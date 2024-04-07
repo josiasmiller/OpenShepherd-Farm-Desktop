@@ -1,17 +1,19 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-# New stuff for the stub project
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+import tkinter as tk
+from UserInterface.RegistryAppTopScreen import RegistryAppTopScreen
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+class RegistryApp(tk.Tk):
+    """Main application class for RegistryApp."""
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    def __init__(self):
+
+        super().__init__()
+        self.tw = RegistryAppTopScreen(self)
+
+def main():
+    """Entry point of the application."""
+    app = RegistryApp()
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()
