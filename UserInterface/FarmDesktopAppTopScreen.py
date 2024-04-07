@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
+import customtkinter as ctk
+
 from pathlib import Path
 from PIL import Image, ImageTk
 
@@ -21,11 +23,13 @@ from .TopScreenUtilities import fetch_animal_pedigree_data, fetch_animal_adition
     ***Note: right now there are couple of method_names which are tkinter related. Need to work on renaming
 """
 
-class RegistryAppTopScreen(tk.Frame):
+ctk.set_appearance_mode("light")
+
+class FarmDesktopAppTopScreen(ctk.CTkFrame):
     def __init__(self, root):
         super().__init__(root)
         self.root = root
-        self.root.title("Registry App")
+        self.root.title("Fram Desktop App")
         self.root.geometry("1024x768")
 
         self._topscreen_setup()  # Setup the top screen before others
@@ -71,14 +75,12 @@ class RegistryAppTopScreen(tk.Frame):
         Setup the top screen. This frame will be used to place the home button at the top of the window.
         """
         # Using 'height=10' and 'bg' for visual design, might need to adjust based on actual content
-        self.topscreen = tk.Frame(self.root, height=100)  # Adjusted height here
+        self.topscreen = ctk.CTkFrame(self.root, height=100, fg_color="white")  # Adjusted height here
         self.topscreen.grid(row=0, column=0, columnspan=1, sticky="ew")
         self.topscreen.grid_propagate(False)  # Prevents the frame from resizing to fit its content
 
         # Adding a Home button to the top screen, aligned to the left
-        self.home_button = tk.Button(self.topscreen, text="Home", command=self.GoHomeBtn,
-                                     fg='black', font=('Arial', 8, 'bold'),
-                                     borderwidth=2, relief="raised")
+        self.home_button = ctk.CTkButton(self.topscreen, fg_color="#09b1be", text="Home", command=self.GoHomeBtn)
         self.home_button.pack(side='top', padx=10, pady=5)  # Adjust padding as needed
         
     # Setting up menu
@@ -105,13 +107,20 @@ class RegistryAppTopScreen(tk.Frame):
         
     # Setting up left sidebar
     def _leftsidebar_setup(self):
-        self.leftsidebar = tk.Frame(self.root, borderwidth=2, relief="raised", width=200)
+        self.leftsidebar = ctk.CTkFrame(self.root, width=200, fg_color="white")
         self.leftsidebar.grid(row=1, column=0, rowspan=8, sticky=("NSEW"))
 
-        self.home_label = tk.Label(self.leftsidebar, text="AnimalTrakker Registry")
+        self.home_label = ctk.CTkLabel(self.leftsidebar, text="AnimalTrakker Farm Desktop")
         self.home_label.grid(row=0, column=0)
-
-        self.leftsidebar_treeview = ttk.Treeview(self.leftsidebar, height=50, show="tree")
+        
+        style = ttk.Style(self.leftsidebar)
+        style.theme_use("classic")  # or another theme that fits well with ctk
+        style.configure("Treeview", background="white",
+                        foreground="black")
+        style.map('Treeview', background=[('selected', '#09b1be')])
+        # Configure more Treeview and Treeview.Item styles if needed
+        
+        self.leftsidebar_treeview = ttk.Treeview(self.leftsidebar, height=100, show="tree")
         self.leftsidebar_treeview.grid(row=1, rowspan=4, column=0)
         self._populate_leftsidebar_treeview()
 
@@ -122,7 +131,7 @@ class RegistryAppTopScreen(tk.Frame):
 
     def _populate_leftsidebar_treeview(self):
         # Inserting main categories and subcategories
-        self.leftsidebar_treeview.insert('', 0, 'animals', text='Animals')
+        self.leftsidebar_treeview.insert('', 0, 'animals', text='Setup')
         self.leftsidebar_treeview.insert('animals', 'end', 'animalsearch', text='Animal Search')
         self.leftsidebar_treeview.insert('animals', 'end', 'animaladd', text='Add/Edit Animal')
         self.leftsidebar_treeview.insert('animals', 'end', 'animalwebentry', text='Process Web Entries')
@@ -130,28 +139,32 @@ class RegistryAppTopScreen(tk.Frame):
         self.leftsidebar_treeview.insert('animals', 'end', 'animaldeaths', text='Animal Deaths')
         self.leftsidebar_treeview.insert('animals', 'end', 'animaltransfers', text='Animal Transfers')
 
-        self.leftsidebar_treeview.insert('', 1, 'members', text='Members')
+        self.leftsidebar_treeview.insert('', 1, 'members', text='Animal/EID Management')
         self.leftsidebar_treeview.insert('members', 'end', 'membersearch', text='Member Search')
         self.leftsidebar_treeview.insert('members', 'end', 'memberreports', text='Member Reports')
         self.leftsidebar_treeview.insert('members', 'end', 'memberadd', text='Add/Edit Member')
 
-        self.leftsidebar_treeview.insert('', 3, 'flockherdbook', text='Flock/Herd Book')
+        self.leftsidebar_treeview.insert('', 2, 'registryreports', text='Animal Evaluation')
+        self.leftsidebar_treeview.insert('registryreports', 'end', 'printpedigree', text='Print Pedigree Certificate')
+        
+        self.leftsidebar_treeview.insert('', 3, 'flockherdbook', text='Animal Care/Vet')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printregistrations', text='Print Registrations')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printtransfers', text='Print Transfers')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printmembers', text='Print Members')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printprefix', text='Print Prefixes')
 
-        self.leftsidebar_treeview.insert('', 4, 'populationanalysis', text='Population Analysis')
+        self.leftsidebar_treeview.insert('', 4, 'populationanalysis', text='Birthing')
         self.leftsidebar_treeview.insert('populationanalysis', 'end', 'definefounders', text='Define Founders')
         self.leftsidebar_treeview.insert('populationanalysis', 'end', 'calculateinbreeding', text='Calculate Inbreeding')
         self.leftsidebar_treeview.insert('populationanalysis', 'end', 'calculatebloodlines', text='Calculate Bloodlines')
 
-        self.leftsidebar_treeview.insert('', 5, 'registrysetup', text='Registry Setup')
-        self.leftsidebar_treeview.insert('registrysetup', 'end', 'choosedatabase', text='Choose Database')
-        self.leftsidebar_treeview.insert('registrysetup', 'end', 'general_setup', text='General Defaults')
-
-        self.leftsidebar_treeview.insert('', 2, 'registryreports', text='Registry Reports', open='true')
-        self.leftsidebar_treeview.insert('registryreports', 'end', 'printpedigree', text='Print Pedigree Certificate')
+        self.leftsidebar_treeview.insert('', 5, 'animalmovements', text='Animal Movements')
+        
+        self.leftsidebar_treeview.insert('', 6, 'animalhistory', text='Animal History')
+        
+        self.leftsidebar_treeview.insert('', 7, 'databasemanagement', text='Database Management')
+        
+        self.leftsidebar_treeview.insert('', 8, 'quit', text='Quit')
 
         # Bind the double-click event to a handler
         self.leftsidebar_treeview.bind("<Double-1>", self.OnDoubleClickLeftSidebar)
@@ -275,7 +288,7 @@ class RegistryAppTopScreen(tk.Frame):
 
         # Load and display the logo image
         logo_path = Path(__file__).parent / 'logo.jpg'
-        initial_size = (754, 434)
+        initial_size = (759, 375)
         image = Image.open(logo_path).resize(initial_size, Image.LANCZOS)
         self.home_image = ImageTk.PhotoImage(image)
         image_label = tk.Label(self.central_frame, image=self.home_image, border=0)
