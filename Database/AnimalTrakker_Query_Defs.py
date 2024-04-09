@@ -11,7 +11,27 @@ from datetime import datetime
 #   This is the Context Manager approach  timestamp 2:28 in this video
 #   https://www.youtube.com/watch?v=hBhAxRwtoJE
 
+# FOR FARM DESKTOP APP. PUT IT IN HERE FOR NOW. WILL BE IN ANOTHER FILE LATER
+def get_animal_evaluation_history(connection):
+    with connection:
+        return connection.execute(GET_ANIMAL_EVALUATION_HISTORY).fetchall()
 
+def get_evaluation_traits(connection, evaluation_id):
+    with connection:
+        return connection.execute(GET_EVALUATION_TRAITS, (evaluation_id,)).fetchone()
+    
+# Getting partucular trait based on id_evaluationtraitid. 
+def get_evaluation_trait(connection, trait_id):
+    """Output is tuple (trait_name, id_evaluationtraittypeid)"""
+    with connection:
+        return connection.execute(GET_EVALUATION_TRAIT, (trait_id,)).fetchone()
+# Getting list of units for a particular trait
+def get_evaluation_units(connection, unit_id):
+    """Output is a tuple (unit_names) for particular unit_id"""
+    with connection:
+        return connection.execute(GET_EVALUATION_UNITS, (unit_id,)).fetchall()
+    
+    
 # Connecting directly to one db
 def db_connect(dbname):
     """
