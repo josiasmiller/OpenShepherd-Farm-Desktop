@@ -12,8 +12,9 @@ from Database.DatabaseUtilities import file_picker
 from Reports.PDFManager import PedigreePDFManager
 from Database.AnimalTrakker_Query_Defs import update_printed_status
 
-from .TopScreenHandlers import handle_print_pedigree
+from .TopScreenHandlers import *
 from .TopScreenUtilities import fetch_animal_pedigree_data, fetch_animal_aditional_data
+from .CustomWidgets import TraitScoreWidget, TraitUnitWidget
 
 """Overall naming conventions:
     _method_name - method which is supposed to be only used internally (for creating interface automatically)
@@ -80,7 +81,7 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         self.topscreen.grid_propagate(False)  # Prevents the frame from resizing to fit its content
 
         # Adding a Home button to the top screen, aligned to the left
-        self.home_button = ctk.CTkButton(self.topscreen, fg_color="#09b1be", text="Home", command=self.GoHomeBtn)
+        self.home_button = ctk.CTkButton(self.topscreen, fg_color="#09b1be", text="Home", text_color="black", command=self.GoHomeBtn)
         self.home_button.pack(side='top', padx=10, pady=5)  # Adjust padding as needed
         
     # Setting up menu
@@ -144,9 +145,8 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         self.leftsidebar_treeview.insert('members', 'end', 'memberreports', text='Member Reports')
         self.leftsidebar_treeview.insert('members', 'end', 'memberadd', text='Add/Edit Member')
 
-        self.leftsidebar_treeview.insert('', 2, 'registryreports', text='Animal Evaluation')
-        self.leftsidebar_treeview.insert('registryreports', 'end', 'printpedigree', text='Print Pedigree Certificate')
-        
+        self.leftsidebar_treeview.insert('', 2, 'animalevaluationhistory', text='Animal Evaluation History')
+                
         self.leftsidebar_treeview.insert('', 3, 'flockherdbook', text='Animal Care/Vet')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printregistrations', text='Print Registrations')
         self.leftsidebar_treeview.insert('flockherdbook', 'end', 'printtransfers', text='Print Transfers')
@@ -162,7 +162,8 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         
         self.leftsidebar_treeview.insert('', 6, 'animalhistory', text='Animal History')
         
-        self.leftsidebar_treeview.insert('', 7, 'databasemanagement', text='Database Management')
+        self.leftsidebar_treeview.insert('', 7, 'registryreports', text='Database Management')
+        self.leftsidebar_treeview.insert('registryreports', 'end', 'printpedigree', text='Print Pedigree Certificate')
         
         self.leftsidebar_treeview.insert('', 8, 'quit', text='Quit')
 
@@ -222,13 +223,107 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
     def OnDoubleClickLeftSidebar(self, event):
         item = self.leftsidebar_treeview.selection()[0]
         item_text = self.leftsidebar_treeview.item(item, "text")
+        parent = self.leftsidebar_treeview.parent(item)
+        value =self.leftsidebar_treeview.item(item, "values")
         print("you clicked on", item_text)
+        print("with parent", parent)
+        print("value", value[0] if value else None)
 
+        if item_text == 'Animal Evaluation History':
+            # Clear the existing children under the 'Animal Evaluation History' item
+            children = self.leftsidebar_treeview.get_children(item)
+            for child in children:
+                self.leftsidebar_treeview.delete(child)
+
+            # Get the updated list of animal evaluation history and populate the treeview
+            animal_evaluation_history = handle_animal_evaluation_history(self.currentdatabase)
+            for evaluation in animal_evaluation_history:
+                self.leftsidebar_treeview.insert('animalevaluationhistory', 'end', text=f'{evaluation[1]}', values=evaluation[0])
+                
+        if parent == 'animalevaluationhistory':
+            # Keep the record of the selected item, and call the function to pull necessary data
+            self.animal_evaluation_history(value[0])
+        
         if item_text == 'Print Pedigree Certificate':
             pedigree_data = handle_print_pedigree(self.currentdatabase)
             columns = ["ID", "Animal Name", "Printed", "Created", "Modified"]
             self.setup_central_treeview(pedigree_data, columns)
         # Add more conditions for other actions and corresponding widget setups here...
+        
+    def animal_evaluation_history(self, evaluation_id):
+        
+        self.animal_search_menu()
+        
+        traits_score, traits_units, traits_custom, trait_units_combined, units = handle_trait_analysis(self.currentdatabase, evaluation_id)
+        start_row = self.search_results_frame.grid_info()['row'] + 1
+        
+        for i, trait in enumerate(traits_score):
+            trait_widget = TraitScoreWidget(self.central_frame, trait[1])
+            trait_widget.grid(row=start_row + i, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
+
+        # Create TraitUnitWidget instances for traits_units
+        for i, trait_unit in enumerate(traits_units):
+            row = start_row + i
+            trait_unit_widget = TraitUnitWidget(self.central_frame, trait_unit)
+            trait_unit_widget.grid(row=row, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
+            
+    def animal_search_menu(self):
+        # First, clear the central frame
+        self.clear_central_frame()
+
+        # Configure the central frame to use all available space horizontally for the search entry and combobox
+        self.central_frame.columnconfigure(0, weight=1)  # Search type label
+        self.central_frame.columnconfigure(1, weight=2)  # Search type combobox gets more space
+        self.central_frame.columnconfigure(2, weight=1)  # Search string label
+        self.central_frame.columnconfigure(3, weight=2)  # Search entry gets more space
+
+        # Search Type Dropdown Menu
+        self.search_type_label = ctk.CTkLabel(self.central_frame, text="Select search type:")
+        self.search_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        
+        self.search_type_var = tk.StringVar()
+        self.search_type_combobox = ttk.Combobox(self.central_frame, textvariable=self.search_type_var, state="readonly", width=20)
+        self.search_type_combobox['values'] = ("Name", "Id", "Electronic", "Farm")
+        self.search_type_combobox.current(0)
+        self.search_type_combobox.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+
+        # Search String Entry
+        self.search_string_label = ctk.CTkLabel(self.central_frame, text="Search string:")
+        self.search_string_label.grid(row=0, column=2, padx=10, pady=10, sticky="ew")
+
+        self.search_entry = tk.Entry(self.central_frame, width=20)
+        self.search_entry.grid(row=0, column=3, padx=10, pady=10, sticky="ew")
+
+        # Search Button
+        self.search_button = ctk.CTkButton(self.central_frame, text="Search", command=self.animal_search, fg_color="#09b1be", text_color="black")
+        self.search_button.grid(row=0, column=4, padx=10, pady=10, sticky="ew")
+
+        # Prepare a container for search results, which will be below the search bar
+        self.search_results_frame = tk.Frame(self.central_frame)
+        self.search_results_frame.grid(row=1, column=0, columnspan=5, padx=10, pady=10, sticky="nsew")
+        self.central_frame.rowconfigure(999, weight=1)  # Allow search results to expand vertically
+
+
+    def animal_search(self):
+        # Clear previous search results from the results frame
+        for widget in self.search_results_frame.winfo_children():
+            widget.destroy()
+
+        search_type = self.search_type_var.get()
+        search_query = self.search_entry.get()
+
+        # Placeholder for your search function
+        search_results = your_search_function(search_type, search_query)
+
+        # Display search results as labels
+        for i, result in enumerate(search_results):
+            result_label = tk.Label(self.search_results_frame, text=result, anchor="w")
+            result_label.pack(fill='x', padx=10, pady=2)
+
+    # Replace `your_search_function` with the actual function that performs the search based on type and query.
+    # The function should return a list of strings representing search results.
+
+
         
     def OnDoubleClickCentralTreeview(self, event):
     # Get the Treeview widget
