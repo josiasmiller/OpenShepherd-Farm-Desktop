@@ -81,7 +81,7 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         self.topscreen.grid_propagate(False)  # Prevents the frame from resizing to fit its content
 
         # Adding a Home button to the top screen, aligned to the left
-        self.home_button = ctk.CTkButton(self.topscreen, fg_color="#09b1be", text="Home", text_color="black", command=self.GoHomeBtn)
+        self.home_button = ctk.CTkButton(self.topscreen, fg_color="#3DAFB9", text="Home", text_color="black", command=self.GoHomeBtn)
         self.home_button.pack(side='top', padx=10, pady=5)  # Adjust padding as needed
         
     # Setting up menu
@@ -118,7 +118,7 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         style.theme_use("classic")  # or another theme that fits well with ctk
         style.configure("Treeview", background="white",
                         foreground="black")
-        style.map('Treeview', background=[('selected', '#09b1be')])
+        style.map('Treeview', background=[('selected', '#3DAFB9')])
         # Configure more Treeview and Treeview.Item styles if needed
         
         self.leftsidebar_treeview = ttk.Treeview(self.leftsidebar, height=100, show="tree")
@@ -163,7 +163,6 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         self.leftsidebar_treeview.insert('', 6, 'animalhistory', text='Animal History')
         
         self.leftsidebar_treeview.insert('', 7, 'registryreports', text='Database Management')
-        self.leftsidebar_treeview.insert('registryreports', 'end', 'printpedigree', text='Print Pedigree Certificate')
         
         self.leftsidebar_treeview.insert('', 8, 'quit', text='Quit')
 
@@ -251,21 +250,29 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         # Add more conditions for other actions and corresponding widget setups here...
         
     def animal_evaluation_history(self, evaluation_id):
-        
         self.animal_search_menu()
         
+        # Fetch the trait data
         traits_score, traits_units, traits_custom, trait_units_combined, units = handle_trait_analysis(self.currentdatabase, evaluation_id)
-        start_row = self.search_results_frame.grid_info()['row'] + 1
         
+        # Create separate containers for each type of widget
+        traits_score_frame = tk.Frame(self.central_frame, background="white")
+        traits_units_frame = tk.Frame(self.central_frame, background="white")
+        
+        # Position the frames within the central frame
+        traits_score_frame.grid(row=2, column=0, columnspan=5, sticky="nsew", padx=10, pady=10)
+        traits_units_frame.grid(row=3, column=0, columnspan=5, sticky="nsew", padx=10, pady=10)
+        
+        # For traits_score, place each widget in the traits_score_frame
         for i, trait in enumerate(traits_score):
-            trait_widget = TraitScoreWidget(self.central_frame, trait[1])
-            trait_widget.grid(row=start_row + i, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
-
-        # Create TraitUnitWidget instances for traits_units
+            trait_widget = TraitScoreWidget(traits_score_frame, trait[1])
+            trait_widget.grid(row=i, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
+        
+        # For traits_units, place each widget in the traits_units_frame
         for i, trait_unit in enumerate(traits_units):
-            row = start_row + i
-            trait_unit_widget = TraitUnitWidget(self.central_frame, trait_unit)
-            trait_unit_widget.grid(row=row, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
+            trait_unit_widget = TraitUnitWidget(traits_units_frame, trait_unit)
+            trait_unit_widget.grid(row=i, column=0, columnspan=5, sticky="ew", padx=10, pady=2)
+
             
     def animal_search_menu(self):
         # First, clear the central frame
@@ -283,6 +290,9 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         
         self.search_type_var = tk.StringVar()
         self.search_type_combobox = ttk.Combobox(self.central_frame, textvariable=self.search_type_var, state="readonly", width=20)
+
+        # !ChangeRequired!
+        # Set lookup for the info in the id type table
         self.search_type_combobox['values'] = ("Name", "Id", "Electronic", "Farm")
         self.search_type_combobox.current(0)
         self.search_type_combobox.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
@@ -295,7 +305,7 @@ class FarmDesktopAppTopScreen(ctk.CTkFrame):
         self.search_entry.grid(row=0, column=3, padx=10, pady=10, sticky="ew")
 
         # Search Button
-        self.search_button = ctk.CTkButton(self.central_frame, text="Search", command=self.animal_search, fg_color="#09b1be", text_color="black")
+        self.search_button = ctk.CTkButton(self.central_frame, text="Search", command=self.animal_search, fg_color="#3DAFB9", text_color="black")
         self.search_button.grid(row=0, column=4, padx=10, pady=10, sticky="ew")
 
         # Prepare a container for search results, which will be below the search bar

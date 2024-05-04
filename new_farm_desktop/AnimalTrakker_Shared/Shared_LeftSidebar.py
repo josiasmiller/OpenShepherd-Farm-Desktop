@@ -1,0 +1,96 @@
+import tkinter as tk
+from tkinter import ttk
+from AnimalTrakker_Shared.Shared_Logging import get_logger
+
+logger = get_logger(__name__)
+
+class LeftSidebar(tk.Frame):
+    """
+    A sidebar component that handles displaying a navigational tree structure and handling user interactions
+    with these elements.
+
+    Attributes:
+        parent (tk.Widget): The parent widget, typically a tk.Frame or tk.Tk instance.
+        sidebar_title (str): The title displayed at the top of the sidebar.
+        tree_structure (list): A list of dictionaries representing the hierarchical structure of the sidebar items.
+        controller (object): The controller object that handles business logic in response to sidebar interactions.
+    """
+    
+    def __init__(self, parent, sidebar_title, tree_structure, controller, **kwargs):
+        """
+        Initializes the LeftSidebar with necessary properties and begins the UI setup.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            sidebar_title (str): The title to be displayed at the top of the sidebar.
+            tree_structure (list): A structured list of items to be displayed in the tree view.
+            controller (object): The controller that manages user interactions.
+            **kwargs: Additional keyword arguments passed to the tk.Frame superclass.
+        """
+        super().__init__(parent, **kwargs)
+        self.controller = controller
+        self.sidebar_title = sidebar_title
+        self.tree_structure = tree_structure
+        self.init_ui()
+
+    def init_ui(self):
+        """
+        Sets up the user interface of the sidebar, including the label and treeview components.
+        """
+        # Label at the top of the sidebar, serving as a heading.
+        self.home_label = tk.Label(self, text=self.sidebar_title)
+        self.home_label.pack(fill='x')
+
+        # Treeview widget for displaying the hierarchical structure of sidebar items.
+        self.treeview = ttk.Treeview(self, show="tree")
+        self.treeview.pack(expand=True, fill='both')
+
+        # Populate the Treeview with predefined structure.
+        self.populate_treeview()
+
+        # Bind the click event on Treeview items to an event handler.
+        self.treeview.bind("<ButtonRelease-1>", self.on_click)
+
+    def populate_treeview(self):
+        """
+        Populates the treeview widget with nodes specified in the tree_structure attribute.
+        """
+        # Clear existing nodes first
+        for item in self.treeview.get_children():
+            self.treeview.delete(item)
+
+        # Iterate over the structured list to insert each item into the Treeview.
+        for node in self.tree_structure:
+            self.treeview.insert(node['parent'], node['index'], node['iid'], text=node['text'])
+            # Insert children of the current node if any exist.
+            if 'children' in node:
+                for child in node['children']:
+                    self.treeview.insert(node['iid'], 'end', text=child['text'])
+
+    def on_click(self, event):
+        """
+        Handles click events on the treeview items, passing the item identifier and text to the controller.
+
+        Args:
+            event: The event data which includes details of the mouse button release.
+        """
+        selected_item = self.treeview.selection()
+        if selected_item:
+            item_id = selected_item[0]
+            item_text = self.treeview.item(item_id, "text")
+            # Notify the controller about the sidebar click with the item id and text.
+            self.controller.handle_sidebar_click(item_id, item_text)
+        else:
+            # Notify the controller that there was a click but no item was selected.
+            self.controller.handle_sidebar_click(None, None)
+
+    def update_leftsidebar(self, new_tree_structure):
+        """
+        Updates the sidebar with new tree structure data.
+
+        Args:
+            new_tree_structure (list): A new list of dictionaries representing the hierarchical structure to update the sidebar.
+        """
+        self.tree_structure = new_tree_structure  # Update the internal tree structure
+        self.populate_treeview()  # Re-populate the treeview with new data
+        logger.info("Sidebar updated with new data")
