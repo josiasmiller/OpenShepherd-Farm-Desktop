@@ -2,9 +2,9 @@ from AnimalTrakker_Shared.Shared_BaseController import BaseController
 from AnimalTrakker_Shared.Shared_Widgets import HomeWidget, ConfirmationMessageWidget
 
 from AnimalTrakker_Shared.Shared_Logging import get_logger
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings, fetch_setting_details, save_setting_changes
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, SettingWidget, DefaultSettingChoiceWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditSettingWidget, DefaultSettingChoiceWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
@@ -91,15 +91,24 @@ class FarmDesktopController(BaseController):
             choice (str): The name of the selected default setting.
             edit (bool): Whether the choice is for editing an existing setting. Defaults to False.
         """
-        if edit:
-            message = f"Editing {choice}."
+        if choice == 'Create New':
+            # Handle creation of a new default setting
+            pass
         else:
-            message = f"{choice} has been chosen."
-
-        self.app.main_frame.update_content(ConfirmationMessageWidget, message=message)
+            # Load and display the chosen default setting
+            if edit:
+                setting_details = fetch_setting_details(self.app.db_connection, setting_name=choice)
+                if setting_details:
+                    self.app.main_frame.update_content(EditSettingWidget, setting_details=setting_details, controller=self, db_connection=self.app.db_connection)
+            else:
+                self.app.current_default_setting = choice
+                self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"{choice} has been chosen as the default setting.")
+                self.app.bottom_bar.update_current_setting(choice)
+                
+    def save_edited_setting(self, updated_details):
+        logger.info("Farm Desktop Controller: Save button clicked")
+        save_setting_changes(self.app.db_connection, updated_details)
         
-        # Update the current setting in the BaseGUI
-        self.app.update_current_setting(choice)
         
     def go_home(self):
         """

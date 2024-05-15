@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
+
 logger = get_logger(__name__)
 
 class EvaluationWidget(tk.Frame):    
@@ -275,143 +277,194 @@ class DefaultSettingChoiceWidget(tk.Frame):
         #self.controller.load_default_setting('Create New')
                 
     def edit_choice(self):
+        logger.info('Edit setting button was clicked')
         choice = self.choice_var.get()
-        logger.info('Edit default setting button was clicked')
-        #self.controller.edit_default_setting(choice)
-        
-class SettingWidget(tk.Frame):
+        self.controller.load_setting(choice, edit=True)
+
+class EditSettingWidget(tk.Frame):
     """
-    A widget that sets general defaults for the application.
+    A widget for editing settings.
+
+    This widget displays setting details in entry fields that can be edited and saved.
 
     Attributes:
-        parent (tk.Widget): The parent widget, which is typically a frame or another Tkinter container.
-        style_manager (StyleManager): The style manager instance that provides style configurations.
+        parent (tk.Widget): The parent widget.
+        setting_details (dict): A dictionary containing the setting details.
+        style_manager (StyleManager): An instance of StyleManager for styling.
+        controller (object): The controller handling the save logic.
+        db_connection (DatabaseConnection): The database connection instance.
     """
-    
-    def __init__(self, parent, style_manager, db_connection, **kwargs):
+    def __init__(self, parent, setting_details, style_manager, controller, db_connection, **kwargs):
         """
-        Initialize the GeneralDefaultsWidget with a parent and a style manager.
+        Initialize the EditSettingWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
-            style_manager (StyleManager): The style manager to use for retrieving styles.
+            setting_details (dict): A dictionary containing the setting details.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+            controller (object): The controller handling the save logic.
             db_connection (DatabaseConnection): The database connection instance.
             **kwargs: Additional keyword arguments for the Frame constructor.
         """
-        self.style_manager = style_manager
-        self.db_connection = db_connection
-        bg_color = self.style_manager.get_bg('main_frame')
+        self.combobox_active = False
+        self.combobox_clicked = False
+        bg_color = style_manager.get_bg('main_frame')
         super().__init__(parent, bg=bg_color, **kwargs)
-
-        # Initialize UI components
-        self.init_ui()
-
-    def init_ui(self):
-        """
-        Initializes the user interface components of the GeneralDefaultsWidget.
-        """
-        # Title Label
-        label = tk.Label(self, text="Set General Defaults", bg=self['bg'])
-        label.pack(pady=(5, 0))
-
-        # Dropdown Menu for Default Settings
-        self.default_settings_var = tk.StringVar(self)
-        self.default_settings_combobox = ttk.Combobox(self, textvariable=self.default_settings_var, state="readonly")
-        self.default_settings_combobox.pack(pady=10)
-
-        # Fetch Default Settings from Database
-        self.fetch_default_settings()
-
-        # Confirm Button
-        self.confirm_button = tk.Button(self, text="Confirm", command=self.load_default_setting)
-        self.confirm_button.pack(pady=5)
-
-        # Frame for Default Settings Details
-        self.settings_frame = tk.Frame(self, bg=self['bg'])
-        self.settings_frame.pack(fill='both', expand=True, padx=10, pady=10)
-
-        # Save Button
-        self.save_button = tk.Button(self, text="Save Changes", command=self.save_changes)
-        self.save_button.pack(pady=5)
-
-    def fetch_default_settings(self):
-        """
-        Fetches default settings from the database and populates the dropdown menu.
-        """
-        settings = self.db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
-        settings_names = [setting[0] for setting in settings]
-        self.default_settings_combobox['values'] = settings_names
-        if settings_names:
-            self.default_settings_combobox.current(0)
-        else:
-            messagebox.showerror("Error", "No default settings found in the database.")
-
-    def load_default_setting(self):
-        """
-        Loads the selected default setting's details and displays them in the settings frame.
-        """
-        selected_setting = self.default_settings_var.get()
-        setting_data = self.db_connection.fetchone(GET_DEFAULT_SETTING_DETAILS, (selected_setting,))
         
-        # Clear previous settings
-        for widget in self.settings_frame.winfo_children():
-            widget.destroy()
+        self.setting_details = setting_details
+        self.controller = controller
+        self.db_connection = db_connection
 
-        if setting_data:
-            self.display_setting_data(setting_data)
-        else:
-            messagebox.showerror("Error", "Selected setting not found.")
+        self.build_widget()
 
-    def display_setting_data(self, data):
+    def build_widget(self):
         """
-        Displays the default setting data in the settings frame.
+        Build the widget with title, scrollable area, and entry fields.
+        """
+        # Create a title label
+        title_label = tk.Label(self, text="Edit Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.pack(pady=10)
+
+        # Create a frame to hold the canvas and scrollbar
+        frame = tk.Frame(self, bg=self['bg'])
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        # Create a canvas
+        self.canvas = tk.Canvas(frame, bg=self['bg'], highlightthickness=0)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Add a scrollbar
+        self.scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        # Create an internal frame to hold the entry widgets
+        self.internal_frame = tk.Frame(self.canvas, bg=self['bg'])
+        self.canvas.create_window((0, 0), window=self.internal_frame, anchor="nw")
+
+        row = 0
+        for key, value in self.setting_details.items():
+            label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
+            label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
+            
+            # Check for foreign key fields to use combobox
+            if key in ['id_speciesid', 'id_breedid', 'id_stateid', 'id_countyid']:
+                names = self.fetch_names(key)
+                combobox = ttk.Combobox(self.internal_frame, values=names, state='readonly')
+                combobox.set(names[0] if value not in names else value)
+                combobox.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+                self.bind_combobox_events(combobox)
+                setattr(self, f"entry_{key}", combobox)
+            else:
+                entry = tk.Entry(self.internal_frame)
+                entry.insert(0, value)
+                entry.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+                setattr(self, f"entry_{key}", entry)
+            
+            row += 1
+
+        self.save_button = tk.Button(self.internal_frame, text="Save", command=self.save_changes)
+        self.save_button.grid(row=row, column=0, columnspan=2, pady=10)
+
+        # Bind mouse wheel scrolling to the canvas
+        self.bind_mousewheel(self.canvas)
+
+    def fetch_names(self, key):
+        """
+        Fetch names for the combobox based on the key.
 
         Args:
-            data (tuple): The data of the default setting.
+            key (str): The key to determine which names to fetch.
+
+        Returns:
+            list: A list of names.
         """
-        columns = ["id_animaltrakkerdefaultsettingsid", "default_settings_name", "owner_id_contactid", "owner_id_companyid",
-                   "owner_id_premiseid", "breeder_id_contactid", "breeder_id_companyid", "breeder_id_premiseid", 
-                   "vet_id_contactid", "vet_id_premiseid", "lab_id_companyid", "lab_id_premiseid", 
-                   "id_registry_id_companyid", "registry_id_premiseid", "id_stateid", "id_countyid", 
-                   "id_flockprefixid", "id_speciesid", "id_breedid", "id_sexid", "id_idtypeid_primary", 
-                   "id_idtypeid_secondary", "id_idtypeid_tertiary", "id_eid_tag_male_color_female_color_same",
-                   "eid_tag_color_male", "eid_tag_color_female", "eid_tag_location", "id_farm_tag_male_color_female_color_same",
-                   "farm_tag_based_on_eid_tag", "farm_tag_number_digits_from_eid", "farm_tag_color_male", 
-                   "farm_tag_color_female", "farm_tag_location", "id_fed_tag_male_color_female_color_same", 
-                   "fed_tag_color_male", "fed_tag_color_female", "fed_tag_location", "id_nues_tag_male_color_female_color_same",
-                   "nues_tag_color_male", "nues_tag_color_female", "nues_tag_location", "id_trich_tag_male_color_female_color_same",
-                   "trich_tag_color_male", "trich_tag_color_female", "trich_tag_location", "trich_tag_auto_increment", 
-                   "trich_tag_next_tag_number", "id_bangs_tag_male_color_female_color_same", "bangs_tag_color_male", 
-                   "bangs_tag_color_female", "bangs_tag_location", "id_sale_order_tag_male_color_female_color_same", 
-                   "sale_order_tag_color_male", "sale_order_tag_color_female", "sale_order_tag_location", "use_paint_marks",
-                   "paint_mark_color", "paint_mark_location", "tattoo_color", "tattoo_location", "freeze_brand_location",
-                   "id_idremovereasonid", "id_tissuesampletypeid", "id_tissuetestid", "id_tissuesamplecontainertypeid",
-                   "birth_type", "rear_type", "minimum_birth_weight", "maximum_birth_weight", "birth_weight_id_unitsid",
-                   "weight_id_unitsid", "sale_price_id_unitsid", "evaluation_update_alert", "death_reason_id_contactid",
-                   "death_reason_id_companyid", "id_deathreasonid", "transfer_reason_id_contactid", "transfer_reason_id_companyid",
-                   "id_transferreasonid", "user_system_serial_number", "created", "modified"]
-
-        self.setting_vars = {}
-        for i, column in enumerate(columns):
-            label = tk.Label(self.settings_frame, text=column.replace('_', ' ').title() + ':', bg=self['bg'])
-            label.grid(row=i, column=0, sticky='e', padx=5, pady=2)
-
-            var = tk.StringVar(value=str(data[i]))
-            entry = tk.Entry(self.settings_frame, textvariable=var)
-            entry.grid(row=i, column=1, sticky='ew', padx=5, pady=2)
-            self.setting_vars[column] = var
+        if key == 'id_speciesid':
+            return fetch_species_names(self.db_connection)
+        elif key == 'id_breedid':
+            return fetch_breed_names(self.db_connection)
+        elif key == 'id_stateid':
+            return fetch_state_names(self.db_connection)
+        elif key == 'id_countyid':
+            return fetch_county_names(self.db_connection)
 
     def save_changes(self):
         """
-        Saves the changes made to the default setting back to the database.
+        Save the changes made in the entry fields.
+
+        This method retrieves the updated values from the entry fields and passes them to the controller.
         """
-        selected_setting = self.default_settings_var.get()
+        updated_details = {key: getattr(self, f"entry_{key}").get() for key in self.setting_details.keys()}
+        self.controller.save_edited_setting(updated_details)
 
-        # Prepare data for update
-        update_data = [var.get() for var in self.setting_vars.values()]
-        update_data.append(selected_setting)  # Append the setting name for the WHERE clause
+    def on_mousewheel(self, event):
+        """
+        Handle mouse wheel scrolling.
 
-        # Update the database
-        self.db_connection.connection.execute(UPDATE_DEFAULT_SETTING_DETAILS, update_data)
-        self.db_connection.connection.commit()
-        messagebox.showinfo("Success", "Changes saved successfully.")
+        Args:
+            event (tk.Event): The event object containing details about the mouse wheel scroll event.
+        """
+        if not self.combobox_active:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def bind_mousewheel(self, widget):
+        """
+        Bind the mouse wheel event to a widget.
+
+        Args:
+            widget (tk.Widget): The widget to bind the mouse wheel event to.
+        """
+        widget.bind_all("<MouseWheel>", self.on_mousewheel)
+
+    def bind_combobox_events(self, combobox):
+        """
+        Bind events to the combobox for handling mouse wheel scrolling.
+
+        Args:
+            combobox (ttk.Combobox): The combobox to bind events to.
+        """
+        combobox.bind("<Enter>", self.on_combobox_enter)
+        combobox.bind("<Leave>", self.on_combobox_leave)
+        combobox.bind("<Button-1>", self.on_combobox_click)
+        combobox.bind("<<ComboboxSelected>>", lambda e: self.bind_mousewheel(self.canvas))
+        combobox.bind("<MouseWheel>", self.on_combobox_mousewheel)
+
+    def on_combobox_enter(self, event):
+        self.combobox_active = True
+        self.unbind_mousewheel()
+
+    def on_combobox_leave(self, event):
+        # Check if the combobox dropdown is still open
+        widget = event.widget
+        if widget.state() == ("readonly",):
+            self.combobox_active = False
+            self.bind_mousewheel(self.canvas)
+
+    def on_combobox_click(self, event):
+        self.combobox_clicked = True
+
+    def on_combobox_mousewheel(self, event):
+        """
+        Handle mouse wheel scrolling for combobox.
+
+        Args:
+            event (tk.Event): The event object containing details about the mouse wheel scroll event.
+        """
+        if self.combobox_clicked:
+            try:
+                popdown_widget_name = event.widget.tk.call("ttk::combobox::PopdownWindow", event.widget)
+                popdown_widget = event.widget.nametowidget(popdown_widget_name)
+                listbox = popdown_widget.winfo_children()[0]
+                listbox.yview_scroll(int(-1 * (event.delta / 120)), 'units')
+                return "break"  # Prevent further propagation of the event
+            except (tk.TclError, IndexError) as e:
+                pass
+
+    def unbind_mousewheel(self):
+        """
+        Unbind the mouse wheel event from all widgets.
+        """
+        self.canvas.unbind_all("<MouseWheel>")
