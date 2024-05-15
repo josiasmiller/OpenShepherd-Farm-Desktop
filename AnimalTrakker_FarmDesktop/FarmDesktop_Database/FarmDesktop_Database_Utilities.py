@@ -1,0 +1,197 @@
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
+from AnimalTrakker_Shared.Shared_Logging import get_logger
+
+logger = get_logger(__name__)
+
+def fetch_evaluation_history(db_connection):
+    """
+    Fetches evaluation history data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of dict: List containing dictionaries of evaluation history, formatted for display. Each dictionary contains the text from the second column of the fetched rows.
+    """
+    try:
+        # Execute the predefined query to fetch evaluation history.
+        rows = db_connection.fetchall(GET_ANIMAL_EVALUATION_HISTORY)
+        logger.info(f"Evaluation history on database open fetched successfully, retrieved {len(rows)} records.")
+        
+        # Process the fetched rows into a list of dictionaries for display.
+        return [{'text': str(row[1])} for row in rows]
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch evaluation history: {e}")
+        return []  # Return an empty list or raise an exception depending on your error handling strategy
+
+def fetch_evaluation_data(db_connection, evaluation_id, evaluation_name):
+    """Fetches evaluation data from the database for a given evaluation ID."""
+    
+    try:
+        row = db_connection.fetchone(GET_EVALUATION_TRAITS, (evaluation_name,))
+        logger.info(f"Evaluation data {row} for {evaluation_name} with id {evaluation_id} fetched successfully.")
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch evaluation data for {evaluation_name}: {e}")
+    
+    return row
+
+def fetch_default_settings(db_connection):
+    """
+    Fetches default settings data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list: List containing names of default settings.
+    """
+    try:
+        # Execute the predefined query to fetch default settings.
+        rows = db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
+        logger.info(f"Default settings fetched successfully, retrieved {len(rows)} records.")
+        
+        # Log the raw data fetched from the database
+        logger.info(f"Fetched rows: {rows}")
+        
+        # Process the fetched rows into a list of setting names.
+        settings = [str(row[0]) for row in rows]  # Ensure only the setting name is returned
+        logger.info(f"Processed settings: {settings}")
+        return settings
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch default settings: {e}")
+        return []  # Return an empty list or raise an exception depending on your requirements.
+
+def fetch_setting_details(db_connection, setting_name):
+    """
+    Fetches details for a specific default setting from the database.
+
+    Args:
+        setting_name (str): The name of the default setting to fetch details for.
+
+    Returns:
+        dict: A dictionary containing the details of the default setting.
+    """
+    try:
+        row = db_connection.fetchone(GET_SETTING_DETAILS, (setting_name,))
+        if row:
+            columns = [
+                "id_animaltrakkerdefaultsettingsid", "default_settings_name", "owner_id_contactid", "owner_id_companyid", 
+                "owner_id_premiseid", "breeder_id_contactid", "breeder_id_companyid", "breeder_id_premiseid", 
+                "vet_id_contactid", "vet_id_premiseid", "lab_id_companyid", "lab_id_premiseid", 
+                "id_registry_id_companyid", "registry_id_premiseid", "id_stateid", "id_countyid", 
+                "id_flockprefixid", "id_speciesid", "id_breedid", "id_sexid", "id_idtypeid_primary", 
+                "id_idtypeid_secondary", "id_idtypeid_tertiary", "id_eid_tag_male_color_female_color_same", 
+                "eid_tag_color_male", "eid_tag_color_female", "eid_tag_location", "id_farm_tag_male_color_female_color_same", 
+                "farm_tag_based_on_eid_tag", "farm_tag_number_digits_from_eid", "farm_tag_color_male", 
+                "farm_tag_color_female", "farm_tag_location", "id_fed_tag_male_color_female_color_same", 
+                "fed_tag_color_male", "fed_tag_color_female", "fed_tag_location", "id_nues_tag_male_color_female_color_same", 
+                "nues_tag_color_male", "nues_tag_color_female", "nues_tag_location", "id_trich_tag_male_color_female_color_same", 
+                "trich_tag_color_male", "trich_tag_color_female", "trich_tag_location", "trich_tag_auto_increment", 
+                "trich_tag_next_tag_number", "id_bangs_tag_male_color_female_color_same", "bangs_tag_color_male", 
+                "bangs_tag_color_female", "bangs_tag_location", "id_sale_order_tag_male_color_female_color_same", 
+                "sale_order_tag_color_male", "sale_order_tag_color_female", "sale_order_tag_location", "use_paint_marks", 
+                "paint_mark_color", "paint_mark_location", "tattoo_color", "tattoo_location", "freeze_brand_location", 
+                "id_idremovereasonid", "id_tissuesampletypeid", "id_tissuetestid", "id_tissuesamplecontainertypeid", 
+                "birth_type", "rear_type", "minimum_birth_weight", "maximum_birth_weight", "birth_weight_id_unitsid", 
+                "weight_id_unitsid", "sale_price_id_unitsid", "evaluation_update_alert", "death_reason_id_contactid", 
+                "death_reason_id_companyid", "id_deathreasonid", "transfer_reason_id_contactid", 
+                "transfer_reason_id_companyid", "id_transferreasonid", "user_system_serial_number", "created", "modified"
+            ]
+            logger.info(f"Setting for {setting_name} fetched successfully, retrieved {len(row)} record.")
+            return dict(zip(columns, row))
+        else:
+            return None
+    except Exception as e:
+        logger.error(f"Failed to fetch default setting details: {e}")
+        return None
+
+def save_setting_changes(db_connection, updated_details):
+        """
+        Saves the changes made to the default setting.
+
+        Args:
+            updated_details (dict): A dictionary of the updated setting details.
+        """
+        setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
+        params = tuple(updated_details.values()) + (setting_id,)
+        rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
+        if rows_affected:
+            logger.info(f"Successfully updated setting with ID {setting_id}")
+        else:
+            logger.error(f"Failed to update setting with ID {setting_id}")
+            
+def fetch_species_names(db_connection):
+    """
+    Fetches species common names from the species_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing species common names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_SPECIES_NAMES)
+        logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
+        return [row[0] for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch species names: {e}")
+        return []
+    
+def fetch_breed_names(db_connection):
+    """
+    Fetches breed names from the breed_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing breed names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_BREED_NAMES)
+        logger.info(f"Breed names fetched successfully, retrieved {len(rows)} records.")
+        return [row[0] for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch breed names: {e}")
+        return []
+
+def fetch_state_names(db_connection):
+    """
+    Fetches state names from the state_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing state names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_STATE_NAMES)
+        logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
+        return [row[0] for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch state names: {e}")
+        return []
+
+def fetch_county_names(db_connection):
+    """
+    Fetches county names from the county_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing county names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_COUNTY_NAMES)
+        logger.info(f"County names fetched successfully, retrieved {len(rows)} records.")
+        return [row[0] for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch county names: {e}")
+        return []
+
