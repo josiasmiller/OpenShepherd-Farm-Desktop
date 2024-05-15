@@ -231,41 +231,55 @@ class TraitUnitWidget(tk.Frame):
 
 class DefaultSettingChoiceWidget(tk.Frame):
     def __init__(self, parent, choices, controller, style_manager, **kwargs):
-        super().__init__(parent, **kwargs)
+        # Get the background color from the style manager
+        bg_color = style_manager.get_bg('sidebar')
+        super().__init__(parent, bg=bg_color, **kwargs)
+        logger.info(f"DefaultSettingChoiceWidget initialized with choices: {choices}")
         self.controller = controller
         self.style_manager = style_manager
         
-        # Apply style to the frame
-        bg_color = self.style_manager.get_bg('sidebar')
-        self.configure(bg=bg_color)
-        
         self.choice_var = tk.StringVar(self)
         
+        # Configuring column weights for proportionate division
+        self.grid_columnconfigure(0, weight=1)
+        
         # Label with style
-        label_style = {'bg': bg_color}
-        tk.Label(self, text="Select a default setting:", **label_style).pack(pady=5)
+        self.label = tk.Label(self, text="Select a default setting:", bg=bg_color)
+        self.label.grid(row=0, column=0, pady=5, sticky="nsew")
         
         # Combobox with style
-        combobox_style = {'background': bg_color}
-        self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly", **combobox_style)
-        self.combobox.pack(pady=5)
+        print(choices)
+        self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly")
+        self.combobox.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
         self.combobox.current(0)
         
         # Confirm button with style
-        button_style = {'bg': self.style_manager.get_bg('button')}
-        tk.Button(self, text="Confirm", command=self.confirm_choice, **button_style).pack(pady=5)
+        self.confirm_button = tk.Button(self, text="Confirm", command=self.confirm_choice)
+        self.confirm_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+        
+        # Edit button
+        self.create_new_button = tk.Button(self, text="Edit", command=self.edit_choice)
+        self.create_new_button.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
         
         # Create New button with style
-        tk.Button(self, text="Create New", command=self.create_new_choice, **button_style).pack(pady=5)
+        self.create_new_button = tk.Button(self, text="Create New", command=self.create_new_choice)
+        self.create_new_button.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
 
     def confirm_choice(self):
         choice = self.choice_var.get()
-        self.controller.load_default_setting(choice)
-
+        logger.info('Confirm default setting button was clicked')
+        self.controller.load_setting(choice)
+        
     def create_new_choice(self):
-        self.controller.load_default_setting('Create New')
-
-class GeneralDefaultsWidget(tk.Frame):
+        logger.info('Create New default setting button was clicked')
+        #self.controller.load_default_setting('Create New')
+                
+    def edit_choice(self):
+        choice = self.choice_var.get()
+        logger.info('Edit default setting button was clicked')
+        #self.controller.edit_default_setting(choice)
+        
+class SettingWidget(tk.Frame):
     """
     A widget that sets general defaults for the application.
 

@@ -8,7 +8,7 @@ class BottomBar(tk.Frame):
     A bottom bar GUI component that displays application status or information.
     Currently configured to show the current database path being used.
     """
-    def __init__(self, parent, currentdatabase, bg='default', **kwargs):
+    def __init__(self, parent, currentdatabase, current_setting=None, bg='default', **kwargs):
         """
         Initializes the BottomBar with the current database path displayed.
 
@@ -18,10 +18,13 @@ class BottomBar(tk.Frame):
         """
         super().__init__(parent, bg=bg, **kwargs)
 
-        # Create and pack a label to display the current database path
-        # Use the parent's background color if not specified
+       # Create and pack a label to display the current database path
         self.db_label = tk.Label(self, text=f"Current DB: {currentdatabase}", bg=bg)
-        self.db_label.pack(side='left') # Align the label to the left
+        self.db_label.grid(row=0, column=0, sticky="w", padx=5)
+        
+        # Create and pack a label to display the current default setting
+        self.setting_label = tk.Label(self, text=f"Current Setting: {current_setting}", bg=bg)
+        self.setting_label.grid(row=1, column=0, sticky="w", padx=5)
         
     def update_database_path(self, new_db_path):
         """
@@ -33,4 +36,13 @@ class BottomBar(tk.Frame):
         self.db_label.config(text=f"Current DB: {new_db_path}")
         
         logger.info(f"Database path in BottomBar updated to: {new_db_path}")
-        
+    
+    def update_current_setting(self, new_setting):
+        """
+        Updates the text of the label to reflect the current default setting.
+
+        Args:
+            new_setting (str): The new default setting to display.
+        """
+        self.setting_label.config(text=f"Current Setting: {new_setting}")
+        logger.info(f"Current setting in BottomBar updated to: {new_setting}")

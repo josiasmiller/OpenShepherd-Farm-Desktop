@@ -1,7 +1,10 @@
 from AnimalTrakker_Shared.Shared_BaseController import BaseController
+from AnimalTrakker_Shared.Shared_Widgets import HomeWidget, ConfirmationMessageWidget
+
 from AnimalTrakker_Shared.Shared_Logging import get_logger
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, GeneralDefaultsWidget, DefaultSettingChoiceWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, SettingWidget, DefaultSettingChoiceWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
@@ -76,6 +79,38 @@ class FarmDesktopController(BaseController):
         self.app.main_frame.update_content(EvaluationWidget, data=data)
         
     def choose_general_defaluts(self):
-        default_settings = self.app.db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
+        choices = fetch_default_settings(self.app.db_connection)
+        logger.info(f"Choices for default settings: {choices}")
+        self.app.left_sidebar.switch_to_widget(DefaultSettingChoiceWidget, choices=choices, controller=self, style_manager=self.app.style_manager)
+        
+    def load_setting(self, choice, edit=False):
+        """
+        Loads the selected default setting and updates the main frame with a confirmation message.
 
-        self.app.left_sidebar.switch_to_widget(DefaultSettingChoiceWidget, choices=default_settings, controller=self, style_manager=self.app.style_manager)
+        Args:
+            choice (str): The name of the selected default setting.
+            edit (bool): Whether the choice is for editing an existing setting. Defaults to False.
+        """
+        if edit:
+            message = f"Editing {choice}."
+        else:
+            message = f"{choice} has been chosen."
+
+        self.app.main_frame.update_content(ConfirmationMessageWidget, message=message)
+        
+        # Update the current setting in the BaseGUI
+        self.app.update_current_setting(choice)
+        
+    def go_home(self):
+        """
+        Handles the home button logic specific to the Farm Desktop.
+        """
+        logger.info("Farm Desktop Controller: Home button clicked")
+        
+        if self.app:
+            # Refresh the GUI data
+            self.app.refresh_gui_data()
+            # Update the main frame content to the HomeWidget
+            self.app.main_frame.update_content(HomeWidget)
+        else:
+            logger.error("GUI instance is not set in the controller.")

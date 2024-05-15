@@ -40,6 +40,9 @@ class BaseGUI(tk.Frame):
         self.db_connection = db_connection
         self.controller = controller
         
+        # Initialize current default setting variable
+        self.current_default_setting = None
+        
         # Initialize style manager and configure styles
         self.style_manager = StyleManager()
         
@@ -65,7 +68,7 @@ class BaseGUI(tk.Frame):
         self.main_frame = MainFrame(self, style_manager=self.style_manager)
         
         # Initialize the bottom bar with specified background color and passing current database path
-        self.bottom_bar = BottomBar(self, bg=bg_bottom, height=25, currentdatabase=self.currentdatabase)
+        self.bottom_bar = BottomBar(self, bg=bg_bottom, height=50, currentdatabase=self.currentdatabase, current_setting=self.current_default_setting)
 
         # Call to layout the components correctly in the frame.
         self.layout_components()
@@ -100,4 +103,17 @@ class BaseGUI(tk.Frame):
         self.db_connection.update_connection(new_db_path)
         
         # Update the BottomBar with new database path
-        self.bottom_bar.update_database_path(new_db_path)  
+        self.bottom_bar.update_database_path(new_db_path)
+        
+    def update_current_setting(self, new_setting):
+        """
+        Updates the current default setting and the BottomBar display.
+
+        Args:
+            new_setting (str): The new default setting to update.
+        """
+        logger.info(f"Updating current default setting to {new_setting}")
+        self.current_default_setting = new_setting
+        
+        # Update the BottomBar with new default setting
+        self.bottom_bar.update_current_setting(new_setting)  
