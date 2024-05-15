@@ -32,6 +32,7 @@ class LeftSidebar(tk.Frame):
         self.sidebar_title = sidebar_title
         self.tree_structure = tree_structure
         self.style_manager = style_manager
+        self.current_widget = None  # Initialize current_widget
         self.init_ui(bg)
 
     def init_ui(self, bg):
@@ -43,9 +44,12 @@ class LeftSidebar(tk.Frame):
         # Label at the top of the sidebar, serving as a heading.
         self.home_label = tk.Label(self, text=self.sidebar_title, bg=bg)
         self.home_label.pack(fill='x')
+        
+        self.content_frame = tk.Frame(self, bg=bg)
+        self.content_frame.pack(expand=True, fill='both')
 
         # Treeview widget for displaying the hierarchical structure of sidebar items.
-        self.treeview = ttk.Treeview(self, show="tree")
+        self.treeview = ttk.Treeview(self.content_frame, show="tree")
         self.treeview.pack(expand=True, fill='both', padx=0, pady=0)
 
         # Populate the Treeview with predefined structure.
@@ -87,6 +91,14 @@ class LeftSidebar(tk.Frame):
             # Notify the controller that there was a click but no item was selected.
             self.controller.handle_sidebar_click(None, None)
 
+    def clear_content_frame(self):
+        """
+        Clears all widgets from the content frame.
+        """
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        self.current_widget = None
+
     def update_leftsidebar(self, new_tree_structure):
         """
         Updates the sidebar with new tree structure data.
@@ -97,3 +109,27 @@ class LeftSidebar(tk.Frame):
         self.tree_structure = new_tree_structure  # Update the internal tree structure
         self.populate_treeview()  # Re-populate the treeview with new data
         logger.info("Sidebar updated with new data")
+        
+    def switch_to_widget(self, widget_class, *args, **kwargs):
+        self.clear_content_frame()
+        widget = widget_class(self.content_frame, *args, **kwargs)
+        widget.pack(expand=True, fill='both')
+
+    def update_content(self, widget_class, *args, **kwargs):
+        """
+        Updates the content of the LeftSidebar with a new widget.
+
+        Args:
+            widget_class (class): The widget class to instantiate and display.
+            *args: Positional arguments to pass to the widget class constructor.
+            **kwargs: Keyword arguments to pass to the widget class constructor.
+        """
+        logger.info(f"Updating sidebar content to {widget_class.__name__}")
+        self.clear_content_frame()
+
+        try:
+            self.current_widget = widget_class(self.content_frame, *args, **kwargs)
+            self.current_widget.pack(fill=tk.BOTH, expand=True)
+            logger.info(f"Widget {widget_class.__name__} added and packed.")
+        except Exception as e:
+            logger.error(f"Failed to initialize or pack widget {widget_class.__name__}: {str(e)}")

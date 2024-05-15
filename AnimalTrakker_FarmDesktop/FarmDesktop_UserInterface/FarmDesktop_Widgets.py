@@ -1,12 +1,12 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 logger = get_logger(__name__)
 
 class EvaluationWidget(tk.Frame):    
     """
-    A widget that displays the home screen of the application.
+    A widget that displays Evaluation information.
 
     This class is responsible for loading and displaying a logo image and welcoming text on the home screen.
 
@@ -128,17 +128,6 @@ class SearchWidget(tk.Frame):
                                             highlightthickness=2, borderwidth=0, relief='flat')
         self.search_results_frame.grid(row=1, column=0, columnspan=5, padx=10, pady=10, sticky="ew")
         self.rowconfigure(1, weight=0)  # Allows the results area to expand vertically
-        
-        self.update_idletasks()
-        print("Frame height:", self.search_results_frame.winfo_height())
-        print("Parent height:", self.search_results_frame.winfo_width())
-        
-        self.after(100, self.print_frame_size)
-
-    def print_frame_size(self):
-        print("Delayed Frame height:", self.search_results_frame.winfo_height())
-        print("Delayed Parent height:", self.winfo_height())
-
 
     # !Just a dummy function to show how to perform a search!
     def perform_search(self):
@@ -162,9 +151,6 @@ class SearchWidget(tk.Frame):
             result_label = tk.Label(self.search_results_frame, text=result, anchor="w")
             result_label.pack(fill='x', padx=10, pady=2)
 
-        # Replace `your_search_function` with the actual function that performs the search based on type and query.
-        # The function should return a list of strings representing search results.
-        
 class TraitScoreWidget(tk.Frame):
     def __init__(self, parent, trait_name, style_manager, *args, **kwargs):
         bg_color = style_manager.get_bg('main_frame')
@@ -242,3 +228,176 @@ class TraitUnitWidget(tk.Frame):
 
     def get_selected_unit(self):
         return self.unit_var.get()
+
+class DefaultSettingChoiceWidget(tk.Frame):
+    def __init__(self, parent, choices, controller, style_manager, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.controller = controller
+        self.style_manager = style_manager
+        
+        # Apply style to the frame
+        bg_color = self.style_manager.get_bg('sidebar')
+        self.configure(bg=bg_color)
+        
+        self.choice_var = tk.StringVar(self)
+        
+        # Label with style
+        label_style = {'bg': bg_color}
+        tk.Label(self, text="Select a default setting:", **label_style).pack(pady=5)
+        
+        # Combobox with style
+        combobox_style = {'background': bg_color}
+        self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly", **combobox_style)
+        self.combobox.pack(pady=5)
+        self.combobox.current(0)
+        
+        # Confirm button with style
+        button_style = {'bg': self.style_manager.get_bg('button')}
+        tk.Button(self, text="Confirm", command=self.confirm_choice, **button_style).pack(pady=5)
+        
+        # Create New button with style
+        tk.Button(self, text="Create New", command=self.create_new_choice, **button_style).pack(pady=5)
+
+    def confirm_choice(self):
+        choice = self.choice_var.get()
+        self.controller.load_default_setting(choice)
+
+    def create_new_choice(self):
+        self.controller.load_default_setting('Create New')
+
+class GeneralDefaultsWidget(tk.Frame):
+    """
+    A widget that sets general defaults for the application.
+
+    Attributes:
+        parent (tk.Widget): The parent widget, which is typically a frame or another Tkinter container.
+        style_manager (StyleManager): The style manager instance that provides style configurations.
+    """
+    
+    def __init__(self, parent, style_manager, db_connection, **kwargs):
+        """
+        Initialize the GeneralDefaultsWidget with a parent and a style manager.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            style_manager (StyleManager): The style manager to use for retrieving styles.
+            db_connection (DatabaseConnection): The database connection instance.
+            **kwargs: Additional keyword arguments for the Frame constructor.
+        """
+        self.style_manager = style_manager
+        self.db_connection = db_connection
+        bg_color = self.style_manager.get_bg('main_frame')
+        super().__init__(parent, bg=bg_color, **kwargs)
+
+        # Initialize UI components
+        self.init_ui()
+
+    def init_ui(self):
+        """
+        Initializes the user interface components of the GeneralDefaultsWidget.
+        """
+        # Title Label
+        label = tk.Label(self, text="Set General Defaults", bg=self['bg'])
+        label.pack(pady=(5, 0))
+
+        # Dropdown Menu for Default Settings
+        self.default_settings_var = tk.StringVar(self)
+        self.default_settings_combobox = ttk.Combobox(self, textvariable=self.default_settings_var, state="readonly")
+        self.default_settings_combobox.pack(pady=10)
+
+        # Fetch Default Settings from Database
+        self.fetch_default_settings()
+
+        # Confirm Button
+        self.confirm_button = tk.Button(self, text="Confirm", command=self.load_default_setting)
+        self.confirm_button.pack(pady=5)
+
+        # Frame for Default Settings Details
+        self.settings_frame = tk.Frame(self, bg=self['bg'])
+        self.settings_frame.pack(fill='both', expand=True, padx=10, pady=10)
+
+        # Save Button
+        self.save_button = tk.Button(self, text="Save Changes", command=self.save_changes)
+        self.save_button.pack(pady=5)
+
+    def fetch_default_settings(self):
+        """
+        Fetches default settings from the database and populates the dropdown menu.
+        """
+        settings = self.db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
+        settings_names = [setting[0] for setting in settings]
+        self.default_settings_combobox['values'] = settings_names
+        if settings_names:
+            self.default_settings_combobox.current(0)
+        else:
+            messagebox.showerror("Error", "No default settings found in the database.")
+
+    def load_default_setting(self):
+        """
+        Loads the selected default setting's details and displays them in the settings frame.
+        """
+        selected_setting = self.default_settings_var.get()
+        setting_data = self.db_connection.fetchone(GET_DEFAULT_SETTING_DETAILS, (selected_setting,))
+        
+        # Clear previous settings
+        for widget in self.settings_frame.winfo_children():
+            widget.destroy()
+
+        if setting_data:
+            self.display_setting_data(setting_data)
+        else:
+            messagebox.showerror("Error", "Selected setting not found.")
+
+    def display_setting_data(self, data):
+        """
+        Displays the default setting data in the settings frame.
+
+        Args:
+            data (tuple): The data of the default setting.
+        """
+        columns = ["id_animaltrakkerdefaultsettingsid", "default_settings_name", "owner_id_contactid", "owner_id_companyid",
+                   "owner_id_premiseid", "breeder_id_contactid", "breeder_id_companyid", "breeder_id_premiseid", 
+                   "vet_id_contactid", "vet_id_premiseid", "lab_id_companyid", "lab_id_premiseid", 
+                   "id_registry_id_companyid", "registry_id_premiseid", "id_stateid", "id_countyid", 
+                   "id_flockprefixid", "id_speciesid", "id_breedid", "id_sexid", "id_idtypeid_primary", 
+                   "id_idtypeid_secondary", "id_idtypeid_tertiary", "id_eid_tag_male_color_female_color_same",
+                   "eid_tag_color_male", "eid_tag_color_female", "eid_tag_location", "id_farm_tag_male_color_female_color_same",
+                   "farm_tag_based_on_eid_tag", "farm_tag_number_digits_from_eid", "farm_tag_color_male", 
+                   "farm_tag_color_female", "farm_tag_location", "id_fed_tag_male_color_female_color_same", 
+                   "fed_tag_color_male", "fed_tag_color_female", "fed_tag_location", "id_nues_tag_male_color_female_color_same",
+                   "nues_tag_color_male", "nues_tag_color_female", "nues_tag_location", "id_trich_tag_male_color_female_color_same",
+                   "trich_tag_color_male", "trich_tag_color_female", "trich_tag_location", "trich_tag_auto_increment", 
+                   "trich_tag_next_tag_number", "id_bangs_tag_male_color_female_color_same", "bangs_tag_color_male", 
+                   "bangs_tag_color_female", "bangs_tag_location", "id_sale_order_tag_male_color_female_color_same", 
+                   "sale_order_tag_color_male", "sale_order_tag_color_female", "sale_order_tag_location", "use_paint_marks",
+                   "paint_mark_color", "paint_mark_location", "tattoo_color", "tattoo_location", "freeze_brand_location",
+                   "id_idremovereasonid", "id_tissuesampletypeid", "id_tissuetestid", "id_tissuesamplecontainertypeid",
+                   "birth_type", "rear_type", "minimum_birth_weight", "maximum_birth_weight", "birth_weight_id_unitsid",
+                   "weight_id_unitsid", "sale_price_id_unitsid", "evaluation_update_alert", "death_reason_id_contactid",
+                   "death_reason_id_companyid", "id_deathreasonid", "transfer_reason_id_contactid", "transfer_reason_id_companyid",
+                   "id_transferreasonid", "user_system_serial_number", "created", "modified"]
+
+        self.setting_vars = {}
+        for i, column in enumerate(columns):
+            label = tk.Label(self.settings_frame, text=column.replace('_', ' ').title() + ':', bg=self['bg'])
+            label.grid(row=i, column=0, sticky='e', padx=5, pady=2)
+
+            var = tk.StringVar(value=str(data[i]))
+            entry = tk.Entry(self.settings_frame, textvariable=var)
+            entry.grid(row=i, column=1, sticky='ew', padx=5, pady=2)
+            self.setting_vars[column] = var
+
+    def save_changes(self):
+        """
+        Saves the changes made to the default setting back to the database.
+        """
+        selected_setting = self.default_settings_var.get()
+
+        # Prepare data for update
+        update_data = [var.get() for var in self.setting_vars.values()]
+        update_data.append(selected_setting)  # Append the setting name for the WHERE clause
+
+        # Update the database
+        self.db_connection.connection.execute(UPDATE_DEFAULT_SETTING_DETAILS, update_data)
+        self.db_connection.connection.commit()
+        messagebox.showinfo("Success", "Changes saved successfully.")

@@ -1,7 +1,8 @@
 from AnimalTrakker_Shared.Shared_BaseController import BaseController
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import SearchWidget, EvaluationWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, GeneralDefaultsWidget, DefaultSettingChoiceWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
 
@@ -49,9 +50,14 @@ class FarmDesktopController(BaseController):
         # Perform specific logic based on the item clicked in the sidebar
         # Get the parent of the clicked item
         parent_id = self.app.left_sidebar.treeview.parent(item)
+        
         if parent_id == 'animalevaluationhistory':
             logger.info(f"Handling evaluation history for item: {item_text}")
             self.handle_evaluation_history(item, item_text)
+        elif parent_id == 'setup':
+            logger.info(f"Handling setup for item: {item_text}")
+            if item_text == 'Set, Create and Edit General Defaults':
+                self.choose_general_defaluts()
 
     def handle_evaluation_history(self, item, item_text):
         """
@@ -68,12 +74,8 @@ class FarmDesktopController(BaseController):
         
         # Updating the main frame content
         self.app.main_frame.update_content(EvaluationWidget, data=data)
-        #self.show_search()
         
-    def show_search(self):
-        """
-        Method to display the search widget in the main frame of the application.
-        """
-        logger.info("Attempting to display the Search Widget")
-        self.app.main_frame.update_content(SearchWidget)
-        logger.info("Search Widget display attempted")
+    def choose_general_defaluts(self):
+        default_settings = self.app.db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
+
+        self.app.left_sidebar.switch_to_widget(DefaultSettingChoiceWidget, choices=default_settings, controller=self, style_manager=self.app.style_manager)
