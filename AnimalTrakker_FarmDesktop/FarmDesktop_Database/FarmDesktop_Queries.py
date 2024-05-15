@@ -1,0 +1,89 @@
+# FOR FARM DESKTOP APP. PUT IT IN HERE FOR NOW. WILL BE IN ANOTHER FILE LATER
+GET_ANIMAL_EVALUATION_HISTORY = """
+	SELECT
+		id_savedevaluationstableid,
+  		evaluation_name
+	FROM
+		saved_evaluations_table
+"""
+# Geting the traits and their units based on each evaluation
+GET_EVALUATION_TRAITS = """
+	SELECT 
+		trait_name01, trait_name02, trait_name03, trait_name04, trait_name05, 
+		trait_name06, trait_name07, trait_name08, trait_name09, trait_name10, 
+		trait_name11, trait_name12, trait_name13, trait_name14, trait_name15, 
+		trait_name16, trait_name17, trait_name18, trait_name19, trait_name20,
+		trait_units11, trait_units12, trait_units13, trait_units14, trait_units15
+	FROM 
+		saved_evaluations_table
+	WHERE 
+		evaluation_name = ?
+"""
+
+# Getting partucular trait based on id_evaluationtraitid
+GET_EVALUATION_TRAIT = """
+	SELECT 
+		trait_name, 
+		id_evaluationtraittypeid
+	FROM 
+		evaluation_trait_table
+	WHERE 
+		id_evaluationtraitid = ?;
+	"""
+
+# Getting list of units for a particular trait
+GET_EVALUATION_UNITS = """
+	SELECT 
+		units_name
+	FROM 
+		units_table
+	WHERE 
+		id_unitstypeid = (
+			SELECT id_unitstypeid
+			FROM units_table
+			WHERE id_unitsid = ?
+		)
+	ORDER BY 
+		units_display_order;
+"""
+
+# Fetch all default settings names
+GET_DEFAULT_SETTINGS_NAMES = """
+    SELECT
+    	default_settings_name 
+     FROM 
+     	animaltrakker_default_settings_table
+"""
+
+# Fetch details for a specific default setting by name
+GET_DEFAULT_SETTING_DETAILS = """
+    SELECT * FROM animaltrakker_default_settings_table 
+    WHERE default_settings_name = ?
+"""
+
+# Update details for a specific default setting
+UPDATE_DEFAULT_SETTING_DETAILS = """
+    UPDATE animaltrakker_default_settings_table SET
+    default_settings_name=?, owner_id_contactid=?, owner_id_companyid=?, owner_id_premiseid=?, 
+    breeder_id_contactid=?, breeder_id_companyid=?, breeder_id_premiseid=?, vet_id_contactid=?, 
+    vet_id_premiseid=?, lab_id_companyid=?, lab_id_premiseid=?, id_registry_id_companyid=?, 
+    registry_id_premiseid=?, id_stateid=?, id_countyid=?, id_flockprefixid=?, id_speciesid=?, 
+    id_breedid=?, id_sexid=?, id_idtypeid_primary=?, id_idtypeid_secondary=?, id_idtypeid_tertiary=?, 
+    id_eid_tag_male_color_female_color_same=?, eid_tag_color_male=?, eid_tag_color_female=?, 
+    eid_tag_location=?, id_farm_tag_male_color_female_color_same=?, farm_tag_based_on_eid_tag=?, 
+    farm_tag_number_digits_from_eid=?, farm_tag_color_male=?, farm_tag_color_female=?, farm_tag_location=?, 
+    id_fed_tag_male_color_female_color_same=?, fed_tag_color_male=?, fed_tag_color_female=?, 
+    fed_tag_location=?, id_nues_tag_male_color_female_color_same=?, nues_tag_color_male=?, nues_tag_color_female=?, 
+    nues_tag_location=?, id_trich_tag_male_color_female_color_same=?, trich_tag_color_male=?, 
+    trich_tag_color_female=?, trich_tag_location=?, trich_tag_auto_increment=?, trich_tag_next_tag_number=?, 
+    id_bangs_tag_male_color_female_color_same=?, bangs_tag_color_male=?, bangs_tag_color_female=?, 
+    bangs_tag_location=?, id_sale_order_tag_male_color_female_color_same=?, sale_order_tag_color_male=?, 
+    sale_order_tag_color_female=?, sale_order_tag_location=?, use_paint_marks=?, paint_mark_color=?, 
+    paint_mark_location=?, tattoo_color=?, tattoo_location=?, freeze_brand_location=?, id_idremovereasonid=?, 
+    id_tissuesampletypeid=?, id_tissuetestid=?, id_tissuesamplecontainertypeid=?, birth_type=?, 
+    rear_type=?, minimum_birth_weight=?, maximum_birth_weight=?, birth_weight_id_unitsid=?, 
+    weight_id_unitsid=?, sale_price_id_unitsid=?, evaluation_update_alert=?, death_reason_id_contactid=?, 
+    death_reason_id_companyid=?, id_deathreasonid=?, transfer_reason_id_contactid=?, 
+    transfer_reason_id_companyid=?, id_transferreasonid=?, user_system_serial_number=?, created=?, modified=? 
+    WHERE default_settings_name = ?
+"""
