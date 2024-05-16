@@ -65,3 +65,17 @@ class HomeWidget(tk.Frame):
         """
         label = Label(self, text="Welcome to AnimalTrakker!", bg=background_color)
         label.pack()
+
+class ConfirmationMessageWidget(tk.Frame):
+    def __init__(self, parent, message, style_manager, *args, **kwargs):
+        bg_color = style_manager.get_bg('main_frame')
+        super().__init__(parent, bg=bg_color, *args, **kwargs)
+
+        self.message = message
+        self.style_manager = style_manager
+
+        self.build_widget()
+
+    def build_widget(self):
+        self.label = tk.Label(self, text=self.message, font=('Helvetica', 14), bg=self['bg'])
+        self.label.pack(pady=20, padx=20, expand=True)

@@ -31,7 +31,7 @@ class FarmDesktopGUI(BaseGUI):
 
             tree_data = farm_desktop_left_sidebar(evaluation_history=evaluation_history)
 
-            self.left_sidebar.update_leftsidebar(tree_data)
+            self.left_sidebar.update_treeview(tree_data)
             
             logger.info("GUI refreshed successfully")
         except Exception as e:

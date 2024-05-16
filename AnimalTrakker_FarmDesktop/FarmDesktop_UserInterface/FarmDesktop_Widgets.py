@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
+
 logger = get_logger(__name__)
 
 class EvaluationWidget(tk.Frame):    
@@ -135,7 +137,6 @@ class SearchWidget(tk.Frame):
         Triggered by the Search button; performs the search operation.
         Replace this stub with the actual search logic and result display update.
         """
-        print("Search initiated!")  # Placeholder for actual search logic
         # Clear previous search results from the results frame
         for widget in self.search_results_frame.winfo_children():
             widget.destroy()
@@ -229,175 +230,432 @@ class TraitUnitWidget(tk.Frame):
     def get_selected_unit(self):
         return self.unit_var.get()
 
-class DefaultSettingChoiceWidget(tk.Frame):
-    def __init__(self, parent, choices, controller, style_manager, **kwargs):
-        super().__init__(parent, **kwargs)
+class LeftSidebarChoiceWidget(tk.Frame):
+    def __init__(self, parent, choices, choice_type, controller, style_manager, **kwargs):
+        # Get the background color from the style manager
+        bg_color = style_manager.get_bg('sidebar')
+        super().__init__(parent, bg=bg_color, **kwargs)
+        logger.info(f"LeftSidebarChoiceWidget initialized with choices: {choices} and type: {choice_type}")
         self.controller = controller
         self.style_manager = style_manager
-        
-        # Apply style to the frame
-        bg_color = self.style_manager.get_bg('sidebar')
-        self.configure(bg=bg_color)
+        self.choice_type = choice_type
         
         self.choice_var = tk.StringVar(self)
         
+        # Configuring column weights for proportionate division
+        self.grid_columnconfigure(0, weight=1)
+        
         # Label with style
-        label_style = {'bg': bg_color}
-        tk.Label(self, text="Select a default setting:", **label_style).pack(pady=5)
+        self.label = tk.Label(self, text="Select a setting or evaluation:", bg=bg_color)
+        self.label.grid(row=0, column=0, pady=5, sticky="nsew")
         
         # Combobox with style
-        combobox_style = {'background': bg_color}
-        self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly", **combobox_style)
-        self.combobox.pack(pady=5)
+        self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly")
+        self.combobox.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
         self.combobox.current(0)
         
         # Confirm button with style
-        button_style = {'bg': self.style_manager.get_bg('button')}
-        tk.Button(self, text="Confirm", command=self.confirm_choice, **button_style).pack(pady=5)
+        self.confirm_button = tk.Button(self, text="Confirm", command=self.confirm_choice)
+        self.confirm_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+        
+        # Edit button
+        self.create_new_button = tk.Button(self, text="Edit", command=self.edit_choice)
+        self.create_new_button.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
         
         # Create New button with style
-        tk.Button(self, text="Create New", command=self.create_new_choice, **button_style).pack(pady=5)
+        self.create_new_button = tk.Button(self, text="Create New", command=self.create_new_choice)
+        self.create_new_button.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
 
     def confirm_choice(self):
         choice = self.choice_var.get()
-        self.controller.load_default_setting(choice)
-
+        logger.info(f'Confirm {self.choice_type} choice button was clicked')
+        self.controller.load_setting(choice, choice_type=self.choice_type)
+        
     def create_new_choice(self):
-        self.controller.load_default_setting('Create New')
+        logger.info(f'Create New {self.choice_type} choice button was clicked')
+        self.controller.load_setting('Create New', choice_type=self.choice_type)
+                
+    def edit_choice(self):
+        logger.info(f'Edit {self.choice_type} choice button was clicked')
+        choice = self.choice_var.get()
+        self.controller.load_setting(choice, edit=True, choice_type=self.choice_type)
 
-class GeneralDefaultsWidget(tk.Frame):
-    """
-    A widget that sets general defaults for the application.
-
-    Attributes:
-        parent (tk.Widget): The parent widget, which is typically a frame or another Tkinter container.
-        style_manager (StyleManager): The style manager instance that provides style configurations.
-    """
-    
-    def __init__(self, parent, style_manager, db_connection, **kwargs):
+class EditPopup(tk.Toplevel):
+    def __init__(self, parent, key, current_id, fetch_function, style_manager):
         """
-        Initialize the GeneralDefaultsWidget with a parent and a style manager.
+        Initialize the EditPopup.
 
         Args:
             parent (tk.Widget): The parent widget.
-            style_manager (StyleManager): The style manager to use for retrieving styles.
+            key (str): The key of the setting being edited.
+            current_id (int): The current ID of the setting.
+            fetch_function (callable): The function to fetch options for the setting.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+        """
+        super().__init__(parent)
+        self.parent = parent
+        self.key = key
+        self.current_id = current_id
+        self.fetch_function = fetch_function
+        self.style_manager = style_manager
+        self.build_widget()
+        self.center_popup()
+
+    def build_widget(self):
+        """
+        Build the popup widget.
+
+        This method creates the layout of the popup, including the listbox, scrollbar, and update button.
+        """
+        self.title(f"Edit {self.key}")
+        self.geometry("400x300")
+        self.configure(bg=self.style_manager.get_bg('main_frame'))
+
+        label = tk.Label(self, text=self.key, bg=self.style_manager.get_bg('main_frame'))
+        label.pack(pady=10)
+
+        options = self.fetch_function(self.parent.db_connection)
+        self.ids = [row[0] for row in options]
+        self.names = [row[1] for row in options]
+
+        frame = tk.Frame(self)
+        frame.pack(pady=5, fill=tk.BOTH, expand=True)
+
+        self.listbox = tk.Listbox(frame, selectmode=tk.SINGLE)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.listbox.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+
+        # Insert names into the listbox
+        for name in self.names:
+            self.listbox.insert(tk.END, name)
+
+        # Handle initial value 0 by selecting the first item or a default value
+        if self.current_id in self.ids:
+            current_index = self.ids.index(self.current_id)
+        else:
+            current_index = 0  # Default to the first item if current_id is not in the list
+
+        self.listbox.selection_set(current_index)
+        self.listbox.activate(current_index)
+
+        self.listbox.bind("<MouseWheel>", self.on_listbox_mousewheel)
+        self.listbox.bind("<Button-1>", self.on_listbox_click)
+
+        update_button = tk.Button(self, text="Update", command=self.update_changes)
+        update_button.pack(pady=10)
+
+        # Prevent main frame from scrolling when popup is open
+        self.bind("<MouseWheel>", self.on_mousewheel)
+
+    def on_mousewheel(self, event):
+        """
+        Prevent the main frame from scrolling when the mouse wheel is used within the popup.
+        """
+        return "break"
+
+    def on_listbox_mousewheel(self, event):
+        """
+        Handle mouse wheel scrolling within the listbox.
+
+        Args:
+            event (tk.Event): The event object containing details about the mouse wheel scroll event.
+        """
+        self.listbox.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        return "break"
+
+    def on_listbox_click(self, event):
+        """
+        Handle click events within the listbox to log the selected element.
+
+        Args:
+            event (tk.Event): The event object containing details about the click event.
+        """
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            logger.info(f"Selected element: {self.names[selected_index[0]]}")
+
+    def center_popup(self):
+        """
+        Center the popup window on the screen.
+        """
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+        self.geometry(f'{width}x{height}+{x}+{y}')
+
+    def update_changes(self):
+        """
+        Update the changes made in the listbox and pass them to the parent widget.
+        """
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            selected_id = self.ids[selected_index[0]]
+            self.parent.update_setting(self.key, selected_id)
+            self.destroy()
+
+class EditSettingWidget(tk.Frame):
+    """
+    A widget for editing settings.
+
+    This widget displays setting details in entry fields that can be edited and saved.
+
+    Attributes:
+        parent (tk.Widget): The parent widget.
+        setting_details (dict): A dictionary containing the setting details.
+        style_manager (StyleManager): An instance of StyleManager for styling.
+        controller (object): The controller handling the save logic.
+        db_connection (DatabaseConnection): The database connection instance.
+    """
+    def __init__(self, parent, setting_details, style_manager, controller, db_connection, **kwargs):
+        """
+        Initialize the EditSettingWidget.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            setting_details (dict): A dictionary containing the setting details.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+            controller (object): The controller handling the save logic.
             db_connection (DatabaseConnection): The database connection instance.
             **kwargs: Additional keyword arguments for the Frame constructor.
         """
-        self.style_manager = style_manager
+        super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
+        self.setting_details = setting_details
+        self.controller = controller
         self.db_connection = db_connection
-        bg_color = self.style_manager.get_bg('main_frame')
-        super().__init__(parent, bg=bg_color, **kwargs)
+        self.style_manager = style_manager
 
-        # Initialize UI components
-        self.init_ui()
+        self.build_widget()
 
-    def init_ui(self):
+    def build_widget(self):
         """
-        Initializes the user interface components of the GeneralDefaultsWidget.
+        Build the widget with title, scrollable area, and entry fields.
         """
-        # Title Label
-        label = tk.Label(self, text="Set General Defaults", bg=self['bg'])
-        label.pack(pady=(5, 0))
+        # Create a frame to hold the title label and scrollbar
+        title_frame = tk.Frame(self, bg=self['bg'])
+        title_frame.pack(fill=tk.BOTH, expand=False)
 
-        # Dropdown Menu for Default Settings
-        self.default_settings_var = tk.StringVar(self)
-        self.default_settings_combobox = ttk.Combobox(self, textvariable=self.default_settings_var, state="readonly")
-        self.default_settings_combobox.pack(pady=10)
+        # Create a title label
+        title_label = tk.Label(title_frame, text="Edit Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.pack(pady=10, side=tk.TOP)
 
-        # Fetch Default Settings from Database
-        self.fetch_default_settings()
+        # Create a frame to hold the canvas and scrollbar
+        frame = tk.Frame(self, bg=self['bg'])
+        frame.pack(fill=tk.BOTH, expand=True)
 
-        # Confirm Button
-        self.confirm_button = tk.Button(self, text="Confirm", command=self.load_default_setting)
-        self.confirm_button.pack(pady=5)
+        # Create a canvas
+        self.canvas = tk.Canvas(frame, bg=self['bg'], highlightthickness=0)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Frame for Default Settings Details
-        self.settings_frame = tk.Frame(self, bg=self['bg'])
-        self.settings_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        # Add a ttk scrollbar
+        self.scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Save Button
-        self.save_button = tk.Button(self, text="Save Changes", command=self.save_changes)
-        self.save_button.pack(pady=5)
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
-    def fetch_default_settings(self):
+        # Create an internal frame to hold the entry widgets
+        self.internal_frame = tk.Frame(self.canvas, bg=self['bg'])
+        self.canvas.create_window((0, 0), window=self.internal_frame, anchor="nw")
+
+        self.value_labels = {}
+        row = 0
+        for key, value in self.setting_details.items():
+            label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
+            label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
+
+            display_value, fetch_function = self.get_display_value_and_function(key, value)
+            if fetch_function:
+                value_label = tk.Label(self.internal_frame, text=display_value, bg=self['bg'])
+                value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+                edit_button = tk.Button(self.internal_frame, text="Edit", command=lambda k=key, v=value, f=fetch_function: self.open_edit_popup(k, v, f))
+                edit_button.grid(row=row, column=2, padx=5, pady=5, sticky="w")
+            else:
+                value_label = tk.Label(self.internal_frame, text=value, bg=self['bg'])
+                value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+
+            self.value_labels[key] = value_label
+            row += 1
+
+        self.save_button = tk.Button(self.internal_frame, text="Save", command=self.save_changes)
+        self.save_button.grid(row=row, column=0, columnspan=3, pady=10)
+
+        # Bind mouse wheel scrolling to the canvas
+        self.bind_mousewheel(self.canvas)
+
+    def get_display_value_and_function(self, key, value):
         """
-        Fetches default settings from the database and populates the dropdown menu.
-        """
-        settings = self.db_connection.fetchall(GET_DEFAULT_SETTINGS_NAMES)
-        settings_names = [setting[0] for setting in settings]
-        self.default_settings_combobox['values'] = settings_names
-        if settings_names:
-            self.default_settings_combobox.current(0)
-        else:
-            messagebox.showerror("Error", "No default settings found in the database.")
-
-    def load_default_setting(self):
-        """
-        Loads the selected default setting's details and displays them in the settings frame.
-        """
-        selected_setting = self.default_settings_var.get()
-        setting_data = self.db_connection.fetchone(GET_DEFAULT_SETTING_DETAILS, (selected_setting,))
-        
-        # Clear previous settings
-        for widget in self.settings_frame.winfo_children():
-            widget.destroy()
-
-        if setting_data:
-            self.display_setting_data(setting_data)
-        else:
-            messagebox.showerror("Error", "Selected setting not found.")
-
-    def display_setting_data(self, data):
-        """
-        Displays the default setting data in the settings frame.
+        Get the display value and corresponding fetch function for a key.
 
         Args:
-            data (tuple): The data of the default setting.
+            key (str): The key to fetch the display value for.
+            value (str): The current value.
+
+        Returns:
+            tuple: A tuple containing the display value and the fetch function.
         """
-        columns = ["id_animaltrakkerdefaultsettingsid", "default_settings_name", "owner_id_contactid", "owner_id_companyid",
-                   "owner_id_premiseid", "breeder_id_contactid", "breeder_id_companyid", "breeder_id_premiseid", 
-                   "vet_id_contactid", "vet_id_premiseid", "lab_id_companyid", "lab_id_premiseid", 
-                   "id_registry_id_companyid", "registry_id_premiseid", "id_stateid", "id_countyid", 
-                   "id_flockprefixid", "id_speciesid", "id_breedid", "id_sexid", "id_idtypeid_primary", 
-                   "id_idtypeid_secondary", "id_idtypeid_tertiary", "id_eid_tag_male_color_female_color_same",
-                   "eid_tag_color_male", "eid_tag_color_female", "eid_tag_location", "id_farm_tag_male_color_female_color_same",
-                   "farm_tag_based_on_eid_tag", "farm_tag_number_digits_from_eid", "farm_tag_color_male", 
-                   "farm_tag_color_female", "farm_tag_location", "id_fed_tag_male_color_female_color_same", 
-                   "fed_tag_color_male", "fed_tag_color_female", "fed_tag_location", "id_nues_tag_male_color_female_color_same",
-                   "nues_tag_color_male", "nues_tag_color_female", "nues_tag_location", "id_trich_tag_male_color_female_color_same",
-                   "trich_tag_color_male", "trich_tag_color_female", "trich_tag_location", "trich_tag_auto_increment", 
-                   "trich_tag_next_tag_number", "id_bangs_tag_male_color_female_color_same", "bangs_tag_color_male", 
-                   "bangs_tag_color_female", "bangs_tag_location", "id_sale_order_tag_male_color_female_color_same", 
-                   "sale_order_tag_color_male", "sale_order_tag_color_female", "sale_order_tag_location", "use_paint_marks",
-                   "paint_mark_color", "paint_mark_location", "tattoo_color", "tattoo_location", "freeze_brand_location",
-                   "id_idremovereasonid", "id_tissuesampletypeid", "id_tissuetestid", "id_tissuesamplecontainertypeid",
-                   "birth_type", "rear_type", "minimum_birth_weight", "maximum_birth_weight", "birth_weight_id_unitsid",
-                   "weight_id_unitsid", "sale_price_id_unitsid", "evaluation_update_alert", "death_reason_id_contactid",
-                   "death_reason_id_companyid", "id_deathreasonid", "transfer_reason_id_contactid", "transfer_reason_id_companyid",
-                   "id_transferreasonid", "user_system_serial_number", "created", "modified"]
+        fetch_function = None
+        if key == 'id_speciesid':
+            fetch_function = fetch_species_names
+        elif key == 'id_breedid':
+            fetch_function = fetch_breed_names
+        elif key == 'id_stateid':
+            fetch_function = fetch_state_names
+        elif key == 'id_countyid':
+            fetch_function = fetch_county_names
 
-        self.setting_vars = {}
-        for i, column in enumerate(columns):
-            label = tk.Label(self.settings_frame, text=column.replace('_', ' ').title() + ':', bg=self['bg'])
-            label.grid(row=i, column=0, sticky='e', padx=5, pady=2)
+        display_value = self.get_name_by_id(fetch_function(self.db_connection), value) if fetch_function else value
+        return display_value, fetch_function
 
-            var = tk.StringVar(value=str(data[i]))
-            entry = tk.Entry(self.settings_frame, textvariable=var)
-            entry.grid(row=i, column=1, sticky='ew', padx=5, pady=2)
-            self.setting_vars[column] = var
+    def get_name_by_id(self, options, id_value):
+        """
+        Get the name corresponding to an ID from the options.
+
+        Args:
+            options (list): The list of options containing (ID, name) tuples.
+            id_value (int): The ID value to look up.
+
+        Returns:
+            str: The name corresponding to the ID value, or "Unknown" if the ID is 0.
+        """
+        for option in options:
+            if option[0] == id_value:
+                return option[1]
+        return "Unknown" if id_value == 0 else id_value
+
+    def open_edit_popup(self, key, value, fetch_function):
+        """
+        Open the edit popup for a specific setting.
+
+        Args:
+            key (str): The key of the setting to edit.
+            value (str): The current value of the setting.
+            fetch_function (callable): The function to fetch options for the setting.
+        """
+        popup = EditPopup(self, key, value, fetch_function, self.style_manager)
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+
+    def update_setting(self, key, new_value):
+        """
+        Update the setting value in the main widget.
+
+        Args:
+            key (str): The key of the setting to update.
+            new_value (int): The new value for the setting.
+        """
+        self.setting_details[key] = new_value
+        # Update the display value for the specific key in the main widget
+        display_value, _ = self.get_display_value_and_function(key, new_value)
+        self.value_labels[key].config(text=display_value)
 
     def save_changes(self):
         """
-        Saves the changes made to the default setting back to the database.
+        Save the changes made in the entry fields.
+
+        This method retrieves the updated values from the entry fields and passes them to the controller.
         """
-        selected_setting = self.default_settings_var.get()
+        updated_details = {key: value for key, value in self.setting_details.items()}
+        self.controller.save_edited_setting(updated_details)
 
-        # Prepare data for update
-        update_data = [var.get() for var in self.setting_vars.values()]
-        update_data.append(selected_setting)  # Append the setting name for the WHERE clause
+    def on_mousewheel(self, event):
+        """
+        Handle mouse wheel scrolling.
 
-        # Update the database
-        self.db_connection.connection.execute(UPDATE_DEFAULT_SETTING_DETAILS, update_data)
-        self.db_connection.connection.commit()
-        messagebox.showinfo("Success", "Changes saved successfully.")
+        Args:
+            event (tk.Event): The event object containing details about the mouse wheel scroll event.
+        """
+        if self.winfo_containing(event.x_root, event.y_root) == self.canvas:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def bind_mousewheel(self, widget):
+        """
+        Bind the mouse wheel event to a widget.
+
+        Args:
+            widget (tk.Widget): The widget to bind the mouse wheel event to.
+        """
+        widget.bind_all("<MouseWheel>", self.on_mousewheel)
+        
+    def unbind_mousewheel(self):
+        """
+        Unbind the mouse wheel event from all widgets.
+        """
+        self.canvas.unbind_all("<MouseWheel>")
+        
+class CreateNewSettingWidget(tk.Frame):
+    """
+    A widget for creating a new setting.
+
+    This widget prompts the user to enter a name for the new setting and confirm the creation.
+
+    Attributes:
+        parent (tk.Widget): The parent widget.
+        style_manager (StyleManager): An instance of StyleManager for styling.
+        controller (object): The controller handling the logic.
+    """
+    def __init__(self, parent, style_manager, controller, **kwargs):
+        """
+        Initialize the CreateNewSettingWidget.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+            controller (object): The controller handling the logic.
+            **kwargs: Additional keyword arguments for the Frame constructor.
+        """
+        super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
+        self.style_manager = style_manager
+        self.controller = controller
+
+        self.build_widget()
+        self.bind('<Map>', self.on_map)  # Bind to the <Map> event
+
+    def build_widget(self):
+        """
+        Build the widget with input field and confirm button.
+        """
+        # Create a title label
+        title_label = tk.Label(self, text="Create New Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.pack(pady=10)
+
+        # Create input field for setting name
+        self.name_var = tk.StringVar()
+        name_label = tk.Label(self, text="Enter setting name:", bg=self['bg'])
+        name_label.pack(pady=5)
+        self.name_entry = tk.Entry(self, textvariable=self.name_var)
+        self.name_entry.pack(pady=5)
+        self.name_entry.config(state=tk.NORMAL)  # Ensure the entry is in normal state
+
+        # Create confirm button
+        confirm_button = tk.Button(self, text="Confirm", command=self.confirm_creation)
+        confirm_button.pack(pady=10)
+        
+        # Create note label
+        note_label = tk.Label(self, text="Note: Add function to copy setting from existing setting entry?", bg=self['bg'])
+        note_label.pack(pady=5)
+
+    def on_map(self, event):
+        """
+        Set focus on the name entry widget when the widget is mapped (shown).
+        """
+        self.after(200, self.set_focus)  # Slightly increased delay
+
+    def set_focus(self):
+        """
+        Set focus on the name entry widget and log the focus operation.
+        """
+        self.name_entry.focus_force()
+        logger.info("Focus set on name entry widget")
+
+    def confirm_creation(self):
+        """
+        Handle the confirmation of the new setting creation.
+        """
+        new_setting_name = self.name_var.get()
+        logger.info(f'Confirm new setting creation button was clicked with name: {new_setting_name}')
+        self.controller.confirm_new_setting_creation(new_setting_name)

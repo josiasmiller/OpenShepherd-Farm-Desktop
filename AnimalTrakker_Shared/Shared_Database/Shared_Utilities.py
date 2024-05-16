@@ -139,6 +139,29 @@ class DatabaseConnection:
             logger.error(f"Error executing query '{query}': {e}")
             return []
 
+    def save(self, query, params=None):
+        """
+        Executes an update or insert query with provided parameters.
+
+        Args:
+            query (str): SQL query to execute.
+            params (tuple, optional): Parameters to substitute into the query.
+
+        Returns:
+            int: The number of rows affected by the query.
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(query, params or ())
+            self.connection.commit()
+            rows_affected = cursor.rowcount
+            cursor.close()
+            logger.info(f"Query executed successfully: {query}, Rows affected: {rows_affected}")
+            return rows_affected
+        except sqlite3.Error as e:
+            logger.error(f"Error executing query '{query}': {e}")
+            return 0
+        
     def close(self):
         """
         Closes the database connection.

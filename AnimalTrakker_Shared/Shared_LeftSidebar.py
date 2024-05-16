@@ -62,9 +62,13 @@ class LeftSidebar(tk.Frame):
         """
         Populates the treeview widget with nodes specified in the tree_structure attribute.
         """
-        # Clear existing nodes first
-        for item in self.treeview.get_children():
-            self.treeview.delete(item)
+        # Clear existing content
+        self.clear_content_frame()
+
+        # Re-initialize the Treeview widget
+        self.treeview = ttk.Treeview(self.content_frame, show="tree")
+        self.treeview.pack(expand=True, fill='both', padx=0, pady=0)
+        self.treeview.bind("<ButtonRelease-1>", self.on_click)
 
         # Iterate over the structured list to insert each item into the Treeview.
         for node in self.tree_structure:
@@ -99,7 +103,7 @@ class LeftSidebar(tk.Frame):
             widget.destroy()
         self.current_widget = None
 
-    def update_leftsidebar(self, new_tree_structure):
+    def update_treeview(self, new_tree_structure):
         """
         Updates the sidebar with new tree structure data.
 
