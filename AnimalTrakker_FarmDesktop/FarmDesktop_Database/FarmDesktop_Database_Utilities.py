@@ -65,7 +65,34 @@ def fetch_default_settings(db_connection):
         # Log any errors that occur during the fetch process.
         logger.error(f"Failed to fetch default settings: {e}")
         return []  # Return an empty list or raise an exception depending on your requirements.
+    
+def fetch_evaluations(db_connection):
+    """
+    Fetches default evaluations data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
 
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list: List containing names of evaluations.
+    """
+    try:
+        # Execute the predefined query to fetch default settings.
+        rows = db_connection.fetchall(GET_EVALUATIONS_NAMES)
+        logger.info(f"Evaluations fetched successfully, retrieved {len(rows)} records.")
+        
+        # Log the raw data fetched from the database
+        logger.info(f"Fetched rows: {rows}")
+        
+        # Process the fetched rows into a list of setting names.
+        settings = [str(row[0]) for row in rows]  # Ensure only the setting name is returned
+        logger.info(f"Processed settings: {settings}")
+        return settings
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch Evaluations: {e}")
+        return []  # Return an empty list or raise an exception depending on your requirements.
+    
 def fetch_setting_details(db_connection, setting_name):
     """
     Fetches details for a specific default setting from the database.

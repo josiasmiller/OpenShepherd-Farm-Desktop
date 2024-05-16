@@ -55,6 +55,14 @@ GET_DEFAULT_SETTINGS_NAMES = """
      	animaltrakker_default_settings_table
 """
 
+# Fetch all evaluations names
+GET_EVALUATIONS_NAMES = """
+	SELECT
+		evaluation_name 
+	 FROM 
+	 	saved_evaluations_table
+"""
+
 # Fetch details for a specific default setting by name
 GET_SETTING_DETAILS = """
     SELECT * FROM animaltrakker_default_settings_table 

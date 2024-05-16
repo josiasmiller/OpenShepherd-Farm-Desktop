@@ -230,14 +230,15 @@ class TraitUnitWidget(tk.Frame):
     def get_selected_unit(self):
         return self.unit_var.get()
 
-class DefaultSettingChoiceWidget(tk.Frame):
-    def __init__(self, parent, choices, controller, style_manager, **kwargs):
+class LeftSidebarChoiceWidget(tk.Frame):
+    def __init__(self, parent, choices, choice_type, controller, style_manager, **kwargs):
         # Get the background color from the style manager
         bg_color = style_manager.get_bg('sidebar')
         super().__init__(parent, bg=bg_color, **kwargs)
-        logger.info(f"DefaultSettingChoiceWidget initialized with choices: {choices}")
+        logger.info(f"LeftSidebarChoiceWidget initialized with choices: {choices} and type: {choice_type}")
         self.controller = controller
         self.style_manager = style_manager
+        self.choice_type = choice_type
         
         self.choice_var = tk.StringVar(self)
         
@@ -245,7 +246,7 @@ class DefaultSettingChoiceWidget(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         
         # Label with style
-        self.label = tk.Label(self, text="Select a default setting:", bg=bg_color)
+        self.label = tk.Label(self, text="Select a setting or evaluation:", bg=bg_color)
         self.label.grid(row=0, column=0, pady=5, sticky="nsew")
         
         # Combobox with style
@@ -267,17 +268,17 @@ class DefaultSettingChoiceWidget(tk.Frame):
 
     def confirm_choice(self):
         choice = self.choice_var.get()
-        logger.info('Confirm default setting button was clicked')
-        self.controller.load_setting(choice)
+        logger.info(f'Confirm {self.choice_type} choice button was clicked')
+        self.controller.load_setting(choice, choice_type=self.choice_type)
         
     def create_new_choice(self):
-        logger.info('Create New default setting button was clicked')
-        self.controller.load_setting('Create New')
+        logger.info(f'Create New {self.choice_type} choice button was clicked')
+        self.controller.load_setting('Create New', choice_type=self.choice_type)
                 
     def edit_choice(self):
-        logger.info('Edit setting button was clicked')
+        logger.info(f'Edit {self.choice_type} choice button was clicked')
         choice = self.choice_var.get()
-        self.controller.load_setting(choice, edit=True)
+        self.controller.load_setting(choice, edit=True, choice_type=self.choice_type)
 
 class EditPopup(tk.Toplevel):
     def __init__(self, parent, key, current_id, fetch_function, style_manager):
