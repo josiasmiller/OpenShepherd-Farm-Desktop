@@ -1,6 +1,8 @@
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
+from datetime import datetime
+
 logger = get_logger(__name__)
 
 def fetch_evaluation_history(db_connection):
@@ -123,6 +125,48 @@ def save_setting_changes(db_connection, updated_details):
         else:
             logger.error(f"Failed to update setting with ID {setting_id}")
             
+def save_new_setting(db_connection, new_setting_name):
+    """
+    Saves a new setting by copying details from the 'Standard Setting'.
+
+    Args:
+        db_connection: The database connection object.
+        new_setting_name (str): The name of the new setting.
+    """
+    try:
+        # Fetch the details of the 'Standard Setting'
+        row = db_connection.fetchone(GET_SETTING_DETAILS, ('Standard Settings',))
+        if not row:
+            logger.error("Standard Setting not found.")
+            return
+
+        # Prepare the new setting details
+        new_setting_details = list(row)
+        new_setting_details[1] = new_setting_name  # Update the setting name
+
+        # Remove the primary key and the original created and modified timestamps
+        #new_setting_details = new_setting_details[1:-2]
+
+        # Add 'created' and 'modified' timestamps
+        created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_setting_details[-2] = created
+        new_setting_details[-1] = modified
+        
+        # Remove the primary key
+        new_setting_details = new_setting_details[1:]
+
+        # Convert to tuple for insertion
+        params = tuple(new_setting_details)
+        print("Values: ", params)
+        print("Lenght of values tuple: ", len(params))
+              
+        # Insert the new setting into the database
+        db_connection.save(CREATE_NEW_SETTING, params)
+        logger.info(f"Successfully created new setting with name {new_setting_name}")
+    except Exception as e:
+        logger.error(f"Failed to create new setting: {e}")
+            
 def fetch_species_names(db_connection):
     """
     Fetches species common names from the species_table.
@@ -131,12 +175,12 @@ def fetch_species_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing species common names.
+        list of str: List containing species IDs and common names.
     """
     try:
         rows = db_connection.fetchall(GET_SPECIES_NAMES)
         logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch species names: {e}")
         return []
@@ -149,12 +193,12 @@ def fetch_breed_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing breed names.
+        list of str: List containing breed IDs andnames.
     """
     try:
         rows = db_connection.fetchall(GET_BREED_NAMES)
         logger.info(f"Breed names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch breed names: {e}")
         return []
@@ -167,12 +211,12 @@ def fetch_state_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing state names.
+        list of str: List containing state IDs andnames.
     """
     try:
         rows = db_connection.fetchall(GET_STATE_NAMES)
         logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch state names: {e}")
         return []
@@ -185,12 +229,12 @@ def fetch_county_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing county names.
+        list of str: List containing county IDs and names.
     """
     try:
         rows = db_connection.fetchall(GET_COUNTY_NAMES)
         logger.info(f"County names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch county names: {e}")
         return []

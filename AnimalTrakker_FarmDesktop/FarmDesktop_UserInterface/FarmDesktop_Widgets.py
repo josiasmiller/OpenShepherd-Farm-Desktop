@@ -137,7 +137,6 @@ class SearchWidget(tk.Frame):
         Triggered by the Search button; performs the search operation.
         Replace this stub with the actual search logic and result display update.
         """
-        print("Search initiated!")  # Placeholder for actual search logic
         # Clear previous search results from the results frame
         for widget in self.search_results_frame.winfo_children():
             widget.destroy()
@@ -250,7 +249,6 @@ class DefaultSettingChoiceWidget(tk.Frame):
         self.label.grid(row=0, column=0, pady=5, sticky="nsew")
         
         # Combobox with style
-        print(choices)
         self.combobox = ttk.Combobox(self, textvariable=self.choice_var, values=choices, state="readonly")
         self.combobox.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
         self.combobox.current(0)
@@ -274,12 +272,130 @@ class DefaultSettingChoiceWidget(tk.Frame):
         
     def create_new_choice(self):
         logger.info('Create New default setting button was clicked')
-        #self.controller.load_default_setting('Create New')
+        self.controller.load_setting('Create New')
                 
     def edit_choice(self):
         logger.info('Edit setting button was clicked')
         choice = self.choice_var.get()
         self.controller.load_setting(choice, edit=True)
+
+class EditPopup(tk.Toplevel):
+    def __init__(self, parent, key, current_id, fetch_function, style_manager):
+        """
+        Initialize the EditPopup.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            key (str): The key of the setting being edited.
+            current_id (int): The current ID of the setting.
+            fetch_function (callable): The function to fetch options for the setting.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+        """
+        super().__init__(parent)
+        self.parent = parent
+        self.key = key
+        self.current_id = current_id
+        self.fetch_function = fetch_function
+        self.style_manager = style_manager
+        self.build_widget()
+        self.center_popup()
+
+    def build_widget(self):
+        """
+        Build the popup widget.
+
+        This method creates the layout of the popup, including the listbox, scrollbar, and update button.
+        """
+        self.title(f"Edit {self.key}")
+        self.geometry("400x300")
+        self.configure(bg=self.style_manager.get_bg('main_frame'))
+
+        label = tk.Label(self, text=self.key, bg=self.style_manager.get_bg('main_frame'))
+        label.pack(pady=10)
+
+        options = self.fetch_function(self.parent.db_connection)
+        self.ids = [row[0] for row in options]
+        self.names = [row[1] for row in options]
+
+        frame = tk.Frame(self)
+        frame.pack(pady=5, fill=tk.BOTH, expand=True)
+
+        self.listbox = tk.Listbox(frame, selectmode=tk.SINGLE)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.listbox.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+
+        # Insert names into the listbox
+        for name in self.names:
+            self.listbox.insert(tk.END, name)
+
+        # Handle initial value 0 by selecting the first item or a default value
+        if self.current_id in self.ids:
+            current_index = self.ids.index(self.current_id)
+        else:
+            current_index = 0  # Default to the first item if current_id is not in the list
+
+        self.listbox.selection_set(current_index)
+        self.listbox.activate(current_index)
+
+        self.listbox.bind("<MouseWheel>", self.on_listbox_mousewheel)
+        self.listbox.bind("<Button-1>", self.on_listbox_click)
+
+        update_button = tk.Button(self, text="Update", command=self.update_changes)
+        update_button.pack(pady=10)
+
+        # Prevent main frame from scrolling when popup is open
+        self.bind("<MouseWheel>", self.on_mousewheel)
+
+    def on_mousewheel(self, event):
+        """
+        Prevent the main frame from scrolling when the mouse wheel is used within the popup.
+        """
+        return "break"
+
+    def on_listbox_mousewheel(self, event):
+        """
+        Handle mouse wheel scrolling within the listbox.
+
+        Args:
+            event (tk.Event): The event object containing details about the mouse wheel scroll event.
+        """
+        self.listbox.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        return "break"
+
+    def on_listbox_click(self, event):
+        """
+        Handle click events within the listbox to log the selected element.
+
+        Args:
+            event (tk.Event): The event object containing details about the click event.
+        """
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            logger.info(f"Selected element: {self.names[selected_index[0]]}")
+
+    def center_popup(self):
+        """
+        Center the popup window on the screen.
+        """
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+        self.geometry(f'{width}x{height}+{x}+{y}')
+
+    def update_changes(self):
+        """
+        Update the changes made in the listbox and pass them to the parent widget.
+        """
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            selected_id = self.ids[selected_index[0]]
+            self.parent.update_setting(self.key, selected_id)
+            self.destroy()
 
 class EditSettingWidget(tk.Frame):
     """
@@ -306,14 +422,11 @@ class EditSettingWidget(tk.Frame):
             db_connection (DatabaseConnection): The database connection instance.
             **kwargs: Additional keyword arguments for the Frame constructor.
         """
-        self.combobox_active = False
-        self.combobox_clicked = False
-        bg_color = style_manager.get_bg('main_frame')
-        super().__init__(parent, bg=bg_color, **kwargs)
-        
+        super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
         self.setting_details = setting_details
         self.controller = controller
         self.db_connection = db_connection
+        self.style_manager = style_manager
 
         self.build_widget()
 
@@ -321,9 +434,13 @@ class EditSettingWidget(tk.Frame):
         """
         Build the widget with title, scrollable area, and entry fields.
         """
+        # Create a frame to hold the title label and scrollbar
+        title_frame = tk.Frame(self, bg=self['bg'])
+        title_frame.pack(fill=tk.BOTH, expand=False)
+
         # Create a title label
-        title_label = tk.Label(self, text="Edit Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
-        title_label.pack(pady=10)
+        title_label = tk.Label(title_frame, text="Edit Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.pack(pady=10, side=tk.TOP)
 
         # Create a frame to hold the canvas and scrollbar
         frame = tk.Frame(self, bg=self['bg'])
@@ -333,8 +450,8 @@ class EditSettingWidget(tk.Frame):
         self.canvas = tk.Canvas(frame, bg=self['bg'], highlightthickness=0)
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Add a scrollbar
-        self.scrollbar = tk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        # Add a ttk scrollbar
+        self.scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Configure the canvas to use the scrollbar
@@ -345,51 +462,95 @@ class EditSettingWidget(tk.Frame):
         self.internal_frame = tk.Frame(self.canvas, bg=self['bg'])
         self.canvas.create_window((0, 0), window=self.internal_frame, anchor="nw")
 
+        self.value_labels = {}
         row = 0
         for key, value in self.setting_details.items():
             label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
             label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
-            
-            # Check for foreign key fields to use combobox
-            if key in ['id_speciesid', 'id_breedid', 'id_stateid', 'id_countyid']:
-                names = self.fetch_names(key)
-                combobox = ttk.Combobox(self.internal_frame, values=names, state='readonly')
-                combobox.set(names[0] if value not in names else value)
-                combobox.grid(row=row, column=1, padx=5, pady=5, sticky="w")
-                self.bind_combobox_events(combobox)
-                setattr(self, f"entry_{key}", combobox)
+
+            display_value, fetch_function = self.get_display_value_and_function(key, value)
+            if fetch_function:
+                value_label = tk.Label(self.internal_frame, text=display_value, bg=self['bg'])
+                value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+                edit_button = tk.Button(self.internal_frame, text="Edit", command=lambda k=key, v=value, f=fetch_function: self.open_edit_popup(k, v, f))
+                edit_button.grid(row=row, column=2, padx=5, pady=5, sticky="w")
             else:
-                entry = tk.Entry(self.internal_frame)
-                entry.insert(0, value)
-                entry.grid(row=row, column=1, padx=5, pady=5, sticky="w")
-                setattr(self, f"entry_{key}", entry)
-            
+                value_label = tk.Label(self.internal_frame, text=value, bg=self['bg'])
+                value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+
+            self.value_labels[key] = value_label
             row += 1
 
         self.save_button = tk.Button(self.internal_frame, text="Save", command=self.save_changes)
-        self.save_button.grid(row=row, column=0, columnspan=2, pady=10)
+        self.save_button.grid(row=row, column=0, columnspan=3, pady=10)
 
         # Bind mouse wheel scrolling to the canvas
         self.bind_mousewheel(self.canvas)
 
-    def fetch_names(self, key):
+    def get_display_value_and_function(self, key, value):
         """
-        Fetch names for the combobox based on the key.
+        Get the display value and corresponding fetch function for a key.
 
         Args:
-            key (str): The key to determine which names to fetch.
+            key (str): The key to fetch the display value for.
+            value (str): The current value.
 
         Returns:
-            list: A list of names.
+            tuple: A tuple containing the display value and the fetch function.
         """
+        fetch_function = None
         if key == 'id_speciesid':
-            return fetch_species_names(self.db_connection)
+            fetch_function = fetch_species_names
         elif key == 'id_breedid':
-            return fetch_breed_names(self.db_connection)
+            fetch_function = fetch_breed_names
         elif key == 'id_stateid':
-            return fetch_state_names(self.db_connection)
+            fetch_function = fetch_state_names
         elif key == 'id_countyid':
-            return fetch_county_names(self.db_connection)
+            fetch_function = fetch_county_names
+
+        display_value = self.get_name_by_id(fetch_function(self.db_connection), value) if fetch_function else value
+        return display_value, fetch_function
+
+    def get_name_by_id(self, options, id_value):
+        """
+        Get the name corresponding to an ID from the options.
+
+        Args:
+            options (list): The list of options containing (ID, name) tuples.
+            id_value (int): The ID value to look up.
+
+        Returns:
+            str: The name corresponding to the ID value, or "Unknown" if the ID is 0.
+        """
+        for option in options:
+            if option[0] == id_value:
+                return option[1]
+        return "Unknown" if id_value == 0 else id_value
+
+    def open_edit_popup(self, key, value, fetch_function):
+        """
+        Open the edit popup for a specific setting.
+
+        Args:
+            key (str): The key of the setting to edit.
+            value (str): The current value of the setting.
+            fetch_function (callable): The function to fetch options for the setting.
+        """
+        popup = EditPopup(self, key, value, fetch_function, self.style_manager)
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+
+    def update_setting(self, key, new_value):
+        """
+        Update the setting value in the main widget.
+
+        Args:
+            key (str): The key of the setting to update.
+            new_value (int): The new value for the setting.
+        """
+        self.setting_details[key] = new_value
+        # Update the display value for the specific key in the main widget
+        display_value, _ = self.get_display_value_and_function(key, new_value)
+        self.value_labels[key].config(text=display_value)
 
     def save_changes(self):
         """
@@ -397,7 +558,7 @@ class EditSettingWidget(tk.Frame):
 
         This method retrieves the updated values from the entry fields and passes them to the controller.
         """
-        updated_details = {key: getattr(self, f"entry_{key}").get() for key in self.setting_details.keys()}
+        updated_details = {key: value for key, value in self.setting_details.items()}
         self.controller.save_edited_setting(updated_details)
 
     def on_mousewheel(self, event):
@@ -407,7 +568,7 @@ class EditSettingWidget(tk.Frame):
         Args:
             event (tk.Event): The event object containing details about the mouse wheel scroll event.
         """
-        if not self.combobox_active:
+        if self.winfo_containing(event.x_root, event.y_root) == self.canvas:
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def bind_mousewheel(self, widget):
@@ -418,53 +579,82 @@ class EditSettingWidget(tk.Frame):
             widget (tk.Widget): The widget to bind the mouse wheel event to.
         """
         widget.bind_all("<MouseWheel>", self.on_mousewheel)
-
-    def bind_combobox_events(self, combobox):
-        """
-        Bind events to the combobox for handling mouse wheel scrolling.
-
-        Args:
-            combobox (ttk.Combobox): The combobox to bind events to.
-        """
-        combobox.bind("<Enter>", self.on_combobox_enter)
-        combobox.bind("<Leave>", self.on_combobox_leave)
-        combobox.bind("<Button-1>", self.on_combobox_click)
-        combobox.bind("<<ComboboxSelected>>", lambda e: self.bind_mousewheel(self.canvas))
-        combobox.bind("<MouseWheel>", self.on_combobox_mousewheel)
-
-    def on_combobox_enter(self, event):
-        self.combobox_active = True
-        self.unbind_mousewheel()
-
-    def on_combobox_leave(self, event):
-        # Check if the combobox dropdown is still open
-        widget = event.widget
-        if widget.state() == ("readonly",):
-            self.combobox_active = False
-            self.bind_mousewheel(self.canvas)
-
-    def on_combobox_click(self, event):
-        self.combobox_clicked = True
-
-    def on_combobox_mousewheel(self, event):
-        """
-        Handle mouse wheel scrolling for combobox.
-
-        Args:
-            event (tk.Event): The event object containing details about the mouse wheel scroll event.
-        """
-        if self.combobox_clicked:
-            try:
-                popdown_widget_name = event.widget.tk.call("ttk::combobox::PopdownWindow", event.widget)
-                popdown_widget = event.widget.nametowidget(popdown_widget_name)
-                listbox = popdown_widget.winfo_children()[0]
-                listbox.yview_scroll(int(-1 * (event.delta / 120)), 'units')
-                return "break"  # Prevent further propagation of the event
-            except (tk.TclError, IndexError) as e:
-                pass
-
+        
     def unbind_mousewheel(self):
         """
         Unbind the mouse wheel event from all widgets.
         """
         self.canvas.unbind_all("<MouseWheel>")
+        
+class CreateNewSettingWidget(tk.Frame):
+    """
+    A widget for creating a new setting.
+
+    This widget prompts the user to enter a name for the new setting and confirm the creation.
+
+    Attributes:
+        parent (tk.Widget): The parent widget.
+        style_manager (StyleManager): An instance of StyleManager for styling.
+        controller (object): The controller handling the logic.
+    """
+    def __init__(self, parent, style_manager, controller, **kwargs):
+        """
+        Initialize the CreateNewSettingWidget.
+
+        Args:
+            parent (tk.Widget): The parent widget.
+            style_manager (StyleManager): An instance of StyleManager for styling.
+            controller (object): The controller handling the logic.
+            **kwargs: Additional keyword arguments for the Frame constructor.
+        """
+        super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
+        self.style_manager = style_manager
+        self.controller = controller
+
+        self.build_widget()
+        self.bind('<Map>', self.on_map)  # Bind to the <Map> event
+
+    def build_widget(self):
+        """
+        Build the widget with input field and confirm button.
+        """
+        # Create a title label
+        title_label = tk.Label(self, text="Create New Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.pack(pady=10)
+
+        # Create input field for setting name
+        self.name_var = tk.StringVar()
+        name_label = tk.Label(self, text="Enter setting name:", bg=self['bg'])
+        name_label.pack(pady=5)
+        self.name_entry = tk.Entry(self, textvariable=self.name_var)
+        self.name_entry.pack(pady=5)
+        self.name_entry.config(state=tk.NORMAL)  # Ensure the entry is in normal state
+
+        # Create confirm button
+        confirm_button = tk.Button(self, text="Confirm", command=self.confirm_creation)
+        confirm_button.pack(pady=10)
+        
+        # Create note label
+        note_label = tk.Label(self, text="Note: Add function to copy setting from existing setting entry?", bg=self['bg'])
+        note_label.pack(pady=5)
+
+    def on_map(self, event):
+        """
+        Set focus on the name entry widget when the widget is mapped (shown).
+        """
+        self.after(200, self.set_focus)  # Slightly increased delay
+
+    def set_focus(self):
+        """
+        Set focus on the name entry widget and log the focus operation.
+        """
+        self.name_entry.focus_force()
+        logger.info("Focus set on name entry widget")
+
+    def confirm_creation(self):
+        """
+        Handle the confirmation of the new setting creation.
+        """
+        new_setting_name = self.name_var.get()
+        logger.info(f'Confirm new setting creation button was clicked with name: {new_setting_name}')
+        self.controller.confirm_new_setting_creation(new_setting_name)

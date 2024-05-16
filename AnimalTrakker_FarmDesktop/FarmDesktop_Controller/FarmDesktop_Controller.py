@@ -2,9 +2,9 @@ from AnimalTrakker_Shared.Shared_BaseController import BaseController
 from AnimalTrakker_Shared.Shared_Widgets import HomeWidget, ConfirmationMessageWidget
 
 from AnimalTrakker_Shared.Shared_Logging import get_logger
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings, fetch_setting_details, save_setting_changes
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings, fetch_setting_details, save_setting_changes, save_new_setting
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditSettingWidget, DefaultSettingChoiceWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditSettingWidget, DefaultSettingChoiceWidget, CreateNewSettingWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
@@ -92,8 +92,8 @@ class FarmDesktopController(BaseController):
             edit (bool): Whether the choice is for editing an existing setting. Defaults to False.
         """
         if choice == 'Create New':
-            # Handle creation of a new default setting
-            pass
+            # Load the widget for creating a new setting
+            self.app.main_frame.update_content(CreateNewSettingWidget, controller=self)
         else:
             # Load and display the chosen default setting
             if edit:
@@ -109,6 +109,17 @@ class FarmDesktopController(BaseController):
         logger.info("Farm Desktop Controller: Save button clicked")
         save_setting_changes(self.app.db_connection, updated_details)
         
+    def confirm_new_setting_creation(self, new_setting_name):
+        """
+        Handle the confirmation of a new setting creation.
+
+        Args:
+            new_setting_name (str): The name of the new setting.
+        """
+        logger.info(f'New setting created with name: {new_setting_name}')
+        save_new_setting(self.app.db_connection, new_setting_name)
+        self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New setting '{new_setting_name}' has been created.")
+        self.choose_general_defaluts()
         
     def go_home(self):
         """
