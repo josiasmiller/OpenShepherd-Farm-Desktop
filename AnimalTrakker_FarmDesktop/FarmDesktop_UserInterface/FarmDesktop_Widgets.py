@@ -280,10 +280,10 @@ class LeftSidebarChoiceWidget(tk.Frame):
         choice = self.choice_var.get()
         self.controller.load_setting(choice, edit=True, choice_type=self.choice_type)
 
-class EditPopup(tk.Toplevel):
-    def __init__(self, parent, key, current_id, fetch_function, style_manager):
+class EditPopupWidget(tk.Toplevel):
+    def __init__(self, parent, key, current_id, fetch_function, style_manager, popup_type="list", text_fields=None):
         """
-        Initialize the EditPopup.
+        Initialize the EditPopupWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
@@ -291,6 +291,8 @@ class EditPopup(tk.Toplevel):
             current_id (int): The current ID of the setting.
             fetch_function (callable): The function to fetch options for the setting.
             style_manager (StyleManager): An instance of StyleManager for styling.
+            popup_type (str): The type of popup ("list", "single_text", or "multiple_text").
+            text_fields (dict): Dictionary for multiple text fields with field names as keys.
         """
         super().__init__(parent)
         self.parent = parent
@@ -298,6 +300,8 @@ class EditPopup(tk.Toplevel):
         self.current_id = current_id
         self.fetch_function = fetch_function
         self.style_manager = style_manager
+        self.popup_type = popup_type
+        self.text_fields = text_fields or {}
         self.build_widget()
         self.center_popup()
 
@@ -305,7 +309,7 @@ class EditPopup(tk.Toplevel):
         """
         Build the popup widget.
 
-        This method creates the layout of the popup, including the listbox, scrollbar, and update button.
+        This method creates the layout of the popup based on the popup type.
         """
         self.title(f"Edit {self.key}")
         self.geometry("400x300")
@@ -314,6 +318,23 @@ class EditPopup(tk.Toplevel):
         label = tk.Label(self, text=self.key, bg=self.style_manager.get_bg('main_frame'))
         label.pack(pady=10)
 
+        if self.popup_type == "list":
+            self.build_list_widget()
+        elif self.popup_type == "single_text":
+            self.build_single_text_widget()
+        elif self.popup_type == "multiple_text":
+            self.build_multiple_text_widget()
+
+        update_button = tk.Button(self, text="Update", command=self.update_changes)
+        update_button.pack(pady=10)
+
+        # Prevent main frame from scrolling when popup is open
+        self.bind("<MouseWheel>", self.on_mousewheel)
+
+    def build_list_widget(self):
+        """
+        Build the list widget for list selection popup.
+        """
         options = self.fetch_function(self.parent.db_connection)
         self.ids = [row[0] for row in options]
         self.names = [row[1] for row in options]
@@ -344,11 +365,27 @@ class EditPopup(tk.Toplevel):
         self.listbox.bind("<MouseWheel>", self.on_listbox_mousewheel)
         self.listbox.bind("<Button-1>", self.on_listbox_click)
 
-        update_button = tk.Button(self, text="Update", command=self.update_changes)
-        update_button.pack(pady=10)
+    def build_single_text_widget(self):
+        """
+        Build the widget for single text field popup.
+        """
+        self.text_var = tk.StringVar(value=self.current_id)
+        self.text_entry = tk.Entry(self, textvariable=self.text_var)
+        self.text_entry.pack(pady=10, fill=tk.X, padx=10)
 
-        # Prevent main frame from scrolling when popup is open
-        self.bind("<MouseWheel>", self.on_mousewheel)
+    def build_multiple_text_widget(self):
+        """
+        Build the widget for multiple text fields popup.
+        """
+        self.text_vars = {}
+        for field_name, field_value in self.text_fields.items():
+            label = tk.Label(self, text=field_name, bg=self.style_manager.get_bg('main_frame'))
+            label.pack(pady=5)
+
+            text_var = tk.StringVar(value=field_value)
+            self.text_vars[field_name] = text_var
+            text_entry = tk.Entry(self, textvariable=text_var)
+            text_entry.pack(pady=5, fill=tk.X, padx=10)
 
     def on_mousewheel(self, event):
         """
@@ -390,13 +427,20 @@ class EditPopup(tk.Toplevel):
 
     def update_changes(self):
         """
-        Update the changes made in the listbox and pass them to the parent widget.
+        Update the changes made in the popup and pass them to the parent widget.
         """
-        selected_index = self.listbox.curselection()
-        if selected_index:
-            selected_id = self.ids[selected_index[0]]
-            self.parent.update_data_field(self.key, selected_id)
-            self.destroy()
+        if self.popup_type == "list":
+            selected_index = self.listbox.curselection()
+            if selected_index:
+                selected_id = self.ids[selected_index[0]]
+                self.parent.update_data_field(self.key, selected_id)
+        elif self.popup_type == "single_text":
+            new_value = self.text_var.get()
+            self.parent.update_data_field(self.key, new_value)
+        elif self.popup_type == "multiple_text":
+            new_values = {field_name: text_var.get() for field_name, text_var in self.text_vars.items()}
+            self.parent.update_data_field(self.key, new_values)
+        self.destroy()
 
 class EditWidget(tk.Frame):
     """
@@ -473,11 +517,16 @@ class EditWidget(tk.Frame):
             label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
             label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
 
-            display_value, fetch_function = self.get_display_value_and_function(key, value)
-            if fetch_function:
+            display_value, action = self.get_display_value_and_function(key, value)
+            if action == "single_text":
                 value_label = tk.Label(self.internal_frame, text=display_value, bg=self['bg'])
                 value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
-                edit_button = tk.Button(self.internal_frame, text="Edit", command=lambda k=key, v=value, f=fetch_function: self.open_edit_popup(k, v, f))
+                edit_button = tk.Button(self.internal_frame, text="Edit", command=lambda k=key, v=value: self.open_edit_popup(k, v, popup_type="single_text"))
+                edit_button.grid(row=row, column=2, padx=5, pady=5, sticky="w")
+            elif callable(action):
+                value_label = tk.Label(self.internal_frame, text=display_value, bg=self['bg'])
+                value_label.grid(row=row, column=1, padx=5, pady=5, sticky="w")
+                edit_button = tk.Button(self.internal_frame, text="Edit", command=lambda k=key, v=value, f=action: self.open_edit_popup(k, v, f))
                 edit_button.grid(row=row, column=2, padx=5, pady=5, sticky="w")
             else:
                 value_label = tk.Label(self.internal_frame, text=value, bg=self['bg'])
@@ -504,6 +553,8 @@ class EditWidget(tk.Frame):
             tuple: A tuple containing the display value and the fetch function.
         """
         fetch_function = None
+        popup_type = "list"
+        
         if self.data_type == "setting":
             if key == 'id_speciesid':
                 fetch_function = fetch_species_names
@@ -513,15 +564,21 @@ class EditWidget(tk.Frame):
                 fetch_function = fetch_state_names
             elif key == 'id_countyid':
                 fetch_function = fetch_county_names
+            elif key == 'default_settings_name':
+                return value, "single_text"
         elif self.data_type == "evaluation":
+            if key == 'evaluation_name':
+                return value, "single_text"
             pass
             """if key.startswith('trait_name'):
                 fetch_function = fetch_trait_names
             elif key.startswith('trait_units'):
                 fetch_function = fetch_units_names"""
 
-        display_value = self.get_name_by_id(fetch_function(self.db_connection), value) if fetch_function else value
-        return display_value, fetch_function
+        if fetch_function:
+            display_value = self.get_name_by_id(fetch_function(self.db_connection), value)
+            return display_value, fetch_function
+        return value, popup_type
 
     def get_name_by_id(self, options, id_value):
         """
@@ -539,17 +596,57 @@ class EditWidget(tk.Frame):
                 return option[1]
         return "Unknown" if id_value == 0 else id_value
 
-    def open_edit_popup(self, key, value, fetch_function):
+    def open_list_edit_popup(self, key, value, fetch_function):
         """
-        Open the edit popup for a specific data field.
+        Open the edit popup for a list selection.
+
+        Args:
+            key (str): The key of the data field to edit.
+            value (int): The current ID of the data field.
+            fetch_function (callable): The function to fetch options for the data field.
+        """
+        popup = EditPopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list")
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+
+    def open_single_text_edit_popup(self, key, value):
+        """
+        Open the edit popup for a single text field.
 
         Args:
             key (str): The key of the data field to edit.
             value (str): The current value of the data field.
-            fetch_function (callable): The function to fetch options for the data field.
         """
-        popup = EditPopup(self, key, value, fetch_function, self.style_manager)
+        popup = EditPopupWidget(self, key, value, None, self.style_manager, popup_type="single_text")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+
+    def open_multiple_text_edit_popup(self, key, text_fields):
+        """
+        Open the edit popup for multiple text fields.
+
+        Args:
+            key (str): The key of the data field to edit.
+            text_fields (dict): A dictionary of field names and their current values.
+        """
+        popup = EditPopupWidget(self, key, None, None, self.style_manager, popup_type="multiple_text", text_fields=text_fields)
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+
+    def open_edit_popup(self, key, value, fetch_function=None, popup_type="list", text_fields=None):
+        """
+        Open the appropriate edit popup based on the popup type.
+
+        Args:
+            key (str): The key of the data field to edit.
+            value (str or int): The current value or ID of the data field.
+            fetch_function (callable, optional): The function to fetch options for list selection.
+            popup_type (str): The type of popup ("list", "single_text", or "multiple_text").
+            text_fields (dict, optional): A dictionary of field names and their current values for multiple text fields.
+        """
+        if popup_type == "list":
+            self.open_list_edit_popup(key, value, fetch_function)
+        elif popup_type == "single_text":
+            self.open_single_text_edit_popup(key, value)
+        elif popup_type == "multiple_text":
+            self.open_multiple_text_edit_popup(key, text_fields)
 
     def update_data_field(self, key, new_value):
         """
@@ -557,12 +654,21 @@ class EditWidget(tk.Frame):
 
         Args:
             key (str): The key of the data field to update.
-            new_value (int): The new value for the data field.
+            new_value (str or int or dict): The new value for the data field.
         """
-        self.data_details[key] = new_value
-        # Update the display value for the specific key in the main widget
-        display_value, _ = self.get_display_value_and_function(key, new_value)
-        self.value_labels[key].config(text=display_value)
+        # Check if the new value is a dictionary (for multiple text fields)
+        if isinstance(new_value, dict):
+            for sub_key, sub_value in new_value.items():
+                self.data_details[sub_key] = sub_value
+                # Update the display value for each sub-key in the main widget
+                display_value, _ = self.get_display_value_and_function(sub_key, sub_value)
+                self.value_labels[sub_key].config(text=display_value)
+        else:
+            self.data_details[key] = new_value
+            # Update the display value for the specific key in the main widget
+            display_value, _ = self.get_display_value_and_function(key, new_value)
+            self.value_labels[key].config(text=display_value)
+
 
     def save_changes(self):
         """
@@ -598,30 +704,33 @@ class EditWidget(tk.Frame):
         """
         self.canvas.unbind_all("<MouseWheel>")
         
-class CreateNewSettingWidget(tk.Frame):
+class CreateNewDBEntryWidget(tk.Frame):
     """
-    A widget for creating a new setting.
+    A widget for creating a new database entry.
 
-    This widget prompts the user to enter a name for the new setting and confirm the creation.
+    This widget prompts the user to enter a name for the new entry and confirm the creation.
 
     Attributes:
         parent (tk.Widget): The parent widget.
         style_manager (StyleManager): An instance of StyleManager for styling.
         controller (object): The controller handling the logic.
+        entry_type (str): The type of entry being created ('setting' or 'evaluation').
     """
-    def __init__(self, parent, style_manager, controller, **kwargs):
+    def __init__(self, parent, style_manager, controller, entry_type="setting", **kwargs):
         """
-        Initialize the CreateNewSettingWidget.
+        Initialize the CreateNewDBEntryWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
             style_manager (StyleManager): An instance of StyleManager for styling.
             controller (object): The controller handling the logic.
+            entry_type (str): The type of entry being created ('setting' or 'evaluation').
             **kwargs: Additional keyword arguments for the Frame constructor.
         """
         super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
         self.style_manager = style_manager
         self.controller = controller
+        self.entry_type = entry_type
 
         self.build_widget()
         self.bind('<Map>', self.on_map)  # Bind to the <Map> event
@@ -631,12 +740,14 @@ class CreateNewSettingWidget(tk.Frame):
         Build the widget with input field and confirm button.
         """
         # Create a title label
-        title_label = tk.Label(self, text="Create New Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_text = "Create New Setting" if self.entry_type == "setting" else "Create New Evaluation"
+        title_label = tk.Label(self, text=title_text, font=('Helvetica', 16, 'bold'), bg=self['bg'])
         title_label.pack(pady=10)
 
-        # Create input field for setting name
+        # Create input field for entry name
         self.name_var = tk.StringVar()
-        name_label = tk.Label(self, text="Enter setting name:", bg=self['bg'])
+        name_label_text = "Enter setting name:" if self.entry_type == "setting" else "Enter evaluation name:"
+        name_label = tk.Label(self, text=name_label_text, bg=self['bg'])
         name_label.pack(pady=5)
         self.name_entry = tk.Entry(self, textvariable=self.name_var)
         self.name_entry.pack(pady=5)
@@ -645,9 +756,10 @@ class CreateNewSettingWidget(tk.Frame):
         # Create confirm button
         confirm_button = tk.Button(self, text="Confirm", command=self.confirm_creation)
         confirm_button.pack(pady=10)
-        
+
         # Create note label
-        note_label = tk.Label(self, text="Note: Add function to copy setting from existing setting entry?", bg=self['bg'])
+        note_text = "Note: Add function to copy entry from existing setting entry?" if self.entry_type == "setting" else "Note: Add function to copy entry from existing evaluation entry?"
+        note_label = tk.Label(self, text=note_text, bg=self['bg'])
         note_label.pack(pady=5)
 
     def on_map(self, event):
@@ -665,8 +777,12 @@ class CreateNewSettingWidget(tk.Frame):
 
     def confirm_creation(self):
         """
-        Handle the confirmation of the new setting creation.
+        Handle the confirmation of the new entry creation.
         """
-        new_setting_name = self.name_var.get()
-        logger.info(f'Confirm new setting creation button was clicked with name: {new_setting_name}')
-        self.controller.confirm_new_setting_creation(new_setting_name)
+        new_entry_name = self.name_var.get()
+        logger.info(f'Confirm new {self.entry_type} creation button was clicked with name: {new_entry_name}')
+        if self.entry_type == "setting":
+            self.controller.confirm_new_setting_creation(new_entry_name)
+        elif self.entry_type == "evaluation":
+            self.controller.confirm_new_evaluation_creation(new_entry_name)
+

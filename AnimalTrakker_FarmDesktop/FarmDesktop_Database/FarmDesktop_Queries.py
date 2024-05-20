@@ -111,6 +111,45 @@ UPDATE_SETTING_DETAILS = """
 	WHERE id_animaltrakkerdefaultsettingsid = ?
 """
 
+# Update details for a specific evaluation
+UPDATE_EVALUATION_DETAILS = """
+    UPDATE 
+        saved_evaluations_table
+    SET 
+        evaluation_name = ?, 
+        saved_evaluation_id_contactid = ?, 
+        saved_evaluation_id_companyid = ?, 
+        trait_name01 = ?, 
+        trait_name02 = ?, 
+        trait_name03 = ?, 
+        trait_name04 = ?, 
+        trait_name05 = ?, 
+        trait_name06 = ?, 
+        trait_name07 = ?, 
+        trait_name08 = ?, 
+        trait_name09 = ?, 
+        trait_name10 = ?, 
+        trait_name11 = ?, 
+        trait_name12 = ?, 
+        trait_name13 = ?, 
+        trait_name14 = ?, 
+        trait_name15 = ?, 
+        trait_units11 = ?, 
+        trait_units12 = ?, 
+        trait_units13 = ?, 
+        trait_units14 = ?, 
+        trait_units15 = ?, 
+        trait_name16 = ?, 
+        trait_name17 = ?, 
+        trait_name18 = ?, 
+        trait_name19 = ?, 
+        trait_name20 = ?, 
+        created = ?, 
+        modified = ?
+    WHERE 
+        id_savedevaluationstableid = ?
+"""
+
 # Create new entry in default settings table with new setting
 CREATE_NEW_SETTING = """
     INSERT INTO 
@@ -138,8 +177,41 @@ CREATE_NEW_SETTING = """
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
 
-
-
+# Create new entry in evaluation table with new evaluation
+CREATE_NEW_EVALUATION = """
+    INSERT INTO saved_evaluations_table (
+        evaluation_name, 
+        saved_evaluation_id_contactid, 
+        saved_evaluation_id_companyid, 
+        trait_name01, 
+        trait_name02, 
+        trait_name03, 
+        trait_name04, 
+        trait_name05, 
+        trait_name06, 
+        trait_name07, 
+        trait_name08, 
+        trait_name09, 
+        trait_name10, 
+        trait_name11, 
+        trait_name12, 
+        trait_name13, 
+        trait_name14, 
+        trait_name15, 
+        trait_units11, 
+        trait_units12, 
+        trait_units13, 
+        trait_units14, 
+        trait_units15, 
+        trait_name16, 
+        trait_name17, 
+        trait_name18, 
+        trait_name19, 
+        trait_name20, 
+        created, 
+        modified
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+"""
 
 # Fetch species common names for dropdown
 GET_SPECIES_NAMES = """

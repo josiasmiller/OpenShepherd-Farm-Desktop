@@ -4,7 +4,7 @@ from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewSettingWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
@@ -113,7 +113,7 @@ class FarmDesktopController(BaseController):
         """
         if choice_type == "setting":
             if choice == 'Create New':
-                self.app.main_frame.update_content(CreateNewSettingWidget, controller=self)
+                self.app.main_frame.update_content(CreateNewDBEntryWidget, controller=self, entry_type="setting")
             else:
                 if edit:
                     setting_details = fetch_setting_details(self.app.db_connection, setting_name=choice)
@@ -125,7 +125,7 @@ class FarmDesktopController(BaseController):
                     self.app.bottom_bar.update_current_setting(choice)
         elif choice_type == "evaluation":
             if choice == 'Create New':
-                self.app.main_frame.update_content(CreateNewEvaluationWidget, controller=self)
+                self.app.main_frame.update_content(CreateNewDBEntryWidget, controller=self, entry_type="evaluation")
             else:
                 if edit:
                     evaluation_details = fetch_evaluation_details(self.app.db_connection, evaluation_name=choice)
@@ -140,8 +140,12 @@ class FarmDesktopController(BaseController):
         logger.info(f"Farm Desktop Controller: Save button clicked for {data_type}")
         if data_type == "setting":
             save_setting_changes(self.app.db_connection, updated_details)
+            self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"Edits for {updated_details['default_settings_name']} has been saved.")
+            self.set_default_setting()
         elif data_type == "evaluation":
             save_evaluation_changes(self.app.db_connection, updated_details)
+            self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"Edits for {updated_details['evaluation_name']} has been saved.")
+            self.set_evaluation()
         
     def confirm_new_setting_creation(self, new_setting_name):
         """
@@ -154,6 +158,18 @@ class FarmDesktopController(BaseController):
         save_new_setting(self.app.db_connection, new_setting_name)
         self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New setting '{new_setting_name}' has been created.")
         self.set_default_setting()
+        
+    def confirm_new_evaluation_creation(self, new_evaluation_name):
+        """
+        Handle the confirmation of a new evaluation creation.
+
+        Args:
+            new_evaluation_name (str): The name of the new evaluation.
+        """
+        logger.info(f'New evaluation created with name: {new_evaluation_name}')
+        save_new_evaluation(self.app.db_connection, new_evaluation_name)
+        self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New evaluation '{new_evaluation_name}' has been created.")
+        self.set_evaluation()
         
     def go_home(self):
         """
