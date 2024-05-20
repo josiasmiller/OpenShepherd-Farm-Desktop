@@ -395,39 +395,42 @@ class EditPopup(tk.Toplevel):
         selected_index = self.listbox.curselection()
         if selected_index:
             selected_id = self.ids[selected_index[0]]
-            self.parent.update_setting(self.key, selected_id)
+            self.parent.update_data_field(self.key, selected_id)
             self.destroy()
 
-class EditSettingWidget(tk.Frame):
+class EditWidget(tk.Frame):
     """
-    A widget for editing settings.
+    A widget for editing data.
 
-    This widget displays setting details in entry fields that can be edited and saved.
+    This widget displays data details in entry fields that can be edited and saved.
 
     Attributes:
         parent (tk.Widget): The parent widget.
-        setting_details (dict): A dictionary containing the setting details.
+        data_details (dict): A dictionary containing the data details.
         style_manager (StyleManager): An instance of StyleManager for styling.
         controller (object): The controller handling the save logic.
         db_connection (DatabaseConnection): The database connection instance.
+        data_type (str): The type of data being edited ("setting" or "evaluation").
     """
-    def __init__(self, parent, setting_details, style_manager, controller, db_connection, **kwargs):
+    def __init__(self, parent, data_details, style_manager, controller, db_connection, data_type, **kwargs):
         """
-        Initialize the EditSettingWidget.
+        Initialize the EditWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
-            setting_details (dict): A dictionary containing the setting details.
+            data_details (dict): A dictionary containing the data details.
             style_manager (StyleManager): An instance of StyleManager for styling.
             controller (object): The controller handling the save logic.
             db_connection (DatabaseConnection): The database connection instance.
+            data_type (str): The type of data being edited ("setting" or "evaluation").
             **kwargs: Additional keyword arguments for the Frame constructor.
         """
         super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
-        self.setting_details = setting_details
+        self.data_details = data_details
         self.controller = controller
         self.db_connection = db_connection
         self.style_manager = style_manager
+        self.data_type = data_type
 
         self.build_widget()
 
@@ -440,7 +443,8 @@ class EditSettingWidget(tk.Frame):
         title_frame.pack(fill=tk.BOTH, expand=False)
 
         # Create a title label
-        title_label = tk.Label(title_frame, text="Edit Setting", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_text = "Edit Setting" if self.data_type == "setting" else "Edit Evaluation"
+        title_label = tk.Label(title_frame, text=title_text, font=('Helvetica', 16, 'bold'), bg=self['bg'])
         title_label.pack(pady=10, side=tk.TOP)
 
         # Create a frame to hold the canvas and scrollbar
@@ -465,7 +469,7 @@ class EditSettingWidget(tk.Frame):
 
         self.value_labels = {}
         row = 0
-        for key, value in self.setting_details.items():
+        for key, value in self.data_details.items():
             label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
             label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
 
@@ -500,14 +504,21 @@ class EditSettingWidget(tk.Frame):
             tuple: A tuple containing the display value and the fetch function.
         """
         fetch_function = None
-        if key == 'id_speciesid':
-            fetch_function = fetch_species_names
-        elif key == 'id_breedid':
-            fetch_function = fetch_breed_names
-        elif key == 'id_stateid':
-            fetch_function = fetch_state_names
-        elif key == 'id_countyid':
-            fetch_function = fetch_county_names
+        if self.data_type == "setting":
+            if key == 'id_speciesid':
+                fetch_function = fetch_species_names
+            elif key == 'id_breedid':
+                fetch_function = fetch_breed_names
+            elif key == 'id_stateid':
+                fetch_function = fetch_state_names
+            elif key == 'id_countyid':
+                fetch_function = fetch_county_names
+        elif self.data_type == "evaluation":
+            pass
+            """if key.startswith('trait_name'):
+                fetch_function = fetch_trait_names
+            elif key.startswith('trait_units'):
+                fetch_function = fetch_units_names"""
 
         display_value = self.get_name_by_id(fetch_function(self.db_connection), value) if fetch_function else value
         return display_value, fetch_function
@@ -530,25 +541,25 @@ class EditSettingWidget(tk.Frame):
 
     def open_edit_popup(self, key, value, fetch_function):
         """
-        Open the edit popup for a specific setting.
+        Open the edit popup for a specific data field.
 
         Args:
-            key (str): The key of the setting to edit.
-            value (str): The current value of the setting.
-            fetch_function (callable): The function to fetch options for the setting.
+            key (str): The key of the data field to edit.
+            value (str): The current value of the data field.
+            fetch_function (callable): The function to fetch options for the data field.
         """
         popup = EditPopup(self, key, value, fetch_function, self.style_manager)
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
-    def update_setting(self, key, new_value):
+    def update_data_field(self, key, new_value):
         """
-        Update the setting value in the main widget.
+        Update the data field value in the main widget.
 
         Args:
-            key (str): The key of the setting to update.
-            new_value (int): The new value for the setting.
+            key (str): The key of the data field to update.
+            new_value (int): The new value for the data field.
         """
-        self.setting_details[key] = new_value
+        self.data_details[key] = new_value
         # Update the display value for the specific key in the main widget
         display_value, _ = self.get_display_value_and_function(key, new_value)
         self.value_labels[key].config(text=display_value)
@@ -559,8 +570,8 @@ class EditSettingWidget(tk.Frame):
 
         This method retrieves the updated values from the entry fields and passes them to the controller.
         """
-        updated_details = {key: value for key, value in self.setting_details.items()}
-        self.controller.save_edited_setting(updated_details)
+        updated_details = {key: value for key, value in self.data_details.items()}
+        self.controller.save_edited_data(updated_details, self.data_type)
 
     def on_mousewheel(self, event):
         """
@@ -580,7 +591,7 @@ class EditSettingWidget(tk.Frame):
             widget (tk.Widget): The widget to bind the mouse wheel event to.
         """
         widget.bind_all("<MouseWheel>", self.on_mousewheel)
-        
+
     def unbind_mousewheel(self):
         """
         Unbind the mouse wheel event from all widgets.

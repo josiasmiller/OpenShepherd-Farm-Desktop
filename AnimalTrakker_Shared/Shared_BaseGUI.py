@@ -43,6 +43,9 @@ class BaseGUI(tk.Frame):
         # Initialize current default setting variable
         self.current_default_setting = None
         
+        # Initialize current evaluation variable
+        self.current_evaluation = None
+        
         # Initialize style manager and configure styles
         self.style_manager = StyleManager()
         
@@ -68,7 +71,7 @@ class BaseGUI(tk.Frame):
         self.main_frame = MainFrame(self, style_manager=self.style_manager)
         
         # Initialize the bottom bar with specified background color and passing current database path
-        self.bottom_bar = BottomBar(self, bg=bg_bottom, height=50, currentdatabase=self.currentdatabase, current_setting=self.current_default_setting)
+        self.bottom_bar = BottomBar(self, bg=bg_bottom, height=50, currentdatabase=self.currentdatabase, current_setting=self.current_default_setting, current_evaluation=self.current_evaluation)
 
         # Call to layout the components correctly in the frame.
         self.layout_components()

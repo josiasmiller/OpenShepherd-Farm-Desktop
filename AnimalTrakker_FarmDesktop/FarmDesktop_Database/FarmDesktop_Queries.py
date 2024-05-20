@@ -65,8 +65,22 @@ GET_EVALUATIONS_NAMES = """
 
 # Fetch details for a specific default setting by name
 GET_SETTING_DETAILS = """
-    SELECT * FROM animaltrakker_default_settings_table 
-    WHERE default_settings_name = ?
+    SELECT 
+    	* 
+    FROM 
+    	animaltrakker_default_settings_table 
+    WHERE 
+    	default_settings_name = ?
+"""
+
+# Fetch details for a specific evaluation by name
+GET_EVALUATION_DETAILS = """
+    SELECT 
+    	* 
+    FROM 
+    	saved_evaluations_table 
+    WHERE 
+    	evaluation_name = ?
 """
 
 # Update details for a specific default setting
