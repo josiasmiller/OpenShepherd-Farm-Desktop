@@ -136,6 +136,36 @@ def fetch_setting_details(db_connection, setting_name):
     except Exception as e:
         logger.error(f"Failed to fetch default setting details: {e}")
         return None
+    
+def fetch_evaluation_details(db_connection, evaluation_name):
+    """
+    Fetches details for a specific evaluation from the database.
+
+    Args:
+        evaluation_name (str): The name of the evaluation to fetch details for.
+
+    Returns:
+        dict: A dictionary containing the details of the evaluation.
+    """
+    try:
+        row = db_connection.fetchone(GET_EVALUATION_DETAILS, (evaluation_name,))
+        if row:
+            columns = [
+                "id_savedevaluationstableid", "evaluation_name", "saved_evaluation_id_contactid", "saved_evaluation_id_companyid", 
+                "trait_name01", "trait_name02", "trait_name03", "trait_name04", "trait_name05", "trait_name06", 
+                "trait_name07", "trait_name08", "trait_name09", "trait_name10", "trait_name11", "trait_name12", 
+                "trait_name13", "trait_name14", "trait_name15", "trait_units11", "trait_units12", "trait_units13", 
+                "trait_units14", "trait_units15", "trait_name16", "trait_name17", "trait_name18", "trait_name19", 
+                "trait_name20", "created", "modified"
+            ]
+            logger.info(f"Evaluation for {evaluation_name} fetched successfully, retrieved {len(row)} record.")
+            return dict(zip(columns, row))
+        else:
+            return None
+    except Exception as e:
+        logger.error(f"Failed to fetch evaluation details: {e}")
+        return None
+
 
 def save_setting_changes(db_connection, updated_details):
         """
@@ -152,6 +182,21 @@ def save_setting_changes(db_connection, updated_details):
         else:
             logger.error(f"Failed to update setting with ID {setting_id}")
             
+def save_evaluation_changes(db_connection, updated_details):
+    """
+    Saves the changes made to the evaluation.
+
+    Args:
+        updated_details (dict): A dictionary of the updated evaluation details.
+    """
+    evaluation_id = updated_details.pop('id_savedevaluationstableid')  # Extract the ID for the WHERE clause
+    params = tuple(updated_details.values()) + (evaluation_id,)
+    rows_affected = db_connection.save(UPDATE_EVALUATION_DETAILS, params)
+    if rows_affected:
+        logger.info(f"Successfully updated evaluation with ID {evaluation_id}")
+    else:
+        logger.error(f"Failed to update evaluation with ID {evaluation_id}")        
+    
 def save_new_setting(db_connection, new_setting_name):
     """
     Saves a new setting by copying details from the 'Standard Setting'.
@@ -185,14 +230,48 @@ def save_new_setting(db_connection, new_setting_name):
 
         # Convert to tuple for insertion
         params = tuple(new_setting_details)
-        print("Values: ", params)
-        print("Lenght of values tuple: ", len(params))
               
         # Insert the new setting into the database
         db_connection.save(CREATE_NEW_SETTING, params)
         logger.info(f"Successfully created new setting with name {new_setting_name}")
     except Exception as e:
         logger.error(f"Failed to create new setting: {e}")
+        
+def save_new_evaluation(db_connection, new_evaluation_name):
+    """
+    Saves a new evaluation by copying details from the 'Standard Evaluation'.
+
+    Args:
+        db_connection: The database connection object.
+        new_evaluation_name (str): The name of the new evaluation.
+    """
+    try:
+        # Fetch the details of the 'Standard Evaluation'
+        row = db_connection.fetchone(GET_EVALUATION_DETAILS, ('Simple Lambing',))
+        if not row:
+            logger.error("Standard Evaluation not found.")
+            return
+
+        # Prepare the new evaluation details
+        new_evaluation_details = list(row)
+        new_evaluation_details[1] = new_evaluation_name  # Update the evaluation name
+
+        # Remove the primary key and the original created and modified timestamps
+        new_evaluation_details[-2] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # created
+        new_evaluation_details[-1] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # modified
+        
+        # Remove the primary key
+        new_evaluation_details = new_evaluation_details[1:]
+
+        # Convert to tuple for insertion
+        params = tuple(new_evaluation_details)
+              
+        # Insert the new evaluation into the database
+        db_connection.save(CREATE_NEW_EVALUATION, params)
+        logger.info(f"Successfully created new evaluation with name {new_evaluation_name}")
+    except Exception as e:
+        logger.error(f"Failed to create new evaluation: {e}")
+
             
 def fetch_species_names(db_connection):
     """

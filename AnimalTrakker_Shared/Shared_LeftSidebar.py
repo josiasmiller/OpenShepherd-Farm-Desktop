@@ -99,6 +99,7 @@ class LeftSidebar(tk.Frame):
         """
         Clears all widgets from the content frame.
         """
+        logger.info("Clearing Leftsidebar content frame")
         for widget in self.content_frame.winfo_children():
             widget.destroy()
         self.current_widget = None
