@@ -786,3 +786,187 @@ class CreateNewDBEntryWidget(tk.Frame):
         elif self.entry_type == "evaluation":
             self.controller.confirm_new_evaluation_creation(new_entry_name)
 
+class SearchLeftSidebarWidget(tk.Frame):
+    def __init__(self, parent, controller, style_manager, **kwargs):
+        super().__init__(parent, bg=style_manager.get_bg('sidebar'), **kwargs)
+        self.controller = controller
+        self.style_manager = style_manager
+
+        self.build_widget()
+
+    def build_widget(self):
+        title_label = tk.Label(self, text="Display Options", bg=self['bg'])
+        title_label.pack(pady=10)
+
+        self.options = [
+            "animal flock prefix", "animal name", "sex", "sire flock prefix", "sire name",
+            "dam flock prefix", "dam name", "registration number", "All IDs", "alert",
+            "birth date", "birth type", "death date", "death reason", "breed",
+            "genetic characteristics", "Scrapie Codon 171", "Scrapie Codon 136",
+            "Coat Color", "owner", "location", "breeder"
+        ]
+
+        self.selected_options = {}
+        for option in self.options:
+            var = tk.BooleanVar()
+            chk = tk.Checkbutton(self, text=option, variable=var, bg=self['bg'])
+            chk.pack(anchor='w', padx=10)
+            self.selected_options[option] = var
+
+    def get_selected_options(self):
+        return [option for option, var in self.selected_options.items() if var.get()]
+
+class SearchBoxWidget(tk.Frame):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.build_widget()
+
+    def build_widget(self):
+        self.text_box = tk.Text(self, wrap='word')
+        self.text_box.pack(expand=True, fill='both')
+
+    def display_results(self, results):
+        self.text_box.delete('1.0', tk.END)
+        self.text_box.insert(tk.END, results)
+
+class SearchMainFrameWidget(tk.Frame):
+    def __init__(self, parent, controller, style_manager, **kwargs):
+        super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
+        self.controller = controller
+        self.style_manager = style_manager
+
+        self.build_widget()
+        self.configure_grid()
+        
+        # Forse cursor to be on the main frame
+        self.bind('<Map>', self.on_map)  # Bind to the <Map> event
+
+    def build_widget(self):
+        title_label = tk.Label(self, text="Animal Search", font=('Helvetica', 16, 'bold'), bg=self['bg'])
+        title_label.grid(row=0, column=1, columnspan=4, pady=2)  # Adjusted vertical padding
+
+        self.entries = {}
+
+        # Row 1: Animal ID and Animal Name Labels
+        label = tk.Label(self, text="Animal ID", bg=self['bg'])
+        label.grid(row=1, column=1, padx=2, pady=2, sticky="w")
+        label = tk.Label(self, text="Animal Name", bg=self['bg'])
+        label.grid(row=1, column=3, padx=2, pady=2, sticky="w")
+
+        # Row 2: Animal ID and Animal Name Entry Fields
+        entry = tk.Entry(self)
+        entry.grid(row=2, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["id_animalid"] = entry
+        entry = tk.Entry(self)
+        entry.grid(row=2, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["animal_name"] = entry
+
+        # Row 3: Birth Date Range and Death Date Range
+        label = tk.Label(self, text="Birth Date Range", bg=self['bg'])
+        label.grid(row=3, column=1, columnspan=2, padx=2, pady=2, sticky="w")
+        label = tk.Label(self, text="Death Date Range", bg=self['bg'])
+        label.grid(row=3, column=3, columnspan=2, padx=2, pady=2, sticky="w")
+
+        # Row 4: From/To labels for Birth and Death
+        label = tk.Label(self, text="From", bg=self['bg'])
+        label.grid(row=4, column=1, padx=2, pady=2, sticky="w")
+        label = tk.Label(self, text="To", bg=self['bg'])
+        label.grid(row=4, column=2, padx=2, pady=2, sticky="w")
+        label = tk.Label(self, text="From", bg=self['bg'])
+        label.grid(row=4, column=3, padx=2, pady=2, sticky="w")
+        label = tk.Label(self, text="To", bg=self['bg'])
+        label.grid(row=4, column=4, padx=2, pady=2, sticky="w")
+
+        # Row 5: From/To entries for Birth and Death
+        entry = tk.Entry(self)
+        entry.grid(row=5, column=1, padx=2, pady=2, sticky="ew")
+        self.entries["birth_date_from"] = entry
+        entry = tk.Entry(self)
+        entry.grid(row=5, column=2, padx=2, pady=2, sticky="ew")
+        self.entries["birth_date_to"] = entry
+        entry = tk.Entry(self)
+        entry.grid(row=5, column=3, padx=2, pady=2, sticky="ew")
+        self.entries["death_date_from"] = entry
+        entry = tk.Entry(self)
+        entry.grid(row=5, column=4, padx=2, pady=2, sticky="ew")
+        self.entries["death_date_to"] = entry
+
+        # Row 6: Sex and Birth Type
+        label = tk.Label(self, text="Sex", bg=self['bg'])
+        label.grid(row=6, column=1, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=7, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["sex"] = entry
+        label = tk.Label(self, text="Birth Type", bg=self['bg'])
+        label.grid(row=6, column=3, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=7, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["birth_type"] = entry
+
+        # Row 7: Alert and Breed
+        label = tk.Label(self, text="Alert Text", bg=self['bg'])
+        label.grid(row=8, column=1, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=9, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["alert_text"] = entry
+        label = tk.Label(self, text="Breed", bg=self['bg'])
+        label.grid(row=8, column=3, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=9, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["breed"] = entry
+
+        # Row 8: Owner and Breeder
+        label = tk.Label(self, text="Owner", bg=self['bg'])
+        label.grid(row=10, column=1, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=11, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["owner"] = entry
+        label = tk.Label(self, text="Breeder", bg=self['bg'])
+        label.grid(row=10, column=3, columnspan=2, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=11, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
+        self.entries["breeder"] = entry
+
+        # Row 9: Location
+        label = tk.Label(self, text="Location", bg=self['bg'])
+        label.grid(row=12, column=1, columnspan=4, padx=2, pady=2, sticky="w")
+        entry = tk.Entry(self)
+        entry.grid(row=13, column=1, columnspan=4, padx=2, pady=2, sticky="ew")
+        self.entries["location"] = entry
+
+        search_button = tk.Button(self, text="Search", command=self.on_search_button_click)
+        search_button.grid(row=14, column=1, columnspan=4, pady=5)  # Adjusted vertical padding
+
+        # Row 10: Search Box Widget
+        self.search_box_widget = SearchBoxWidget(self, bg=self['bg'])
+        self.search_box_widget.grid(row=15, column=1, columnspan=4, padx=2, pady=2, sticky="nsew")
+        
+        # Pass a reference of search_box_widget to the controller
+        self.controller.search_box_widget = self.search_box_widget
+
+    def on_search_button_click(self):
+        search_params = self.get_search_parameters()
+        self.controller.perform_animal_search(search_params)
+    
+    def on_map(self, event):
+        """
+        Set focus on the name entry widget when the widget is mapped (shown).
+        """
+        self.after(200, self.set_focus)  # Slightly increased delay
+
+    def set_focus(self):
+        """
+        Set focus on the name entry widget and log the focus operation.
+        """
+        self.entries["id_animalid"].focus_force()
+        logger.info("Focus set on name entry widget")
+        
+    def configure_grid(self):
+        self.grid_columnconfigure(0, weight=1)  # Left padding column
+        for column in range(1, 5):
+            self.grid_columnconfigure(column, weight=1)  # Main content columns
+        self.grid_columnconfigure(5, weight=1)  # Right padding column
+        self.grid_rowconfigure(15, weight=1)  # Make the search box widget expandable
+
+    def get_search_parameters(self):
+        return {field_name: entry.get() for field_name, entry in self.entries.items()}

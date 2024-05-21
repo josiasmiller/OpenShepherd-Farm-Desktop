@@ -4,7 +4,7 @@ from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis
-from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget, SearchLeftSidebarWidget, SearchMainFrameWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 logger = get_logger(__name__)
@@ -63,6 +63,10 @@ class FarmDesktopController(BaseController):
                 self.set_default_setting()
             if item_text == 'Set Current Evaluation':
                 self.set_evaluation()
+        elif parent_id == 'animals':
+            logger.info(f"Handling animals for item: {item_text}")
+            if item_text == 'Animal Search':
+                self.animal_search()
 
     def handle_evaluation_history(self, item, item_text):
         """
@@ -170,6 +174,95 @@ class FarmDesktopController(BaseController):
         save_new_evaluation(self.app.db_connection, new_evaluation_name)
         self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New evaluation '{new_evaluation_name}' has been created.")
         self.set_evaluation()
+    
+    def animal_search(self):
+        """
+        Display the Animal Search interface with the search parameters sidebar and main frame.
+        """
+        logger.info("Displaying Animal Search interface")
+        
+        # Clear any existing content in the left sidebar
+        self.app.left_sidebar.clear_content_frame()
+
+        # Create and display the SearchLeftSidebarWidget
+        self.left_sidebar_widget = SearchLeftSidebarWidget(
+            parent=self.app.left_sidebar.content_frame, 
+            controller=self, 
+            style_manager=self.app.style_manager
+        )
+        self.left_sidebar_widget.pack(expand=True, fill='both')
+        self.app.left_sidebar.current_widget = self.left_sidebar_widget  # Store the reference
+
+        # Create and display the SearchMainFrameWidget
+        self.app.main_frame.update_content(
+            SearchMainFrameWidget, 
+            controller=self
+        )
+
+    def perform_animal_search(self, search_params):
+        """
+        Perform the animal search based on input fields and selected display options.
+        """
+        if not hasattr(self, 'left_sidebar_widget'):
+            logger.error("Left sidebar widget is not initialized.")
+            return
+
+        display_options = self.left_sidebar_widget.get_selected_options()
+        
+        query = self.construct_search_query(search_params, display_options)
+        results = self.app.db_connection.fetchall(query)
+        
+        self.display_search_results(results, display_options)
+
+    def construct_search_query(self, search_params, display_options):
+        base_query = "SELECT "
+        base_query += ", ".join(self.map_display_options(display_options))
+        base_query += " FROM animal_table WHERE "
+        
+        conditions = []
+        for field, value in search_params.items():
+            if value:
+                conditions.append(f"{field} LIKE '%{value}%'")
+        
+        if not conditions:
+            conditions.append("1=1")  # No filters applied
+        
+        query = base_query + " AND ".join(conditions)
+        return query
+
+    def map_display_options(self, display_options):
+        option_to_field = {
+            "animal flock prefix": "animal_flock_prefix",
+            "animal name": "animal_name",
+            "sex": "id_sexid",
+            "sire flock prefix": "sire_flock_prefix",
+            "sire name": "sire_name",
+            "dam flock prefix": "dam_flock_prefix",
+            "dam name": "dam_name",
+            "registration number": "registration_number",
+            "All IDs": "id_animalid",
+            "alert": "alert",
+            "birth date": "birth_date",
+            "birth type": "id_birthtypeid",
+            "death date": "death_date",
+            "death reason": "id_deathreasonid",
+            "breed": "breed",
+            "genetic characteristics": "genetic_characteristics",
+            "Scrapie Codon 171": "scrapie_codon_171",
+            "Scrapie Codon 136": "scrapie_codon_136",
+            "Coat Color": "coat_color",
+            "owner": "owner",
+            "location": "location",
+            "breeder": "breeder"
+        }
+        return [option_to_field[option] for option in display_options if option in option_to_field]
+
+    def display_search_results(self, results, display_options):
+        """
+        Display the search results in the SearchBoxWidget.
+        """
+        results_text = "\n".join(["\t".join(map(str, row)) for row in results])
+        self.search_box_widget.display_results(results_text)
         
     def go_home(self):
         """
