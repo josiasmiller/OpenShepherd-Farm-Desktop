@@ -475,6 +475,8 @@ class EditWidget(tk.Frame):
         self.db_connection = db_connection
         self.style_manager = style_manager
         self.data_type = data_type
+        
+        self.hidden_fields = ['id_animaltrakkerdefaultsettingsid', 'id_savedevaluationstableid']  # List of keys to hide
 
         self.build_widget()
 
@@ -514,6 +516,9 @@ class EditWidget(tk.Frame):
         self.value_labels = {}
         row = 0
         for key, value in self.data_details.items():
+            if key in self.hidden_fields:
+                continue  # Skip rendering this field if it is in the hidden_fields list
+
             label = tk.Label(self.internal_frame, text=key, bg=self['bg'])
             label.grid(row=row, column=0, padx=5, pady=5, sticky="w")
 
@@ -792,22 +797,35 @@ class SearchLeftSidebarWidget(tk.Frame):
         self.controller = controller
         self.style_manager = style_manager
 
+        self.option_to_field = {
+            "Animal Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
+            "Animal Name": ("animal_name", None, None, None),
+            "Sex": ("id_sexid", "sex_table.id_sexid", None, "sex_table.sex_name"),
+            "Sire Name": ("sire_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
+            "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
+            "Registration Number": ("id_animalid", "animal_registration_table.id_animalid", None, "animal_registration_table.registration_number"),
+            "Alert": ("alert", None, None, None),
+            "Birth Date": ("birth_date", None, None, None),
+            "Death Date": ("death_date", None, None, None),
+            "Death Reason": ("id_deathreasonid", "death_reason_table.id_deathreasonid", None, "death_reason_table.death_reason"),
+            "Breed": ("id_animalid", "animal_breed_table.id_animalid", "breed_table.id_breedid", "breed_table.breed_name"),
+            "Scrapie Codon 171": ("scrapie_codon_171", None, None, None),
+            "Scrapie Codon 136": ("scrapie_codon_136", None, None, None),
+            "Coat Color": ("coat_color", None, None, None),
+            "Location": ("location", None, None, None),
+            "Owner": ("id_animalid", "animal_ownership_history_table.id_animalid", None, "owner_info"),
+            "Breeder": ("id_animalid", "animal_registration_table.id_animalid", None, "breeder_info")
+        }
+
+
         self.build_widget()
 
     def build_widget(self):
         title_label = tk.Label(self, text="Display Options", bg=self['bg'])
         title_label.pack(pady=10)
 
-        self.options = [
-            "animal flock prefix", "animal name", "sex", "sire flock prefix", "sire name",
-            "dam flock prefix", "dam name", "registration number", "All IDs", "alert",
-            "birth date", "birth type", "death date", "death reason", "breed",
-            "genetic characteristics", "Scrapie Codon 171", "Scrapie Codon 136",
-            "Coat Color", "owner", "location", "breeder"
-        ]
-
         self.selected_options = {}
-        for option in self.options:
+        for option in self.option_to_field.keys():
             var = tk.BooleanVar()
             chk = tk.Checkbutton(self, text=option, variable=var, bg=self['bg'])
             chk.pack(anchor='w', padx=10)
@@ -822,12 +840,28 @@ class SearchBoxWidget(tk.Frame):
         self.build_widget()
 
     def build_widget(self):
-        self.text_box = tk.Text(self, wrap='word')
-        self.text_box.pack(expand=True, fill='both')
+        self.tree = ttk.Treeview(self, show="headings")
+        self.tree.pack(expand=True, fill='both', side='left')
+        
+        self.tree_scroll = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
+        self.tree_scroll.pack(side='right', fill='y')
+        self.tree.configure(yscrollcommand=self.tree_scroll.set)
 
-    def display_results(self, results):
-        self.text_box.delete('1.0', tk.END)
-        self.text_box.insert(tk.END, results)
+    def clear_data(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+    def set_columns(self, columns):
+        self.tree["columns"] = columns
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, anchor='w', stretch=True)  # Adjust to stretch columns
+
+    def display_results(self, results, columns):
+        self.clear_data()
+        self.set_columns(columns)
+        for row in results:
+            self.tree.insert("", "end", values=row)
 
 class SearchMainFrameWidget(tk.Frame):
     def __init__(self, parent, controller, style_manager, **kwargs):
