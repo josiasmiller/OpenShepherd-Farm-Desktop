@@ -248,3 +248,24 @@ GET_COUNTY_NAMES = """
     FROM 
     	county_table
 """
+# Query to fetch codon values
+GET_CODONS_VALUE_IDS = """
+	SELECT id_geneticcharacteristictableid, id_geneticcharacteristicvalueid
+	FROM animal_genetic_characteristic_table
+	WHERE id_animalid = ?
+	AND id_geneticcharacteristictableid IN (2, 5)
+"""
+
+# Query to fetch codon 136
+GET_CODON_136 = """
+	SELECT codon136_alleles
+	FROM genetic_codon136_table
+	WHERE id_geneticcodon136id = ?
+"""
+
+# Query to fetch codon 171
+GET_CODON_171 = """
+	SELECT codon171_alleles
+	FROM genetic_codon171_table
+	WHERE id_geneticcodon171id = ?
+"""

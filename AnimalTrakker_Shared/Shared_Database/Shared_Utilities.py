@@ -88,7 +88,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             rows = cursor.fetchall()
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            logger.info(f"Query executed successfully: {query}, fetched {len(rows)} rows")
             return rows
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
