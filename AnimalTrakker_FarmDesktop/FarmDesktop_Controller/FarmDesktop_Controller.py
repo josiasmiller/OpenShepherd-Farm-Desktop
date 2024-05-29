@@ -199,6 +199,9 @@ class FarmDesktopController(BaseController):
             controller=self
         )
 
+        # Store a reference to the newly created SearchMainFrameWidget
+        self.main_frame_widget = self.app.main_frame.current_widget
+
     def perform_animal_search(self, search_params):
         """
         Perform the animal search based on input fields and selected display options.
@@ -208,9 +211,13 @@ class FarmDesktopController(BaseController):
             return
 
         display_options = self.left_sidebar_widget.get_selected_options()
+        if not display_options:
+            logger.error("No display options selected.")
+            if hasattr(self, 'main_frame_widget'):
+                self.main_frame_widget.update_message("Please select at least one display option.")
+            return
         
-        query = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
-        results = self.app.db_connection.fetchall(query)
+        results = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
         
         self.display_search_results(results, display_options)
 

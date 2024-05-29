@@ -253,7 +253,7 @@ GET_CODONS_VALUE_IDS = """
 	SELECT id_geneticcharacteristictableid, id_geneticcharacteristicvalueid
 	FROM animal_genetic_characteristic_table
 	WHERE id_animalid = ?
-	AND id_geneticcharacteristictableid IN (2, 5)
+	AND id_geneticcharacteristictableid IN (2, 5, 7)
 """
 
 # Query to fetch codon 136
@@ -268,4 +268,11 @@ GET_CODON_171 = """
 	SELECT codon171_alleles
 	FROM genetic_codon171_table
 	WHERE id_geneticcodon171id = ?
+"""
+
+# Query to fetch coat color
+GET_COAT_COLOR = """
+	SELECT coat_color
+	FROM genetic_coat_color_table
+	WHERE id_geneticcoatcolorid = ?
 """

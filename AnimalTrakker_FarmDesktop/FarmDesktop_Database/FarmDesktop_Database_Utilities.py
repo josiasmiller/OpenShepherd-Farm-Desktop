@@ -168,19 +168,21 @@ def fetch_evaluation_details(db_connection, evaluation_name):
 
 
 def save_setting_changes(db_connection, updated_details):
-        """
-        Saves the changes made to the default setting.
+    """
+    Saves the changes made to the default setting.
 
-        Args:
-            updated_details (dict): A dictionary of the updated setting details.
-        """
-        setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
-        params = tuple(updated_details.values()) + (setting_id,)
-        rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
-        if rows_affected:
-            logger.info(f"Successfully updated setting with ID {setting_id}")
-        else:
-            logger.error(f"Failed to update setting with ID {setting_id}")
+    Args:
+        updated_details (dict): A dictionary of the updated setting details.
+    """
+    setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
+    params = tuple(updated_details.values()) + (setting_id,)
+    rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
+    if rows_affected:
+        logger.info(f"Successfully updated setting with ID {setting_id}")
+    else:
+        logger.error(f"Failed to update setting with ID {setting_id}")
             
 def save_evaluation_changes(db_connection, updated_details):
     """
@@ -190,6 +192,8 @@ def save_evaluation_changes(db_connection, updated_details):
         updated_details (dict): A dictionary of the updated evaluation details.
     """
     evaluation_id = updated_details.pop('id_savedevaluationstableid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
     params = tuple(updated_details.values()) + (evaluation_id,)
     rows_affected = db_connection.save(UPDATE_EVALUATION_DETAILS, params)
     if rows_affected:
