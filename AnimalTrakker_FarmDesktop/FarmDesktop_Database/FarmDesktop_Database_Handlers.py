@@ -1,4 +1,4 @@
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_evaluation_data
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
 from AnimalTrakker_Shared.Shared_Logging import get_logger
@@ -63,11 +63,26 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
                 join_clauses.append(join_clause)
                 selected_fields.append(f"{table_alias}2.{join_field.split('.')[1]} AS {display_option.lower().replace(' ', '_')}")
             else:
-                join_clause = f"LEFT JOIN {join_table_1.split('.')[0]} AS {table_alias} ON animal_table.{field} = {table_alias}.{join_table_1.split('.')[1]}"
-                join_clauses.append(join_clause)
-                selected_fields.append(f"{table_alias}.{join_field.split('.')[1]} AS {display_option.lower().replace(' ', '_')}")
+                if display_option == "Registration Number":
+                    join_clause = f"""
+                    LEFT JOIN (
+                        SELECT id_animalid, registration_number
+                        FROM animal_registration_table
+                        WHERE (id_animalid, registration_date) IN (
+                            SELECT id_animalid, MAX(registration_date)
+                            FROM animal_registration_table
+                            GROUP BY id_animalid
+                        )
+                    ) AS {table_alias} ON animal_table.id_animalid = {table_alias}.id_animalid
+                    """
+                    join_clauses.append(join_clause)
+                    selected_fields.append(f"{table_alias}.registration_number AS registration_number")
+                else:
+                    join_clause = f"LEFT JOIN {join_table_1.split('.')[0]} AS {table_alias} ON animal_table.{field} = {table_alias}.{join_table_1.split('.')[1]}"
+                    join_clauses.append(join_clause)
+                    selected_fields.append(f"{table_alias}.{join_field.split('.')[1]} AS {display_option.lower().replace(' ', '_')}")
         else:
-            if display_option not in ["Scrapie Codon 171", "Scrapie Codon 136", "Coat Color"]:
+            if display_option not in ["Scrapie Codon 171", "Scrapie Codon 136", "Coat Color", "Owner", "Breeder", "Location"]:
                 selected_fields.append(f"animal_table.{field} AS {display_option.lower().replace(' ', '_')}")
 
     fields = ", ".join(selected_fields)
@@ -93,14 +108,18 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
     codon_136_selected = "Scrapie Codon 136" in display_options
     codon_171_selected = "Scrapie Codon 171" in display_options
     coat_color_selected = "Coat Color" in display_options
+    owner_selected = "Owner" in display_options
+    breeder_selected = "Breeder" in display_options
+    location_selected = "Location" in display_options
 
     final_results = []
     for result in results:
+        # Order of the operations matters, and it is the same as order in display options for animal search leftsidebar
         result_dict = dict(zip(selected_fields, result))  # Create a dictionary for easy manipulation
         animal_id = result_dict.pop('animal_table.id_animalid')  # Remove id_animalid
 
         if codon_136_selected or codon_171_selected or coat_color_selected:
-            codon_values = get_codon_values(animal_id, db_connection)
+            codon_values = fetch_codon_values(animal_id, db_connection)
             codon_136_alleles, codon_171_alleles, coat_color = codon_values
 
             if codon_136_selected:
@@ -111,44 +130,19 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
                 
             if coat_color_selected:
                 result_dict["coat_color"] = coat_color
+                
+        if location_selected:
+            location_address = fetch_animal_location(db_connection, animal_id)
+            result_dict["location"] = location_address
+            
+        if owner_selected:
+            owner_name = fetch_owner_info(db_connection, animal_id)
+            result_dict["owner_name"] = owner_name
+
+        if breeder_selected:
+            breeder_name = fetch_breeder_info(db_connection, animal_id)
+            result_dict["breeder_name"] = breeder_name
 
         final_results.append(list(result_dict.values()))  # Append only the values to the final results
 
     return final_results
-
-
-def get_codon_values(animal_id, db_connection):
-
-    def get_codon_136(db_connection, codon_136_value_id):
-        if codon_136_value_id is None:
-            return None
-        result = db_connection.fetchone(GET_CODON_136, (codon_136_value_id,))
-        return result[0] if result else None
-
-    def get_codon_171(db_connection, codon_171_value_id):
-        if codon_171_value_id is None:
-            return None
-        result = db_connection.fetchone(GET_CODON_171, (codon_171_value_id,))
-        return result[0] if result else None
-    
-    def get_coat_color(db_connection, coat_color_value_id):
-        if coat_color_value_id is None:
-            return None
-        result = db_connection.fetchone(GET_COAT_COLOR, (coat_color_value_id,))
-        return result[0] if result else None
-
-    results = db_connection.fetchall(GET_CODONS_VALUE_IDS, (animal_id,))
-    codon_value_ids = {'codon_136': None, 'codon_171': None, 'coat_color': None}
-    for table_id, value_id in results:
-        if table_id == 2:
-            codon_value_ids['codon_136'] = value_id
-        elif table_id == 5:
-            codon_value_ids['codon_171'] = value_id
-        elif table_id == 7:
-            codon_value_ids['coat_color'] = value_id
-
-    codon_136_alleles = get_codon_136(db_connection, codon_value_ids['codon_136'])
-    codon_171_alleles = get_codon_171(db_connection, codon_value_ids['codon_171'])
-    coat_color = get_coat_color(db_connection, codon_value_ids['coat_color'])
-    
-    return codon_136_alleles, codon_171_alleles, coat_color

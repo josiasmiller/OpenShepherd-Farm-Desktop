@@ -67,6 +67,10 @@ class FarmDesktopController(BaseController):
             logger.info(f"Handling animals for item: {item_text}")
             if item_text == 'Animal Search':
                 self.animal_search()
+        elif parent_id == 'animals':
+            logger.info(f"Handling animals for item: {item_text}")
+            if item_text == 'Move Animals':
+                self.animal_search("moveanimal")
 
     def handle_evaluation_history(self, item, item_text):
         """

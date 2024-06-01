@@ -815,8 +815,8 @@ class SearchLeftSidebarWidget(tk.Frame):
             "Scrapie Codon 136": ("scrapie_codon_136", None, None, None),
             "Coat Color": ("coat_color", None, None, None),
             "Location": ("location", None, None, None),
-            "Owner": ("id_animalid", "animal_ownership_history_table.id_animalid", None, "owner_info"),
-            "Breeder": ("id_animalid", "animal_registration_table.id_animalid", None, "breeder_info")
+            "Owner": ("owner", None, None, None),
+            "Breeder": ("breeder", None, None, None)
         }
 
 
@@ -836,7 +836,7 @@ class SearchLeftSidebarWidget(tk.Frame):
         # Add the buttons at the bottom
         button_frame = tk.Frame(self, bg=self['bg'])
         button_frame.pack(pady=10, fill=tk.X)
-
+    
         pdf_button = tk.Button(button_frame, text="Save as PDF", command=self.save_as_pdf)
         pdf_button.pack(fill=tk.X, padx=5, pady=2)
 
