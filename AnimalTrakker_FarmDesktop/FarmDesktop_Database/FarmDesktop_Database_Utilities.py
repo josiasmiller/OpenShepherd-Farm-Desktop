@@ -290,6 +290,7 @@ def fetch_species_names(db_connection):
     try:
         rows = db_connection.fetchall(GET_SPECIES_NAMES)
         logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
+        print("Pure data from db:", rows)
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch species names: {e}")
@@ -422,7 +423,7 @@ def fetch_breeder_info(db_connection, animal_id):
                 return contact_name[0] if contact_name else None
         return []
     except Exception as e:
-        logger.error(f"An error occurred in 'fetch_breeder_info': {e}")
+        logger.error(f"An error occurred in 'fetch_breeder_info': {e}, {animal_id}")
         return []
     
 def fetch_animal_location(db_connection, animal_id):
@@ -447,7 +448,7 @@ def fetch_animal_location(db_connection, animal_id):
         latest_premises = [row for row in rows if row[2] == latest_date]
 
         if any(row[4] == '' or row[4] == 0 for row in latest_premises):  # to_id_premiseid is the fifth column
-            logger.info("Animal ID %s is dead", animal_id)
+            #logger.info("Animal ID %s is dead", animal_id)
             return []
 
         last_location = latest_premises[0]  # If there are multiple, choose the first one
@@ -493,4 +494,14 @@ def fetch_premise_info(db_connection, premise_id):
 
     except Exception as e:
         logger.error("Failed to fetch premise info for premise ID %s: %s", premise_id, e)
+        return []
+
+def fetch_example(db_connection):
+    # this is just example, copy of fetch_states_names list of states
+    try:
+        rows = db_connection.fetchall(GET_STATE_NAMES)
+        logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch state names: {e}")
         return []

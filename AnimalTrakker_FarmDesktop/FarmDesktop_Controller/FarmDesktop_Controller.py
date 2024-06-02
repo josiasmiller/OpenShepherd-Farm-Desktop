@@ -66,12 +66,10 @@ class FarmDesktopController(BaseController):
         elif parent_id == 'animals':
             logger.info(f"Handling animals for item: {item_text}")
             if item_text == 'Animal Search':
-                self.animal_search()
-        elif parent_id == 'animals':
-            logger.info(f"Handling animals for item: {item_text}")
+                self.animal_search(search_type="default")
             if item_text == 'Move Animals':
-                self.animal_search("moveanimal")
-
+                self.animal_search(search_type="moveanimals")
+            
     def handle_evaluation_history(self, item, item_text):
         """
         Handles the fetching and displaying of evaluation history based on a sidebar item selection.
@@ -143,7 +141,7 @@ class FarmDesktopController(BaseController):
                     self.app.current_evaluation = choice
                     self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"{choice} has been chosen as the evaluation.")
                     self.app.bottom_bar.update_current_evaluation(choice)
-
+                    
     def save_edited_data(self, updated_details, data_type):
         logger.info(f"Farm Desktop Controller: Save button clicked for {data_type}")
         if data_type == "setting":
@@ -179,7 +177,7 @@ class FarmDesktopController(BaseController):
         self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New evaluation '{new_evaluation_name}' has been created.")
         self.set_evaluation()
     
-    def animal_search(self):
+    def animal_search(self, search_type):
         """
         Display the Animal Search interface with the search parameters sidebar and main frame.
         """
@@ -192,7 +190,9 @@ class FarmDesktopController(BaseController):
         self.left_sidebar_widget = SearchLeftSidebarWidget(
             parent=self.app.left_sidebar.content_frame, 
             controller=self, 
-            style_manager=self.app.style_manager
+            style_manager=self.app.style_manager,
+            search_type=search_type,
+            db_connection=self.app.db_connection
         )
         self.left_sidebar_widget.pack(expand=True, fill='both')
         self.app.left_sidebar.current_widget = self.left_sidebar_widget  # Store the reference

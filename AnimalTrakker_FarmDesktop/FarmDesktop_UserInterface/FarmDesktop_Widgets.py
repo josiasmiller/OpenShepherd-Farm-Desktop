@@ -145,8 +145,8 @@ class SearchWidget(tk.Frame):
         search_type = self.search_type_var.get()
         search_query = self.search_entry.get()
 
-        # Placeholder for your search function
-        search_results = your_search_function(search_type, search_query)
+        # Placeholder for search function
+        search_results = search_function(search_type, search_query)
 
         # Display search results as labels
         for i, result in enumerate(search_results):
@@ -236,7 +236,6 @@ class LeftSidebarChoiceWidget(tk.Frame):
         # Get the background color from the style manager
         bg_color = style_manager.get_bg('sidebar')
         super().__init__(parent, bg=bg_color, **kwargs)
-        logger.info(f"LeftSidebarChoiceWidget initialized with choices: {choices} and type: {choice_type}")
         self.controller = controller
         self.style_manager = style_manager
         self.choice_type = choice_type
@@ -281,10 +280,10 @@ class LeftSidebarChoiceWidget(tk.Frame):
         choice = self.choice_var.get()
         self.controller.load_setting(choice, edit=True, choice_type=self.choice_type)
 
-class EditPopupWidget(tk.Toplevel):
-    def __init__(self, parent, key, current_id, fetch_function, style_manager, popup_type="list", text_fields=None):
+class PopupWidget(tk.Toplevel):
+    def __init__(self, parent, key, current_id, fetch_function, style_manager, popup_type="list", popup_purpose="edit", text_fields=None):
         """
-        Initialize the EditPopupWidget.
+        Initialize the PopupWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
@@ -302,6 +301,7 @@ class EditPopupWidget(tk.Toplevel):
         self.fetch_function = fetch_function
         self.style_manager = style_manager
         self.popup_type = popup_type
+        self.popup_purpose = popup_purpose
         self.text_fields = text_fields or {}
         self.build_widget()
         self.center_popup()
@@ -326,8 +326,12 @@ class EditPopupWidget(tk.Toplevel):
         elif self.popup_type == "multiple_text":
             self.build_multiple_text_widget()
 
-        update_button = tk.Button(self, text="Update", command=self.update_changes)
-        update_button.pack(pady=10)
+        if self.popup_purpose == "edit":
+            update_button = tk.Button(self, text="Update", command=self.update_changes)
+            update_button.pack(pady=10)
+        if self.popup_purpose == "moveanimals":
+            choose_new_owner_button = tk.Button(self, text="Confirm", command=self.choose_new_owner)
+            choose_new_owner_button.pack(pady=10)
 
         # Prevent main frame from scrolling when popup is open
         self.bind("<MouseWheel>", self.on_mousewheel)
@@ -441,6 +445,23 @@ class EditPopupWidget(tk.Toplevel):
         elif self.popup_type == "multiple_text":
             new_values = {field_name: text_var.get() for field_name, text_var in self.text_vars.items()}
             self.parent.update_data_field(self.key, new_values)
+        self.destroy()
+        
+    def choose_new_owner(self):
+        # Set logic for where to store new owner information
+        if self.popup_type == "list":
+            selected_index = self.listbox.curselection()
+            if selected_index:
+                selected_id = self.ids[selected_index[0]]
+                self.parent.new_owner = (self.key, selected_id)
+                print("Here we've saved new_owner data to a variable, but it is also can be a function")
+                print(self.parent.new_owner)
+        elif self.popup_type == "single_text":
+            new_value = self.text_var.get()
+            self.parent.new_owner = (self.key, new_value)
+        elif self.popup_type == "multiple_text":
+            new_values = {field_name: text_var.get() for field_name, text_var in self.text_vars.items()}
+            self.parent.new_owner = (self.key, new_values)
         self.destroy()
 
 class EditWidget(tk.Frame):
@@ -610,7 +631,7 @@ class EditWidget(tk.Frame):
             value (int): The current ID of the data field.
             fetch_function (callable): The function to fetch options for the data field.
         """
-        popup = EditPopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list")
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_single_text_edit_popup(self, key, value):
@@ -621,7 +642,7 @@ class EditWidget(tk.Frame):
             key (str): The key of the data field to edit.
             value (str): The current value of the data field.
         """
-        popup = EditPopupWidget(self, key, value, None, self.style_manager, popup_type="single_text")
+        popup = PopupWidget(self, key, value, None, self.style_manager, popup_type="single_text")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_multiple_text_edit_popup(self, key, text_fields):
@@ -632,7 +653,7 @@ class EditWidget(tk.Frame):
             key (str): The key of the data field to edit.
             text_fields (dict): A dictionary of field names and their current values.
         """
-        popup = EditPopupWidget(self, key, None, None, self.style_manager, popup_type="multiple_text", text_fields=text_fields)
+        popup = PopupWidget(self, key, None, None, self.style_manager, popup_type="multiple_text", text_fields=text_fields)
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_edit_popup(self, key, value, fetch_function=None, popup_type="list", text_fields=None):
@@ -792,10 +813,13 @@ class CreateNewDBEntryWidget(tk.Frame):
             self.controller.confirm_new_evaluation_creation(new_entry_name)
 
 class SearchLeftSidebarWidget(tk.Frame):
-    def __init__(self, parent, controller, style_manager, **kwargs):
+    def __init__(self, parent, controller, style_manager, search_type, db_connection, **kwargs):
         super().__init__(parent, bg=style_manager.get_bg('sidebar'), **kwargs)
         self.controller = controller
         self.style_manager = style_manager
+        self.search_type = search_type
+        self.db_connection = db_connection
+        self.new_owner = None
 
         self.option_to_field = {
             "Animal Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
@@ -836,26 +860,75 @@ class SearchLeftSidebarWidget(tk.Frame):
         # Add the buttons at the bottom
         button_frame = tk.Frame(self, bg=self['bg'])
         button_frame.pack(pady=10, fill=tk.X)
-    
-        pdf_button = tk.Button(button_frame, text="Save as PDF", command=self.save_as_pdf)
-        pdf_button.pack(fill=tk.X, padx=5, pady=2)
 
-        csv_button = tk.Button(button_frame, text="Save as CSV", command=self.save_as_csv)
-        csv_button.pack(fill=tk.X, padx=5, pady=2)
+        if self.search_type == "default":
+            pdf_button = tk.Button(button_frame, text="Save as PDF", command=self.save_as_pdf)
+            pdf_button.pack(fill=tk.X, padx=5, pady=2)
 
-        odt_button = tk.Button(button_frame, text="Save as ODT", command=self.save_as_odt)
-        odt_button.pack(fill=tk.X, padx=5, pady=2)
-        
+            csv_button = tk.Button(button_frame, text="Save as CSV", command=self.save_as_csv)
+            csv_button.pack(fill=tk.X, padx=5, pady=2)
+
+            odt_button = tk.Button(button_frame, text="Save as ODT", command=self.save_as_odt)
+            odt_button.pack(fill=tk.X, padx=5, pady=2)
+        elif self.search_type == "moveanimals":
+            location_button = tk.Button(button_frame, text="Select New Location", command=self.select_new_location)
+            location_button.pack(fill=tk.X, padx=5, pady=2)
+
+            owner_button = tk.Button(button_frame, text="Select New Owner", command=self.select_new_owner)
+            owner_button.pack(fill=tk.X, padx=5, pady=2)
+            
+            move_button = tk.Button(button_frame, text="Move Animals", command=self.move_animals)
+            move_button.pack(fill=tk.X, padx=5, pady=2)
+
     def save_as_pdf(self):
-        # Add your logic to save as PDF
+        # Add logic to save as PDF
         pass
 
     def save_as_csv(self):
-        # Add your logic to save as CSV
+        # Add logic to save as CSV
         pass
 
     def save_as_odt(self):
-        # Add your logic to save as ODT
+        # Add logic to save as ODT
+        pass
+
+    # This is a exmaple of two buttons which will handle the logic of moving animals
+    # As per my understanding now, you want to select new owner (or location) 
+    # and then move chosen animals by clicking "Move Animals" button
+    # So far I've tried separate logic in MVC model - Model, View and Controller
+    # Meaning that I have to have separate logic User Interface, general logic and database logic
+    # For ease, you can call database logic from here
+    # So far, functions for fetching/saving data are in FarmDesktop_Database_Utilities.py
+    # And more complex data operations to handle multiple queries are in FarmDesktop_Database_Handlers.py
+    
+    def select_new_owner(self):
+        # Add logic to select new owner
+        logger.info("Select New Owner button in SearchLeftSidebarWidget was clicked")
+        # Here, you can access database. For example you can look at fetch_example (copy of fetch_species_names) in FamDesktop_Database_Utilities.py
+        # Data in it is fetched for the list construction as [(id, 'value')]
+        # Here is an example of calling that function
+        fetch_function = fetch_example
+        # key and value are the reference to keep existing values form the default settings, but can be ommited
+        # Also key is what would be displayed on the top of the popup widget (next steps is to make conversion to readable names)
+        key = "id_stateid"
+        value = 6
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list", popup_purpose="moveanimals")
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+        if self.new_owner:
+            print("And here is new owner after our previous selection")
+            print(self.new_owner)
+        else:
+            print("Here new owner is empty, because we haven't selected anything yet")
+            print(self.new_owner)
+        # farther we can call logic from the search widget, and use new owner data to change necessary fields in database
+    
+    def select_new_location(self):
+        # Add logic to select new location
+        logger.info("Select New Location button in SearchLeftSidebarWidget was clicked")
+        pass
+    
+    def move_animals(self):
+        # Add logic to move animals
         pass
     
     def get_selected_options(self):
@@ -965,7 +1038,7 @@ class SearchMainFrameWidget(tk.Frame):
         self.add_entry(self, "address", 30, 7, 2, width=20)
 
         self.add_label(self, "State", 6, 4)
-        self.add_entry(self, "state", 2, 7, 4, width=5)
+        self.add_entry(self, "state", 10, 7, 4, width=5)
 
         self.add_label(self, "Alert", 6, 6)
         self.add_entry(self, "alert", 50, 7, 6, width=20)

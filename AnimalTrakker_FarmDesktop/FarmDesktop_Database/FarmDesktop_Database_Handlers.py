@@ -86,12 +86,35 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
                 selected_fields.append(f"animal_table.{field} AS {display_option.lower().replace(' ', '_')}")
 
     fields = ", ".join(selected_fields)
-    joins = " ".join(join_clauses)
     
     conditions = []
     for field, value in search_params.items():
         if value:
-            conditions.append(f"animal_table.{field} LIKE '%{value}%'")
+            if field == "animal_name":
+                conditions.append(f"animal_table.{field} LIKE '%{value}%'")
+            elif field == "sex":
+                # Join with the sex_table to get the corresponding id_sexid
+                join_clause = f"LEFT JOIN sex_table ON animal_table.id_sexid = sex_table.id_sexid"
+                join_clauses.append(join_clause)
+                conditions.append(f"sex_table.sex_name LIKE '%{value}%'")
+            elif field == "birth_type":
+                join_clause = f"LEFT JOIN birth_type_table ON animal_table.id_birthtypeid = birth_type_table.id_birthtypeid"
+                join_clauses.append(join_clause)
+                conditions.append(f"birth_type_table.birth_type LIKE '%{value}%'")
+            elif field == "breed":
+                join_clause_1 = f"LEFT JOIN animal_breed_table ON animal_table.id_animalid = animal_breed_table.id_animalid"
+                join_clause_2 = f"LEFT JOIN breed_table ON animal_breed_table.id_breedid = breed_table.id_breedid"
+                join_clauses.append(join_clause_1)
+                join_clauses.append(join_clause_2)
+                conditions.append(f"breed_table.breed_name LIKE '%{value}%'")
+            elif field == "flock_prefix":
+                join_clause_1 = f"LEFT JOIN animal_flock_prefix_table ON animal_table.id_animalid = animal_flock_prefix_table.id_animalid"
+                join_clause_2 = f"LEFT JOIN flock_prefix_table ON animal_flock_prefix_table.id_flockprefixid = flock_prefix_table.id_flockprefixid"
+                join_clauses.append(join_clause_1)
+                join_clauses.append(join_clause_2)
+                conditions.append(f"flock_prefix_table.flock_prefix LIKE '%{value}%'")
+    
+    joins = " ".join(join_clauses)
     
     if not conditions:
         conditions.append("1=1")  # No filters applied
