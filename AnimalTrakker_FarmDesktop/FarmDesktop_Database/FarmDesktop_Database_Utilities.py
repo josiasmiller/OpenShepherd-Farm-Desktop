@@ -168,19 +168,21 @@ def fetch_evaluation_details(db_connection, evaluation_name):
 
 
 def save_setting_changes(db_connection, updated_details):
-        """
-        Saves the changes made to the default setting.
+    """
+    Saves the changes made to the default setting.
 
-        Args:
-            updated_details (dict): A dictionary of the updated setting details.
-        """
-        setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
-        params = tuple(updated_details.values()) + (setting_id,)
-        rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
-        if rows_affected:
-            logger.info(f"Successfully updated setting with ID {setting_id}")
-        else:
-            logger.error(f"Failed to update setting with ID {setting_id}")
+    Args:
+        updated_details (dict): A dictionary of the updated setting details.
+    """
+    setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
+    params = tuple(updated_details.values()) + (setting_id,)
+    rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
+    if rows_affected:
+        logger.info(f"Successfully updated setting with ID {setting_id}")
+    else:
+        logger.error(f"Failed to update setting with ID {setting_id}")
             
 def save_evaluation_changes(db_connection, updated_details):
     """
@@ -190,6 +192,8 @@ def save_evaluation_changes(db_connection, updated_details):
         updated_details (dict): A dictionary of the updated evaluation details.
     """
     evaluation_id = updated_details.pop('id_savedevaluationstableid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
     params = tuple(updated_details.values()) + (evaluation_id,)
     rows_affected = db_connection.save(UPDATE_EVALUATION_DETAILS, params)
     if rows_affected:
@@ -286,6 +290,7 @@ def fetch_species_names(db_connection):
     try:
         rows = db_connection.fetchall(GET_SPECIES_NAMES)
         logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
+        print("Pure data from db:", rows)
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch species names: {e}")
@@ -345,3 +350,158 @@ def fetch_county_names(db_connection):
         logger.error(f"Failed to fetch county names: {e}")
         return []
 
+def fetch_codon_values(animal_id, db_connection):
+
+    def get_codon_136(db_connection, codon_136_value_id):
+        if codon_136_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_CODON_136, (codon_136_value_id,))
+        return result[0] if result else None
+
+    def get_codon_171(db_connection, codon_171_value_id):
+        if codon_171_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_CODON_171, (codon_171_value_id,))
+        return result[0] if result else None
+    
+    def get_coat_color(db_connection, coat_color_value_id):
+        if coat_color_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_COAT_COLOR, (coat_color_value_id,))
+        return result[0] if result else None
+
+    results = db_connection.fetchall(GET_CODONS_VALUE_IDS, (animal_id,))
+    codon_value_ids = {'codon_136': None, 'codon_171': None, 'coat_color': None}
+    for table_id, value_id in results:
+        if table_id == 2:
+            codon_value_ids['codon_136'] = value_id
+        elif table_id == 5:
+            codon_value_ids['codon_171'] = value_id
+        elif table_id == 7:
+            codon_value_ids['coat_color'] = value_id
+
+    codon_136_alleles = get_codon_136(db_connection, codon_value_ids['codon_136'])
+    codon_171_alleles = get_codon_171(db_connection, codon_value_ids['codon_171'])
+    coat_color = get_coat_color(db_connection, codon_value_ids['coat_color'])
+    
+    return codon_136_alleles, codon_171_alleles, coat_color
+
+def fetch_owner_info(db_connection, animal_id):
+    """
+    Fetches owner name based on the animal ID.
+    """
+    try:
+        result = db_connection.fetchone(GET_OWNER_INFO, (animal_id,))
+        
+        if result:
+            to_id_contactid, to_id_companyid, _ = result
+            if to_id_contactid and to_id_contactid != 0:
+                contact_name = db_connection.fetchone(GET_CONTACT_NAME, (to_id_contactid,))
+                return contact_name[0] if contact_name else None
+            elif to_id_companyid and to_id_companyid != 0:
+                company_name = db_connection.fetchone(GET_COMPANY_NAME, (to_id_companyid,))
+                return company_name[0] if company_name else None
+        return []
+    except Exception as e:
+        logger.error(f"An error occurred in 'fetch_owner_info': {e}")
+        return []
+
+def fetch_breeder_info(db_connection, animal_id):
+    """
+    Fetches breeder name based on the animal ID.
+    """
+    try:
+        result = db_connection.fetchone(GET_BREEDER_IDS, (animal_id,))
+        
+        if result:
+            _, company_id, contact_id = result
+            if company_id and company_id > 0:
+                company_name = db_connection.fetchone(GET_COMPANY_NAME, (company_id,))
+                return company_name[0] if company_name else None
+            elif contact_id and contact_id > 0:
+                contact_name = db_connection.fetchone(GET_CONTACT_NAME, (contact_id,))
+                return contact_name[0] if contact_name else None
+        return []
+    except Exception as e:
+        logger.error(f"An error occurred in 'fetch_breeder_info': {e}, {animal_id}")
+        return []
+    
+def fetch_animal_location(db_connection, animal_id):
+    """
+    Fetches the location history of an animal by animalid and returns the last known location if the animal isn't dead.
+
+    Args:
+        db_connection (sqlite3.Connection): The database connection instance.
+        animal_id (int): The ID of the animal.
+
+    Returns:
+        str: Full address of the last known location or an empty string if the animal is dead.
+    """
+    try:
+        rows = db_connection.fetchall(GET_ANIMAL_LOCATION_HISTORY, (animal_id,))
+
+        if not rows:
+            logger.info("No location history found for animal ID %s", animal_id)
+            return []
+
+        latest_date = max(row[2] for row in rows)  # movement_date is the third column
+        latest_premises = [row for row in rows if row[2] == latest_date]
+
+        if any(row[4] == '' or row[4] == 0 for row in latest_premises):  # to_id_premiseid is the fifth column
+            #logger.info("Animal ID %s is dead", animal_id)
+            return []
+
+        last_location = latest_premises[0]  # If there are multiple, choose the first one
+
+        return fetch_premise_info(db_connection, last_location[4])  # to_id_premiseid is the fifth column
+
+    except Exception as e:
+        logger.error("Failed to fetch location history for animal ID %s: %s", animal_id, e)
+        return []
+
+def fetch_premise_info(db_connection, premise_id):
+    """
+    Fetches the address components of a premise given its ID and concatenates them into a full address.
+
+    Args:
+        db_connection (sqlite3.Connection): The database connection instance.
+        premise_id (int): The ID of the premise.
+
+    Returns:
+        str: Full address of the premise.
+    """
+    try:
+        row = db_connection.fetchone(GET_PREMISE_INFO_FIELDS, (premise_id,))
+
+        if row:
+            address_parts = [
+                row[0],  # premise_address1
+                row[1],  # premise_address2
+                row[2],  # premise_city
+                row[3],  # state_abbrev
+                row[4]   # premise_postcode
+            ]
+            
+            # Check if country needs to be included
+            if row[6] > 1:
+                address_parts.append(row[5])  # country_name
+            
+            # Filter out None or empty strings and join with ', '
+            full_address = ', '.join(filter(None, address_parts))
+            return full_address
+
+        return []
+
+    except Exception as e:
+        logger.error("Failed to fetch premise info for premise ID %s: %s", premise_id, e)
+        return []
+
+def fetch_example(db_connection):
+    # this is just example, copy of fetch_states_names list of states
+    try:
+        rows = db_connection.fetchall(GET_STATE_NAMES)
+        logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch state names: {e}")
+        return []

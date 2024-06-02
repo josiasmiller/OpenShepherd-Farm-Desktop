@@ -66,8 +66,10 @@ class FarmDesktopController(BaseController):
         elif parent_id == 'animals':
             logger.info(f"Handling animals for item: {item_text}")
             if item_text == 'Animal Search':
-                self.animal_search()
-
+                self.animal_search(search_type="default")
+            if item_text == 'Move Animals':
+                self.animal_search(search_type="moveanimals")
+            
     def handle_evaluation_history(self, item, item_text):
         """
         Handles the fetching and displaying of evaluation history based on a sidebar item selection.
@@ -139,7 +141,7 @@ class FarmDesktopController(BaseController):
                     self.app.current_evaluation = choice
                     self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"{choice} has been chosen as the evaluation.")
                     self.app.bottom_bar.update_current_evaluation(choice)
-
+                    
     def save_edited_data(self, updated_details, data_type):
         logger.info(f"Farm Desktop Controller: Save button clicked for {data_type}")
         if data_type == "setting":
@@ -175,7 +177,7 @@ class FarmDesktopController(BaseController):
         self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"New evaluation '{new_evaluation_name}' has been created.")
         self.set_evaluation()
     
-    def animal_search(self):
+    def animal_search(self, search_type):
         """
         Display the Animal Search interface with the search parameters sidebar and main frame.
         """
@@ -188,7 +190,9 @@ class FarmDesktopController(BaseController):
         self.left_sidebar_widget = SearchLeftSidebarWidget(
             parent=self.app.left_sidebar.content_frame, 
             controller=self, 
-            style_manager=self.app.style_manager
+            style_manager=self.app.style_manager,
+            search_type=search_type,
+            db_connection=self.app.db_connection
         )
         self.left_sidebar_widget.pack(expand=True, fill='both')
         self.app.left_sidebar.current_widget = self.left_sidebar_widget  # Store the reference
@@ -199,6 +203,9 @@ class FarmDesktopController(BaseController):
             controller=self
         )
 
+        # Store a reference to the newly created SearchMainFrameWidget
+        self.main_frame_widget = self.app.main_frame.current_widget
+
     def perform_animal_search(self, search_params):
         """
         Perform the animal search based on input fields and selected display options.
@@ -208,9 +215,13 @@ class FarmDesktopController(BaseController):
             return
 
         display_options = self.left_sidebar_widget.get_selected_options()
+        if not display_options:
+            logger.error("No display options selected.")
+            if hasattr(self, 'main_frame_widget'):
+                self.main_frame_widget.update_message("Please select at least one display option.")
+            return
         
-        query = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
-        results = self.app.db_connection.fetchall(query)
+        results = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
         
         self.display_search_results(results, display_options)
 

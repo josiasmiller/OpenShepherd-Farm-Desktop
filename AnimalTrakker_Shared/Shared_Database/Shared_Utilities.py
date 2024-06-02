@@ -88,7 +88,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             rows = cursor.fetchall()
             cursor.close()
-            logger.info(f"Query executed successfully: {query}, fetched {len(rows)} rows")
+            #logger.info(f"Query executed successfully: {query}, fetched {len(rows)} rows")
             return rows
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -110,7 +110,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             row = cursor.fetchone()
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            #logger.info(f"Query executed successfully: {query}, fetched 1 row: {row}")
             return row
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -133,7 +133,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             rows = cursor.fetchmany(size)
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            #logger.info(f"Query executed successfully: {query}")
             return rows
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -156,7 +156,7 @@ class DatabaseConnection:
             self.connection.commit()
             rows_affected = cursor.rowcount
             cursor.close()
-            logger.info(f"Query executed successfully: {query}, Rows affected: {rows_affected}")
+            #logger.info(f"Query executed successfully: {query}, Rows affected: {rows_affected}")
             return rows_affected
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")

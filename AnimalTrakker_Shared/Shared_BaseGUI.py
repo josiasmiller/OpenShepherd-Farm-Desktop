@@ -108,15 +108,3 @@ class BaseGUI(tk.Frame):
         # Update the BottomBar with new database path
         self.bottom_bar.update_database_path(new_db_path)
         
-    def update_current_setting(self, new_setting):
-        """
-        Updates the current default setting and the BottomBar display.
-
-        Args:
-            new_setting (str): The new default setting to update.
-        """
-        logger.info(f"Updating current default setting to {new_setting}")
-        self.current_default_setting = new_setting
-        
-        # Update the BottomBar with new default setting
-        self.bottom_bar.update_current_setting(new_setting)  

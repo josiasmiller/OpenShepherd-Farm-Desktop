@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkcalendar import DateEntry
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
@@ -144,8 +145,8 @@ class SearchWidget(tk.Frame):
         search_type = self.search_type_var.get()
         search_query = self.search_entry.get()
 
-        # Placeholder for your search function
-        search_results = your_search_function(search_type, search_query)
+        # Placeholder for search function
+        search_results = search_function(search_type, search_query)
 
         # Display search results as labels
         for i, result in enumerate(search_results):
@@ -235,7 +236,6 @@ class LeftSidebarChoiceWidget(tk.Frame):
         # Get the background color from the style manager
         bg_color = style_manager.get_bg('sidebar')
         super().__init__(parent, bg=bg_color, **kwargs)
-        logger.info(f"LeftSidebarChoiceWidget initialized with choices: {choices} and type: {choice_type}")
         self.controller = controller
         self.style_manager = style_manager
         self.choice_type = choice_type
@@ -280,10 +280,10 @@ class LeftSidebarChoiceWidget(tk.Frame):
         choice = self.choice_var.get()
         self.controller.load_setting(choice, edit=True, choice_type=self.choice_type)
 
-class EditPopupWidget(tk.Toplevel):
-    def __init__(self, parent, key, current_id, fetch_function, style_manager, popup_type="list", text_fields=None):
+class PopupWidget(tk.Toplevel):
+    def __init__(self, parent, key, current_id, fetch_function, style_manager, popup_type="list", popup_purpose="edit", text_fields=None):
         """
-        Initialize the EditPopupWidget.
+        Initialize the PopupWidget.
 
         Args:
             parent (tk.Widget): The parent widget.
@@ -301,6 +301,7 @@ class EditPopupWidget(tk.Toplevel):
         self.fetch_function = fetch_function
         self.style_manager = style_manager
         self.popup_type = popup_type
+        self.popup_purpose = popup_purpose
         self.text_fields = text_fields or {}
         self.build_widget()
         self.center_popup()
@@ -325,8 +326,12 @@ class EditPopupWidget(tk.Toplevel):
         elif self.popup_type == "multiple_text":
             self.build_multiple_text_widget()
 
-        update_button = tk.Button(self, text="Update", command=self.update_changes)
-        update_button.pack(pady=10)
+        if self.popup_purpose == "edit":
+            update_button = tk.Button(self, text="Update", command=self.update_changes)
+            update_button.pack(pady=10)
+        if self.popup_purpose == "moveanimals":
+            choose_new_owner_button = tk.Button(self, text="Confirm", command=self.choose_new_owner)
+            choose_new_owner_button.pack(pady=10)
 
         # Prevent main frame from scrolling when popup is open
         self.bind("<MouseWheel>", self.on_mousewheel)
@@ -440,6 +445,23 @@ class EditPopupWidget(tk.Toplevel):
         elif self.popup_type == "multiple_text":
             new_values = {field_name: text_var.get() for field_name, text_var in self.text_vars.items()}
             self.parent.update_data_field(self.key, new_values)
+        self.destroy()
+        
+    def choose_new_owner(self):
+        # Set logic for where to store new owner information
+        if self.popup_type == "list":
+            selected_index = self.listbox.curselection()
+            if selected_index:
+                selected_id = self.ids[selected_index[0]]
+                self.parent.new_owner = (self.key, selected_id)
+                print("Here we've saved new_owner data to a variable, but it is also can be a function")
+                print(self.parent.new_owner)
+        elif self.popup_type == "single_text":
+            new_value = self.text_var.get()
+            self.parent.new_owner = (self.key, new_value)
+        elif self.popup_type == "multiple_text":
+            new_values = {field_name: text_var.get() for field_name, text_var in self.text_vars.items()}
+            self.parent.new_owner = (self.key, new_values)
         self.destroy()
 
 class EditWidget(tk.Frame):
@@ -579,7 +601,6 @@ class EditWidget(tk.Frame):
                 fetch_function = fetch_trait_names
             elif key.startswith('trait_units'):
                 fetch_function = fetch_units_names"""
-
         if fetch_function:
             display_value = self.get_name_by_id(fetch_function(self.db_connection), value)
             return display_value, fetch_function
@@ -610,7 +631,7 @@ class EditWidget(tk.Frame):
             value (int): The current ID of the data field.
             fetch_function (callable): The function to fetch options for the data field.
         """
-        popup = EditPopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list")
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_single_text_edit_popup(self, key, value):
@@ -621,7 +642,7 @@ class EditWidget(tk.Frame):
             key (str): The key of the data field to edit.
             value (str): The current value of the data field.
         """
-        popup = EditPopupWidget(self, key, value, None, self.style_manager, popup_type="single_text")
+        popup = PopupWidget(self, key, value, None, self.style_manager, popup_type="single_text")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_multiple_text_edit_popup(self, key, text_fields):
@@ -632,7 +653,7 @@ class EditWidget(tk.Frame):
             key (str): The key of the data field to edit.
             text_fields (dict): A dictionary of field names and their current values.
         """
-        popup = EditPopupWidget(self, key, None, None, self.style_manager, popup_type="multiple_text", text_fields=text_fields)
+        popup = PopupWidget(self, key, None, None, self.style_manager, popup_type="multiple_text", text_fields=text_fields)
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
 
     def open_edit_popup(self, key, value, fetch_function=None, popup_type="list", text_fields=None):
@@ -792,17 +813,22 @@ class CreateNewDBEntryWidget(tk.Frame):
             self.controller.confirm_new_evaluation_creation(new_entry_name)
 
 class SearchLeftSidebarWidget(tk.Frame):
-    def __init__(self, parent, controller, style_manager, **kwargs):
+    def __init__(self, parent, controller, style_manager, search_type, db_connection, **kwargs):
         super().__init__(parent, bg=style_manager.get_bg('sidebar'), **kwargs)
         self.controller = controller
         self.style_manager = style_manager
+        self.search_type = search_type
+        self.db_connection = db_connection
+        self.new_owner = None
 
         self.option_to_field = {
             "Animal Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Animal Name": ("animal_name", None, None, None),
             "Sex": ("id_sexid", "sex_table.id_sexid", None, "sex_table.sex_name"),
             "Sire Name": ("sire_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
+            "Sire Flock Prefix": ("sire_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
+            "Dam Flock Prefix": ("dam_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Registration Number": ("id_animalid", "animal_registration_table.id_animalid", None, "animal_registration_table.registration_number"),
             "Alert": ("alert", None, None, None),
             "Birth Date": ("birth_date", None, None, None),
@@ -813,8 +839,8 @@ class SearchLeftSidebarWidget(tk.Frame):
             "Scrapie Codon 136": ("scrapie_codon_136", None, None, None),
             "Coat Color": ("coat_color", None, None, None),
             "Location": ("location", None, None, None),
-            "Owner": ("id_animalid", "animal_ownership_history_table.id_animalid", None, "owner_info"),
-            "Breeder": ("id_animalid", "animal_registration_table.id_animalid", None, "breeder_info")
+            "Owner": ("owner", None, None, None),
+            "Breeder": ("breeder", None, None, None)
         }
 
 
@@ -831,7 +857,83 @@ class SearchLeftSidebarWidget(tk.Frame):
             chk.pack(anchor='w', padx=10)
             self.selected_options[option] = var
 
+        # Add the buttons at the bottom
+        button_frame = tk.Frame(self, bg=self['bg'])
+        button_frame.pack(pady=10, fill=tk.X)
+
+        if self.search_type == "default":
+            pdf_button = tk.Button(button_frame, text="Save as PDF", command=self.save_as_pdf)
+            pdf_button.pack(fill=tk.X, padx=5, pady=2)
+
+            csv_button = tk.Button(button_frame, text="Save as CSV", command=self.save_as_csv)
+            csv_button.pack(fill=tk.X, padx=5, pady=2)
+
+            odt_button = tk.Button(button_frame, text="Save as ODT", command=self.save_as_odt)
+            odt_button.pack(fill=tk.X, padx=5, pady=2)
+        elif self.search_type == "moveanimals":
+            location_button = tk.Button(button_frame, text="Select New Location", command=self.select_new_location)
+            location_button.pack(fill=tk.X, padx=5, pady=2)
+
+            owner_button = tk.Button(button_frame, text="Select New Owner", command=self.select_new_owner)
+            owner_button.pack(fill=tk.X, padx=5, pady=2)
+            
+            move_button = tk.Button(button_frame, text="Move Animals", command=self.move_animals)
+            move_button.pack(fill=tk.X, padx=5, pady=2)
+
+    def save_as_pdf(self):
+        # Add logic to save as PDF
+        pass
+
+    def save_as_csv(self):
+        # Add logic to save as CSV
+        pass
+
+    def save_as_odt(self):
+        # Add logic to save as ODT
+        pass
+
+    # This is a exmaple of two buttons which will handle the logic of moving animals
+    # As per my understanding now, you want to select new owner (or location) 
+    # and then move chosen animals by clicking "Move Animals" button
+    # So far I've tried separate logic in MVC model - Model, View and Controller
+    # Meaning that I have to have separate logic User Interface, general logic and database logic
+    # For ease, you can call database logic from here
+    # So far, functions for fetching/saving data are in FarmDesktop_Database_Utilities.py
+    # And more complex data operations to handle multiple queries are in FarmDesktop_Database_Handlers.py
+    
+    def select_new_owner(self):
+        # Add logic to select new owner
+        logger.info("Select New Owner button in SearchLeftSidebarWidget was clicked")
+        # Here, you can access database. For example you can look at fetch_example (copy of fetch_species_names) in FamDesktop_Database_Utilities.py
+        # Data in it is fetched for the list construction as [(id, 'value')]
+        # Here is an example of calling that function
+        fetch_function = fetch_example
+        # key and value are the reference to keep existing values form the default settings, but can be ommited
+        # Also key is what would be displayed on the top of the popup widget (next steps is to make conversion to readable names)
+        key = "id_stateid"
+        value = 6
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list", popup_purpose="moveanimals")
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+        if self.new_owner:
+            print("And here is new owner after our previous selection")
+            print(self.new_owner)
+        else:
+            print("Here new owner is empty, because we haven't selected anything yet")
+            print(self.new_owner)
+        # farther we can call logic from the search widget, and use new owner data to change necessary fields in database
+    
+    def select_new_location(self):
+        # Add logic to select new location
+        logger.info("Select New Location button in SearchLeftSidebarWidget was clicked")
+        pass
+    
+    def move_animals(self):
+        # Add logic to move animals
+        pass
+    
     def get_selected_options(self):
+        if not self.selected_options:
+            return None
         return [option for option, var in self.selected_options.items() if var.get()]
 
 class SearchBoxWidget(tk.Frame):
@@ -840,12 +942,23 @@ class SearchBoxWidget(tk.Frame):
         self.build_widget()
 
     def build_widget(self):
-        self.tree = ttk.Treeview(self, show="headings")
+        # Create a frame to hold the treeview and both scrollbars
+        self.tree_frame = tk.Frame(self)
+        self.tree_frame.pack(expand=True, fill='both')
+
+        # Create the vertical scrollbar
+        self.tree_scroll_y = ttk.Scrollbar(self.tree_frame, orient="vertical")
+        self.tree_scroll_y.pack(side='right', fill='y')
+
+        # Create the treeview widget
+        self.tree = ttk.Treeview(self.tree_frame, show="headings", yscrollcommand=self.tree_scroll_y.set)
         self.tree.pack(expand=True, fill='both', side='left')
-        
-        self.tree_scroll = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
-        self.tree_scroll.pack(side='right', fill='y')
-        self.tree.configure(yscrollcommand=self.tree_scroll.set)
+        self.tree_scroll_y.config(command=self.tree.yview)
+
+        # Create the horizontal scrollbar
+        self.tree_scroll_x = ttk.Scrollbar(self, orient="horizontal", command=self.tree.xview)
+        self.tree_scroll_x.pack(side='bottom', fill='x')
+        self.tree.configure(xscrollcommand=self.tree_scroll_x.set)
 
     def clear_data(self):
         for row in self.tree.get_children():
@@ -872,108 +985,75 @@ class SearchMainFrameWidget(tk.Frame):
         self.build_widget()
         self.configure_grid()
         
-        # Forse cursor to be on the main frame
+        # Forcing cursor to be on the main frame
         self.bind('<Map>', self.on_map)  # Bind to the <Map> event
 
     def build_widget(self):
         title_label = tk.Label(self, text="Animal Search", font=('Helvetica', 16, 'bold'), bg=self['bg'])
-        title_label.grid(row=0, column=1, columnspan=4, pady=2)  # Adjusted vertical padding
+        title_label.grid(row=0, column=0, columnspan=10, pady=2)  # Adjusted vertical padding
 
         self.entries = {}
 
-        # Row 1: Animal ID and Animal Name Labels
-        label = tk.Label(self, text="Animal ID", bg=self['bg'])
-        label.grid(row=1, column=1, padx=2, pady=2, sticky="w")
-        label = tk.Label(self, text="Animal Name", bg=self['bg'])
-        label.grid(row=1, column=3, padx=2, pady=2, sticky="w")
+        # First Row: Flock Prefix, Animal Name, Sex, Birth Type, Breed Labels and Entry Fields
+        self.add_label(self, "Flock Prefix", 1, 0)
+        self.add_entry(self, "flock_prefix", 25, 2, 0, width=20)
 
-        # Row 2: Animal ID and Animal Name Entry Fields
-        entry = tk.Entry(self)
-        entry.grid(row=2, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["id_animalid"] = entry
-        entry = tk.Entry(self)
-        entry.grid(row=2, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["animal_name"] = entry
+        self.add_label(self, "Animal Name", 1, 2)
+        self.add_entry(self, "animal_name", 25, 2, 2, width=20)
 
-        # Row 3: Birth Date Range and Death Date Range
-        label = tk.Label(self, text="Birth Date Range", bg=self['bg'])
-        label.grid(row=3, column=1, columnspan=2, padx=2, pady=2, sticky="w")
-        label = tk.Label(self, text="Death Date Range", bg=self['bg'])
-        label.grid(row=3, column=3, columnspan=2, padx=2, pady=2, sticky="w")
+        self.add_label(self, "Sex", 1, 4)
+        self.add_entry(self, "sex", 10, 2, 4, width=15)
 
-        # Row 4: From/To labels for Birth and Death
-        label = tk.Label(self, text="From", bg=self['bg'])
-        label.grid(row=4, column=1, padx=2, pady=2, sticky="w")
-        label = tk.Label(self, text="To", bg=self['bg'])
-        label.grid(row=4, column=2, padx=2, pady=2, sticky="w")
-        label = tk.Label(self, text="From", bg=self['bg'])
-        label.grid(row=4, column=3, padx=2, pady=2, sticky="w")
-        label = tk.Label(self, text="To", bg=self['bg'])
-        label.grid(row=4, column=4, padx=2, pady=2, sticky="w")
+        self.add_label(self, "Birth Type", 1, 6)
+        self.add_entry(self, "birth_type", 12, 2, 6, width=15)
 
-        # Row 5: From/To entries for Birth and Death
-        entry = tk.Entry(self)
-        entry.grid(row=5, column=1, padx=2, pady=2, sticky="ew")
-        self.entries["birth_date_from"] = entry
-        entry = tk.Entry(self)
-        entry.grid(row=5, column=2, padx=2, pady=2, sticky="ew")
-        self.entries["birth_date_to"] = entry
-        entry = tk.Entry(self)
-        entry.grid(row=5, column=3, padx=2, pady=2, sticky="ew")
-        self.entries["death_date_from"] = entry
-        entry = tk.Entry(self)
-        entry.grid(row=5, column=4, padx=2, pady=2, sticky="ew")
-        self.entries["death_date_to"] = entry
+        self.add_label(self, "Breed", 1, 8)
+        self.add_entry(self, "breed", 30, 2, 8, width=20)
 
-        # Row 6: Sex and Birth Type
-        label = tk.Label(self, text="Sex", bg=self['bg'])
-        label.grid(row=6, column=1, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=7, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["sex"] = entry
-        label = tk.Label(self, text="Birth Type", bg=self['bg'])
-        label.grid(row=6, column=3, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=7, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["birth_type"] = entry
+        # Second Row: Birth Date Range and Death Date Range Labels
+        self.add_label(self, "Birth Date Range", 3, 0, 2)
+        self.add_label(self, "Death Date Range", 3, 4, 2)
 
-        # Row 7: Alert and Breed
-        label = tk.Label(self, text="Alert Text", bg=self['bg'])
-        label.grid(row=8, column=1, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=9, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["alert_text"] = entry
-        label = tk.Label(self, text="Breed", bg=self['bg'])
-        label.grid(row=8, column=3, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=9, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["breed"] = entry
+        # Third Row: From/To Labels and Entry Fields for Birth Date Range and Death Date Range
+        self.add_label(self, "From", 4, 0)
+        self.birth_date_from = self.add_date_entry(self, "birth_date_from", 5, 0, "Birth Date From")
 
-        # Row 8: Owner and Breeder
-        label = tk.Label(self, text="Owner", bg=self['bg'])
-        label.grid(row=10, column=1, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=11, column=1, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["owner"] = entry
-        label = tk.Label(self, text="Breeder", bg=self['bg'])
-        label.grid(row=10, column=3, columnspan=2, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=11, column=3, columnspan=2, padx=2, pady=2, sticky="ew")
-        self.entries["breeder"] = entry
+        self.add_label(self, "To", 4, 2)
+        self.birth_date_to = self.add_date_entry(self, "birth_date_to", 5, 2, "Birth Date To")
 
-        # Row 9: Location
-        label = tk.Label(self, text="Location", bg=self['bg'])
-        label.grid(row=12, column=1, columnspan=4, padx=2, pady=2, sticky="w")
-        entry = tk.Entry(self)
-        entry.grid(row=13, column=1, columnspan=4, padx=2, pady=2, sticky="ew")
-        self.entries["location"] = entry
+        self.add_label(self, "From", 4, 4)
+        self.death_date_from = self.add_date_entry(self, "death_date_from", 5, 4, "Death Date From")
 
+        self.add_label(self, "To", 4, 6)
+        self.death_date_to = self.add_date_entry(self, "death_date_to", 5, 6, "Death Date To")
+
+        self.add_label(self, "Owner Name", 4, 8)
+        self.add_entry(self, "owner_name", 30, 5, 8, width=20)
+
+        # Fourth Row: Breeder Name, Address, State, Entry and Alert Lables andFields
+        self.add_label(self, "Breeder Name", 6, 0)
+        self.add_entry(self, "breeder_name", 30, 7, 0, width=20)
+
+        self.add_label(self, "Address", 6, 2)
+        self.add_entry(self, "address", 30, 7, 2, width=20)
+
+        self.add_label(self, "State", 6, 4)
+        self.add_entry(self, "state", 10, 7, 4, width=5)
+
+        self.add_label(self, "Alert", 6, 6)
+        self.add_entry(self, "alert", 50, 7, 6, width=20)
+
+        # Search Button
         search_button = tk.Button(self, text="Search", command=self.on_search_button_click)
-        search_button.grid(row=14, column=1, columnspan=4, pady=5)  # Adjusted vertical padding
+        search_button.grid(row=8, column=0, columnspan=10, pady=5)  # Adjusted vertical padding
+
+        # Message display area
+        self.message_label = tk.Label(self, text="", fg="red", bg=self['bg'])
+        self.message_label.grid(row=9, column=0, columnspan=10, padx=2, pady=2, sticky="ew")
 
         # Row 10: Search Box Widget
         self.search_box_widget = SearchBoxWidget(self, bg=self['bg'])
-        self.search_box_widget.grid(row=15, column=1, columnspan=4, padx=2, pady=2, sticky="nsew")
+        self.search_box_widget.grid(row=10, column=0, columnspan=10, padx=2, pady=2, sticky="nsew")
         
         # Pass a reference of search_box_widget to the controller
         self.controller.search_box_widget = self.search_box_widget
@@ -992,15 +1072,46 @@ class SearchMainFrameWidget(tk.Frame):
         """
         Set focus on the name entry widget and log the focus operation.
         """
-        self.entries["id_animalid"].focus_force()
+        self.entries["flock_prefix"].focus_force()
         logger.info("Focus set on name entry widget")
         
     def configure_grid(self):
         self.grid_columnconfigure(0, weight=1)  # Left padding column
-        for column in range(1, 5):
+        for column in range(1, 10):
             self.grid_columnconfigure(column, weight=1)  # Main content columns
-        self.grid_columnconfigure(5, weight=1)  # Right padding column
-        self.grid_rowconfigure(15, weight=1)  # Make the search box widget expandable
+        self.grid_columnconfigure(10, weight=1)  # Right padding column
+        self.grid_rowconfigure(12, weight=1)  # Make the search box widget expandable
 
     def get_search_parameters(self):
-        return {field_name: entry.get() for field_name, entry in self.entries.items()}
+        params = {}
+        for field_name, entry in self.entries.items():
+            if isinstance(entry, DateEntry) and not entry.get():
+                continue  # Skip empty date fields
+            params[field_name] = entry.get() if not isinstance(entry, DateEntry) else entry.get_date()
+        return params
+
+    def add_label(self, parent, text, row, column, colspan=1):
+        label = tk.Label(parent, text=text, bg=self['bg'])
+        label.grid(row=row, column=column, columnspan=colspan, padx=2, pady=2, sticky="w")
+
+    def add_entry(self, parent, name, max_length, row, column, width=20):
+        validate_cmd = self.register(self.validate_entry)
+        entry = tk.Entry(parent, validate="key", validatecommand=(validate_cmd, '%P', max_length, name), width=width)
+        entry.grid(row=row, column=column, padx=2, pady=2, sticky="ew")
+        self.entries[name] = entry
+
+    def add_date_entry(self, parent, name, row, column, field_name):
+        entry = DateEntry(parent, width=10, background='darkblue', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+        entry.grid(row=row, column=column, padx=2, pady=2, sticky="ew")
+        entry.delete(0, tk.END)  # Clear the default date
+        self.entries[name] = entry
+        return entry
+
+    def validate_entry(self, value_if_allowed, max_length, field_name):
+        if len(value_if_allowed) > int(max_length):
+            self.update_message(f"{field_name} must be at most {max_length} characters.")
+            return False
+        return True
+
+    def update_message(self, message):
+        self.message_label.config(text=message)

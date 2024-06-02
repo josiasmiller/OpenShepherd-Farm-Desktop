@@ -253,7 +253,7 @@ GET_CODONS_VALUE_IDS = """
 	SELECT id_geneticcharacteristictableid, id_geneticcharacteristicvalueid
 	FROM animal_genetic_characteristic_table
 	WHERE id_animalid = ?
-	AND id_geneticcharacteristictableid IN (2, 5)
+	AND id_geneticcharacteristictableid IN (2, 5, 7)
 """
 
 # Query to fetch codon 136
@@ -268,4 +268,86 @@ GET_CODON_171 = """
 	SELECT codon171_alleles
 	FROM genetic_codon171_table
 	WHERE id_geneticcodon171id = ?
+"""
+
+# Query to fetch coat color
+GET_COAT_COLOR = """
+	SELECT coat_color
+	FROM genetic_coat_color_table
+	WHERE id_geneticcoatcolorid = ?
+"""
+# Get Owner info
+GET_OWNER_INFO = """
+	SELECT 
+		to_id_contactid, 
+		to_id_companyid, 
+		transfer_date
+	FROM 
+		animal_ownership_history_table
+	WHERE 
+		id_animalid = ?  -- replace ? with the specific id_animalid
+	ORDER BY 
+		transfer_date DESC
+	LIMIT 1;
+"""
+
+# Instead of performing logic in sqlite, moving it to python
+GET_BREEDER_IDS = """
+    SELECT 
+        id_animalid,
+        id_breeder_id_companyid,
+        id_breeder_id_contactid
+    FROM animal_registration_table
+    WHERE id_animalid = ?;
+"""
+
+# Get Contact title + Full Name
+GET_CONTACT_NAME = """
+SELECT 
+    COALESCE(contact_title_table.contact_title, '') || ' ' || contact_table.contact_first_name || ' ' || contact_table.contact_middle_name || ' ' || contact_table.contact_last_name AS full_name
+FROM 
+    contact_table
+LEFT JOIN
+    contact_title_table ON contact_table.id_contacttitleid = contact_title_table.id_contacttitleid
+WHERE 
+    contact_table.id_contactid = ?;
+"""
+
+
+# Get Company Name
+GET_COMPANY_NAME = """
+SELECT 
+    company
+FROM 
+    company_table
+WHERE 
+    company_table.id_companyid = ?;
+"""
+
+# Get Animal Location history by animal id, logic of sorting is in fetch_animal_location function in FarmDesktop_Database_Utilities.py
+GET_ANIMAL_LOCATION_HISTORY = """
+	SELECT 
+		*
+	FROM 
+		animal_location_history_table
+	WHERE 
+		id_animalid = ?
+	ORDER 
+		BY movement_date DESC;
+"""
+
+# Get full premise address fields by premise id, the concatenation logic is in fetch_premise_info function in FarmDesktop_Database_Utilities.py
+GET_PREMISE_INFO_FIELDS = """
+	SELECT 
+		premise_address1, 
+		premise_address2, 
+		premise_city, 
+		state_table.state_abbrev, 
+		premise_postcode, 
+		country_table.country_name,
+		premise_table.premise_id_countryid
+	FROM premise_table
+	JOIN state_table ON premise_table.premise_id_stateid = state_table.id_stateid
+	JOIN country_table ON premise_table.premise_id_countryid = country_table.id_countryid
+	WHERE premise_table.id_premiseid = ?;
 """
