@@ -24,6 +24,7 @@ class FarmDesktopController(BaseController):
         Initialize the FarmDesktopController by calling the initializer of the BaseController.
         """
         super().__init__()  # Call the base class constructor to perform any setup defined there.
+        self.search_results = None
 
     def handle_sidebar_click(self, item, item_text):
         """
@@ -221,9 +222,9 @@ class FarmDesktopController(BaseController):
                 self.main_frame_widget.update_message("Please select at least one display option.")
             return
         
-        results = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
+        self.search_results = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
         
-        self.display_search_results(results, display_options)
+        self.display_search_results(self.search_results, display_options)
 
 
     def display_search_results(self, results, display_options):
