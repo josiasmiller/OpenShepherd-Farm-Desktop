@@ -21,7 +21,8 @@ def main():
     # Set up the main application window
     root = tk.Tk()
     root.title("AnimalTrakker")
-    root.geometry("1024x768")  # Configure the initial size of the window
+    #root.geometry("1024x768") 
+    root.geometry("1126x844")  # Configure the initial size of the window
     animaltrakker_setup_logging()  # Initialize the logging system for the application
     
     # Initialize the controller for handling application logic

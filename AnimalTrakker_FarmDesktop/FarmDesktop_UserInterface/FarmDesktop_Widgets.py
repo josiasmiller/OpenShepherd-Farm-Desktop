@@ -870,6 +870,7 @@ class SearchLeftSidebarWidget(tk.Frame):
 
             odt_button = tk.Button(button_frame, text="Save as ODT", command=self.save_as_odt)
             odt_button.pack(fill=tk.X, padx=5, pady=2)
+            
         elif self.search_type == "moveanimals":
             location_button = tk.Button(button_frame, text="Select New Location", command=self.select_new_location)
             location_button.pack(fill=tk.X, padx=5, pady=2)
@@ -878,6 +879,12 @@ class SearchLeftSidebarWidget(tk.Frame):
             owner_button.pack(fill=tk.X, padx=5, pady=2)
             
             move_button = tk.Button(button_frame, text="Move Animals", command=self.move_animals)
+            move_button.pack(fill=tk.X, padx=5, pady=2)
+            
+            move_button = tk.Button(button_frame, text="Single Text", command=self.select_new_owner_single_text)
+            move_button.pack(fill=tk.X, padx=5, pady=2)
+            
+            move_button = tk.Button(button_frame, text="Multiple Text", command=self.select_new_owner_multiple_text)
             move_button.pack(fill=tk.X, padx=5, pady=2)
 
     def save_as_pdf(self):
@@ -903,10 +910,11 @@ class SearchLeftSidebarWidget(tk.Frame):
     
     def select_new_owner(self):
         # Add logic to select new owner
+        # Here is an example of using 'list' popup widget, and two functions below show how to use 'single_text' and 'multiple_text' popup widgets
         logger.info("Select New Owner button in SearchLeftSidebarWidget was clicked")
         # Here, you can access database. For example you can look at fetch_example (copy of fetch_species_names) in FamDesktop_Database_Utilities.py
         # Data in it is fetched for the list construction as [(id, 'value')]
-        # Here is an example of calling that function
+        # Here is an example of calling that function (from the way logic is set up so far, you don't need to use () after the function)
         fetch_function = fetch_example
         # key and value are the reference to keep existing values form the default settings, but can be ommited
         # Also key is what would be displayed on the top of the popup widget (next steps is to make conversion to readable names)
@@ -920,8 +928,46 @@ class SearchLeftSidebarWidget(tk.Frame):
         else:
             print("Here new owner is empty, because we haven't selected anything yet")
             print(self.new_owner)
-        # farther we can call logic from the search widget, and use new owner data to change necessary fields in database
-    
+        # And here we can access the search results, and manipulate it how we need
+        print(self.controller.search_results)
+        # after this we can manipulate search results as we want, create query to make changes to db based on new owner information
+        # right now search_results are only showing what will be displayed in the searchbox, without animal id
+        # I can add it if necessary
+
+    def select_new_owner_single_text(self):
+        """
+        Select a new owner using a single text field popup.
+        """
+        logger.info("Select New Owner (Single Text) button was clicked")
+        key = "owner_name"
+        value = "John Doe"
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="single_text", popup_purpose="moveanimals")
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+        if hasattr(self, 'new_owner'):
+            print("And here is new owner after our previous selection")
+            print(self.new_owner)
+        else:
+            print("Here new owner is empty, because we haven't selected anything yet")
+            self.new_owner = None
+            print(self.new_owner)
+
+    def select_new_owner_multiple_text(self):
+        """
+        Select a new owner using multiple text fields popup.
+        """
+        logger.info("Select New Owner (Multiple Text) button was clicked")
+        key = "owner_details"
+        value = {"First Name": "John", "Last Name": "Doe", "Address": "123 Main St"}
+        popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="multiple_text", popup_purpose="moveanimals", text_fields=value)
+        popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
+        if hasattr(self, 'new_owner'):
+            print("And here is new owner after our previous selection")
+            print(self.new_owner)
+        else:
+            print("Here new owner is empty, because we haven't selected anything yet")
+            self.new_owner = None
+            print(self.new_owner)
+        
     def select_new_location(self):
         # Add logic to select new location
         logger.info("Select New Location button in SearchLeftSidebarWidget was clicked")
