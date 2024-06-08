@@ -60,7 +60,6 @@ def farm_desktop_left_sidebar(evaluation_history):
             {'text': 'Backup Database with New Name'}
         ]},
         {'parent': '', 'index': 8, 'iid': 'animalevaluationhistory', 'text': 'Animal Evaluation History', 'children': evaluation_history},
-        {'parent': '', 'index': 9, 'iid': 'quitanimaltrakker', 'text': 'Quit'}
     ]
     
     return tree_data
