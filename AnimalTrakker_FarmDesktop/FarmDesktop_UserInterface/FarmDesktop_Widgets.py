@@ -825,10 +825,10 @@ class SearchLeftSidebarWidget(tk.Frame):
             "Animal Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Animal Name": ("animal_name", None, None, None),
             "Sex": ("id_sexid", "sex_table.id_sexid", None, "sex_table.sex_name"),
-            "Sire Name": ("sire_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
             "Sire Flock Prefix": ("sire_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
-            "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
+            "Sire Name": ("sire_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
             "Dam Flock Prefix": ("dam_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
+            "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
             "Registration Number": ("id_animalid", "animal_registration_table.id_animalid", None, "animal_registration_table.registration_number"),
             "Alert": ("alert", None, None, None),
             "Birth Date": ("birth_date", None, None, None),
@@ -939,6 +939,7 @@ class SearchLeftSidebarWidget(tk.Frame):
         Select a new owner using a single text field popup.
         """
         logger.info("Select New Owner (Single Text) button was clicked")
+        fetch_function = fetch_example
         key = "owner_name"
         value = "John Doe"
         popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="single_text", popup_purpose="moveanimals")
@@ -956,6 +957,7 @@ class SearchLeftSidebarWidget(tk.Frame):
         Select a new owner using multiple text fields popup.
         """
         logger.info("Select New Owner (Multiple Text) button was clicked")
+        fetch_function = fetch_example
         key = "owner_details"
         value = {"First Name": "John", "Last Name": "Doe", "Address": "123 Main St"}
         popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="multiple_text", popup_purpose="moveanimals", text_fields=value)
