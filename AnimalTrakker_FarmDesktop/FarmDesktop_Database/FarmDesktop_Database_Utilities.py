@@ -496,6 +496,79 @@ def fetch_premise_info(db_connection, premise_id):
         logger.error("Failed to fetch premise info for premise ID %s: %s", premise_id, e)
         return []
 
+def fetch_animalid_by_eid(db_connection, eid):
+    """Fetches the animal ID from the database for a given EID."""
+    try:
+        row = db_connection.fetchone(GET_ANIMALID_BY_EID, (eid,))
+        if row:
+            #logger.info(f"Animal ID {row[0]} for EID {eid} fetched successfully.")
+            return row[0]  # Return the id_animalid directly
+        else:
+            logger.warning(f"No animal ID found for EID {eid}.")
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch animal ID for EID {eid}: {e}")
+    return None
+
+def fetch_animalids_by_evaluation_date(db_connection, eval_date):
+    """Fetches animal IDs from the database for a given evaluation date."""
+    try:
+        rows = db_connection.fetchall(GET_ANIMALIDS_BY_EVALUATION_DATE, (eval_date,))
+        logger.info(f"Animal IDs fetched successfully for evaluation date {eval_date}.")
+        print(rows)
+        return rows
+    except Exception as e:
+        logger.error(f"Failed to fetch animal IDs for evaluation date {eval_date}: {e}")
+        return []
+
+def fetch_animal_evaluations_by_date(db_connection, animal_id, eval_date):
+    """Fetches rows from animal_evaluation_table for a given animal ID and evaluation date."""
+    try:
+        rows = db_connection.fetchall_with_column_names(GET_ANIMAL_EVALUATIONS_BY_DATE, (animal_id, eval_date))
+        logger.info(f"Animal evaluations fetched successfully for animal ID {animal_id} and evaluation date {eval_date}.")
+        return rows
+    except Exception as e:
+        logger.error(f"Failed to fetch animal evaluations for animal ID {animal_id} and evaluation date {eval_date}: {e}")
+        return []
+
+def update_trait_score(db_connection, eval_id, trait_num, score):
+    """Updates the trait score in animal_evaluation_table for a given evaluation ID and trait number."""
+    query = UPDATE_TRAIT_SCORE.format(trait_num=trait_num)
+    try:
+        db_connection.save(query, (score, eval_id))
+        logger.info(f"Trait {trait_num} score updated successfully for evaluation ID {eval_id}.")
+    except Exception as e:
+        logger.error(f"Failed to update trait {trait_num} score for evaluation ID {eval_id}: {e}")
+
+    
+def add_animal_note(db_connection, animal_id, note_text, note_date, note_time, predefined_notes_id):
+    """Inserts a note into the animal_note_table for a given animal."""
+    try:
+        db_connection.save(
+            INSERT_ANIMAL_NOTE,
+            (animal_id, note_text, note_date, note_time, predefined_notes_id, note_date, note_date)
+        )
+        logger.info(f"Note added successfully for animal ID {animal_id}.")
+    except Exception as e:
+        logger.error(f"Failed to add note for animal ID {animal_id}: {e}")
+
+def fetch_animal_alert(db_connection, animal_id):
+    """Fetches the existing alert for a given animal ID."""
+    try:
+        alert = db_connection.fetchone(GET_ANIMAL_ALERT, (animal_id,))
+        return alert[0] if alert else ''
+    except Exception as e:
+        logger.error(f"Failed to fetch alert for animal ID {animal_id}: {e}")
+        return ''
+
+def update_animal_alert(db_connection, animal_id, new_alert):
+    """Updates the alert column for a given animal ID."""
+    try:
+        db_connection.save(UPDATE_ANIMAL_ALERT, (new_alert, animal_id))
+        logger.info(f"Alert updated successfully for animal ID {animal_id}.")
+    except Exception as e:
+        logger.error(f"Failed to update alert for animal ID {animal_id}: {e}")
+
 def fetch_example(db_connection):
     # this is just example, copy of fetch_states_names list of states
     try:

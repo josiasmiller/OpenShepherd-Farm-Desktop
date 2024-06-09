@@ -351,3 +351,61 @@ GET_PREMISE_INFO_FIELDS = """
 	JOIN country_table ON premise_table.premise_id_countryid = country_table.id_countryid
 	WHERE premise_table.id_premiseid = ?;
 """
+
+GET_ANIMALID_BY_EID = """
+	SELECT 
+ 		id_animalid 
+   	FROM 
+    	animal_id_info_table 
+    WHERE id_number = ?;
+"""
+
+GET_ANIMALIDS_BY_EVALUATION_DATE = """
+	SELECT 
+		id_animalid, eval_date 
+	FROM 
+		animal_evaluation_table 
+	WHERE 
+		eval_date = ?;
+"""
+
+INSERT_ANIMAL_NOTE = """
+INSERT INTO animal_note_table (id_animalid, note_text, note_date, note_time, id_predefinednotesid, created, modified)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+"""
+
+GET_ANIMAL_EVALUATIONS_BY_DATE = """
+	SELECT 
+ 		*
+	FROM 
+ 		animal_evaluation_table
+	WHERE 
+ 		id_animalid = ? AND eval_date = ?
+"""
+
+UPDATE_TRAIT_SCORE = """
+	UPDATE 
+ 		animal_evaluation_table
+	SET 
+ 		trait_score{trait_num} = ?
+	WHERE 
+ 		id_animalevaluationid = ?
+"""
+
+GET_ANIMAL_ALERT = """
+	SELECT 
+ 		alert
+	FROM 
+ 		animal_table
+	WHERE 
+ 		id_animalid = ?
+"""
+
+UPDATE_ANIMAL_ALERT = """
+	UPDATE 
+ 		animal_table
+	SET 
+ 		alert = ?
+	WHERE 
+ 		id_animalid = ?
+"""

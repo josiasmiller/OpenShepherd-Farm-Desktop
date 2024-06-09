@@ -94,6 +94,29 @@ class DatabaseConnection:
             logger.error(f"Error executing query '{query}': {e}")
             return []
 
+    def fetchall_with_column_names(self, query, params=None):
+        """
+        Executes a query and fetches all rows, returning a list of dictionaries with column names.
+        
+        Args:
+            query (str): SQL query to execute.
+            params (tuple, optional): Parameters to substitute into the query.
+
+        Returns:
+            list of dict: Rows returned by the query with column names as keys.
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(query, params or ())
+            columns = [column[0] for column in cursor.description]
+            rows = cursor.fetchall()
+            cursor.close()
+            result = [dict(zip(columns, row)) for row in rows]
+            return result
+        except sqlite3.Error as e:
+            logger.error(f"Error executing query '{query}': {e}")
+            return []
+        
     def fetchone(self, query, params=None):
         """
         Executes a query and fetches the first row of the result.
@@ -204,3 +227,33 @@ def file_picker():
     # File was selected; log and return the path
     logger.info(f"The database file is {database_file}")
     return database_file
+
+def report_picker():
+    """
+    Opens a file dialog for the user to select an Excel file (.xls or .xlsx) and returns the file path.
+
+    This function uses a Tkinter file dialog to ask the user to open a file
+    with specific extensions suitable for Excel files. It handles the case
+    where a user might cancel the operation.
+
+    Returns:
+        str: The path to the selected Excel file, or an empty string if no file is selected.
+    """
+    # Configure the options for the file dialog
+    filetypes = [
+        ("Excel files", "*.xls *.xlsx"),
+        ("All Files", "*.*")
+    ]
+    title = "Open Report File"
+
+    # Show the open file dialog and store the result
+    report_file = filedialog.askopenfilename(title=title, filetypes=filetypes)
+
+    if not report_file:
+        # No file was selected (user cancelled the dialog)
+        logger.info("No report file selected.")
+        return ""
+
+    # File was selected; log and return the path
+    logger.info(f"The report file is {report_file}")
+    return report_file
