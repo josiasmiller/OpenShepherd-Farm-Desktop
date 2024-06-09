@@ -23,7 +23,7 @@ class BottomBar(tk.Frame):
         self.db_label.grid(row=0, column=0, sticky="w", padx=5)
         
         # Create and pack a label to display the current default setting
-        self.setting_label = tk.Label(self, text=f"Current Setting: {current_setting}", bg=bg)
+        self.setting_label = tk.Label(self, text=f"Current Default Settings: {current_setting}", bg=bg)
         self.setting_label.grid(row=1, column=0, sticky="w", padx=5)
         
         # Create and pack a label to display the current evaluation
