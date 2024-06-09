@@ -30,10 +30,10 @@ class StyleManager:
         This method sets up the colors and other style parameters for frames, treeviews, and potentially other widgets.
         """
         # Define colors
-        self.bg_main_frame = 'lightyellow'
-        self.bg_sidebar = 'lightblue'
-        self.bg_top_bar = 'lightgreen'
-        self.bg_bottom_bar = 'lightpink'
+        self.bg_main_frame = 'white'
+        self.bg_sidebar = 'white'
+        self.bg_top_bar = 'white'
+        self.bg_bottom_bar = 'white'
 
         # Configure specific Treeview widget styles, including selection and field backgrounds
         self.style.configure("Treeview", background=self.bg_sidebar, fieldbackground=self.bg_sidebar, 
