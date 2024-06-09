@@ -78,7 +78,7 @@ class FarmDesktopController(BaseController):
         elif parent_id == 'addanimaldata':
             logger.info(f"Handling animal reports for item: {item_text}")
             if item_text == 'Update Optimal Ag Ram BSE':
-                self.get_optimal_ag_ram_bse_report()
+                self.update_optimal_ag_ram_bse_report()
                 
     def handle_evaluation_history(self, item, item_text):
         """
@@ -260,7 +260,7 @@ class FarmDesktopController(BaseController):
         else:
             logger.error("GUI instance is not set in the controller.")
             
-    def get_optimal_ag_ram_bse_report(self):
+    def update_optimal_ag_ram_bse_report(self):
         """
         Reads the selected Excel file using pandas, structures the data, fetches animal ID, and processes it.
         """
