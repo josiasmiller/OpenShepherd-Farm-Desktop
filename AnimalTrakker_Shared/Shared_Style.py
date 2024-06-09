@@ -1,6 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
+
+# Convert RGB values to hexadecimal
+def rgb_to_hex(rgb):
+    return '#%02x%02x%02x' % rgb
+
+
 class StyleManager:
     """
     Manages the styles for the Tkinter GUI components, ensuring consistency and ease of theme adjustments.
@@ -23,7 +29,8 @@ class StyleManager:
         self.style = ttk.Style()
         self.style.theme_use(theme)  # Sets the theme for styling
         self.configure_styles()
-    
+
+
     def configure_styles(self):
         """
         Configures the styles for various ttk widgets according to the application's design requirements.
@@ -34,6 +41,11 @@ class StyleManager:
         self.bg_sidebar = 'white'
         self.bg_top_bar = 'white'
         self.bg_bottom_bar = 'white'
+        # AnimalTrakker logo RGB values
+        rgb_color = (62, 177, 200)
+
+        # Convert RGB to hexadecimal
+        hex_color = rgb_to_hex(rgb_color)
 
         # Configure specific Treeview widget styles, including selection and field backgrounds
         self.style.configure("Treeview", background=self.bg_sidebar, fieldbackground=self.bg_sidebar, 
@@ -41,9 +53,9 @@ class StyleManager:
         
         # Modify the Treeview layout to remove borders around the tree area
         self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
-        
-        self.style.map("Treeview", background=[('selected', 'green')])
 
+        self.style.map("Treeview", background=[('selected', hex_color)])
+        self.style.configure("Treeview", rowheight=40)
     def get_bg(self, component_name):
         """
         Retrieves the background color for a specified component by name.
