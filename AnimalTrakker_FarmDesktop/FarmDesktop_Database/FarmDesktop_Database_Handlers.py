@@ -113,6 +113,135 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
                 join_clauses.append(join_clause_1)
                 join_clauses.append(join_clause_2)
                 conditions.append(f"flock_prefix_table.flock_prefix LIKE '%{value}%'")
+            elif field == "birth_date_from":
+                conditions.append(f"animal_table.birth_date >= '{value}'")
+            elif field == "birth_date_to":
+                conditions.append(f"animal_table.birth_date <= '{value}'")
+            elif field == "death_date_from":
+                conditions.append(f"animal_table.death_date >= '{value}'")
+            elif field == "death_date_to":
+                conditions.append(f"animal_table.death_date <= '{value}'")
+            elif field == "alert":
+                conditions.append(f"animal_table.{field} LIKE '%{value}%'")
+            elif field == "breeder_name":
+                initial_query = f"""
+                SELECT id_animalid FROM animal_registration_table
+                WHERE id_breeder_id_companyid IN (
+                    SELECT id_companyid FROM company_table
+                    WHERE company LIKE '%{value}%'
+                )
+                OR id_breeder_id_contactid IN (
+                    SELECT id_contactid FROM contact_table
+                    WHERE contact_first_name LIKE '%{value}%' OR contact_last_name LIKE '%{value}%'
+                )
+                """
+                breeder_animal_ids = db_connection.fetchall(initial_query)
+                if breeder_animal_ids:
+                    breeder_animal_ids = [row[0] for row in breeder_animal_ids]
+                    conditions.append(f"animal_table.id_animalid IN ({','.join(map(str, breeder_animal_ids))})")
+            elif field == "owner_name":
+                # Initial query to find animal IDs based on owner names matching the search value
+                initial_query = f"""
+                SELECT DISTINCT id_animalid FROM animal_ownership_history_table
+                WHERE to_id_companyid IN (
+                    SELECT id_companyid FROM company_table
+                    WHERE company LIKE '%{value}%'
+                )
+                OR to_id_contactid IN (
+                    SELECT id_contactid FROM contact_table
+                    WHERE contact_first_name LIKE '%{value}%' OR contact_last_name LIKE '%{value}%'
+                )
+                """
+                owner_animal_ids = db_connection.fetchall(initial_query)
+                
+                if owner_animal_ids:
+                    owner_animal_ids = [row[0] for row in owner_animal_ids]
+                    
+                    # Step 2: Verify the final owner
+                    final_animal_ids = []
+                    for animal_id in owner_animal_ids:
+                        final_owner = fetch_owner_info(db_connection, animal_id)
+                        if final_owner and value.lower() in final_owner.lower():
+                            final_animal_ids.append(animal_id)
+                    
+                    if final_animal_ids:
+                        conditions.append(f"animal_table.id_animalid IN ({','.join(map(str, final_animal_ids))})")
+                    else:
+                        # No matches found, ensure no results are returned
+                        conditions.append("1=0")
+                    #logger.info(f"Owner match found, filtering animal IDs: {final_animal_ids}")
+                else:
+                    # No matches found, ensure no results are returned
+                    conditions.append("1=0")
+                    logger.info("No owner matches found, setting condition to return no results.")
+            elif field == "state":
+                try:
+                    # Query to get the id_stateid from the state name
+                    state_query = f"""
+                    SELECT id_stateid FROM state_table
+                    WHERE state_name LIKE '%{value}%'
+                    """
+                    state_id_result = db_connection.fetchone(state_query)
+                    
+                    if state_id_result:
+                        id_stateid = state_id_result[0]
+                        
+                        # Initial query to find premise IDs based on the state ID
+                        initial_query = f"""
+                        SELECT id_premiseid FROM premise_table
+                        WHERE premise_id_stateid = {id_stateid}
+                        """
+                        premise_ids = db_connection.fetchall(initial_query)
+                        
+                        if premise_ids:
+                            premise_ids = [row[0] for row in premise_ids]
+                            
+                            # Step 2: Find animal IDs based on to_id_premiseid
+                            subquery = f"""
+                            SELECT DISTINCT id_animalid FROM animal_location_history_table
+                            WHERE to_id_premiseid IN ({','.join(map(str, premise_ids))})
+                            """
+                            animal_ids = db_connection.fetchall(subquery)
+                            
+                            if animal_ids:
+                                animal_ids = [row[0] for row in animal_ids]
+                                
+                                # Step 3: Verify the final premise
+                                final_animal_ids = []
+                                for animal_id in animal_ids:
+                                    # Fetch the final premise ID for each animal
+                                    query = """
+                                    SELECT to_id_premiseid FROM animal_location_history_table
+                                    WHERE id_animalid = ?
+                                    ORDER BY movement_date DESC
+                                    LIMIT 1;
+                                    """
+                                    result = db_connection.fetchone(query, (animal_id,))
+                                    if result and result[0] in premise_ids:
+                                        final_animal_ids.append(animal_id)
+                                
+                                if final_animal_ids:
+                                    conditions.append(f"animal_table.id_animalid IN ({','.join(map(str, final_animal_ids))})")
+                                else:
+                                    # No matches found, ensure no results are returned
+                                    conditions.append("1=0")
+                                logger.info(f"State match found, filtering animal IDs: {final_animal_ids}")
+                            else:
+                                # No matches found, ensure no results are returned
+                                conditions.append("1=0")
+                                logger.info("No state matches found, setting condition to return no results.")
+                        else:
+                            # No matches found, ensure no results are returned
+                            conditions.append("1=0")
+                            logger.info("No premises found for the given state, setting condition to return no results.")
+                    else:
+                        # No state ID found, ensure no results are returned
+                        conditions.append("1=0")
+                        logger.info("No state found for the given state name, setting condition to return no results.")
+                except Exception as e:
+                    logger.error(f"Error in state search condition: {e}")
+                    conditions.append("1=0")  # Ensure no results are returned on error
+
     
     joins = " ".join(join_clauses)
     

@@ -822,7 +822,7 @@ class SearchLeftSidebarWidget(tk.Frame):
         self.new_owner = None
 
         self.option_to_field = {
-            "Animal Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
+            "Flock Prefix": ("id_animalid", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Animal Name": ("animal_name", None, None, None),
             "Sex": ("id_sexid", "sex_table.id_sexid", None, "sex_table.sex_name"),
             "Sire Flock Prefix": ("sire_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
@@ -830,8 +830,9 @@ class SearchLeftSidebarWidget(tk.Frame):
             "Dam Flock Prefix": ("dam_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
             "Registration Number": ("id_animalid", "animal_registration_table.id_animalid", None, "animal_registration_table.registration_number"),
-            "Alert": ("alert", None, None, None),
+            "Alert Text": ("alert", None, None, None),
             "Birth Date": ("birth_date", None, None, None),
+            "Birth Type": ("id_birthtypeid", "birth_type_table.id_birthtypeid", None, "birth_type_table.birth_type_abbrev"),
             "Death Date": ("death_date", None, None, None),
             "Death Reason": ("id_deathreasonid", "death_reason_table.id_deathreasonid", None, "death_reason_table.death_reason"),
             "Breed": ("id_animalid", "animal_breed_table.id_animalid", "breed_table.id_breedid", "breed_table.breed_name"),
@@ -984,6 +985,7 @@ class SearchLeftSidebarWidget(tk.Frame):
             return None
         return [option for option, var in self.selected_options.items() if var.get()]
 
+
 class SearchBoxWidget(tk.Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
@@ -998,8 +1000,8 @@ class SearchBoxWidget(tk.Frame):
         self.tree_scroll_y = ttk.Scrollbar(self.tree_frame, orient="vertical")
         self.tree_scroll_y.pack(side='right', fill='y')
 
-        # Create the treeview widget
-        self.tree = ttk.Treeview(self.tree_frame, show="headings", yscrollcommand=self.tree_scroll_y.set)
+        # Create the treeview widget with a checkbox column
+        self.tree = ttk.Treeview(self.tree_frame, columns=['checkbox'], show="headings", yscrollcommand=self.tree_scroll_y.set)
         self.tree.pack(expand=True, fill='both', side='left')
         self.tree_scroll_y.config(command=self.tree.yview)
 
@@ -1008,12 +1010,19 @@ class SearchBoxWidget(tk.Frame):
         self.tree_scroll_x.pack(side='bottom', fill='x')
         self.tree.configure(xscrollcommand=self.tree_scroll_x.set)
 
+        # Configure the checkbox column
+        self.tree.column('checkbox', anchor=tk.W, width=30)
+        self.tree.heading('checkbox', text='')  # No text for the checkbox column header
+
+        # Bind click event to toggle checkboxes
+        self.tree.bind('<Button-1>', self.on_click)
+
     def clear_data(self):
         for row in self.tree.get_children():
             self.tree.delete(row)
 
     def set_columns(self, columns):
-        self.tree["columns"] = columns
+        self.tree["columns"] = ['checkbox'] + columns
         for col in columns:
             self.tree.heading(col, text=col)
             self.tree.column(col, anchor='w', stretch=True)  # Adjust to stretch columns
@@ -1022,8 +1031,24 @@ class SearchBoxWidget(tk.Frame):
         self.clear_data()
         self.set_columns(columns)
         for row in results:
-            self.tree.insert("", "end", values=row)
+            self.tree.insert("", "end", values=('☐',) + tuple(row))
 
+    def on_click(self, event):
+        # Identify the region clicked
+        region = self.tree.identify_region(event.x, event.y)
+        if region == "cell":
+            col = self.tree.identify_column(event.x)
+            row_id = self.tree.identify_row(event.y)
+            if col == '#1':  # Assuming the checkbox column is the first one
+                # Get current value of the checkbox
+                current_value = self.tree.item(row_id, 'values')[0]
+                # Determine the new value based on current state
+                new_value = '☑' if current_value == '☐' else '☐'
+                # Update the checkbox value while preserving other column values
+                values = list(self.tree.item(row_id, 'values'))
+                values[0] = new_value  # Update checkbox state
+                self.tree.item(row_id, values=values)
+            
 class SearchMainFrameWidget(tk.Frame):
     def __init__(self, parent, controller, style_manager, **kwargs):
         super().__init__(parent, bg=style_manager.get_bg('main_frame'), **kwargs)
@@ -1036,7 +1061,23 @@ class SearchMainFrameWidget(tk.Frame):
         # Forcing cursor to be on the main frame
         self.bind('<Map>', self.on_map)  # Bind to the <Map> event
 
+    def add_combobox(self, parent, name, row, column, width=20):
+            if name == "breed":
+                data = fetch_breed_names(self.controller.app.db_connection)
+            elif name == "birth_type":
+                data = fetch_birth_type(self.controller.app.db_connection)
+            elif name == "sex":
+                data = fetch_sex_names(self.controller.app.db_connection)
+            elif name == "state":
+                data = fetch_state_names(self.controller.app.db_connection)
+
+            values_list = [item[1] for item in data]
+            combobox = ttk.Combobox(parent, values=values_list, width=width)
+            combobox.grid(row=row, column=column, padx=2, pady=2, sticky="ew")
+            self.entries[name] = combobox
+            
     def build_widget(self):
+    
         title_label = tk.Label(self, text="Animal Search", font=('Helvetica', 16, 'bold'), bg=self['bg'])
         title_label.grid(row=0, column=0, columnspan=10, pady=2)  # Adjusted vertical padding
 
@@ -1050,13 +1091,13 @@ class SearchMainFrameWidget(tk.Frame):
         self.add_entry(self, "animal_name", 25, 2, 2, width=20)
 
         self.add_label(self, "Sex", 1, 4)
-        self.add_entry(self, "sex", 10, 2, 4, width=15)
+        self.add_combobox(self, "sex", 2, 4, width=15)
 
         self.add_label(self, "Birth Type", 1, 6)
-        self.add_entry(self, "birth_type", 12, 2, 6, width=15)
+        self.add_combobox(self, "birth_type", 2, 6, width=15)
 
         self.add_label(self, "Breed", 1, 8)
-        self.add_entry(self, "breed", 30, 2, 8, width=20)
+        self.add_combobox(self, "breed", 2, 8, width=20)
 
         # Second Row: Birth Date Range and Death Date Range Labels
         self.add_label(self, "Birth Date Range", 3, 0, 2)
@@ -1086,9 +1127,9 @@ class SearchMainFrameWidget(tk.Frame):
         self.add_entry(self, "address", 30, 7, 2, width=20)
 
         self.add_label(self, "State", 6, 4)
-        self.add_entry(self, "state", 10, 7, 4, width=5)
+        self.add_combobox(self, "state", 7, 4, width=5)
 
-        self.add_label(self, "Alert", 6, 6)
+        self.add_label(self, "Alert Text", 6, 6)
         self.add_entry(self, "alert", 50, 7, 6, width=20)
 
         # Search Button

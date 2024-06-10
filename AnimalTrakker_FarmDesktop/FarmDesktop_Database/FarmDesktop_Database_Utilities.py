@@ -313,6 +313,43 @@ def fetch_breed_names(db_connection):
     except Exception as e:
         logger.error(f"Failed to fetch breed names: {e}")
         return []
+    
+def fetch_birth_type(db_connection):
+    """
+    Fetches birth types from the birth_type_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing birth type IDs and names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_BIRTH_TYPE_NAMES)
+        logger.info(f"Birth types fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch birth types: {e}")
+        return []
+    
+def fetch_sex_names(db_connection):
+    """
+    Fetches sex names from the sex_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing sex IDs and names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_SEX_NAMES)
+        logger.info(f"Sex names fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch sex names: {e}")
+        return []
+
 
 def fetch_state_names(db_connection):
     """
@@ -415,10 +452,10 @@ def fetch_breeder_info(db_connection, animal_id):
         
         if result:
             _, company_id, contact_id = result
-            if company_id and company_id > 0:
+            if isinstance(company_id, int) and company_id and company_id > 0:
                 company_name = db_connection.fetchone(GET_COMPANY_NAME, (company_id,))
                 return company_name[0] if company_name else None
-            elif contact_id and contact_id > 0:
+            elif isinstance(contact_id, int) and contact_id and contact_id > 0:
                 contact_name = db_connection.fetchone(GET_CONTACT_NAME, (contact_id,))
                 return contact_name[0] if contact_name else None
         return []
@@ -511,21 +548,28 @@ def fetch_animalid_by_eid(db_connection, eid):
     return None
 
 def fetch_animalids_by_evaluation_date(db_connection, eval_date):
-    """Fetches animal IDs from the database for a given evaluation date."""
+    """Fetches animal IDs, names, and flock prefixes from the database for a given evaluation date."""
     try:
         rows = db_connection.fetchall(GET_ANIMALIDS_BY_EVALUATION_DATE, (eval_date,))
-        logger.info(f"Animal IDs fetched successfully for evaluation date {eval_date}.")
-        print(rows)
-        return rows
+        #logger.info(f"Animal IDs fetched successfully for evaluation date {eval_date}.")
+        
+        # Remove duplicates based on id_animalid
+        unique_rows = {}
+        for row in rows:
+            id_animalid = row[0]
+            if id_animalid not in unique_rows:
+                unique_rows[id_animalid] = row
+        return list(unique_rows.values())
     except Exception as e:
         logger.error(f"Failed to fetch animal IDs for evaluation date {eval_date}: {e}")
         return []
+
 
 def fetch_animal_evaluations_by_date(db_connection, animal_id, eval_date):
     """Fetches rows from animal_evaluation_table for a given animal ID and evaluation date."""
     try:
         rows = db_connection.fetchall_with_column_names(GET_ANIMAL_EVALUATIONS_BY_DATE, (animal_id, eval_date))
-        logger.info(f"Animal evaluations fetched successfully for animal ID {animal_id} and evaluation date {eval_date}.")
+        #logger.info(f"Animal evaluations fetched successfully for animal ID {animal_id} and evaluation date {eval_date}.")
         return rows
     except Exception as e:
         logger.error(f"Failed to fetch animal evaluations for animal ID {animal_id} and evaluation date {eval_date}: {e}")
@@ -536,7 +580,7 @@ def update_trait_score(db_connection, eval_id, trait_num, score):
     query = UPDATE_TRAIT_SCORE.format(trait_num=trait_num)
     try:
         db_connection.save(query, (score, eval_id))
-        logger.info(f"Trait {trait_num} score updated successfully for evaluation ID {eval_id}.")
+        #logger.info(f"Trait {trait_num} score updated successfully for evaluation ID {eval_id}.")
     except Exception as e:
         logger.error(f"Failed to update trait {trait_num} score for evaluation ID {eval_id}: {e}")
 
@@ -548,7 +592,7 @@ def add_animal_note(db_connection, animal_id, note_text, note_date, note_time, p
             INSERT_ANIMAL_NOTE,
             (animal_id, note_text, note_date, note_time, predefined_notes_id, note_date, note_date)
         )
-        logger.info(f"Note added successfully for animal ID {animal_id}.")
+        #logger.info(f"Note added successfully for animal ID {animal_id}.")
     except Exception as e:
         logger.error(f"Failed to add note for animal ID {animal_id}: {e}")
 
@@ -565,7 +609,7 @@ def update_animal_alert(db_connection, animal_id, new_alert):
     """Updates the alert column for a given animal ID."""
     try:
         db_connection.save(UPDATE_ANIMAL_ALERT, (new_alert, animal_id))
-        logger.info(f"Alert updated successfully for animal ID {animal_id}.")
+        #logger.info(f"Alert updated successfully for animal ID {animal_id}.")
     except Exception as e:
         logger.error(f"Failed to update alert for animal ID {animal_id}: {e}")
 
