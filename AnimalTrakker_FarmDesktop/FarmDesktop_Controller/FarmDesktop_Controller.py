@@ -264,6 +264,8 @@ class FarmDesktopController(BaseController):
         """
         Reads the selected Excel file using pandas, structures the data, fetches animal ID, and processes it.
         """
+        self.message = ""
+
         def modify_eid(eid):
             """Modifies the EID by removing the trailing underscore and adding one after the third digit."""
             eid = eid.rstrip('_')
@@ -282,114 +284,137 @@ class FarmDesktopController(BaseController):
             found_animal_ids = {row["id_animalid"] for row in data if "id_animalid" in row}
             return [animal for animal in evaluated_animals if animal[0] not in found_animal_ids]
 
-        def show_detailed_missing_animals_popup(missing_animals, evaluated_animals):
-            root = tk.Tk()
-            root.title("Missing Animals")
-            root.geometry("800x600")  # Set initial size of the popup window
+        def show_detailed_missing_animals_popup(parent, missing_animal, evaluated_animals, on_close_callback):
+            popup = tk.Toplevel(parent)
+            popup.transient(parent)  # Keep the popup on top of the parent
+            popup.grab_set()  # Make the popup modal
+            popup.title("Match Missing Animal")
+            popup.geometry("800x600")
 
-            left_frame = tk.Frame(root)
+            left_frame = tk.Frame(popup)
             left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-            right_frame = tk.Frame(root)
+            right_frame = tk.Frame(popup)
             right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-            tk.Label(left_frame, text="Missing Animals").pack()
+            tk.Label(left_frame, text="Missing Animal").pack()
             tk.Label(right_frame, text="Evaluated Animals on Same Date").pack()
 
             missing_listbox = tk.Listbox(left_frame, selectmode=tk.SINGLE, exportselection=False)
             missing_listbox.pack(fill=tk.BOTH, expand=True)
-
             evaluated_listbox = tk.Listbox(right_frame, selectmode=tk.SINGLE, exportselection=False)
             evaluated_listbox.pack(fill=tk.BOTH, expand=True)
 
-            for animal in missing_animals:
-                missing_listbox.insert(tk.END, f"EID: {animal['EID']}, Name: {animal['Animal ID']}")
+            missing_listbox.insert(tk.END, f"EID: {missing_animal['EID']}, Name: {missing_animal['Animal ID']}")
 
             filtered_evaluated_animals = filter_evaluated_animals(evaluated_animals, data)
 
             for animal in filtered_evaluated_animals:
-                evaluated_listbox.insert(tk.END, f"Animal ID: {animal[0]}, Date: {animal[1]}")
+                evaluated_listbox.insert(tk.END, f"Flock Prefix: {animal[2]}, Animal Name: {animal[1]}")
 
-            tk.Button(root, text="Match Selected", command=lambda: match_animals(missing_listbox, evaluated_listbox, root)).pack()
+            tk.Button(popup, text="Match Selected", command=lambda: match_animals(missing_listbox, evaluated_listbox, popup, missing_animal, on_close_callback)).pack()
 
-            root.mainloop()
+            def on_cancel():
+                if missing_animals:
+                    unprocessed_animals = ', '.join([f"{animal['Animal ID']} (EID: {animal['EID']})" for animal in missing_animals])
+                    messagebox.showerror("Unprocessed Animals", f"The following animals were not processed:\n{unprocessed_animals}")
+                popup.destroy()
+                
+
+            tk.Button(popup, text="Cancel", command=on_cancel).pack()
+    
+            def on_close():
+                if missing_animals:
+                    unprocessed_animals = ', '.join([f"{animal['Animal ID']} (EID: {animal['EID']})" for animal in missing_animals])
+                    messagebox.showerror("Unprocessed Animals", f"The following animals were not processed:\n{unprocessed_animals}")
+                popup.destroy()
+                on_close_callback()
+
+            popup.protocol("WM_DELETE_WINDOW", on_close)
+            parent.wait_window(popup)  # Wait for the popup to close before continuing
 
         def extract_classification_text(classification):
             """Extracts the text part from the classification string."""
             return ' '.join(classification.split()[1:])
         
-        def match_animals(missing_listbox, evaluated_listbox, root):
+        def match_animals(missing_listbox, evaluated_listbox, popup, missing_animal, on_close_callback):
             selected_missing = missing_listbox.curselection()
             selected_evaluated = evaluated_listbox.curselection()
 
             if selected_missing and selected_evaluated:
-                missing_animal = missing_listbox.get(selected_missing[0])
-                evaluated_animal = evaluated_listbox.get(selected_evaluated[0])
-                # Extract the EID and animal ID from the selected items and update the data dictionary accordingly
-                missing_eid = missing_animal.split(',')[0].split(': ')[1]
-                evaluated_id = evaluated_animal.split(',')[0].split(': ')[1]
+                evaluated_id = evaluated_listbox.get(selected_evaluated[0]).split(',')[0].split(': ')[1]
 
-                # Find the corresponding data entry and update its id_animalid
-                for row in data:
-                    if row['EID'] == missing_eid:
-                        row['id_animalid'] = evaluated_id
-                        break
+                missing_animal['id_animalid'] = evaluated_id
+                
+                # Remove the processed animal from the missing animals list
+                missing_animals.pop(0)
 
-                # Optionally, update the UI or provide feedback to the user
-                logger.info(f"Matched {missing_eid} with animal ID {evaluated_id}")
+                popup.destroy()
+                process_animal(missing_animal)
 
-                # Remove the matched items from the listboxes
-                missing_listbox.delete(selected_missing[0])
-                evaluated_listbox.delete(selected_evaluated[0])
-
-                # Check if there are no more missing animals left
-                if missing_listbox.size() == 0:
-                    root.destroy()  # Close the popup window
-                    for row in data:
-                        if not pd.isna(row.get("Morphological Defects")):  # Check if Morphological Defects is not empty
-                            add_animal_note(
-                                self.app.db_connection,
-                                row["id_animalid"],
-                                row["Morphological Defects"],
-                                row["Date"].strftime('%Y-%m-%d'),
-                                row["Date"].strftime('%H:%M:%S'),
-                                predefined_notes_id=0  # Assuming 1 is the ID for predefined note
-                            )
-
-                        if not pd.isna(row.get("Remarks")):  # Check if Remarks is not empty
-                            add_animal_note(
-                                self.app.db_connection,
-                                row["id_animalid"],
-                                row["Remarks"],
-                                row["Date"].strftime('%Y-%m-%d'),
-                                row["Date"].strftime('%H:%M:%S'),
-                                predefined_notes_id=0  # Assuming 2 is the ID for predefined note
-                            )
-                        
-                        classification_text = extract_classification_text(row["Classification"])
-                        existing_alert = fetch_animal_alert(self.app.db_connection, row["id_animalid"])
-                        new_alert = f"{classification_text}\n{existing_alert}".strip()
-                        update_animal_alert(self.app.db_connection, row["id_animalid"], new_alert)
-                            
-                        eval_rows = fetch_animal_evaluations_by_date(self.app.db_connection, row["id_animalid"], row["Date"].strftime('%Y-%m-%d'))
-                        if eval_rows:
-                            for eval_row in eval_rows:
-                                eval_id = eval_row['id_animalevaluationid']
-                                for i in range(11, 16):
-                                    if eval_row[f"trait_name{i}"] == 47:
-                                        update_trait_score(self.app.db_connection, eval_id, i, row["Motility"])
-                                    elif eval_row[f"trait_name{i}"] == 48:
-                                        update_trait_score(self.app.db_connection, eval_id, i, row["Morphology"])
-                                for i in range(16, 21):
-                                    if eval_row[f"trait_name{i}"] == 53:
-                                        update_trait_score(self.app.db_connection, eval_id, i, row["Classification"])
-                    self.app.main_frame.update_content(ConfirmationMessageWidget, message="Optimal Ag Ram BSE was updated successfully.")
             else:
                 messagebox.showwarning("Selection Error", "Please select an item from both lists to match.")
+                popup.destroy()
+                on_close_callback()
+                
+            on_close_callback()
+            
+        def process_animal(row):
+            try:
+                if not pd.isna(row.get("Morphological Defects")):
+                    add_animal_note(
+                        self.app.db_connection,
+                        row["id_animalid"],
+                        row["Morphological Defects"],
+                        row["Date"].strftime('%Y-%m-%d'),
+                        row["Date"].strftime('%H:%M:%S'),
+                        predefined_notes_id=0
+                    )
+                if not pd.isna(row.get("Remarks")):
+                    add_animal_note(
+                        self.app.db_connection,
+                        row["id_animalid"],
+                        row["Remarks"],
+                        row["Date"].strftime('%Y-%m-%d'),
+                        row["Date"].strftime('%H:%M:%S'),
+                        predefined_notes_id=0
+                    )
+
+                classification_text = extract_classification_text(row["Classification"])
+                existing_alert = fetch_animal_alert(self.app.db_connection, row["id_animalid"])
+                new_alert = f"{classification_text}\n{existing_alert}".strip()
+                update_animal_alert(self.app.db_connection, row["id_animalid"], new_alert)
+
+                eval_rows = fetch_animal_evaluations_by_date(self.app.db_connection, row["id_animalid"], row["Date"].strftime('%Y-%m-%d'))
+                if eval_rows:
+                    for eval_row in eval_rows:
+                        eval_id = eval_row['id_animalevaluationid']
+                        for i in range(11, 16):
+                            if eval_row[f"trait_name{i}"] == 47:
+                                update_trait_score(self.app.db_connection, eval_id, i, row["Motility"])
+                            elif eval_row[f"trait_name{i}"] == 48:
+                                update_trait_score(self.app.db_connection, eval_id, i, row["Morphology"])
+                        for i in range(16, 21):
+                            if eval_row[f"trait_name{i}"] == 53:
+                                numeric_part = row['Classification'].split(' ')[0]
+                                update_trait_score(self.app.db_connection, eval_id, i, numeric_part)
+
+                self.message += f"Animal {row['Animal ID']} with EID {row['EID']} was updated successfully\n"
+                self.app.main_frame.update_content(ConfirmationMessageWidget, message=self.message)
+
+            except Exception as e:
+                messagebox.showerror("Processing Error", f"Error processing animal {row['Animal ID']} with EID {row['EID']}: {str(e)}")
+                return
+
+        def process_next_missing_animal(missing_animals, evaluated_animals):
+            if missing_animals:
+                next_missing_animal = missing_animals[0]
+                show_detailed_missing_animals_popup(self.app, next_missing_animal, evaluated_animals, lambda: process_next_missing_animal(missing_animals, evaluated_animals))
 
         file_path = report_picker()
         
         if not file_path:
+            self.app.main_frame.update_content(ConfirmationMessageWidget, message="No report was selected")
             return
         
         # Load the Excel file
@@ -398,28 +423,23 @@ class FarmDesktopController(BaseController):
         else:
             df = pd.read_excel(file_path, engine='openpyxl')
 
-        # Convert the dataframe to a list of dictionaries
         data = df.to_dict(orient='records')
 
         for row in data:
-            # Iterate over a copy of the dictionary's items to avoid changing size during iteration
             for key, value in list(row.items()):
                 if key == "EID":
                     modified_eid = modify_eid(value)
                     row[key] = modified_eid
-                    # Fetch the animal ID using the modified EID
                     animal_id_info = fetch_animalid_by_eid(self.app.db_connection, modified_eid)
                     if animal_id_info:
                         row["id_animalid"] = animal_id_info
+                        process_animal(row)
                     else:
                         row["id_animalid"] = 'not found'
 
-        # After processing the data
         missing_animals = find_missing_animals(data)
         eval_date = data[0]['Date'].strftime('%Y-%m-%d') if data else None
 
         if eval_date:
             evaluated_animals = fetch_animalids_by_evaluation_date(self.app.db_connection, eval_date)
-            show_detailed_missing_animals_popup(missing_animals, evaluated_animals)
-
-
+            process_next_missing_animal(missing_animals, evaluated_animals)

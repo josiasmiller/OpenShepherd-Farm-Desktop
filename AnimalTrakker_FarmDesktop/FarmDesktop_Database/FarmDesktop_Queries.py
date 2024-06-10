@@ -231,6 +231,23 @@ GET_BREED_NAMES = """
     	breed_table
 """
 
+GET_BIRTH_TYPE_NAMES = """
+    SELECT
+        id_birthtypeid,
+        birth_type 
+    FROM 
+        birth_type_table
+"""
+
+GET_SEX_NAMES = """
+    SELECT
+        id_sexid,
+        sex_name 
+    FROM 
+        sex_table
+"""
+
+
 # Query to fetch state names
 GET_STATE_NAMES = """
     SELECT
@@ -361,12 +378,20 @@ GET_ANIMALID_BY_EID = """
 """
 
 GET_ANIMALIDS_BY_EVALUATION_DATE = """
-	SELECT 
-		id_animalid, eval_date 
-	FROM 
-		animal_evaluation_table 
-	WHERE 
-		eval_date = ?;
+    SELECT 
+        animal_evaluation_table.id_animalid, 
+        animal_table.animal_name, 
+        flock_prefix_table.flock_prefix 
+    FROM 
+        animal_evaluation_table
+    LEFT JOIN 
+        animal_table ON animal_evaluation_table.id_animalid = animal_table.id_animalid
+    LEFT JOIN 
+        animal_flock_prefix_table ON animal_evaluation_table.id_animalid = animal_flock_prefix_table.id_animalid
+    LEFT JOIN 
+        flock_prefix_table ON animal_flock_prefix_table.id_flockprefixid = flock_prefix_table.id_flockprefixid
+    WHERE 
+        animal_evaluation_table.eval_date = ?;
 """
 
 INSERT_ANIMAL_NOTE = """
