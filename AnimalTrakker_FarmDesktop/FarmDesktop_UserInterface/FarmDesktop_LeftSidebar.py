@@ -17,8 +17,8 @@ def farm_desktop_left_sidebar(evaluation_history):
             {'text': 'Add General Evaluations'},
             {'text': 'Add Vaccination and Deworming'},
             {'text': 'Add and Remove Drugs Given'},
-            {'text': 'Add Trim Hooves and Other General Tasks'},
-            {'text': 'Add Male Breeding Soundness Exams'},
+            {'text': 'Add Trim Hooves and\n      Other General Tasks'},
+            {'text': 'Add Male Breeding\n      Soundness Exams'},
             {'text': 'Update Optimal Ag Ram BSE'},
             {'text': 'Add Male Breeding Records'},
             {'text': 'Add Female Breeding Records'},
@@ -26,16 +26,16 @@ def farm_desktop_left_sidebar(evaluation_history):
             {'text': 'Add Tissue Sample Tests'}
         ]},
         {'parent': '', 'index': 2, 'iid': 'animalreports', 'text': 'Animal Reports', 'children': [
-            {'text': 'Get List of Current Animals'},
+            {'text': 'Get Current Animals'},
             {'text': 'Get Ownership History'},
             {'text': 'Get Location History'},
             {'text': 'Get ID History'},
-            {'text': 'Get Male Breeding Soundness Report'},
-            {'text': 'Get Optimal Ag Ram BSE Report'},
-            {'text': 'Get Female Pregnancy Status Report'},
-            {'text': 'Get Optimal Ag Ewe Ultrasound Report'},
+            {'text': 'Get Male BSE Report'},
+            {'text': 'Get Optimal Ag Ram\n     BSE Report'},
+            {'text': 'Get Female Pregnancy\n      Status Report'},
+            {'text': 'Get Optimal Ag Ewe\n      Ultrasound Report'},
             {'text': 'Get Animal Deaths Report'},
-            {'text': 'Get Purchased Animals Report'},
+            {'text': 'Get Purchased\n      Animals Report'},
             {'text': 'Get Sold Animal Report'}
         ]},
         {'parent': '', 'index': 3, 'iid': 'estimatedbreedingvalues', 'text': 'Estimated Breeding Values', 'children': [
