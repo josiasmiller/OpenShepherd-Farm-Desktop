@@ -1,4 +1,5 @@
-from tkinter import filedialog
+import tkinter as tk
+from tkinter import filedialog, ttk
 import sqlite3
 from threading import Lock
 from AnimalTrakker_Shared.Shared_Logging import get_logger
@@ -88,12 +89,35 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             rows = cursor.fetchall()
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            #logger.info(f"Query executed successfully: {query}, fetched {len(rows)} rows")
             return rows
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
             return []
 
+    def fetchall_with_column_names(self, query, params=None):
+        """
+        Executes a query and fetches all rows, returning a list of dictionaries with column names.
+        
+        Args:
+            query (str): SQL query to execute.
+            params (tuple, optional): Parameters to substitute into the query.
+
+        Returns:
+            list of dict: Rows returned by the query with column names as keys.
+        """
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(query, params or ())
+            columns = [column[0] for column in cursor.description]
+            rows = cursor.fetchall()
+            cursor.close()
+            result = [dict(zip(columns, row)) for row in rows]
+            return result
+        except sqlite3.Error as e:
+            logger.error(f"Error executing query '{query}': {e}")
+            return []
+        
     def fetchone(self, query, params=None):
         """
         Executes a query and fetches the first row of the result.
@@ -110,7 +134,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             row = cursor.fetchone()
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            #logger.info(f"Query executed successfully: {query}, fetched 1 row: {row}")
             return row
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -133,7 +157,7 @@ class DatabaseConnection:
             cursor.execute(query, params or ())
             rows = cursor.fetchmany(size)
             cursor.close()
-            logger.info(f"Query executed successfully: {query}")
+            #logger.info(f"Query executed successfully: {query}")
             return rows
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -156,7 +180,7 @@ class DatabaseConnection:
             self.connection.commit()
             rows_affected = cursor.rowcount
             cursor.close()
-            logger.info(f"Query executed successfully: {query}, Rows affected: {rows_affected}")
+            #logger.info(f"Query executed successfully: {query}, Rows affected: {rows_affected}")
             return rows_affected
         except sqlite3.Error as e:
             logger.error(f"Error executing query '{query}': {e}")
@@ -204,3 +228,72 @@ def file_picker():
     # File was selected; log and return the path
     logger.info(f"The database file is {database_file}")
     return database_file
+
+def report_picker():
+    """
+    Opens a file dialog for the user to select an Excel file (.xls or .xlsx) and returns the file path.
+
+    This function uses a Tkinter file dialog to ask the user to open a file
+    with specific extensions suitable for Excel files. It handles the case
+    where a user might cancel the operation.
+
+    Returns:
+        str: The path to the selected Excel file, or an empty string if no file is selected.
+    """
+    # Configure the options for the file dialog
+    filetypes = [
+        ("Excel files", "*.xls *.xlsx"),
+        ("All Files", "*.*")
+    ]
+    title = "Open Report File"
+
+    # Show the open file dialog and store the result
+    report_file = filedialog.askopenfilename(title=title, filetypes=filetypes)
+
+    if not report_file:
+        # No file was selected (user cancelled the dialog)
+        logger.info("No report file selected.")
+        return ""
+
+    # File was selected; log and return the path
+    logger.info(f"The report file is {report_file}")
+    return report_file
+
+
+## MITCH DEBUG
+
+class InitialPage(tk.Tk):
+    def __init__(self, run_main):
+        super().__init__()
+
+        self._run_main = run_main
+
+        self.title("Initial Page")
+        self.geometry("500x300")
+
+        self.create_widgets()
+
+        self.current_database = ""
+
+
+
+    def create_widgets(self):
+        button1 = ttk.Button(self, text="Select Database", command=self.select_database)
+        button1.pack(pady=10)
+
+        ##TODO: make it so the user can choose the default settings from the database selected
+
+        button3 = ttk.Button(self, text="Open Main App", command=self.open_main_app)
+        button3.pack(pady=10)
+
+        self.database_label = ttk.Label(self, text="No database selected")
+        self.database_label.pack(pady=10)
+
+    def select_database(self):
+        self.current_database = file_picker()
+        self.database_label.config(text=f"Selected Database: {self.current_database}")
+
+
+    def open_main_app(self):
+        self.destroy()
+        self._run_main(self.current_database)
