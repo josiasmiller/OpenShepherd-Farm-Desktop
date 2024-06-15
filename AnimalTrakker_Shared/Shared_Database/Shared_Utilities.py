@@ -1,4 +1,5 @@
-from tkinter import filedialog
+import tkinter as tk
+from tkinter import filedialog, ttk
 import sqlite3
 from threading import Lock
 from AnimalTrakker_Shared.Shared_Logging import get_logger
@@ -257,3 +258,42 @@ def report_picker():
     # File was selected; log and return the path
     logger.info(f"The report file is {report_file}")
     return report_file
+
+
+## MITCH DEBUG
+
+class InitialPage(tk.Tk):
+    def __init__(self, run_main):
+        super().__init__()
+
+        self._run_main = run_main
+
+        self.title("Initial Page")
+        self.geometry("500x300")
+
+        self.create_widgets()
+
+        self.current_database = ""
+
+
+
+    def create_widgets(self):
+        button1 = ttk.Button(self, text="Select Database", command=self.select_database)
+        button1.pack(pady=10)
+
+        ##TODO: make it so the user can choose the default settings from the database selected
+
+        button3 = ttk.Button(self, text="Open Main App", command=self.open_main_app)
+        button3.pack(pady=10)
+
+        self.database_label = ttk.Label(self, text="No database selected")
+        self.database_label.pack(pady=10)
+
+    def select_database(self):
+        self.current_database = file_picker()
+        self.database_label.config(text=f"Selected Database: {self.current_database}")
+
+
+    def open_main_app(self):
+        self.destroy()
+        self._run_main(self.current_database)
