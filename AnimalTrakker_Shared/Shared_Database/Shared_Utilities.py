@@ -20,7 +20,7 @@ class DatabaseConnection:
         This method ensures that only one instance of the database connection exists within the application.
 
         Args:
-            db_path (str): The file path to the SQLite database.
+            db_path (str): The file path to the SQLite database.InitialPage
 
         Returns:
             DatabaseConnection: The singleton instance of the database connection.
@@ -273,8 +273,10 @@ class InitialPage(tk.Tk):
 
         self.create_widgets()
 
+        # initialize database fields to be empty
         self.current_database = ""
-
+        self.db_connection = None
+        self.db_default_settings = None
 
 
     def create_widgets(self):
@@ -288,6 +290,22 @@ class InitialPage(tk.Tk):
 
         self.database_label = ttk.Label(self, text="No database selected")
         self.database_label.pack(pady=10)
+
+       ## drop down menu
+
+        # List of options for the dropdown
+        options = ["Option 1", "Option 2", "Option 3", "Option 4"]
+
+        # Define a StringVar to hold the selected option
+        self.selected_option = tk.StringVar(self)
+        self.selected_option.set("Option 1")  # Set the default option
+
+        # Create the dropdown (OptionMenu) widget
+        self.dropdown = tk.OptionMenu(self, self.selected_option, *options)
+        self.dropdown.pack(pady=10)
+
+        # Debugging statement
+        logger.info(f"Dropdown menu created successfully.")
 
     def select_database(self):
         self.current_database = file_picker()
