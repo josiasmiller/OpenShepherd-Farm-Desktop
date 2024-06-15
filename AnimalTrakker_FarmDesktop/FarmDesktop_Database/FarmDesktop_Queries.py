@@ -50,7 +50,8 @@ GET_EVALUATION_UNITS = """
 # Fetch all default settings names
 GET_DEFAULT_SETTINGS_NAMES = """
     SELECT
-    	default_settings_name 
+    	id_animaltrakkerdefaultsettingsid
+    	, default_settings_name 
      FROM 
      	animaltrakker_default_settings_table
 """
