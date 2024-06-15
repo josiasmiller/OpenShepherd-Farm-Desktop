@@ -70,6 +70,9 @@ class LeftSidebar(tk.Frame):
         self.treeview.pack(expand=True, fill='both', padx=0, pady=0)
         self.treeview.bind("<ButtonRelease-1>", self.on_click)
 
+        # Configure the Treeview column to adjust width automatically
+        self.treeview.column("#0", width=self.calculate_treeview_width(), stretch=True)
+        
         # Iterate over the structured list to insert each item into the Treeview.
         for node in self.tree_structure:
             self.treeview.insert(node['parent'], node['index'], node['iid'], text=node['text'])
@@ -99,6 +102,7 @@ class LeftSidebar(tk.Frame):
         """
         Clears all widgets from the content frame.
         """
+        logger.info("Clearing Leftsidebar content frame")
         for widget in self.content_frame.winfo_children():
             widget.destroy()
         self.current_widget = None
@@ -131,9 +135,29 @@ class LeftSidebar(tk.Frame):
         logger.info(f"Updating sidebar content to {widget_class.__name__}")
         self.clear_content_frame()
 
-        try:
+        try:                    
             self.current_widget = widget_class(self.content_frame, *args, **kwargs)
             self.current_widget.pack(fill=tk.BOTH, expand=True)
             logger.info(f"Widget {widget_class.__name__} added and packed.")
         except Exception as e:
             logger.error(f"Failed to initialize or pack widget {widget_class.__name__}: {str(e)}")
+            
+    def calculate_treeview_width(self):
+        """
+        Calculate the appropriate width for the treeview based on the text of the items.
+
+        Returns:
+            int: The calculated width for the treeview column.
+        """
+        max_width = 0
+        for node in self.tree_structure:
+            item_text = node['text']
+            item_width = tk.font.Font().measure(item_text)
+            max_width = max(max_width, item_width)
+            if 'children' in node:
+                for child in node['children']:
+                    child_text = child['text']
+                    child_width = tk.font.Font().measure(child_text)
+                    max_width = max(max_width, child_width)
+        return max_width + 0  # Add some padding for better visual appearance
+

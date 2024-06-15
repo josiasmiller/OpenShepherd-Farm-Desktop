@@ -8,7 +8,7 @@ class BottomBar(tk.Frame):
     A bottom bar GUI component that displays application status or information.
     Currently configured to show the current database path being used.
     """
-    def __init__(self, parent, currentdatabase, current_setting=None, bg='default', **kwargs):
+    def __init__(self, parent, currentdatabase, current_setting=None, current_evaluation=None, bg='default', **kwargs):
         """
         Initializes the BottomBar with the current database path displayed.
 
@@ -23,8 +23,12 @@ class BottomBar(tk.Frame):
         self.db_label.grid(row=0, column=0, sticky="w", padx=5)
         
         # Create and pack a label to display the current default setting
-        self.setting_label = tk.Label(self, text=f"Current Setting: {current_setting}", bg=bg)
+        self.setting_label = tk.Label(self, text=f"Current Default Settings: {current_setting}", bg=bg)
         self.setting_label.grid(row=1, column=0, sticky="w", padx=5)
+        
+        # Create and pack a label to display the current evaluation
+        self.evaluation_label = tk.Label(self, text=f"Current Evaluation: {current_evaluation}", bg=bg)
+        self.evaluation_label.grid(row=2, column=0, sticky="w", padx=5)
         
     def update_database_path(self, new_db_path):
         """
@@ -46,3 +50,13 @@ class BottomBar(tk.Frame):
         """
         self.setting_label.config(text=f"Current Setting: {new_setting}")
         logger.info(f"Current setting in BottomBar updated to: {new_setting}")
+        
+    def update_current_evaluation(self, new_evaluation):
+        """
+        Updates the text of the label to reflect the current evaluation.
+
+        Args:
+            new_setting (str): The new evaluation to display.
+        """
+        self.evaluation_label.config(text=f"Current Evaluation: {new_evaluation}")
+        logger.info(f"Current evaluation in BottomBar updated to: {new_evaluation}")

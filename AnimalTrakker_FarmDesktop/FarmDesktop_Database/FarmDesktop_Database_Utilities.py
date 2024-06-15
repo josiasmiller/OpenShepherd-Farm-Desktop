@@ -1,6 +1,8 @@
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 from AnimalTrakker_Shared.Shared_Logging import get_logger
 
+from datetime import datetime
+
 logger = get_logger(__name__)
 
 def fetch_evaluation_history(db_connection):
@@ -63,7 +65,34 @@ def fetch_default_settings(db_connection):
         # Log any errors that occur during the fetch process.
         logger.error(f"Failed to fetch default settings: {e}")
         return []  # Return an empty list or raise an exception depending on your requirements.
+    
+def fetch_evaluations(db_connection):
+    """
+    Fetches default evaluations data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
 
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list: List containing names of evaluations.
+    """
+    try:
+        # Execute the predefined query to fetch default settings.
+        rows = db_connection.fetchall(GET_EVALUATIONS_NAMES)
+        logger.info(f"Evaluations fetched successfully, retrieved {len(rows)} records.")
+        
+        # Log the raw data fetched from the database
+        logger.info(f"Fetched rows: {rows}")
+        
+        # Process the fetched rows into a list of setting names.
+        settings = [str(row[0]) for row in rows]  # Ensure only the setting name is returned
+        logger.info(f"Processed settings: {settings}")
+        return settings
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch Evaluations: {e}")
+        return []  # Return an empty list or raise an exception depending on your requirements.
+    
 def fetch_setting_details(db_connection, setting_name):
     """
     Fetches details for a specific default setting from the database.
@@ -107,21 +136,146 @@ def fetch_setting_details(db_connection, setting_name):
     except Exception as e:
         logger.error(f"Failed to fetch default setting details: {e}")
         return None
+    
+def fetch_evaluation_details(db_connection, evaluation_name):
+    """
+    Fetches details for a specific evaluation from the database.
+
+    Args:
+        evaluation_name (str): The name of the evaluation to fetch details for.
+
+    Returns:
+        dict: A dictionary containing the details of the evaluation.
+    """
+    try:
+        row = db_connection.fetchone(GET_EVALUATION_DETAILS, (evaluation_name,))
+        if row:
+            columns = [
+                "id_savedevaluationstableid", "evaluation_name", "saved_evaluation_id_contactid", "saved_evaluation_id_companyid", 
+                "trait_name01", "trait_name02", "trait_name03", "trait_name04", "trait_name05", "trait_name06", 
+                "trait_name07", "trait_name08", "trait_name09", "trait_name10", "trait_name11", "trait_name12", 
+                "trait_name13", "trait_name14", "trait_name15", "trait_units11", "trait_units12", "trait_units13", 
+                "trait_units14", "trait_units15", "trait_name16", "trait_name17", "trait_name18", "trait_name19", 
+                "trait_name20", "created", "modified"
+            ]
+            logger.info(f"Evaluation for {evaluation_name} fetched successfully, retrieved {len(row)} record.")
+            return dict(zip(columns, row))
+        else:
+            return None
+    except Exception as e:
+        logger.error(f"Failed to fetch evaluation details: {e}")
+        return None
+
 
 def save_setting_changes(db_connection, updated_details):
-        """
-        Saves the changes made to the default setting.
+    """
+    Saves the changes made to the default setting.
 
-        Args:
-            updated_details (dict): A dictionary of the updated setting details.
-        """
-        setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
-        params = tuple(updated_details.values()) + (setting_id,)
-        rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
-        if rows_affected:
-            logger.info(f"Successfully updated setting with ID {setting_id}")
-        else:
-            logger.error(f"Failed to update setting with ID {setting_id}")
+    Args:
+        updated_details (dict): A dictionary of the updated setting details.
+    """
+    setting_id = updated_details.pop('id_animaltrakkerdefaultsettingsid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
+    params = tuple(updated_details.values()) + (setting_id,)
+    rows_affected = db_connection.save(UPDATE_SETTING_DETAILS, params)
+    if rows_affected:
+        logger.info(f"Successfully updated setting with ID {setting_id}")
+    else:
+        logger.error(f"Failed to update setting with ID {setting_id}")
+            
+def save_evaluation_changes(db_connection, updated_details):
+    """
+    Saves the changes made to the evaluation.
+
+    Args:
+        updated_details (dict): A dictionary of the updated evaluation details.
+    """
+    evaluation_id = updated_details.pop('id_savedevaluationstableid')  # Extract the ID for the WHERE clause
+    modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    updated_details['modified'] = modified
+    params = tuple(updated_details.values()) + (evaluation_id,)
+    rows_affected = db_connection.save(UPDATE_EVALUATION_DETAILS, params)
+    if rows_affected:
+        logger.info(f"Successfully updated evaluation with ID {evaluation_id}")
+    else:
+        logger.error(f"Failed to update evaluation with ID {evaluation_id}")        
+    
+def save_new_setting(db_connection, new_setting_name):
+    """
+    Saves a new setting by copying details from the 'Standard Setting'.
+
+    Args:
+        db_connection: The database connection object.
+        new_setting_name (str): The name of the new setting.
+    """
+    try:
+        # Fetch the details of the 'Standard Setting'
+        row = db_connection.fetchone(GET_SETTING_DETAILS, ('Standard Settings',))
+        if not row:
+            logger.error("Standard Setting not found.")
+            return
+
+        # Prepare the new setting details
+        new_setting_details = list(row)
+        new_setting_details[1] = new_setting_name  # Update the setting name
+
+        # Remove the primary key and the original created and modified timestamps
+        #new_setting_details = new_setting_details[1:-2]
+
+        # Add 'created' and 'modified' timestamps
+        created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        modified = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_setting_details[-2] = created
+        new_setting_details[-1] = modified
+        
+        # Remove the primary key
+        new_setting_details = new_setting_details[1:]
+
+        # Convert to tuple for insertion
+        params = tuple(new_setting_details)
+              
+        # Insert the new setting into the database
+        db_connection.save(CREATE_NEW_SETTING, params)
+        logger.info(f"Successfully created new setting with name {new_setting_name}")
+    except Exception as e:
+        logger.error(f"Failed to create new setting: {e}")
+        
+def save_new_evaluation(db_connection, new_evaluation_name):
+    """
+    Saves a new evaluation by copying details from the 'Standard Evaluation'.
+
+    Args:
+        db_connection: The database connection object.
+        new_evaluation_name (str): The name of the new evaluation.
+    """
+    try:
+        # Fetch the details of the 'Standard Evaluation'
+        row = db_connection.fetchone(GET_EVALUATION_DETAILS, ('Simple Lambing',))
+        if not row:
+            logger.error("Standard Evaluation not found.")
+            return
+
+        # Prepare the new evaluation details
+        new_evaluation_details = list(row)
+        new_evaluation_details[1] = new_evaluation_name  # Update the evaluation name
+
+        # Remove the primary key and the original created and modified timestamps
+        new_evaluation_details[-2] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # created
+        new_evaluation_details[-1] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # modified
+        
+        # Remove the primary key
+        new_evaluation_details = new_evaluation_details[1:]
+
+        # Convert to tuple for insertion
+        params = tuple(new_evaluation_details)
+              
+        # Insert the new evaluation into the database
+        db_connection.save(CREATE_NEW_EVALUATION, params)
+        logger.info(f"Successfully created new evaluation with name {new_evaluation_name}")
+    except Exception as e:
+        logger.error(f"Failed to create new evaluation: {e}")
+
             
 def fetch_species_names(db_connection):
     """
@@ -131,12 +285,13 @@ def fetch_species_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing species common names.
+        list of str: List containing species IDs and common names.
     """
     try:
         rows = db_connection.fetchall(GET_SPECIES_NAMES)
         logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        print("Pure data from db:", rows)
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch species names: {e}")
         return []
@@ -149,15 +304,52 @@ def fetch_breed_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing breed names.
+        list of str: List containing breed IDs andnames.
     """
     try:
         rows = db_connection.fetchall(GET_BREED_NAMES)
         logger.info(f"Breed names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch breed names: {e}")
         return []
+    
+def fetch_birth_type(db_connection):
+    """
+    Fetches birth types from the birth_type_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing birth type IDs and names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_BIRTH_TYPE_NAMES)
+        logger.info(f"Birth types fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch birth types: {e}")
+        return []
+    
+def fetch_sex_names(db_connection):
+    """
+    Fetches sex names from the sex_table.
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+
+    Returns:
+        list of str: List containing sex IDs and names.
+    """
+    try:
+        rows = db_connection.fetchall(GET_SEX_NAMES)
+        logger.info(f"Sex names fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch sex names: {e}")
+        return []
+
 
 def fetch_state_names(db_connection):
     """
@@ -167,12 +359,12 @@ def fetch_state_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing state names.
+        list of str: List containing state IDs andnames.
     """
     try:
         rows = db_connection.fetchall(GET_STATE_NAMES)
         logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch state names: {e}")
         return []
@@ -185,13 +377,248 @@ def fetch_county_names(db_connection):
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
 
     Returns:
-        list of str: List containing county names.
+        list of str: List containing county IDs and names.
     """
     try:
         rows = db_connection.fetchall(GET_COUNTY_NAMES)
         logger.info(f"County names fetched successfully, retrieved {len(rows)} records.")
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch county names: {e}")
         return []
 
+def fetch_codon_values(animal_id, db_connection):
+
+    def get_codon_136(db_connection, codon_136_value_id):
+        if codon_136_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_CODON_136, (codon_136_value_id,))
+        return result[0] if result else None
+
+    def get_codon_171(db_connection, codon_171_value_id):
+        if codon_171_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_CODON_171, (codon_171_value_id,))
+        return result[0] if result else None
+    
+    def get_coat_color(db_connection, coat_color_value_id):
+        if coat_color_value_id is None:
+            return []
+        result = db_connection.fetchone(GET_COAT_COLOR, (coat_color_value_id,))
+        return result[0] if result else None
+
+    results = db_connection.fetchall(GET_CODONS_VALUE_IDS, (animal_id,))
+    codon_value_ids = {'codon_136': None, 'codon_171': None, 'coat_color': None}
+    for table_id, value_id in results:
+        if table_id == 2:
+            codon_value_ids['codon_136'] = value_id
+        elif table_id == 5:
+            codon_value_ids['codon_171'] = value_id
+        elif table_id == 7:
+            codon_value_ids['coat_color'] = value_id
+
+    codon_136_alleles = get_codon_136(db_connection, codon_value_ids['codon_136'])
+    codon_171_alleles = get_codon_171(db_connection, codon_value_ids['codon_171'])
+    coat_color = get_coat_color(db_connection, codon_value_ids['coat_color'])
+    
+    return codon_136_alleles, codon_171_alleles, coat_color
+
+def fetch_owner_info(db_connection, animal_id):
+    """
+    Fetches owner name based on the animal ID.
+    """
+    try:
+        result = db_connection.fetchone(GET_OWNER_INFO, (animal_id,))
+        
+        if result:
+            to_id_contactid, to_id_companyid, _ = result
+            if to_id_contactid and to_id_contactid != 0:
+                contact_name = db_connection.fetchone(GET_CONTACT_NAME, (to_id_contactid,))
+                return contact_name[0] if contact_name else None
+            elif to_id_companyid and to_id_companyid != 0:
+                company_name = db_connection.fetchone(GET_COMPANY_NAME, (to_id_companyid,))
+                return company_name[0] if company_name else None
+        return []
+    except Exception as e:
+        logger.error(f"An error occurred in 'fetch_owner_info': {e}")
+        return []
+
+def fetch_breeder_info(db_connection, animal_id):
+    """
+    Fetches breeder name based on the animal ID.
+    """
+    try:
+        result = db_connection.fetchone(GET_BREEDER_IDS, (animal_id,))
+        
+        if result:
+            _, company_id, contact_id = result
+            if isinstance(company_id, int) and company_id and company_id > 0:
+                company_name = db_connection.fetchone(GET_COMPANY_NAME, (company_id,))
+                return company_name[0] if company_name else None
+            elif isinstance(contact_id, int) and contact_id and contact_id > 0:
+                contact_name = db_connection.fetchone(GET_CONTACT_NAME, (contact_id,))
+                return contact_name[0] if contact_name else None
+        return []
+    except Exception as e:
+        logger.error(f"An error occurred in 'fetch_breeder_info': {e}, {animal_id}")
+        return []
+    
+def fetch_animal_location(db_connection, animal_id):
+    """
+    Fetches the location history of an animal by animalid and returns the last known location if the animal isn't dead.
+
+    Args:
+        db_connection (sqlite3.Connection): The database connection instance.
+        animal_id (int): The ID of the animal.
+
+    Returns:
+        str: Full address of the last known location or an empty string if the animal is dead.
+    """
+    try:
+        rows = db_connection.fetchall(GET_ANIMAL_LOCATION_HISTORY, (animal_id,))
+
+        if not rows:
+            logger.info("No location history found for animal ID %s", animal_id)
+            return []
+
+        latest_date = max(row[2] for row in rows)  # movement_date is the third column
+        latest_premises = [row for row in rows if row[2] == latest_date]
+
+        if any(row[4] == '' or row[4] == 0 for row in latest_premises):  # to_id_premiseid is the fifth column
+            #logger.info("Animal ID %s is dead", animal_id)
+            return []
+
+        last_location = latest_premises[0]  # If there are multiple, choose the first one
+
+        return fetch_premise_info(db_connection, last_location[4])  # to_id_premiseid is the fifth column
+
+    except Exception as e:
+        logger.error("Failed to fetch location history for animal ID %s: %s", animal_id, e)
+        return []
+
+def fetch_premise_info(db_connection, premise_id):
+    """
+    Fetches the address components of a premise given its ID and concatenates them into a full address.
+
+    Args:
+        db_connection (sqlite3.Connection): The database connection instance.
+        premise_id (int): The ID of the premise.
+
+    Returns:
+        str: Full address of the premise.
+    """
+    try:
+        row = db_connection.fetchone(GET_PREMISE_INFO_FIELDS, (premise_id,))
+
+        if row:
+            address_parts = [
+                row[0],  # premise_address1
+                row[1],  # premise_address2
+                row[2],  # premise_city
+                row[3],  # state_abbrev
+                row[4]   # premise_postcode
+            ]
+            
+            # Check if country needs to be included
+            if row[6] > 1:
+                address_parts.append(row[5])  # country_name
+            
+            # Filter out None or empty strings and join with ', '
+            full_address = ', '.join(filter(None, address_parts))
+            return full_address
+
+        return []
+
+    except Exception as e:
+        logger.error("Failed to fetch premise info for premise ID %s: %s", premise_id, e)
+        return []
+
+def fetch_animalid_by_eid(db_connection, eid):
+    """Fetches the animal ID from the database for a given EID."""
+    try:
+        row = db_connection.fetchone(GET_ANIMALID_BY_EID, (eid,))
+        if row:
+            #logger.info(f"Animal ID {row[0]} for EID {eid} fetched successfully.")
+            return row[0]  # Return the id_animalid directly
+        else:
+            logger.warning(f"No animal ID found for EID {eid}.")
+    except Exception as e:
+        # Log any errors that occur during the fetch process.
+        logger.error(f"Failed to fetch animal ID for EID {eid}: {e}")
+    return None
+
+def fetch_animalids_by_evaluation_date(db_connection, eval_date):
+    """Fetches animal IDs, names, and flock prefixes from the database for a given evaluation date."""
+    try:
+        rows = db_connection.fetchall(GET_ANIMALIDS_BY_EVALUATION_DATE, (eval_date,))
+        #logger.info(f"Animal IDs fetched successfully for evaluation date {eval_date}.")
+        
+        # Remove duplicates based on id_animalid
+        unique_rows = {}
+        for row in rows:
+            id_animalid = row[0]
+            if id_animalid not in unique_rows:
+                unique_rows[id_animalid] = row
+        return list(unique_rows.values())
+    except Exception as e:
+        logger.error(f"Failed to fetch animal IDs for evaluation date {eval_date}: {e}")
+        return []
+
+
+def fetch_animal_evaluations_by_date(db_connection, animal_id, eval_date):
+    """Fetches rows from animal_evaluation_table for a given animal ID and evaluation date."""
+    try:
+        rows = db_connection.fetchall_with_column_names(GET_ANIMAL_EVALUATIONS_BY_DATE, (animal_id, eval_date))
+        #logger.info(f"Animal evaluations fetched successfully for animal ID {animal_id} and evaluation date {eval_date}.")
+        return rows
+    except Exception as e:
+        logger.error(f"Failed to fetch animal evaluations for animal ID {animal_id} and evaluation date {eval_date}: {e}")
+        return []
+
+def update_trait_score(db_connection, eval_id, trait_num, score):
+    """Updates the trait score in animal_evaluation_table for a given evaluation ID and trait number."""
+    query = UPDATE_TRAIT_SCORE.format(trait_num=trait_num)
+    try:
+        db_connection.save(query, (score, eval_id))
+        #logger.info(f"Trait {trait_num} score updated successfully for evaluation ID {eval_id}.")
+    except Exception as e:
+        logger.error(f"Failed to update trait {trait_num} score for evaluation ID {eval_id}: {e}")
+
+    
+def add_animal_note(db_connection, animal_id, note_text, note_date, note_time, predefined_notes_id):
+    """Inserts a note into the animal_note_table for a given animal."""
+    try:
+        db_connection.save(
+            INSERT_ANIMAL_NOTE,
+            (animal_id, note_text, note_date, note_time, predefined_notes_id, note_date, note_date)
+        )
+        #logger.info(f"Note added successfully for animal ID {animal_id}.")
+    except Exception as e:
+        logger.error(f"Failed to add note for animal ID {animal_id}: {e}")
+
+def fetch_animal_alert(db_connection, animal_id):
+    """Fetches the existing alert for a given animal ID."""
+    try:
+        alert = db_connection.fetchone(GET_ANIMAL_ALERT, (animal_id,))
+        return alert[0] if alert else ''
+    except Exception as e:
+        logger.error(f"Failed to fetch alert for animal ID {animal_id}: {e}")
+        return ''
+
+def update_animal_alert(db_connection, animal_id, new_alert):
+    """Updates the alert column for a given animal ID."""
+    try:
+        db_connection.save(UPDATE_ANIMAL_ALERT, (new_alert, animal_id))
+        #logger.info(f"Alert updated successfully for animal ID {animal_id}.")
+    except Exception as e:
+        logger.error(f"Failed to update alert for animal ID {animal_id}: {e}")
+
+def fetch_example(db_connection):
+    # this is just example, copy of fetch_states_names list of states
+    try:
+        rows = db_connection.fetchall(GET_STATE_NAMES)
+        logger.info(f"State names fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch state names: {e}")
+        return []
