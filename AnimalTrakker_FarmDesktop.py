@@ -22,7 +22,7 @@ def main():
     initial_page.mainloop()
 
 
-def run_main_app(database_path: str):
+def run_main_app(database_path: str, default_settings_pk: int):
     # Set up the main application window
     root = tk.Tk()
     root.title("AnimalTrakker")
