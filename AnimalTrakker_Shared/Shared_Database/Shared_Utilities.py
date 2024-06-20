@@ -3,6 +3,7 @@ from tkinter import filedialog, ttk
 import sqlite3
 from threading import Lock
 from AnimalTrakker_Shared.Shared_Logging import get_logger
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_default_settings
 
 logger = get_logger(__name__)
 
@@ -20,7 +21,7 @@ class DatabaseConnection:
         This method ensures that only one instance of the database connection exists within the application.
 
         Args:
-            db_path (str): The file path to the SQLite database.
+            db_path (str): The file path to the SQLite database.InitialPage
 
         Returns:
             DatabaseConnection: The singleton instance of the database connection.
@@ -266,6 +267,7 @@ class InitialPage(tk.Tk):
     def __init__(self, run_main):
         super().__init__()
 
+        self.dropdown = None
         self._run_main = run_main
 
         self.title("Initial Page")
@@ -273,8 +275,10 @@ class InitialPage(tk.Tk):
 
         self.create_widgets()
 
+        # initialize database fields to be empty
         self.current_database = ""
-
+        self.db_connection = None
+        self.db_default_settings = None
 
 
     def create_widgets(self):
@@ -289,11 +293,77 @@ class InitialPage(tk.Tk):
         self.database_label = ttk.Label(self, text="No database selected")
         self.database_label.pack(pady=10)
 
+        ## drop down menu
+
+        # List of options for the dropdown
+        options = ["Option 1", "Option 2", "Option 3", "Option 4"]
+
+        # Define a StringVar to hold the selected option
+        self.selected_option = tk.StringVar(self)
+        self.selected_option.set("Option 1")  # Set the default option
+
+        # Create the dropdown (OptionMenu) widget
+        self.dropdown = tk.OptionMenu(self, self.selected_option, *options)
+        self.dropdown.pack(pady=10)
+
+        # Debugging statement
+        logger.info(f"Dropdown menu created successfully.")
+
     def select_database(self):
         self.current_database = file_picker()
         self.database_label.config(text=f"Selected Database: {self.current_database}")
 
+        cnx = DatabaseConnection(self.current_database)
+
+        self.db_default_settings = fetch_default_settings(cnx, get_key_and_name=True)
+        self.update_option_menu([row[1] for row in self.db_default_settings])
+
+        # update string var to be first setting in ans
+        self.selected_option.set(self.db_default_settings[0][1])
+
 
     def open_main_app(self):
+
+        if self.current_database == "":
+            self.create_popup()
+            return
+
+        default_settings_pk = None
+
+        for pk, ds_name in self.db_default_settings:
+            if ds_name == self.selected_option.get():
+                default_settings_pk = pk
+                break
+
+        ## dont run app when default settings not found
+        if default_settings_pk is None:
+            return
+
         self.destroy()
-        self._run_main(self.current_database)
+        self._run_main(self.current_database, default_settings_pk)
+
+    def update_option_menu(self, new_options):
+        # Clear the current options
+        menu = self.dropdown['menu']
+        menu.delete(0, 'end')
+
+        # Add new options
+        for option in new_options:
+            menu.add_command(label=option, command=tk._setit(self.selected_option, option))
+
+
+    def create_popup(self):
+        # Create a new Toplevel window (the pop-up)
+        popup = tk.Toplevel()
+        popup.title("Warning")
+
+        # Set the dimensions and position of the pop-up window
+        popup.geometry("300x200+500+300")
+
+        # Add a label to the pop-up window
+        label = tk.Label(popup, text="You must select a database file before opening the main app.")
+        label.pack(pady=20)
+
+        # Add a button to close the pop-up window
+        close_button = tk.Button(popup, text="Close", command=popup.destroy)
+        close_button.pack(pady=20)

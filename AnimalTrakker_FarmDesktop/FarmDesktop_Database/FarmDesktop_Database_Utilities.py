@@ -39,12 +39,13 @@ def fetch_evaluation_data(db_connection, evaluation_id, evaluation_name):
     
     return row
 
-def fetch_default_settings(db_connection):
+def fetch_default_settings(db_connection, get_key_and_name=False):
     """
     Fetches default settings data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
 
     Args:
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+        get_key_and_name (bool): when true, returns a list of tuples that contain the DB Key and the name of the settings.
 
     Returns:
         list: List containing names of default settings.
@@ -58,7 +59,10 @@ def fetch_default_settings(db_connection):
         logger.info(f"Fetched rows: {rows}")
         
         # Process the fetched rows into a list of setting names.
-        settings = [str(row[0]) for row in rows]  # Ensure only the setting name is returned
+        if get_key_and_name:
+            settings = [(row[0], row[1]) for row in rows]
+        else:
+            settings = [str(row[1]) for row in rows]  # Ensure only the setting name is returned
         logger.info(f"Processed settings: {settings}")
         return settings
     except Exception as e:
