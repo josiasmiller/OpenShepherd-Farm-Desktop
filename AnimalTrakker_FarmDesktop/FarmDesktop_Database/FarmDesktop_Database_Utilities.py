@@ -3,7 +3,28 @@ from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 from datetime import datetime
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import update_default_settings, default_settings
+
 logger = get_logger(__name__)
+
+
+def set_settings(db_connection, settings_name: str) -> None:
+    """
+    This function creates a new QuerySettings from a given database file path
+
+    :param db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+    :param settings_name:                      name of the settings to be used, this is in reference to
+                                               the `animaltrakker_default_settings_table`
+    :return:
+    """
+    rows = db_connection.fetchall_with_column_names(GET_SETTING_DETAILS, params=(settings_name,) )
+
+    if len(rows) == 0:
+        raise ValueError("default settings returned nothing from the database")
+
+    settings_dict = rows[0]
+    update_default_settings(settings_dict)
+    return
 
 def fetch_evaluation_history(db_connection):
     """
@@ -347,7 +368,8 @@ def fetch_sex_names(db_connection):
         list of str: List containing sex IDs and names.
     """
     try:
-        rows = db_connection.fetchall(GET_SEX_NAMES)
+        species_id = default_settings.species_id
+        rows = db_connection.fetchall(GET_SEX_NAMES, (species_id, ) )
         logger.info(f"Sex names fetched successfully, retrieved {len(rows)} records.")
         return [(row[0], row[1]) for row in rows]
     except Exception as e:

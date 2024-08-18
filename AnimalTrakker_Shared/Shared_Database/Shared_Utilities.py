@@ -261,8 +261,6 @@ def report_picker():
     return report_file
 
 
-## MITCH DEBUG
-
 class InitialPage(tk.Tk):
     def __init__(self, run_main):
         super().__init__()
@@ -328,19 +326,21 @@ class InitialPage(tk.Tk):
             self.create_popup()
             return
 
-        default_settings_pk = None
+        # default_settings_pk = None
+        #
+        # for pk, ds_name in self.db_default_settings:
+        #     if ds_name == self.selected_option.get():
+        #         default_settings_pk = pk
+        #         break
+        #
+        # ## dont run app when default settings not found
+        # if default_settings_pk is None:
+        #     return
 
-        for pk, ds_name in self.db_default_settings:
-            if ds_name == self.selected_option.get():
-                default_settings_pk = pk
-                break
-
-        ## dont run app when default settings not found
-        if default_settings_pk is None:
-            return
+        # self.selected_option.get()
 
         self.destroy()
-        self._run_main(self.current_database, default_settings_pk)
+        self._run_main(self.current_database, self.selected_option.get())
 
     def update_option_menu(self, new_options):
         # Clear the current options

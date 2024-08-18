@@ -8,6 +8,8 @@ from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handler
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget, SearchLeftSidebarWidget, SearchMainFrameWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import default_settings
+
 import pandas as pd
 from tkinter import messagebox
 import tkinter as tk
@@ -136,6 +138,8 @@ class FarmDesktopController(BaseController):
                     if setting_details:
                         self.app.main_frame.update_content(EditWidget, data_details=setting_details, controller=self, db_connection=self.app.db_connection, data_type="setting")
                 else:
+                    set_settings(self.app.db_connection, choice)
+
                     self.app.current_default_setting = choice
                     self.app.main_frame.update_content(ConfirmationMessageWidget, message=f"{choice} has been chosen as the default setting.")
                     self.app.bottom_bar.update_current_setting(choice)
