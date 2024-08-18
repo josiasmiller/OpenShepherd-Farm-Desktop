@@ -326,19 +326,6 @@ class InitialPage(tk.Tk):
             self.create_popup()
             return
 
-        # default_settings_pk = None
-        #
-        # for pk, ds_name in self.db_default_settings:
-        #     if ds_name == self.selected_option.get():
-        #         default_settings_pk = pk
-        #         break
-        #
-        # ## dont run app when default settings not found
-        # if default_settings_pk is None:
-        #     return
-
-        # self.selected_option.get()
-
         self.destroy()
         self._run_main(self.current_database, self.selected_option.get())
 
