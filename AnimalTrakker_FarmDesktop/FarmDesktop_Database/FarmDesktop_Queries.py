@@ -246,6 +246,8 @@ GET_SEX_NAMES = """
         sex_name 
     FROM 
         sex_table
+    WHERE
+        id_speciesid = ?
 """
 
 

@@ -3,7 +3,28 @@ from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 from datetime import datetime
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import update_default_settings, default_settings
+
 logger = get_logger(__name__)
+
+
+def set_settings(db_connection, settings_name: str) -> None:
+    """
+    This function creates a new QuerySettings from a given database file path
+
+    :param db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+    :param settings_name:                      name of the settings to be used, this is in reference to
+                                               the `animaltrakker_default_settings_table`
+    :return:
+    """
+    rows = db_connection.fetchall_with_column_names(GET_SETTING_DETAILS, params=(settings_name,) )
+
+    if len(rows) == 0:
+        raise ValueError("default settings returned nothing from the database")
+
+    settings_dict = rows[0]
+    update_default_settings(settings_dict)
+    return
 
 def fetch_evaluation_history(db_connection):
     """
@@ -39,12 +60,13 @@ def fetch_evaluation_data(db_connection, evaluation_id, evaluation_name):
     
     return row
 
-def fetch_default_settings(db_connection):
+def fetch_default_settings(db_connection, get_key_and_name=False):
     """
     Fetches default settings data from the database using a secure and efficient connection handling provided by a DatabaseConnection instance.
 
     Args:
         db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+        get_key_and_name (bool): when true, returns a list of tuples that contain the DB Key and the name of the settings.
 
     Returns:
         list: List containing names of default settings.
@@ -58,7 +80,10 @@ def fetch_default_settings(db_connection):
         logger.info(f"Fetched rows: {rows}")
         
         # Process the fetched rows into a list of setting names.
-        settings = [str(row[0]) for row in rows]  # Ensure only the setting name is returned
+        if get_key_and_name:
+            settings = [(row[0], row[1]) for row in rows]
+        else:
+            settings = [str(row[1]) for row in rows]  # Ensure only the setting name is returned
         logger.info(f"Processed settings: {settings}")
         return settings
     except Exception as e:
@@ -343,7 +368,8 @@ def fetch_sex_names(db_connection):
         list of str: List containing sex IDs and names.
     """
     try:
-        rows = db_connection.fetchall(GET_SEX_NAMES)
+        species_id = default_settings.species_id
+        rows = db_connection.fetchall(GET_SEX_NAMES, (species_id, ) )
         logger.info(f"Sex names fetched successfully, retrieved {len(rows)} records.")
         return [(row[0], row[1]) for row in rows]
     except Exception as e:

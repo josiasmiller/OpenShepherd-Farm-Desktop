@@ -4,7 +4,7 @@ from AnimalTrakker_Shared.Shared_Logging import animaltrakker_setup_logging, get
 from AnimalTrakker_Shared.Shared_Database.Shared_Utilities import DatabaseConnection, file_picker, InitialPage
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_GUI import FarmDesktopGUI
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_evaluation_history
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import fetch_evaluation_history, set_settings
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_LeftSidebar import farm_desktop_left_sidebar
 from AnimalTrakker_FarmDesktop.FarmDesktop_Controller.FarmDesktop_Controller import FarmDesktopController
 
@@ -22,7 +22,7 @@ def main():
     initial_page.mainloop()
 
 
-def run_main_app(database_path: str):
+def run_main_app(database_path: str, initial_settings : str):
     # Set up the main application window
     root = tk.Tk()
     root.title("AnimalTrakker")
@@ -40,6 +40,8 @@ def run_main_app(database_path: str):
     tree_data = farm_desktop_left_sidebar(evaluation_history=evaluation_history)
 
     logger.info("App started successfully")
+
+    set_settings(db_connection, initial_settings)
 
     # Set up the main graphical interface for the application
     app = FarmDesktopGUI(root, sidebar_title="AnimalTrakker - Farm Desktop", tree_structure=tree_data, controller=controller, currentdatabase=database_path, db_connection=db_connection)
