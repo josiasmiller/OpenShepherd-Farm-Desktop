@@ -16,6 +16,17 @@ import tkinter as tk
 
 logger = get_logger(__name__)
 
+from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_LeftSidebar import TabNames
+
+
+def not_implemented_popup():
+    """
+    Display a popup message indicating that the button functionality is not yet implemented.
+    """
+    messagebox.showinfo("Not Implemented", "This button's functionality is not yet implemented.")
+
+
+
 class FarmDesktopController(BaseController):
     """
     Controller for the Farm Desktop application, handling specific user interactions
@@ -25,6 +36,7 @@ class FarmDesktopController(BaseController):
     focusing on the specific needs of the Farm Desktop application, such as handling sidebar clicks
     with a focus on specific operational logic depending on the area of the application interacted with.
     """
+
     
     def __init__(self):
         """
@@ -33,7 +45,96 @@ class FarmDesktopController(BaseController):
         super().__init__()  # Call the base class constructor to perform any setup defined there.
         self.search_results = None
 
-    def handle_sidebar_click(self, item, item_text):
+        # define dictionary that maps the minor tab string to the function to be called
+        self._click_handler = {
+            ## Animal Reports
+            TabNames.LIST_OF_ANIMALS:                  lambda: self.animal_search("default"),
+            TabNames.ANIMAL_SCAN:                      not_implemented_popup,
+            TabNames.OWNERSHIP_HISTORY:                not_implemented_popup,
+            TabNames.LOCATION_HISTORY:                 not_implemented_popup,
+            TabNames.ID_HISTORY:                       not_implemented_popup,
+            TabNames.DRUG_HISTORY:                     not_implemented_popup,
+            TabNames.NOTE_HISTROY:                     not_implemented_popup,
+            TabNames.EVALUATION_RESULTS:               not_implemented_popup,
+            TabNames.OPTIMAL_LIVESTOCK_RAM_BSE_REPORT: not_implemented_popup,
+            TabNames.OPTIMAL_LIVESTOCK_EWE_REPORT:     not_implemented_popup,
+            TabNames.MALE_BREEDING_SOUNDNESS_REPORT:   not_implemented_popup,
+            TabNames.FEMALE_PREGNANCY_REPORT:          not_implemented_popup,
+            TabNames.ANIMAL_DEATHS_REPORT:             not_implemented_popup,
+            TabNames.PURCHASE_ANIMAL_REPORT:           not_implemented_popup,
+            TabNames.SOLD_ANIMALS_REPORT:              not_implemented_popup,
+
+            ## Estimated Breeding Values
+            TabNames.GET_SHEEP_NISP_REPORT:       not_implemented_popup,
+            TabNames.ADD_NSIP_RESULT_DATA:        not_implemented_popup,
+            TabNames.CREATE_NSIP_DATA_SUBMISSION: not_implemented_popup,
+
+            ## Animal/EID Management
+            TabNames.UPDATE_ANIMAL_DETAILS: not_implemented_popup,
+            TabNames.SIMPLE_ADD_ANIMAL:     not_implemented_popup,
+            TabNames.DETAILED_ADD_ANIMAL:   not_implemented_popup,
+            TabNames.UPDATE_ANIMAL_ID:      not_implemented_popup,
+            TabNames.ANIMAL_DEATHS:         not_implemented_popup,
+
+            ## Animal Evaluation
+            TabNames.DELETE_SAVED_EVALUATION:          not_implemented_popup,
+            TabNames.OPTIMAL_LIVESTOCK_RAM_BSE:        not_implemented_popup,
+            TabNames.OPTIMAL_LIVESTOCK_EWE_ULTRASOUND: not_implemented_popup,
+            TabNames.TAKE_TISSUE_SAMPLES:              not_implemented_popup,
+            TabNames.EVALUATE_ANIMAL:                  not_implemented_popup,
+            TabNames.MALE_BREEDING_SOUNDESS:           not_implemented_popup,
+            TabNames.FEMALE_PREGNANCY_STATUS:          not_implemented_popup,
+            TabNames.CREATE_SAVED_EVALUATION:          not_implemented_popup,
+
+            ## Animal Care/Vet
+            TabNames.GIVE_DRUGS:                 not_implemented_popup,
+            TabNames.VACCINATE_AND_DEWORM:       not_implemented_popup,
+            TabNames.GENERAL_ANIMAL_CARE:        not_implemented_popup,
+            TabNames.REMOVE_DRUGS:               not_implemented_popup,
+            TabNames.GROUP_GIVE_DRUGS:           not_implemented_popup,
+            TabNames.GROUP_REMOVE_DRUGS:         not_implemented_popup,
+            TabNames.GROUP_VACCINATE_AND_DEWORM: not_implemented_popup,
+            TabNames.GROUP_GENERAL_ANIMAL_CARE:  not_implemented_popup,
+
+            ## Breeding & Birthing
+            TabNames.ADD_MALE_BREEDING_RECORDS:   not_implemented_popup,
+            TabNames.ADD_FEMALE_BREEDING_RECORDS: not_implemented_popup,
+            TabNames.SIMPLE_LAMBING:              not_implemented_popup,
+            TabNames.DETAILED_LAMBING:            not_implemented_popup,
+            TabNames.SIMPLE_BIRTHS:               not_implemented_popup,
+
+            ## Animal Movements
+            TabNames.SORT_FEMALES_FOR_BREEDING: not_implemented_popup,
+            TabNames.MOVE_TO_NEW_PREMISE:       not_implemented_popup,
+            TabNames.BUY_ANIMAL:                not_implemented_popup,
+            TabNames.SELL_ANIMAL:               not_implemented_popup,
+            TabNames.GROUP_MOVE_TO_NEW_PREMISE: not_implemented_popup,
+
+            ## Contact & Company Reports
+            TabNames.GET_CONTACT_LIST: not_implemented_popup,
+
+            ## Contact & Company Management
+            TabNames.ADD_EDIT_CONTACT: not_implemented_popup,
+            TabNames.ADD_EDIT_COMPANY: not_implemented_popup,
+            TabNames.ADD_EDIT_PREMISE: not_implemented_popup,
+            TabNames.ADD_EDIT_VET:     not_implemented_popup,
+            TabNames.ADD_EDIT_LAB:     not_implemented_popup,
+
+            ## Setup
+            TabNames.SET_AND_CLEAR_ANIMAL_ALERTS: not_implemented_popup,
+            TabNames.SELECT_SAVED_DEFAULTS:       not_implemented_popup,
+            TabNames.CREATE_SAVED_DEFAULTS:       not_implemented_popup,
+            TabNames.DELETE_SAVED_DEFAULTS:       not_implemented_popup,
+            TabNames.PURCHASE_DRUGS:              not_implemented_popup,
+            TabNames.DISPOSE_DRUGS:               not_implemented_popup,
+            TabNames.ADD_PREDEFINED_NOTES:        not_implemented_popup,
+
+            ## Database Management
+            TabNames.SELECT_NEW_DB: not_implemented_popup,
+            TabNames.BACKUP_DB:     not_implemented_popup,
+        }
+
+    def handle_sidebar_click(self, item_text):
         """
         Handles click events on items within the sidebar of the Farm Desktop application.
 
@@ -41,7 +142,6 @@ class FarmDesktopController(BaseController):
         and performing application-specific logic based on the item clicked in the sidebar.
 
         Args:
-            item (str): The identifier (iid) of the clicked Treeview item.
             item_text (str): The text of the clicked Treeview item.
 
         Extends:
@@ -49,38 +149,39 @@ class FarmDesktopController(BaseController):
             additional logging and handling specific to the Farm Desktop environment.
         """
         # Call the common click handler first to handle generic tasks such as logging and possibly quitting
-        super().handle_common_click(item, item_text)
-        
-        if item:
-            # Log a specific message about the interaction with the item, using the item's text for clarity
-            logger.info(f"Farm Desktop specific interaction for item: {item_text}")
-        else:
-            # Handle clicks on the empty area of the sidebar, which might be used for deselecting items, etc.
-            logger.info("Clicked on empty area - specific to Farm Desktop")
-            
-        # Perform specific logic based on the item clicked in the sidebar
-        # Get the parent of the clicked item
-        parent_id = self.app.left_sidebar.treeview.parent(item)
-        
-        if parent_id == 'animalevaluationhistory':
-            logger.info(f"Handling evaluation history for item: {item_text}")
-            self.handle_evaluation_history(item, item_text)
-        elif parent_id == 'setup':
-            logger.info(f"Handling setup for item: {item_text}")
-            if item_text == 'Set, Create and Edit General Defaults':
-                self.set_default_setting()
-            if item_text == 'Set Current Evaluation':
-                self.set_evaluation()
-        elif parent_id == 'animals':
-            logger.info(f"Handling animals for item: {item_text}")
-            if item_text == 'Animal Search':
-                self.animal_search(search_type="default")
-            if item_text == 'Move Animals':
-                self.animal_search(search_type="moveanimals")
-        elif parent_id == 'addanimaldata':
-            logger.info(f"Handling animal reports for item: {item_text}")
-            if item_text == 'Update Optimal Ag Ram BSE':
-                self.update_optimal_ag_ram_bse_report()
+        # super().handle_common_click(item, item_text)
+
+        logger.info(f"Farm Desktop specific interaction for item: {item_text}")
+
+        # do nothing for non clicked items
+        if item_text is None:
+            return
+
+        if item_text in self._click_handler:
+            self._click_handler[item_text]()
+        return
+
+
+        # fixme --> probably remove, leaving for context when more changes here are made
+        # if parent_id == 'animalevaluationhistory':
+        #     logger.info(f"Handling evaluation history for item: {item_text}")
+        #     self.handle_evaluation_history(item, item_text)
+        # elif parent_id == 'setup':
+        #     logger.info(f"Handling setup for item: {item_text}")
+        #     if item_text == 'Set, Create and Edit General Defaults':
+        #         self.set_default_setting()
+        #     if item_text == 'Set Current Evaluation':
+        #         self.set_evaluation()
+        # elif parent_id == 'animals':
+        #     logger.info(f"Handling animals for item: {item_text}")
+        #     if item_text == 'Animal Search':
+        #         self.animal_search(search_type="default")
+        #     if item_text == 'Move Animals':
+        #         self.animal_search(search_type="moveanimals")
+        # elif parent_id == 'addanimaldata':
+        #     logger.info(f"Handling animal reports for item: {item_text}")
+        #     if item_text == 'Update Optimal Ag Ram BSE':
+        #         self.update_optimal_ag_ram_bse_report()
                 
     def handle_evaluation_history(self, item, item_text):
         """
