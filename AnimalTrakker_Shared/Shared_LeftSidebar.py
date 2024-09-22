@@ -92,11 +92,15 @@ class LeftSidebar(tk.Frame):
         if selected_item:
             item_id = selected_item[0]
             item_text = self.treeview.item(item_id, "text")
+
+            print(item_text)
+
+
             # Notify the controller about the sidebar click with the item id and text.
-            self.controller.handle_sidebar_click(item_id, item_text)
+            self.controller.handle_sidebar_click(item_text)
         else:
             # Notify the controller that there was a click but no item was selected.
-            self.controller.handle_sidebar_click(None, None)
+            self.controller.handle_sidebar_click(None)
 
     def clear_content_frame(self):
         """
