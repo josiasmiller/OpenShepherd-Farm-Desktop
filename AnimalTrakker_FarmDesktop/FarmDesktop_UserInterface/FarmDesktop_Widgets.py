@@ -1,7 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from tkcalendar import DateEntry
+from ttkwidgets import CheckboxTreeview
 from AnimalTrakker_Shared.Shared_Logging import get_logger
+
+import csv
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
 
@@ -813,12 +816,13 @@ class CreateNewDBEntryWidget(tk.Frame):
             self.controller.confirm_new_evaluation_creation(new_entry_name)
 
 class SearchLeftSidebarWidget(tk.Frame):
-    def __init__(self, parent, controller, style_manager, search_type, db_connection, **kwargs):
+    def __init__(self, parent, controller, style_manager, search_type, db_connection, on_csv_save, **kwargs):
         super().__init__(parent, bg=style_manager.get_bg('sidebar'), **kwargs)
         self.controller = controller
         self.style_manager = style_manager
         self.search_type = search_type
         self.db_connection = db_connection
+        self.on_csv_save = on_csv_save
         self.new_owner = None
 
         self.option_to_field = {
@@ -830,20 +834,30 @@ class SearchLeftSidebarWidget(tk.Frame):
             "Dam Flock Prefix": ("dam_id", "animal_flock_prefix_table.id_animalid", "flock_prefix_table.id_flockprefixid", "flock_prefix_table.flock_prefix"),
             "Dam Name": ("dam_id", "animal_table.id_animalid", None, "animal_table.animal_name"),
             "Registration Number": ("id_animalid", "animal_registration_table.id_animalid", None, "animal_registration_table.registration_number"),
+
+
+
+
             "Alert Text": ("alert", None, None, None),
             "Birth Date": ("birth_date", None, None, None),
             "Birth Type": ("id_birthtypeid", "birth_type_table.id_birthtypeid", None, "birth_type_table.birth_type_abbrev"),
             "Death Date": ("death_date", None, None, None),
             "Death Reason": ("id_deathreasonid", "death_reason_table.id_deathreasonid", None, "death_reason_table.death_reason"),
             "Breed": ("id_animalid", "animal_breed_table.id_animalid", "breed_table.id_breedid", "breed_table.breed_name"),
+
+            # genetic characteristics
+
             "Scrapie Codon 171": ("scrapie_codon_171", None, None, None),
             "Scrapie Codon 136": ("scrapie_codon_136", None, None, None),
             "Coat Color": ("coat_color", None, None, None),
-            "Location": ("location", None, None, None),
             "Owner": ("owner", None, None, None),
+            "Location": ("location", None, None, None),
             "Breeder": ("breeder", None, None, None)
         }
 
+        # KEY : string of checkbox
+        # VAL : tk.BoolVar
+        self.selected_options = {}
 
         self.build_widget()
 
@@ -851,7 +865,6 @@ class SearchLeftSidebarWidget(tk.Frame):
         title_label = tk.Label(self, text="Display Options", bg=self['bg'])
         title_label.pack(pady=10)
 
-        self.selected_options = {}
         for option in self.option_to_field.keys():
             var = tk.BooleanVar()
             chk = tk.Checkbutton(self, text=option, variable=var, bg=self['bg'])
@@ -894,6 +907,8 @@ class SearchLeftSidebarWidget(tk.Frame):
 
     def save_as_csv(self):
         # Add logic to save as CSV
+        # print("Saving CSV")
+        self.on_csv_save()
         pass
 
     def save_as_odt(self):
@@ -1134,23 +1149,42 @@ class SearchMainFrameWidget(tk.Frame):
 
         # Search Button
         search_button = tk.Button(self, text="Search", command=self.on_search_button_click)
-        search_button.grid(row=8, column=0, columnspan=10, pady=5)  # Adjusted vertical padding
+        search_button.grid(row=8, column=0, pady=5, padx=5)  # Removed columnspan and added padding
+
+        select_all_button = tk.Button(self, text="Select All", command=self.on_select_all)
+        select_all_button.grid(row=8, column=1, pady=5, padx=5)  # Removed columnspan and added padding
+
+        unselect_all_button = tk.Button(self, text="Unselect All", command=self.on_search_button_click)
+        unselect_all_button.grid(row=8, column=2, pady=5, padx=5)  # Removed columnspan and added padding
 
         # Message display area
         self.message_label = tk.Label(self, text="", fg="red", bg=self['bg'])
         self.message_label.grid(row=9, column=0, columnspan=10, padx=2, pady=2, sticky="ew")
 
         # Row 10: Search Box Widget
-        self.search_box_widget = SearchBoxWidget(self, bg=self['bg'])
-        self.search_box_widget.grid(row=10, column=0, columnspan=10, padx=2, pady=2, sticky="nsew")
-        
+        # self.search_box_widget = SearchBoxWidget(self, bg=self['bg'])
+        # self.search_box_widget.grid(row=10, column=0, columnspan=10, padx=2, pady=2, sticky="nsew")
+
+        self.tree_view = CheckboxTreeview(self)
+        self.tree_view.grid(row=10, column=0, columnspan=10, padx=2, pady=2, sticky="nsew")
+
         # Pass a reference of search_box_widget to the controller
-        self.controller.search_box_widget = self.search_box_widget
+        # self.controller.search_box_widget = self.search_box_widget
+        self.controller.tree_view = self.tree_view
+        self.controller.search_main_frame_widget = self
 
     def on_search_button_click(self):
         search_params = self.get_search_parameters()
         self.controller.perform_animal_search(search_params)
-    
+
+    def on_select_all(self):
+        for item in self.tree_view.get_children():
+            self.tree_view.item(item, open=True, tags="checked")
+
+    def on_unselect_all(self):
+        for item in self.tree_view.get_children():
+            self.tree_view.item(item, open=False, tags="checked")
+
     def on_map(self, event):
         """
         Set focus on the name entry widget when the widget is mapped (shown).
@@ -1204,3 +1238,58 @@ class SearchMainFrameWidget(tk.Frame):
 
     def update_message(self, message):
         self.message_label.config(text=message)
+
+    def display_search_results(self, column_headers : list[str], results: list[list[str]]) -> None:
+        # Clear existing data in the tree
+        for item in self.tree_view.get_children():
+            self.tree_view.delete(item)
+
+        # first, set the headers
+        self.tree_view.config(columns=column_headers)
+
+        # Configure each column's heading and width
+        for header in column_headers:
+            self.tree_view.heading(header, text=header)
+            self.tree_view.column(header, width=50)
+
+        self.tree_view.column("#0", width=30)  # this makes the column equal in width, it seems
+
+        for result_list in results:
+            self.tree_view.insert("", "end", values=result_list)
+
+        return
+
+    def save_csv(self):
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        # Extract data from the tree view
+        rows = []
+        for item_id in self.tree_view.get_children():
+            # Check if the row is checked (this assumes a custom tag 'checked' or similar is used)
+            checked = self.tree_view.tag_has('checked', item_id)
+
+            if checked:
+                # Get the values from each row that is checked in the treeview
+                row_data = self.tree_view.item(item_id)['values']
+                rows.append(row_data)
+
+        # Write the data to a CSV file at the selected file path
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            # Get the headers (column names) from the treeview
+            headers = [self.tree_view.heading(col)['text'] for col in self.tree_view["columns"]]
+            writer.writerow(headers)
+
+            # Write each row of data
+            for row in rows:
+                writer.writerow(row)
+
+        messagebox.showinfo("File Saved", f"CSV file saved successfully to:\n{file_path}")
+        return
