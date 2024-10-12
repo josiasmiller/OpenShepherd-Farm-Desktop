@@ -309,6 +309,7 @@ class FarmDesktopController(BaseController):
             search_type=search_type,
             db_connection=self.app.db_connection,
             on_csv_save=self.save_csv,
+            on_ods_save=self.save_ods,
         )
         self.left_sidebar_widget.pack(expand=True, fill='both')
         self.app.left_sidebar.current_widget = self.left_sidebar_widget  # Store the reference
@@ -553,4 +554,8 @@ class FarmDesktopController(BaseController):
 
     def save_csv(self):
         self.search_main_frame_widget.save_csv()
+        return
+
+    def save_ods(self):
+        self.search_main_frame_widget.save_ods()
         return

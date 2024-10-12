@@ -6,6 +6,11 @@ from AnimalTrakker_Shared.Shared_Logging import get_logger
 
 import csv
 
+## ods packages
+from pyexcel_ods3 import save_data
+from collections import OrderedDict
+##
+
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utilities import *
 
 logger = get_logger(__name__)
@@ -816,13 +821,14 @@ class CreateNewDBEntryWidget(tk.Frame):
             self.controller.confirm_new_evaluation_creation(new_entry_name)
 
 class SearchLeftSidebarWidget(tk.Frame):
-    def __init__(self, parent, controller, style_manager, search_type, db_connection, on_csv_save, **kwargs):
+    def __init__(self, parent, controller, style_manager, search_type, db_connection, on_csv_save, on_ods_save, **kwargs):
         super().__init__(parent, bg=style_manager.get_bg('sidebar'), **kwargs)
         self.controller = controller
         self.style_manager = style_manager
         self.search_type = search_type
         self.db_connection = db_connection
         self.on_csv_save = on_csv_save
+        self.on_ods_save = on_ods_save
         self.new_owner = None
 
         self.option_to_field = {
@@ -884,6 +890,9 @@ class SearchLeftSidebarWidget(tk.Frame):
 
             odt_button = tk.Button(button_frame, text="Save as ODT", command=self.save_as_odt)
             odt_button.pack(fill=tk.X, padx=5, pady=2)
+
+            ods_button = tk.Button(button_frame, text="Save as ODS", command=self.save_as_ods)
+            ods_button.pack(fill=tk.X, padx=5, pady=2)
             
         elif self.search_type == "moveanimals":
             location_button = tk.Button(button_frame, text="Select New Location", command=self.select_new_location)
@@ -906,14 +915,14 @@ class SearchLeftSidebarWidget(tk.Frame):
         pass
 
     def save_as_csv(self):
-        # Add logic to save as CSV
-        # print("Saving CSV")
         self.on_csv_save()
-        pass
 
     def save_as_odt(self):
         # Add logic to save as ODT
         pass
+
+    def save_as_ods(self):
+        self.on_ods_save()
 
     # This is a exmaple of two buttons which will handle the logic of moving animals
     # As per my understanding now, you want to select new owner (or location) 
@@ -1292,4 +1301,40 @@ class SearchMainFrameWidget(tk.Frame):
                 writer.writerow(row)
 
         messagebox.showinfo("File Saved", f"CSV file saved successfully to:\n{file_path}")
+        return
+
+    def save_ods(self):
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".ods",
+            filetypes=[("ODS files", "*.ods"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        # Extract data from the tree view
+        rows = []
+        for item_id in self.tree_view.get_children():
+            # Check if the row is checked (this assumes a custom tag 'checked' or similar is used)
+            checked = self.tree_view.tag_has('checked', item_id)
+
+            if checked:
+                # Get the values from each row that is checked in the treeview
+                row_data = self.tree_view.item(item_id)['values']
+                rows.append(row_data)
+
+        headers = [self.tree_view.heading(col)['text'] for col in self.tree_view["columns"]]
+
+        # write ODS file
+        data = OrderedDict()
+
+        sheet_data = [headers]
+        for row in rows:
+            sheet_data.append(row)
+
+        data.update({"sheet 1": sheet_data})
+        save_data(file_path, data)
+
+        messagebox.showinfo("File Saved", f"ODS file saved successfully to:\n{file_path}")
         return
