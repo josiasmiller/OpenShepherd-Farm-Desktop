@@ -332,7 +332,8 @@ def fetch_breed_names(db_connection):
         list of str: List containing breed IDs andnames.
     """
     try:
-        rows = db_connection.fetchall(GET_BREED_NAMES)
+        breed_id = default_settings.breed_id
+        rows = db_connection.fetchall(GET_BREED_NAMES, (breed_id,), )
         logger.info(f"Breed names fetched successfully, retrieved {len(rows)} records.")
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
