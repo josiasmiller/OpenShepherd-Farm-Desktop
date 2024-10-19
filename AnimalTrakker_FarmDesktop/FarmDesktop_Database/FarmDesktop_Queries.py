@@ -230,6 +230,8 @@ GET_BREED_NAMES = """
     	breed_name 
     FROM 
     	breed_table
+    WHERE
+        id_breedid = ?
 """
 
 GET_BIRTH_TYPE_NAMES = """

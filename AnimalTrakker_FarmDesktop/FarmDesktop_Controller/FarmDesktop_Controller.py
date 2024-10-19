@@ -307,7 +307,9 @@ class FarmDesktopController(BaseController):
             controller=self, 
             style_manager=self.app.style_manager,
             search_type=search_type,
-            db_connection=self.app.db_connection
+            db_connection=self.app.db_connection,
+            on_csv_save=self.save_csv,
+            on_ods_save=self.save_ods,
         )
         self.left_sidebar_widget.pack(expand=True, fill='both')
         self.app.left_sidebar.current_widget = self.left_sidebar_widget  # Store the reference
@@ -337,20 +339,21 @@ class FarmDesktopController(BaseController):
             return
         
         self.search_results = construct_search_query(search_params, self.left_sidebar_widget.option_to_field, display_options, self.app.db_connection)
-        
         self.display_search_results(self.search_results, display_options)
-
 
     def display_search_results(self, results, display_options):
         """
         Display the search results in the SearchBoxWidget.
+
+        :arg results: list[list[str]]   --> data pulled from DB
+        :arg display_options: list[str] --> column headers
         """
-        if not hasattr(self, 'search_box_widget'):
-            logger.error("Search box widget is not initialized.")
+        if not hasattr(self, 'search_main_frame_widget'):
+            logger.error("search_main_frame_widget is not initialized.")
             return
 
-        self.search_box_widget.display_results(results, display_options)
-        
+        self.search_main_frame_widget.display_search_results(column_headers=display_options, results=results)
+
     def go_home(self):
         """
         Handles the home button logic specific to the Farm Desktop.
@@ -548,3 +551,11 @@ class FarmDesktopController(BaseController):
         if eval_date:
             evaluated_animals = fetch_animalids_by_evaluation_date(self.app.db_connection, eval_date)
             process_next_missing_animal(missing_animals, evaluated_animals)
+
+    def save_csv(self):
+        self.search_main_frame_widget.save_csv()
+        return
+
+    def save_ods(self):
+        self.search_main_frame_widget.save_ods()
+        return
