@@ -268,7 +268,8 @@ def construct_search_query(search_params, option_to_field, display_options, db_c
     for result in results:
         # Order of the operations matters, and it is the same as order in display options for animal search leftsidebar
         result_dict = dict(zip(selected_fields, result))  # Create a dictionary for easy manipulation
-        animal_id = result_dict.pop('animal_table.id_animalid')  # Remove id_animalid
+        # animal_id = result_dict.pop('animal_table.id_animalid')  # Remove id_animalid
+        animal_id = result_dict['animal_table.id_animalid']  # Remove id_animalid
 
         if codon_136_selected or codon_171_selected or coat_color_selected:
             codon_values = fetch_codon_values(animal_id, db_connection)

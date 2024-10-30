@@ -332,8 +332,8 @@ def fetch_breed_names(db_connection):
         list of str: List containing breed IDs andnames.
     """
     try:
-        breed_id = default_settings.breed_id
-        rows = db_connection.fetchall(GET_BREED_NAMES, (breed_id,), )
+        species_id = default_settings.species_id
+        rows = db_connection.fetchall(GET_BREED_NAMES, (species_id,), )
         logger.info(f"Breed names fetched successfully, retrieved {len(rows)} records.")
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
@@ -648,4 +648,19 @@ def fetch_example(db_connection):
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch state names: {e}")
+        return []
+
+def fetch_animal_notes(db_connection, animal_id):
+    """
+    Fetches animal notes
+
+    Args:
+        db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+    """
+    try:
+        rows = db_connection.fetchall(GET_SINGLE_ANIMAL_NOTES, (animal_id, ) )
+        logger.info(f"notes fetched successfully, retrieved {len(rows)} records.")
+        return [(row[0], row[1], row[2], row[3]) for row in rows]
+    except Exception as e:
+        logger.error(f"Failed to fetch sex names: {e}")
         return []
