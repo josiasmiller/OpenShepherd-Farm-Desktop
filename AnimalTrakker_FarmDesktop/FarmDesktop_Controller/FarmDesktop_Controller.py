@@ -7,11 +7,12 @@ from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utiliti
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis, construct_search_query
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget, SearchLeftSidebarWidget, SearchMainFrameWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.csv_writer import write_animal_notes
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import default_settings
 
 import pandas as pd
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 import tkinter as tk
 
 logger = get_logger(__name__)
@@ -54,7 +55,7 @@ class FarmDesktopController(BaseController):
             TabNames.LOCATION_HISTORY:                 not_implemented_popup,
             TabNames.ID_HISTORY:                       not_implemented_popup,
             TabNames.DRUG_HISTORY:                     not_implemented_popup,
-            TabNames.NOTE_HISTROY:                     not_implemented_popup,
+            TabNames.NOTE_HISTROY:                     lambda: self.animal_search("notes"),
             TabNames.EVALUATION_RESULTS:               not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_RAM_BSE_REPORT: not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_EWE_REPORT:     not_implemented_popup,
@@ -161,27 +162,6 @@ class FarmDesktopController(BaseController):
             self._click_handler[item_text]()
         return
 
-
-        # fixme --> probably remove, leaving for context when more changes here are made
-        # if parent_id == 'animalevaluationhistory':
-        #     logger.info(f"Handling evaluation history for item: {item_text}")
-        #     self.handle_evaluation_history(item, item_text)
-        # elif parent_id == 'setup':
-        #     logger.info(f"Handling setup for item: {item_text}")
-        #     if item_text == 'Set, Create and Edit General Defaults':
-        #         self.set_default_setting()
-        #     if item_text == 'Set Current Evaluation':
-        #         self.set_evaluation()
-        # elif parent_id == 'animals':
-        #     logger.info(f"Handling animals for item: {item_text}")
-        #     if item_text == 'Animal Search':
-        #         self.animal_search(search_type="default")
-        #     if item_text == 'Move Animals':
-        #         self.animal_search(search_type="moveanimals")
-        # elif parent_id == 'addanimaldata':
-        #     logger.info(f"Handling animal reports for item: {item_text}")
-        #     if item_text == 'Update Optimal Ag Ram BSE':
-        #         self.update_optimal_ag_ram_bse_report()
                 
     def handle_evaluation_history(self, item, item_text):
         """
@@ -301,6 +281,13 @@ class FarmDesktopController(BaseController):
         # Clear any existing content in the left sidebar
         self.app.left_sidebar.clear_content_frame()
 
+        if search_type == "default":
+            on_csv_save = self.save_csv
+        elif search_type == "notes":
+            on_csv_save = self.save_notes_csv
+        else:
+            raise Exception("Unknown search type")
+
         # Create and display the SearchLeftSidebarWidget
         self.left_sidebar_widget = SearchLeftSidebarWidget(
             parent=self.app.left_sidebar.content_frame, 
@@ -308,7 +295,7 @@ class FarmDesktopController(BaseController):
             style_manager=self.app.style_manager,
             search_type=search_type,
             db_connection=self.app.db_connection,
-            on_csv_save=self.save_csv,
+            on_csv_save=on_csv_save,
             on_ods_save=self.save_ods,
         )
         self.left_sidebar_widget.pack(expand=True, fill='both')
@@ -554,6 +541,30 @@ class FarmDesktopController(BaseController):
 
     def save_csv(self):
         self.search_main_frame_widget.save_csv()
+        return
+
+    def save_notes_csv(self):
+
+        ids = self.search_main_frame_widget.get_checked_animal_ids()
+
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        note_content = list()
+
+        for animal_id in ids:
+            notes = fetch_animal_notes(self.app.db_connection, animal_id)
+            for row in notes:
+                note_content.append(row)
+
+        write_animal_notes(file_path, note_content)
+
         return
 
     def save_ods(self):

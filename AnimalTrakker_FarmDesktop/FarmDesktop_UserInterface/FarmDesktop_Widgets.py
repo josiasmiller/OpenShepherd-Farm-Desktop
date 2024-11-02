@@ -909,6 +909,9 @@ class SearchLeftSidebarWidget(tk.Frame):
             
             move_button = tk.Button(button_frame, text="Multiple Text", command=self.select_new_owner_multiple_text)
             move_button.pack(fill=tk.X, padx=5, pady=2)
+        elif self.search_type == "notes":
+            csv_button = tk.Button(button_frame, text="Save Notes as CSV", command=self.save_as_csv)
+            csv_button.pack(fill=tk.X, padx=5, pady=2)
 
     def save_as_pdf(self):
         # Add logic to save as PDF
@@ -1084,6 +1087,9 @@ class SearchMainFrameWidget(tk.Frame):
         
         # Forcing cursor to be on the main frame
         self.bind('<Map>', self.on_map)  # Bind to the <Map> event
+
+        # a list of animals ids where each index lines up with the given row
+        self.row_animal_ids = []
 
     def add_combobox(self, parent, name, row, column, width=20):
             if name == "breed":
@@ -1263,8 +1269,14 @@ class SearchMainFrameWidget(tk.Frame):
 
         self.tree_view.column("#0", width=30)  # this makes the column equal in width, it seems
 
+        # reset row_animal_ids
+        self.row_animal_ids = []
+
         for result_list in results:
-            self.tree_view.insert("", "end", values=result_list)
+            animal_id = result_list[0]
+            self.row_animal_ids.append(animal_id)  # save the animal_id associated with a row
+            column_values = result_list[1:]
+            self.tree_view.insert("", "end", values=column_values)
 
         return
 
@@ -1338,3 +1350,21 @@ class SearchMainFrameWidget(tk.Frame):
 
         messagebox.showinfo("File Saved", f"ODS file saved successfully to:\n{file_path}")
         return
+
+    def get_all_animal_ids(self):
+        return self.row_animal_ids
+
+    def get_checked_animal_ids(self):
+        checked_rows = []
+        for idx, item_id in enumerate(self.tree_view.get_children()):
+            # Check if the row is checked (this assumes a custom tag 'checked' or similar is used)
+            checked = self.tree_view.tag_has('checked', item_id)
+
+            if checked:
+                checked_rows.append(idx)
+
+        ret = []
+        for i in checked_rows:
+            ret.append(self.row_animal_ids[i])
+
+        return ret

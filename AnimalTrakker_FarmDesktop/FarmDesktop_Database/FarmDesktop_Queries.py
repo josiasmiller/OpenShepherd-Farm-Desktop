@@ -231,8 +231,10 @@ GET_BREED_NAMES = """
     FROM 
     	breed_table
     WHERE
-        id_breedid = ?
+        id_speciesid = ?
 """
+# TODO --> replace "id_breedid = ?" with id_speciesid
+# order by breed_display_order
 
 GET_BIRTH_TYPE_NAMES = """
     SELECT
@@ -439,3 +441,22 @@ UPDATE_ANIMAL_ALERT = """
 	WHERE 
  		id_animalid = ?
 """
+
+GET_SINGLE_ANIMAL_NOTES = """
+    SELECT
+        animal_note_table.id_animalnoteid,
+        animal_note_table.note_text,
+        animal_note_table.note_date,
+        animal_table.animal_name
+    FROM
+        animal_note_table
+    INNER JOIN
+        animal_table
+    ON
+        animal_note_table.id_animalid = animal_table.id_animalid
+    WHERE
+        animal_note_table.id_animalid = ?
+"""
+# TODO: make query not return 'empty' notes?
+
+
