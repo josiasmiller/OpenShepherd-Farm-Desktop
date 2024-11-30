@@ -442,21 +442,22 @@ UPDATE_ANIMAL_ALERT = """
  		id_animalid = ?
 """
 
+
 GET_SINGLE_ANIMAL_NOTES = """
-    SELECT
-        animal_note_table.id_animalnoteid,
-        animal_note_table.note_text,
-        animal_note_table.note_date,
-        animal_table.animal_name
-    FROM
-        animal_note_table
-    INNER JOIN
-        animal_table
-    ON
-        animal_note_table.id_animalid = animal_table.id_animalid
-    WHERE
-        animal_note_table.id_animalid = ?
+SELECT
+	animal_note_table.id_animalnoteid
+	, flock_prefix_table.flock_prefix
+	, animal_table.animal_name
+	, animal_note_table.note_text
+	, animal_note_table.note_date
+	, animal_note_table.note_time
+	, predefined_notes_table.predefined_note_text
+FROM
+	animal_note_table
+INNER JOIN animal_table ON animal_note_table.id_animalid = animal_table.id_animalid
+INNER JOIN animal_flock_prefix_table on animal_table.id_animalid = animal_flock_prefix_table.id_animalid
+INNER JOIN flock_prefix_table on animal_flock_prefix_table.id_flockprefixid = flock_prefix_table.id_flockprefixid
+INNER JOIN predefined_notes_table on animal_note_table.id_predefinednotesid = predefined_notes_table.id_predefinednotesid
+WHERE
+	animal_note_table.id_animalid = ?
 """
-# TODO: make query not return 'empty' notes?
-
-
