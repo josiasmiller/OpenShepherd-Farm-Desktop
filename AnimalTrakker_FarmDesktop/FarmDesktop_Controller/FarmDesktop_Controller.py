@@ -567,6 +567,30 @@ class FarmDesktopController(BaseController):
 
         return
 
+    def save_evaluation_csv(self):
+
+        ids = self.search_main_frame_widget.get_checked_animal_ids()
+
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        note_content = list()
+
+        for animal_id in ids:
+            notes = fetch_animal_notes(self.app.db_connection, animal_id)
+            for row in notes:
+                note_content.append(row)
+
+        write_animal_notes(file_path, note_content)
+
+        return
+
     def save_ods(self):
         self.search_main_frame_widget.save_ods()
         return

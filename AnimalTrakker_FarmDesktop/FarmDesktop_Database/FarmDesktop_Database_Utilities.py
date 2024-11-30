@@ -689,3 +689,43 @@ def fetch_animal_notes(db_connection, animal_id):
     except Exception as e:
         logger.error(f"Failed to fetch animal notes: {e}")
         return []
+
+def fetch_evaluation_notes(db_connection, animal_id):
+    """
+        Fetches animal notes
+
+        Args:
+            db_connection (DatabaseConnection): The database connection instance through which all database interactions are made.
+        """
+    try:
+        rows = db_connection.fetchall(GET_SINGLE_ANIMAL_NOTES, (animal_id,))
+        logger.info(f"notes fetched successfully, retrieved {len(rows)} records.")
+
+        ret = []
+
+        for row in rows:
+            id_animal_note_id = row[0]
+            flock_prefix = row[1]
+            partial_animal_name = row[2]
+            note_text = row[3]
+            note_date = row[4]
+            note_time = row[5]
+            predefined_note_text = row[6]
+
+            if predefined_note_text != "":
+                animal_name = f"{flock_prefix} {partial_animal_name}"
+                timeslot = f"{note_date}T{note_time}"
+                new_row = (timeslot, animal_name, predefined_note_text)
+                ret.append(new_row)
+
+            # if there is text for a note, add that to the return list of tuples
+            if note_text != "":
+                animal_name = f"{flock_prefix} {partial_animal_name}"
+                timeslot = f"{note_date}T{note_time}"
+                new_row = (timeslot, animal_name, note_text)
+                ret.append(new_row)
+
+        return ret
+    except Exception as e:
+        logger.error(f"Failed to fetch animal notes: {e}")
+        return []

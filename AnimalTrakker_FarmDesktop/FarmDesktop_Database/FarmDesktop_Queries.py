@@ -442,24 +442,6 @@ UPDATE_ANIMAL_ALERT = """
  		id_animalid = ?
 """
 
-# GET_SINGLE_ANIMAL_NOTES = """
-#     SELECT
-#         animal_note_table.id_animalnoteid,
-#         animal_note_table.note_text,
-#         animal_note_table.note_date,
-#         animal_note_table.note_time,
-#         animal_note_table.id_predefinednotesid,
-#         flocK_prefix_table
-#         animal_table.animal_name
-#     FROM
-#         animal_note_table
-#     INNER JOIN
-#         animal_table
-#     ON
-#         animal_note_table.id_animalid = animal_table.id_animalid
-#     WHERE
-#         animal_note_table.id_animalid = ?
-# """
 
 GET_SINGLE_ANIMAL_NOTES = """
 SELECT
