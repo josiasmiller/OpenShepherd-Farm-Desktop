@@ -193,7 +193,6 @@ class TraitScoreWidget(tk.Frame):
             self.star_buttons.append(star)  # Store the reference to the button
 
     def set_rating(self, rating):
-        print(f"Setting rating for {self.trait_name}: {rating}")  # Debug print
         self.rating.set(rating)
         for i, star in enumerate(self.star_buttons, start=0):
             star.configure(text='★') if i <= rating else star.configure(text='☆')
@@ -462,8 +461,6 @@ class PopupWidget(tk.Toplevel):
             if selected_index:
                 selected_id = self.ids[selected_index[0]]
                 self.parent.new_owner = (self.key, selected_id)
-                print("Here we've saved new_owner data to a variable, but it is also can be a function")
-                print(self.parent.new_owner)
         elif self.popup_type == "single_text":
             new_value = self.text_var.get()
             self.parent.new_owner = (self.key, new_value)
@@ -912,6 +909,9 @@ class SearchLeftSidebarWidget(tk.Frame):
         elif self.search_type == "notes":
             csv_button = tk.Button(button_frame, text="Save Notes as CSV", command=self.save_as_csv)
             csv_button.pack(fill=tk.X, padx=5, pady=2)
+        elif self.search_type == "id_history":
+            csv_button = tk.Button(button_frame, text="Save ID History as CSV", command=self.save_as_csv)
+            csv_button.pack(fill=tk.X, padx=5, pady=2)
 
     def save_as_pdf(self):
         # Add logic to save as PDF
@@ -950,14 +950,9 @@ class SearchLeftSidebarWidget(tk.Frame):
         value = 6
         popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="list", popup_purpose="moveanimals")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
-        if self.new_owner:
-            print("And here is new owner after our previous selection")
-            print(self.new_owner)
-        else:
-            print("Here new owner is empty, because we haven't selected anything yet")
-            print(self.new_owner)
+
         # And here we can access the search results, and manipulate it how we need
-        print(self.controller.search_results)
+        # print(self.controller.search_results)
         # after this we can manipulate search results as we want, create query to make changes to db based on new owner information
         # right now search_results are only showing what will be displayed in the searchbox, without animal id
         # I can add it if necessary
@@ -972,13 +967,6 @@ class SearchLeftSidebarWidget(tk.Frame):
         value = "John Doe"
         popup = PopupWidget(self, key, value, fetch_function, self.style_manager, popup_type="single_text", popup_purpose="moveanimals")
         popup.grab_set()  # Ensure all events are sent to the popup until it is destroyed
-        if hasattr(self, 'new_owner'):
-            print("And here is new owner after our previous selection")
-            print(self.new_owner)
-        else:
-            print("Here new owner is empty, because we haven't selected anything yet")
-            self.new_owner = None
-            print(self.new_owner)
 
     def select_new_owner_multiple_text(self):
         """

@@ -7,7 +7,7 @@ from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utiliti
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis, construct_search_query
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget, SearchLeftSidebarWidget, SearchMainFrameWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.csv_writer import write_animal_notes
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.csv_writer import write_animal_notes, write_id_history
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import default_settings
 
@@ -53,9 +53,9 @@ class FarmDesktopController(BaseController):
             TabNames.ANIMAL_SCAN:                      not_implemented_popup,
             TabNames.OWNERSHIP_HISTORY:                not_implemented_popup,
             TabNames.LOCATION_HISTORY:                 not_implemented_popup,
-            TabNames.ID_HISTORY:                       not_implemented_popup,
+            TabNames.ID_HISTORY:                       lambda: self.animal_search("id_history"),
             TabNames.DRUG_HISTORY:                     not_implemented_popup,
-            TabNames.NOTE_HISTROY:                     lambda: self.animal_search("notes"),
+            TabNames.NOTE_HISTORY:                     lambda: self.animal_search("notes"),
             TabNames.EVALUATION_RESULTS:               not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_RAM_BSE_REPORT: not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_EWE_REPORT:     not_implemented_popup,
@@ -285,6 +285,8 @@ class FarmDesktopController(BaseController):
             on_csv_save = self.save_csv
         elif search_type == "notes":
             on_csv_save = self.save_notes_csv
+        elif search_type == "id_history":
+            on_csv_save = self.save_animal_id_history
         else:
             raise Exception("Unknown search type")
 
@@ -586,8 +588,31 @@ class FarmDesktopController(BaseController):
             notes = fetch_animal_notes(self.app.db_connection, animal_id)
             for row in notes:
                 note_content.append(row)
+        # FIXME
+        # write_animal_notes(file_path, note_content)
 
-        write_animal_notes(file_path, note_content)
+        return
+
+    def save_animal_id_history(self):
+        ids = self.search_main_frame_widget.get_checked_animal_ids()
+
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        id_history_content = list()
+
+        for animal_id in ids:
+            id_history = fetch_animal_id_history(self.app.db_connection, animal_id)
+            for row in id_history:
+                id_history_content.append(row)
+
+        write_id_history(file_path, id_history_content)
 
         return
 

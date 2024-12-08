@@ -461,3 +461,29 @@ INNER JOIN predefined_notes_table on animal_note_table.id_predefinednotesid = pr
 WHERE
 	animal_note_table.id_animalid = ?
 """
+
+GET_ANIMAL_ID_HISTORY = """
+    SELECT animal_table.id_animalid
+	, flock_prefix_table.flock_prefix
+	, animal_table.animal_name
+	, animal_id_info_table.id_animalidinfoid
+	, id_type_table.id_type_name
+	, animal_id_info_table.id_number 
+	, id_color_table.id_color_name
+	, id_location_table.id_location_name
+	, animal_id_info_table.id_date_on
+	, animal_id_info_table.id_date_off
+	FROM
+	 animal_table
+    INNER JOIN animal_id_info_table ON animal_id_info_table.id_animalid = animal_table.id_animalid
+    INNER JOIN id_type_table ON id_type_table.id_idtypeid = animal_id_info_table.id_idtypeid
+    INNER JOIN id_color_table ON id_color_table.id_idcolorid = animal_id_info_table.id_male_id_idcolorid
+    INNER JOIN id_location_table ON id_location_table.id_idlocationid = animal_id_info_table.id_idlocationid
+    INNER JOIN animal_flock_prefix_table ON animal_table.id_animalid = animal_flock_prefix_table.id_animalid
+    INNER JOIN flock_prefix_table ON animal_flock_prefix_table.id_flockprefixid = flock_prefix_table.id_flockprefixid
+    WHERE 
+        animal_table.id_animalid = ?
+    ORDER BY 
+     animal_id_info_table.id_date_on
+     , animal_id_info_table.id_idtypeid
+"""

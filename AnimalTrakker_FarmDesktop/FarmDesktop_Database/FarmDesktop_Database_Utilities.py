@@ -315,7 +315,6 @@ def fetch_species_names(db_connection):
     try:
         rows = db_connection.fetchall(GET_SPECIES_NAMES)
         logger.info(f"Species names fetched successfully, retrieved {len(rows)} records.")
-        print("Pure data from db:", rows)
         return [(row[0], row[1]) for row in rows]
     except Exception as e:
         logger.error(f"Failed to fetch species names: {e}")
@@ -674,15 +673,14 @@ def fetch_animal_notes(db_connection, animal_id):
 
             if predefined_note_text != "":
                 animal_name = f"{flock_prefix} {partial_animal_name}"
-                timeslot = f"{note_date}T{note_time}"
-                new_row = (timeslot, animal_name, predefined_note_text)
+                # timeslot = f"{note_date}T{note_time}"
+                new_row = (note_date, note_time, animal_name, predefined_note_text)
                 ret.append(new_row)
 
             # if there is text for a note, add that to the return list of tuples
             if note_text != "":
                 animal_name = f"{flock_prefix} {partial_animal_name}"
-                timeslot = f"{note_date}T{note_time}"
-                new_row = (timeslot, animal_name, note_text)
+                new_row = (note_date, note_time, animal_name, note_text)
                 ret.append(new_row)
 
         return ret
@@ -728,4 +726,32 @@ def fetch_evaluation_notes(db_connection, animal_id):
         return ret
     except Exception as e:
         logger.error(f"Failed to fetch animal notes: {e}")
+        return []
+
+
+def fetch_animal_id_history(db_connection, animal_id):
+    try:
+        rows = db_connection.fetchall(GET_ANIMAL_ID_HISTORY, (animal_id,))
+        logger.info(f"notes fetched successfully, retrieved {len(rows)} records.")
+
+        ret = []
+
+        for row in rows:
+            flock_prefix = row[1]
+            animal_fn = row[2]
+            animal_name = f"{flock_prefix} {animal_fn}"
+
+            id_type = row[4]
+            id_number = row[5]
+            id_color = row[6]
+            id_location = row[7]
+            date_on = row[8]
+            date_off = row[9]
+
+            row_content = [animal_name, id_type, id_number, id_color, id_location, date_on, date_off]
+            ret.append(row_content)
+
+        return ret
+    except Exception as e:
+        logger.error(f"Failed to fetch animal id history: {e}")
         return []
