@@ -271,6 +271,8 @@ class InitialPage(tk.Tk):
         self.title("Initial Page")
         self.geometry("500x300")
 
+        self.iconbitmap("assets/AnimalTrakker_icon.ico")  # set app icon
+
         self.create_widgets()
 
         # initialize database fields to be empty

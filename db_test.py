@@ -122,21 +122,11 @@ INSERT INTO animaltrakker_default_settings_table (
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
 
-# Debugging: Print the insert query and number of placeholders
-placeholder_count = create_new_setting_query.count('?')
-print(f"Number of placeholders in query: {placeholder_count}")
-
-# Debugging: Print the params tuple and its length
-print(params)
-print(f"Number of elements in params: {len(params)}")
-
 # Execute the insert query
 try:
     cursor.execute(create_new_setting_query, params)
     db_connection.commit()
-    print("Insert successful")
 except Exception as e:
-    print(f"Error executing query: {e}")
     db_connection.rollback()
 finally:
     cursor.close()

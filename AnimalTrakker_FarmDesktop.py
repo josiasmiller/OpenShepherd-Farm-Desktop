@@ -26,6 +26,7 @@ def run_main_app(database_path: str, initial_settings : str):
     # Set up the main application window
     root = tk.Tk()
     root.title("AnimalTrakker")
+    root.iconbitmap("assets/AnimalTrakker_icon.ico")  # set app icon
     root.geometry("1126x844")  # Configure the initial size of the window
     animaltrakker_setup_logging()  # Initialize the logging system for the application
 

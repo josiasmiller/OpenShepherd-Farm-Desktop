@@ -23,14 +23,12 @@ def handle_trait_analysis(db_connection, evaluation_id, evaluation_name):
         trait_output = db_connection.fetchone(GET_EVALUATION_TRAIT, (trait,))
         # Create a tuple and append it to traits_score_final
         traits_score_final.append((trait, trait_output[0]))
-    print(traits_score_final)
     for trait, unit in trait_units_combined:
         trait_output = db_connection.fetchone(GET_EVALUATION_TRAIT, (trait,))
         unit_output = db_connection.fetchall(GET_EVALUATION_UNITS, (unit,))
         # Create a tuple and append it to traits_score_final
         traits_units_final.append((trait_output[0], unit_output))
-    print(traits_units_final)
-        
+
     return traits_score_final, traits_units_final, traits_custom, trait_units_combined, units
 
 def construct_search_query(search_params, option_to_field, display_options, db_connection):

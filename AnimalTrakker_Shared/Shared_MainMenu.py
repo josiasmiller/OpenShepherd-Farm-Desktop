@@ -75,7 +75,7 @@ class MainMenu(tk.Menu):
         performed properly before the application exits.
 
         The 'quit_application' method encapsulates all the necessary steps to safely terminate the
-        application, including saving state, closing database connections, and releasing resources.
+        application, including saving state, closing database connections, and releasing assets.
         """
         logger.info("Exit menu item clicked")
         # Call the quit_application method from the BaseController to handle the exit

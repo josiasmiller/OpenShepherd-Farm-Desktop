@@ -10,7 +10,7 @@ class TabNames:
     LOCATION_HISTORY                 = 'Get Location History'
     ID_HISTORY                       = 'Get ID History'
     DRUG_HISTORY                     = 'Get Drug History'
-    NOTE_HISTROY                     = 'Get Note History'
+    NOTE_HISTORY                     = 'Get Note History'
     EVALUATION_RESULTS               = 'Get Evaluation Results'
     OPTIMAL_LIVESTOCK_RAM_BSE_REPORT = 'Get Optimal Livestock Ram BSE Report'
     OPTIMAL_LIVESTOCK_EWE_REPORT     = 'Get Optimal Ewe Ultrasound Report'
@@ -103,7 +103,7 @@ def farm_desktop_left_sidebar(evaluation_history):
             {'text': TabNames.LOCATION_HISTORY},
             {'text': TabNames.ID_HISTORY},
             {'text': TabNames.DRUG_HISTORY},
-            {'text': TabNames.NOTE_HISTROY},
+            {'text': TabNames.NOTE_HISTORY},
             {'text': TabNames.EVALUATION_RESULTS},
             {'text': TabNames.OPTIMAL_LIVESTOCK_RAM_BSE_REPORT},
             {'text': TabNames.OPTIMAL_LIVESTOCK_EWE_REPORT},
