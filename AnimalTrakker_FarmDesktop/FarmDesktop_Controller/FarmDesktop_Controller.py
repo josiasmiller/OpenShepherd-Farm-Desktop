@@ -7,7 +7,7 @@ from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Utiliti
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Database_Handlers import handle_trait_analysis, construct_search_query
 from AnimalTrakker_FarmDesktop.FarmDesktop_UserInterface.FarmDesktop_Widgets import EvaluationWidget, EditWidget, LeftSidebarChoiceWidget, CreateNewDBEntryWidget, SearchLeftSidebarWidget, SearchMainFrameWidget
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.FarmDesktop_Queries import *
-from AnimalTrakker_FarmDesktop.FarmDesktop_Database.csv_writer import write_animal_notes, write_id_history, write_tissue_history
+from AnimalTrakker_FarmDesktop.FarmDesktop_Database.csv_writer import write_animal_notes, write_id_history, write_tissue_history, write_lab_test_history, write_lab_result_history
 
 from AnimalTrakker_FarmDesktop.FarmDesktop_Database.DefaultSettings import default_settings
 
@@ -57,6 +57,8 @@ class FarmDesktopController(BaseController):
             TabNames.DRUG_HISTORY:                     not_implemented_popup,
             TabNames.NOTE_HISTORY:                     lambda: self.animal_search("notes"),
             TabNames.TISSUE_SAMPLE_HISTORY:            lambda: self.animal_search("tissue_sample_history"),
+            TabNames.GET_LAB_TEST_HISTORY:             lambda: self.animal_search("lab_test_history"),
+            TabNames.GET_LAB_RESULTS_HISTORY:          lambda: self.animal_search("lab_result_history"),
             TabNames.EVALUATION_RESULTS:               not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_RAM_BSE_REPORT: not_implemented_popup,
             TabNames.OPTIMAL_LIVESTOCK_EWE_REPORT:     not_implemented_popup,
@@ -290,8 +292,13 @@ class FarmDesktopController(BaseController):
             on_csv_save = self.save_animal_id_history
         elif search_type == "tissue_sample_history":
             on_csv_save = self.save_tissue_sample_history
+        elif search_type == "lab_test_history":
+            # on_csv_save = self.save_lab_test_history
+            on_csv_save = lambda: print("placeholder for future impl")
+        elif search_type == "lab_result_history":
+            on_csv_save = self.save_lab_result_history
         else:
-            raise Exception("Unknown search type")
+            raise Exception(f"Unknown search type: {search_type}")
 
         # Create and display the SearchLeftSidebarWidget
         self.left_sidebar_widget = SearchLeftSidebarWidget(
@@ -641,6 +648,50 @@ class FarmDesktopController(BaseController):
 
         write_tissue_history(file_path, tissue_history_content)
 
+        return
+
+    def save_lab_test_history(self):
+        ids = self.search_main_frame_widget.get_checked_animal_ids()
+
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        tissue_history_content = list()
+
+        for animal_id in ids:
+            tissue_history = fetch_lab_test_history(self.app.db_connection, animal_id)
+            for row in tissue_history:
+                tissue_history_content.append(row)
+
+        write_tissue_history(file_path, tissue_history_content)
+        return
+
+    def save_lab_result_history(self):
+        ids = self.search_main_frame_widget.get_checked_animal_ids()
+
+        # Open file dialog to select file path for saving the CSV
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+
+        if not file_path:  # If the user cancels the file dialog, do nothing
+            return
+
+        lab_result_history_content = list()
+
+        for animal_id in ids:
+            tissue_history = fetch_lab_result_history(self.app.db_connection, animal_id)
+            for row in tissue_history:
+                lab_result_history_content.append(row)
+
+        write_lab_result_history(file_path, lab_result_history_content)
         return
 
     def save_ods(self):

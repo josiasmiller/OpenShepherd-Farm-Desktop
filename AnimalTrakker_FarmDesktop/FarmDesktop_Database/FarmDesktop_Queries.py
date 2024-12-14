@@ -510,3 +510,33 @@ GET_TISSUE_SAMPLES_TAKEN_BY_ANIMAL = """
         animal_tissue_sample_taken_table.tissue_sample_date
          , animal_tissue_sample_taken_table.tissue_sample_time
 """
+
+GET_TISSUE_TEST_RESULTS_BY_ANIMAL = """
+    SELECT animal_table.id_animalid
+        , flock_prefix_table.flock_prefix
+        , animal_table.animal_name
+        , animal_tissue_sample_taken_table.tissue_sample_date
+        , animal_tissue_sample_taken_table.tissue_sample_time
+        , tissue_sample_type_table.tissue_sample_type_name
+        , tissue_test_table.tissue_test_name
+        , company_table.company
+        , animal_tissue_test_request_table.tissue_test_results_date
+        , animal_tissue_test_request_table.tissue_test_results_time
+        , animal_tissue_test_request_table.tissue_test_results
+    FROM animal_table
+    INNER JOIN animal_tissue_sample_taken_table ON animal_tissue_sample_taken_table.id_animalid = animal_table.id_animalid
+    
+    INNER JOIN animal_flock_prefix_table ON animal_flock_prefix_table.id_animalid = animal_table.id_animalid
+    INNER JOIN flock_prefix_table on flock_prefix_table.id_flockprefixid = animal_flock_prefix_table.id_flockprefixid
+    INNER JOIN tissue_test_table ON tissue_test_table.id_tissuetestid = animal_tissue_test_request_table.id_tissuetestid
+    INNER JOIN tissue_sample_type_table ON tissue_sample_type_table.id_tissuesampletypeid = animal_tissue_sample_taken_table.id_tissuesampletypeid 
+    INNER JOIN animal_tissue_test_request_table ON animal_tissue_test_request_table.id_animaltissuesampletakenid = animal_tissue_sample_taken_table.id_animaltissuesampletakenid
+    INNER JOIN company_laboratory_table ON company_laboratory_table.id_companylaboratoryid = animal_tissue_test_request_table.id_companylaboratoryid
+    INNER JOIN company_table ON company_table.id_companyid = company_laboratory_table.id_companyid
+    WHERE 
+        animal_table.id_animalid = ? 
+    ORDER BY 
+        animal_tissue_sample_taken_table.tissue_sample_date
+         , animal_tissue_sample_taken_table.tissue_sample_time
+"""
+
