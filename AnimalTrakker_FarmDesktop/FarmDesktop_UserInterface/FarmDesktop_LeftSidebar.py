@@ -11,6 +11,7 @@ class TabNames:
     ID_HISTORY                       = 'Get ID History'
     DRUG_HISTORY                     = 'Get Drug History'
     NOTE_HISTORY                     = 'Get Note History'
+    TISSUE_SAMPLE_HISTORY            = 'Get Tissue Sample Taken History'
     EVALUATION_RESULTS               = 'Get Evaluation Results'
     OPTIMAL_LIVESTOCK_RAM_BSE_REPORT = 'Get Optimal Livestock Ram BSE Report'
     OPTIMAL_LIVESTOCK_EWE_REPORT     = 'Get Optimal Ewe Ultrasound Report'
@@ -102,6 +103,7 @@ def farm_desktop_left_sidebar(evaluation_history):
             {'text': TabNames.OWNERSHIP_HISTORY},
             {'text': TabNames.LOCATION_HISTORY},
             {'text': TabNames.ID_HISTORY},
+            {'text': TabNames.TISSUE_SAMPLE_HISTORY},
             {'text': TabNames.DRUG_HISTORY},
             {'text': TabNames.NOTE_HISTORY},
             {'text': TabNames.EVALUATION_RESULTS},

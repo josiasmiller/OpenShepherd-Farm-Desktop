@@ -755,3 +755,33 @@ def fetch_animal_id_history(db_connection, animal_id):
     except Exception as e:
         logger.error(f"Failed to fetch animal id history: {e}")
         return []
+
+
+def fetch_tissue_sample_history(db_connection, animal_id):
+    try:
+        rows = db_connection.fetchall(GET_TISSUE_SAMPLES_TAKEN_BY_ANIMAL, (animal_id,))
+        logger.info(f"tissue sample data fetched successfully, retrieved {len(rows)} records.")
+
+        ret = []
+
+        for row in rows:
+            flock_prefix = row[1]
+            animal_fn = row[2]
+            animal_name = f"{flock_prefix} {animal_fn}"
+
+            tissue_sample_date = row[3]
+            tissue_sample_time = row[4]
+            tissue_sample_type_name = row[5]
+            tissue_sample_container_name = row[6]
+            tissue_sample_container_id = row[7]
+            tissue_sample_container_exp_date = row[8]
+
+            row_content = [animal_name, tissue_sample_date, tissue_sample_time, tissue_sample_type_name,
+                           tissue_sample_container_name, tissue_sample_container_id, tissue_sample_container_exp_date]
+            ret.append(row_content)
+
+        return ret
+    except Exception as e:
+        logger.error(f"Failed to fetch animal tissue history: {e}")
+        return []
+

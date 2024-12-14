@@ -912,6 +912,9 @@ class SearchLeftSidebarWidget(tk.Frame):
         elif self.search_type == "id_history":
             csv_button = tk.Button(button_frame, text="Save ID History as CSV", command=self.save_as_csv)
             csv_button.pack(fill=tk.X, padx=5, pady=2)
+        elif self.search_type == "tissue_sample_history":
+            csv_button = tk.Button(button_frame, text="Save Tissue Sample History as CSV", command=self.save_as_csv)
+            csv_button.pack(fill=tk.X, padx=5, pady=2)
 
     def save_as_pdf(self):
         # Add logic to save as PDF

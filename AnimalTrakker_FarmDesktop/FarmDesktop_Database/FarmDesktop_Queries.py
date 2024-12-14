@@ -487,3 +487,26 @@ GET_ANIMAL_ID_HISTORY = """
      animal_id_info_table.id_date_on
      , animal_id_info_table.id_idtypeid
 """
+
+GET_TISSUE_SAMPLES_TAKEN_BY_ANIMAL = """
+    SELECT animal_table.id_animalid
+        , flock_prefix_table.flock_prefix
+        , animal_table.animal_name
+        , animal_tissue_sample_taken_table.tissue_sample_date
+        , animal_tissue_sample_taken_table.tissue_sample_time
+        , tissue_sample_type_table.tissue_sample_type_name
+        , tissue_sample_container_type_table.tissue_sample_container_name
+        , animal_tissue_sample_taken_table.tissue_sample_container_id
+        , animal_tissue_sample_taken_table.tissue_sample_container_exp_date
+    FROM animal_table
+    INNER JOIN animal_tissue_sample_taken_table ON animal_tissue_sample_taken_table.id_animalid = animal_table.id_animalid
+    INNER JOIN tissue_sample_type_table ON tissue_sample_type_table.id_tissuesampletypeid = animal_tissue_sample_taken_table.id_tissuesampletypeid 
+    INNER JOIN animal_flock_prefix_table ON animal_flock_prefix_table.id_animalid = animal_table.id_animalid
+    INNER JOIN flock_prefix_table on flock_prefix_table.id_flockprefixid = animal_flock_prefix_table.id_flockprefixid
+    INNER JOIN tissue_sample_container_type_table ON tissue_sample_container_type_table.id_tissuesamplecontainertypeid = animal_tissue_sample_taken_table.id_tissuesamplecontainertypeid
+    WHERE 
+        animal_table.id_animalid = ?
+    ORDER BY 
+        animal_tissue_sample_taken_table.tissue_sample_date
+         , animal_tissue_sample_taken_table.tissue_sample_time
+"""
