@@ -1,0 +1,47 @@
+{
+  "name": "animaltrakkerelectron",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "npm run dist:common && npm-run-all --parallel dev:react dev:electron",
+    "dev:react": "vite",
+    "dev:electron": "npm run transpile:electron; cross-env NODE_ENV=development electron .",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "transpile:electron": "tsc --project src/electron/tsconfig.json",
+    "dist:common": "npm run transpile:electron && npm run dist:python && npm run dist:r",
+    "dist:python": "src/python/venv/bin/pyinstaller src/python/python-echo.py --clean --noconfirm --onefile --distpath dist-python --workpath build-python/build --specpath build-python",
+    "dist:r": "mkdir -p dist-r; cp src/r/*.r dist-r/.",
+    "dist:mac": "npm run dist:common && npm run build && electron-builder --mac --x64",
+    "dist:win": "npm run dist:common && npm run build && electron-builder --win --x64",
+    "dist:linux": "npm run dist:common && npm run build && electron-builder --linux --x64"
+  },
+  "dependencies": {
+    "nvm": "^0.0.4",
+    "os-utils": "^0.0.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/os-utils": "^0.0.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^7.0.3",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.5"
+  }
+}

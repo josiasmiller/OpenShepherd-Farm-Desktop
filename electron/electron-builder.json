@@ -1,0 +1,21 @@
+{
+    "appId": "com.weyr_associates.animaltrakker.electron",
+    "files": ["dist-electron", "dist-react"],
+    "extraResources": [
+        "dist-electron/preload.cjs", 
+        "dist-python/python-echo",
+        "dist-r/*", 
+        "src/assets/**"
+    ],
+    "extends": null,
+    "mac": {
+        "target": "dmg"
+    },
+    "linux": {
+        "target": "AppImage",
+        "category": "Utility"
+    },
+    "win": {
+        "target": ["portable", "msi"]
+    }
+}
