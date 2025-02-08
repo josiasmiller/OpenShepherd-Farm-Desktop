@@ -10,9 +10,7 @@ const fetchData = async () => {
   }
 };
 
-// fetchData();
 
-// src/renderer/scripts/main.ts
 const button = document.getElementById('fetchDataButton');
 if (button) {
   button.addEventListener('click', fetchData);
