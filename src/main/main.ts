@@ -1,0 +1,43 @@
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'path';
+
+let mainWindow: BrowserWindow | null = null;
+
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'), // ensure preload.js is set correctly
+      nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
+    },
+  });
+
+  mainWindow.loadURL('file://' + path.join(__dirname, '../renderer/pages/index.html'));
+
+  // Open the DevTools (optional)
+  mainWindow.webContents.openDevTools();
+}
+
+// Register the 'fetch-data' handler
+ipcMain.handle('fetch-data', async () => {
+  // Here you can retrieve data from a database, API, or any other source
+  // For now, let's return a mock response
+  return { data: 'Some data from main process' };
+});
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
