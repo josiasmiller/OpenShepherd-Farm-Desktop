@@ -21,6 +21,7 @@ function createWindow() {
 
 // Register the 'fetch-data' handler
 ipcMain.handle('fetch-data', async () => {
+  console.log("Main process handling fetch-data");
   // Here you can retrieve data from a database, API, or any other source
   // For now, let's return a mock response
   return { data: 'Some data from main process' };
