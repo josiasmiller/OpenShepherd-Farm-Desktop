@@ -1,78 +1,65 @@
 
-// Get references to the sidebar tabs and content sections
-const homeTab = document.getElementById('homeTab');
-const aboutTab = document.getElementById('aboutTab');
-const settingsTab = document.getElementById('settingsTab');
-const contactTab = document.getElementById('contactTab');
+const content = document.getElementById("content");
+const navLinks = document.querySelectorAll(".sidebar a");
 
-const homeContent = document.getElementById('homeContent');
-const aboutContent = document.getElementById('aboutContent');
-const settingsContent = document.getElementById('settingsContent');
-const contactContent = document.getElementById('contactContent');
-
-// Function to show content and hide other sections
-const showContent = (contentToShow: HTMLElement) => {
-  // Hide all content sections
-  [homeContent, aboutContent, settingsContent, contactContent].forEach((content) => {
-    if (content) {
-      content.style.display = 'none';
-    }
-  });
-  
-  // Show the selected content
-  if (contentToShow) {
-    contentToShow.style.display = 'block';
-  }
+// Attach page-specific JavaScript logic
+const pageScripts: Record<string, () => Promise<any>> = {
+  // home:         () => import("./renderer/scripts/common/home.js").then((module) => module.init()),
+  home:         () => import("./common/home.js").then((module) => module.init()),
+  animalSearch: () => import("./common/animalSearch.js").then((module) => module.init()),
 };
 
-// Event listeners for the sidebar tabs
-if (homeTab) {
-  homeTab.addEventListener('click', (e) => {
-    e.preventDefault();
-    showContent(homeContent as HTMLElement); // Show home page content
-  });
-}
+// Define a mapping of pages to their paths
+const pagePaths: Record<string, string> = {
+  home: "common/home.html",
+  animalSearch: "common/animalSearch.html",
+};
 
-if (aboutTab) {
-  aboutTab.addEventListener('click', (e) => {
-    e.preventDefault();
-    showContent(aboutContent as HTMLElement); // Show about page content
-  });
-}
-
-if (settingsTab) {
-  settingsTab.addEventListener('click', (e) => {
-    e.preventDefault();
-    showContent(settingsContent as HTMLElement); // Show settings page content
-  });
-}
-
-if (contactTab) {
-  contactTab.addEventListener('click', (e) => {
-    e.preventDefault();
-    showContent(contactContent as HTMLElement); // Show contact page content
-  });
-}
-
-// Optional: Show home content by default when the app starts
-showContent(homeContent as HTMLElement);
-
-
-const fetchData = async () => {
-  console.log("DATA BEING FETCHED!!");
+// Function to load a page dynamically
+const loadPage = async (page: string) => {
   try {
-    const data = await window.electronAPI.requestData();
-    console.log("Data received:", data);
+    if (!pagePaths[page]) {
+      throw new Error("Page not found in map");
+    }
+
+    // Load HTML
+    const response = await fetch(`${pagePaths[page]}`);
+    if (!response.ok) throw new Error("Page not found");
+
+    const html = await response.text();
+    const content = document.getElementById("content");
+    if (content) {
+      content.innerHTML = html;
+    }
+
+    // Dynamically import page-specific JS
+    const scriptPath = `./common/${page}.js`;
+    import(scriptPath)
+      .then((module) => {
+        if (module.init) module.init();
+      })
+      .catch((err) => console.error(`Failed to load ${scriptPath}`, err));
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error loading page:", error);
   }
 };
 
+const attachPageScripts = (page: string) => {
+  const loadScript = pageScripts[page];
+  if (loadScript) {
+    loadScript();
+  } else {
+    console.warn(`No script found for page: ${page}`);
+  }
+};
+// Add event listeners to sidebar buttons
+navLinks.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const target = event.currentTarget as HTMLButtonElement;
+    const page = target.dataset.page;
+    if (page) loadPage(page);
+  });
+});
 
-const button = document.getElementById('fetchDataButton');
-if (button) {
-  button.addEventListener('click', fetchData);
-} else {
-  console.log("Button not found");  // This will log if the button ID doesn't match
-}
-
+// Load the default page (Home)
+loadPage("home");

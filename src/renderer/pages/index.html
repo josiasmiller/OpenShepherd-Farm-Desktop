@@ -3,54 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnimalTrakker Registry</title>
+  <title>AnimalTrakker Farm Desktop</title>
   <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>AnimalTrakker Registry</h2>
-    <ul>
-      <li><a href="#" id="homeTab">Home</a></li>
-      <li><a href="#" id="aboutTab">About</a></li>
-      <li><a href="#" id="settingsTab">Settings</a></li>
-      <li><a href="#" id="contactTab">Contact</a></li>
-    </ul>
+  <div id="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>AnimalTrakker Farm Desktop</h2>
+      <ul>
+        <li><a href="#" data-page="home" id="homeTab">Home</a></li>
+        <li><a href="#" data-page="animalSearch" id="aboutTab">Animal Search</a></li>
+      </ul>
+    </div>
+  
+    <!-- <nav class="sidebar">
+      <ul>
+        <li><button class="nav-button" data-page="home">Home</button></li>
+        <li><button class="nav-button" data-page="animalSearch">Animal Search</button></li>
+      </ul>
+    </nav> -->
+
+    <!-- Main Content -->
+    <main class="main-content" id="content">
+      <h2>Welcome to the App</h2>
+      <p>Select a tab from the sidebar to view content.</p>
+    </main>
   </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Home Page Content -->
-    <div id="homeContent" class="content">
-      <h1>Home Page</h1>
-      <p>Welcome to the Home page!</p>
-    </div>
-
-    <!-- About Page Content -->
-    <div id="aboutContent" class="content" style="display: none;">
-      <h1>About Page</h1>
-      <p>Welcome to the About page!</p>
-    </div>
-
-    <!-- Settings Page Content -->
-    <div id="settingsContent" class="content" style="display: none;">
-      <h1>Settings Page</h1>
-      <p>Here you can configure your settings.</p>
-    </div>
-
-    <!-- Contact Page Content -->
-    <div id="contactContent" class="content" style="display: none;">
-      <h1>Contact Page</h1>
-      <p>Get in touch with us!</p>
-    </div>
-  </div>
-
-  <h1>Welcome to My Electron App</h1>
-  <button id="fetchDataButton">Fetch Data</button>
-  <p id="output"></p>
-  <script src="../scripts/main.js"></script>
-
-  <!-- External JS -->
-  <!-- <script src="scripts/main.js"></script> -->
+  <script src="../scripts/main.js"></script>  <!-- Sidebar logic -->
 </body>
 </html>

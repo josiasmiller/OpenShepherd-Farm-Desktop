@@ -1,16 +1,53 @@
-const fs = require("fs");
-const path = require("path");
+import { mkdirSync, cpSync, copyFileSync } from 'fs';
+import { join } from 'path';
 
-const srcDir = path.join(__dirname, "../src/renderer");
-const destDir = path.join(__dirname, "../dist/renderer");
+// Helper function to handle errors and exit early
+const exitOnError = (message, error) => {
+  console.error(message);
+  console.error(error);
+  process.exit(1);  // Exit the script with a non-zero exit code to indicate failure
+};
 
-// Ensure destination directories exist
-fs.mkdirSync(destDir, { recursive: true });
+// Paths to source and destination folders
+const srcRenderer = join('src', 'renderer');
+const destRenderer = join('dist', 'renderer');
 
-// Copy pages directory
-fs.cpSync(path.join(srcDir, "pages"), path.join(destDir, "pages"), { recursive: true });
+// Ensure destination directory exists
+try {
+  mkdirSync(destRenderer, { recursive: true });
+  console.log("Created/Ensured directory: " + destRenderer);
+} catch (err) {
+  exitOnError("Error creating directory: " + destRenderer, err);
+}
 
-// Copy styles.css
-fs.copyFileSync(path.join(srcDir, "styles.css"), path.join(destDir, "styles.css"));
+// Copy pages
+try {
+  const pagesSrc = join(srcRenderer, 'pages');
+  const pagesDest = join(destRenderer, 'pages');
+  cpSync(pagesSrc, pagesDest, { recursive: true });
+  console.log("Copied pages successfully!");
+} catch (err) {
+  exitOnError("Error copying pages: ", err);
+}
+
+// Copy scripts
+try {
+  const scriptsSrc = join(srcRenderer, 'scripts');
+  const scriptsDest = join(destRenderer, 'scripts');
+  cpSync(scriptsSrc, scriptsDest, { recursive: true });
+  console.log("Copied scripts successfully!");
+} catch (err) {
+  exitOnError("Error copying scripts: ", err);
+}
+
+// Copy styles
+try {
+  const stylesSrc = join(srcRenderer, 'styles.css');
+  const stylesDest = join(destRenderer, 'styles.css');
+  copyFileSync(stylesSrc, stylesDest);
+  console.log("Copied styles successfully!");
+} catch (err) {
+  exitOnError("Error copying styles: ", err);
+}
 
 console.log("Assets copied successfully!");

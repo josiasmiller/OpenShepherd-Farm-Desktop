@@ -1,19 +1,27 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 
+// Helper function to get the current directory path in ES Modules
+const getCurrentDirectory = () => {
+  return path.dirname(new URL(import.meta.url).pathname);
+};
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
+  const currentDirectory = getCurrentDirectory(); // Get current directory
+
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // ensure preload.js is set correctly
+      preload: path.join(currentDirectory, 'preload.js'), // ensure preload.js is set correctly
       nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
     },
   });
 
-  mainWindow.loadURL('file://' + path.join(__dirname, '../renderer/pages/index.html'));
+  // Adjust the file path for your renderer pages
+  mainWindow.loadURL('file://' + path.join(currentDirectory, '../renderer/pages/index.html'));
 
   // Open the DevTools (optional)
   mainWindow.webContents.openDevTools();

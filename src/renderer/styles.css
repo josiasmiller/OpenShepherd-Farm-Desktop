@@ -7,14 +7,14 @@
     box-sizing: border-box;
   }
   
-  /* Basic styling for the sidebar */
+  /* Sidebar */
   .sidebar {
-    width: 220px; /* Sidebar width */
-    height: 100vh; /* Full viewport height */
+    width: 220px; /* Fixed width */
+    height: 100vh; /* Full height */
     background-color: #333;
     color: white;
     padding: 20px;
-    position: fixed; /* Fix the sidebar on the left */
+    position: fixed; /* Keeps it in place */
     top: 0;
     left: 0;
     display: flex;
@@ -49,11 +49,12 @@
   
   /* Main content area */
   .main-content {
-    margin-left: 220px; /* Leave space for the sidebar */
+    margin-left: 240px; /* Adjust margin to match sidebar width + padding */
     padding: 20px;
     height: 100vh;
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    overflow-y: auto; /* Allows scrolling if content overflows */
     transition: margin-left 0.3s ease;
+    background-color: white; /* Ensures visibility */
   }
   
   /* Content sections (initially hidden) */

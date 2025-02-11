@@ -1,6 +1,7 @@
 {
   "name": "animaltrakker_farm_desktop",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "dist/main/main.js",
   "scripts": {
