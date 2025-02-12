@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "ES2022",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "moduleResolution": "Node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
   }
 }
 

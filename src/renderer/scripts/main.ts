@@ -78,6 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+console.log("window.electronAPI:", (window as any).electronAPI);
+
 
 
 // Load the default page (Home)

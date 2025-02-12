@@ -11,14 +11,18 @@ let mainWindow: BrowserWindow | null = null;
 let databasePath: string | null = null;
 
 function createWindow() {
-  const currentDirectory = getCurrentDirectory(); // Get current directory
+  let currentDirectory = getCurrentDirectory();
+  currentDirectory = currentDirectory.replace(/^\/+/, ''); 
+  const preloadPath = path.join(currentDirectory, 'preload.cjs'); // Form the relative path
+  const absolutePreloadPath = path.resolve(preloadPath);         // Ensure it’s an absolute path
 
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(currentDirectory, 'preload.js'), // ensure preload.js is set correctly
+      preload: absolutePreloadPath,
       nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
+      contextIsolation: true,  // This must be true for `contextBridge` to work
     },
   });
 
