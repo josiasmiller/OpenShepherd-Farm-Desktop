@@ -1,11 +1,33 @@
 <div class="animal-search-container">
-    <div class="top-section">
-      <h2>Animal Search Results</h2>
-      <p>Top section content goes here...</p>
-    </div>
-    <div class="bottom-section">
-      <h2>Animal Details</h2>
-      <p>Bottom section content goes here...</p>
-    </div>
+  <!-- TOP: Search Section -->
+  <div class="top-section">
+      <h2>Search for an Animal</h2>
+      <div class="search-filters">
+          <input type="text" id="searchName" placeholder="Enter Name">
+          <input type="text" id="searchType" placeholder="Enter Type">
+          <button id="searchButton">Search</button>
+      </div>
+
+      <table id="resultsTable">
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Age</th>
+              </tr>
+          </thead>
+          <tbody>
+              <!-- Results will be inserted here dynamically -->
+          </tbody>
+      </table>
   </div>
-  
+
+  <!-- BOTTOM: Selected Animal Details -->
+  <div class="bottom-section">
+      <h2>Selected Animal</h2>
+      <div id="animalDetails">
+          <p>Select an animal from the list above.</p>
+      </div>
+  </div>
+</div>

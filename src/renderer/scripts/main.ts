@@ -52,6 +52,7 @@ const attachPageScripts = (page: string) => {
     console.warn(`No script found for page: ${page}`);
   }
 };
+
 // Add event listeners to sidebar buttons
 navLinks.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -60,6 +61,24 @@ navLinks.forEach((button) => {
     if (page) loadPage(page);
   });
 });
+
+// allow user to click on the button at the bottom of the left sidebar to select a new DB file
+document.addEventListener("DOMContentLoaded", () => {
+  const selectDbButton = document.getElementById("selectDbButton") as HTMLButtonElement;
+  const dbFileName = document.getElementById("dbFileName") as HTMLParagraphElement;
+
+  if (selectDbButton && dbFileName) {
+      // Request main process to open file dialog
+      selectDbButton.addEventListener("click", async () => {
+          const filePath: string | null = await (window as any).electronAPI.selectDatabase();
+          if (filePath) {
+              dbFileName.textContent = filePath; // Display chosen database file
+          }
+      });
+  }
+});
+
+
 
 // Load the default page (Home)
 loadPage("home");

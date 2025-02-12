@@ -46,6 +46,41 @@
     background-color: #444;
     padding-left: 10px;
   }
+
+  /*  left sidebar database selector  */
+
+  .database-selector {
+    margin-top: auto; /* Push it to the bottom */
+    padding: 10px;
+    background-color: #444;
+    color: white;
+    text-align: center;
+    position: absolute;
+    bottom: 20px;
+    /* width: 100%; */
+    width: calc(100% - 40px); /* this should always be in line with the `.sidebar` padding */
+  }
+
+  .database-selector button {
+      padding: 8px;
+      background-color: #555;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+  }
+
+  .database-selector button:hover {
+      background-color: #666;
+  }
+
+  #dbFileName {
+      font-size: 12px;
+      margin-top: 5px;
+      word-wrap: break-word;
+  }
+
+  /*   */
   
   /* Main content area */
   .main-content {
@@ -79,22 +114,64 @@
     font-size: 16px;
   }
   
-  .animal-search-container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh; /* Full viewport height */
+  /* Ensure the main container takes up the full viewport height minus the sidebar */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    margin-left: 220px; /* Same width as sidebar */
+    overflow: hidden; /* Prevent content from exceeding viewport */
   }
 
+  /* Animal Search container takes up full available space */
+  .animal-search-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full height of parent */
+    width: 100%; /* Prevent overflow */
+  }
+
+  /* Split the content into two sections */
   .top-section {
-      flex: 6; /* 60% of the height */
-      background-color: #f4f4f4; /* Light gray background */
-      padding: 20px;
-      overflow-y: auto; /* Allows scrolling if content overflows */
+    flex: 6; /* 60% of available space */
+    background-color: #f4f4f4;
+    padding: 20px;
+    overflow-y: auto;
   }
 
   .bottom-section {
-      flex: 4; /* 40% of the height */
-      background-color: #ddd; /* Slightly darker background */
+    flex: 4; /* 40% of available space */
+    background-color: #ddd;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .search-filters {
+    margin-bottom: 10px;
+  }
+
+  .search-filters input {
+      padding: 8px;
+      margin-right: 5px;
+  }
+
+  #resultsTable {
+      width: 100%;
+      border-collapse: collapse;
+  }
+
+  #resultsTable th, #resultsTable td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+  }
+
+  #resultsTable tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+  }
+
+  .bottom-section {
+      background-color: #eef;
       padding: 20px;
-      overflow-y: auto;
   }

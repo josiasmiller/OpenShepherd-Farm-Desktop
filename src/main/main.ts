@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+// import sqlite3 from "sqlite3";
 import path from 'path';
 
 // Helper function to get the current directory path in ES Modules
@@ -7,20 +8,20 @@ const getCurrentDirectory = () => {
 };
 
 let mainWindow: BrowserWindow | null = null;
+let databasePath: string | null = null;
 
 function createWindow() {
   const currentDirectory = getCurrentDirectory(); // Get current directory
 
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: path.join(currentDirectory, 'preload.js'), // ensure preload.js is set correctly
       nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
     },
   });
 
-  // Adjust the file path for your renderer pages
   mainWindow.loadURL('file://' + path.join(currentDirectory, '../renderer/pages/index.html'));
 
   // Open the DevTools (optional)
@@ -33,6 +34,22 @@ ipcMain.handle('fetch-data', async () => {
   // Here you can retrieve data from a database, API, or any other source
   // For now, let's return a mock response
   return { data: 'Some data from main process' };
+});
+
+// Function to open a file dialog and select database
+ipcMain.handle("select-database", async () => {
+    const { filePaths } = await dialog.showOpenDialog({
+        title: "Select Database File",
+        properties: ["openFile"],
+        filters: [{ name: "SQLite Database", extensions: ["db", "sqlite"] }]
+    });
+
+    if (filePaths.length > 0) {
+        databasePath = filePaths[0]; // Save the selected file path
+        return databasePath;
+    }
+
+    return null; // No file selected
 });
 
 app.whenReady().then(() => {
