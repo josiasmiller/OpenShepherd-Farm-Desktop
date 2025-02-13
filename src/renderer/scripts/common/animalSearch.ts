@@ -1,4 +1,5 @@
 import { Animal } from "../../../database";
+import { showErrorPopup } from "./utils/notifications.js";
 
 export const init = () => {
   console.log("Animal Search Page Loaded");
@@ -38,10 +39,14 @@ const fetchAndDisplayAnimals = async () => {
           birthCell.textContent = animal.birthDate;
 
           const deathCell = row.insertCell();
-          birthCell.textContent = animal.deathDate;
+          deathCell.textContent = animal.deathDate;
       });
-  } catch (error) {
+    } catch (error) {
+      // TODO: find out how to make nicer error messages here
       console.error("Failed to load animals:", error);
-  }
+      let errorMessage : string = String(error);
+      showErrorPopup(errorMessage);
+    }
+  
 };
 
