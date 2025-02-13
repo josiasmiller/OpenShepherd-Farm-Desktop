@@ -1,11 +1,12 @@
 
 import { ipcMain, dialog } from "electron";
+import { animalSearch } from "../database/queries/animalSearch.js";
+import { openDb } from "../database/dbConnection.js";
 
 export const registerIpcHandlers = () => {
-  // Handler for "animal-search"
+
   ipcMain.handle("animal-search", async () => {
-    console.log("in ipcHandlers!!!!!");
-    return { message: "FIXME need to impl DB conneciton here in ipcHandlers.ts" };
+    return animalSearch();
   });
 
   // Handler for "select-database"
@@ -18,6 +19,9 @@ export const registerIpcHandlers = () => {
 
     if (filePaths.length > 0) {
       const databasePath = filePaths[0]; // Save the selected file path
+
+      openDb(databasePath); // open database in dbConnection
+
       return databasePath;
     }
 

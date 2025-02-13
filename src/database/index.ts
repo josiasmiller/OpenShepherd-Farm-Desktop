@@ -1,2 +1,1 @@
-
-export * from "./queries/getAnimals";
+export * from "./queries/animalSearch.js";

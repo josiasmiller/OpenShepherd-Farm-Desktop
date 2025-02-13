@@ -1,18 +1,42 @@
-​import { Database } from 'sqlite3';
+// import pkg from 'sqlite3'
+// const { Database } = pkg
 
 
-let dbInstance: Database | null = null;
+// let dbInstance: Database | null = null;
 
 
-export const openDb = async (dbPath: string): Promise<Database> => {
+// export const openDb = async (dbPath: string): Promise<Database> => {
+//   if (!dbInstance) {
+//     dbInstance = new Database(dbPath);
+//     console.log("📌 Database connection established:", dbPath);
+//   }
+//   return dbInstance;
+// };
+
+// // Function to get the existing database instance
+// export const getDatabase = (): Database | null => {
+//   return dbInstance;
+// };
+
+import pkg from 'sqlite3';
+
+// Destructure the Database class as a value
+const { Database } = pkg;
+
+// Declare the type as `typeof Database`
+let dbInstance: InstanceType<typeof Database> | null = null;
+
+export const openDb = async (dbPath: string): Promise<InstanceType<typeof Database>> => {
   if (!dbInstance) {
     dbInstance = new Database(dbPath);
     console.log("📌 Database connection established:", dbPath);
+  } else {
+    console.log("WEWLAD!!!!!!!!!", dbPath);
   }
   return dbInstance;
 };
 
 // Function to get the existing database instance
-export const getDatabase = (): Database | null => {
+export const getDatabase = (): InstanceType<typeof Database> | null => {
   return dbInstance;
 };
