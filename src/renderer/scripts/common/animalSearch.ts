@@ -1,3 +1,5 @@
+import { Animal } from "../../../database";
+
 export const init = () => {
   console.log("Animal Search Page Loaded");
 
@@ -15,13 +17,31 @@ const fetchAndDisplayAnimals = async () => {
       const animals = await (window as any).electronAPI.animalSearch();
       console.log("🐾 Animals retrieved:", animals);
 
-      const animalList = document.getElementById("animalList");
-      if (animalList) {
-          animalList.innerHTML = animals
-              .map((animal: any) => `<li>${animal.name}</li>`)
-              .join("");
+      const resultsTable = document.getElementById("resultsTable");
+      if (resultsTable == null) {
+        throw new TypeError("reusltsTable is null");
       }
+
+      const resultsTableBody = resultsTable.getElementsByTagName("tbody")[0];
+
+      // Clear any previous search results
+      resultsTableBody.innerHTML = '';
+
+      // Loop through the animals and create rows
+      animals.forEach((animal: Animal) => {
+          const row = resultsTableBody.insertRow();
+
+          const nameCell = row.insertCell();
+          nameCell.textContent = animal.name;
+
+          const birthCell = row.insertCell();
+          birthCell.textContent = animal.birthDate;
+
+          const deathCell = row.insertCell();
+          birthCell.textContent = animal.deathDate;
+      });
   } catch (error) {
       console.error("Failed to load animals:", error);
   }
 };
+
