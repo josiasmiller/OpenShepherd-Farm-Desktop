@@ -11,6 +11,39 @@ export const init = () => {
           await fetchAndDisplayAnimals();
       });
   }
+
+  const nextPageButton = document.getElementById("moveToNextPage");
+  if (nextPageButton) {
+      nextPageButton.addEventListener("click", async () => {
+          console.log("move button clicked!");
+          await moveToNextPage();
+      });
+  }
+};
+
+const moveToNextPage = async () => {
+  console.log("Moving to next page with selected animals!");
+
+  const chosenTable = document.querySelector("#chosenTableContainer table");
+  if (!chosenTable) {
+      console.log("No chosen table found.");
+      return;
+  }
+
+  const rows = chosenTable.querySelectorAll("tbody tr");
+  if (rows.length === 0) {
+      console.log("No selected animals found.");
+      return;
+  }
+
+  rows.forEach((row, index) => {
+    const rowData: string[] = []; // Explicitly define rowData as a string array
+    row.querySelectorAll("td").forEach((cell) => {
+        rowData.push(cell.textContent?.trim() || ""); // Use optional chaining to prevent null issues
+    });
+    console.log(`Row ${index + 1}:`, rowData);
+  });
+
 };
 
 const fetchAndDisplayAnimals = async () => {
@@ -47,9 +80,14 @@ const fetchAndDisplayAnimals = async () => {
 
       // Create button cell
       const buttonCell = row.insertCell();
+      buttonCell.style.textAlign = "center"; // Center the button within the cell
+
       const selectButton = document.createElement("button");
       selectButton.textContent = "Select";
+      selectButton.classList.add("select-animal-button"); // Add a CSS class for styling
+
       selectButton.addEventListener("click", () => addToChosenAnimals(animal));
+
       buttonCell.appendChild(selectButton);
 
       // Name cell
@@ -100,12 +138,18 @@ const addToChosenAnimals = (animal: AnimalSearchResults) => {
   // Add new row
   const row = chosenTableBody.insertRow();
 
-  // Select button (turns into "Remove" button)
+  // Create button cell for "Remove"
   const buttonCell = row.insertCell();
+  buttonCell.style.textAlign = "center"; // Center the button within the cell
+
   const removeButton = document.createElement("button");
   removeButton.textContent = "Remove";
+  removeButton.classList.add("remove-animal-button"); // Add a CSS class for styling
+
   removeButton.addEventListener("click", () => row.remove());
+
   buttonCell.appendChild(removeButton);
+
 
   // Name cell
   const nameCell = row.insertCell();

@@ -1,5 +1,3 @@
-console.log("STARTING RENDERER");
-
 
 const content = document.getElementById("content");
 const navLinks = document.querySelectorAll(".sidebar a");
