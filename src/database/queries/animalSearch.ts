@@ -1,13 +1,14 @@
 import { getDatabase } from "../dbConnection.js";
 
 // Define the Animal interface
-export interface Animal {
+export interface AnimalSearchResults {
+  flock_prefix: string | null,
   name: string;
-  birthDate: string;
+  birthDate: string | null;
   deathDate: string | null;
 }
 
-export const animalSearch = async (): Promise<Animal[]> => {
+export const animalSearch = async (): Promise<AnimalSearchResults[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -27,7 +28,7 @@ export const animalSearch = async (): Promise<Animal[]> => {
             name: animal_name,
             birthDate: birth_date,
             deathDate: death_date || null, // Use null for missing deathDate
-          } as Animal; // Ensure the object adheres to the Animal interface
+          } as AnimalSearchResults; // Ensure the object adheres to the Animal interface
         });
         resolve(animals);
       }
