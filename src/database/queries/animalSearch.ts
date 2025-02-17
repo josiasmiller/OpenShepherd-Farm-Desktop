@@ -24,24 +24,70 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
     throw new TypeError("DB Instance is null");
   }
 
-  const animalQuery = "SELECT animal_name, birth_date, death_date FROM animal_table limit 100";
-  
+  // Base query
+  let animalQuery = "SELECT animal_name, birth_date, death_date FROM animal_table";
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  // Conditionally add WHERE clauses based on provided parameters
+  if (queryParams.name) {
+    conditions.push("animal_name LIKE ?");
+    values.push(`%${queryParams.name}%`); // Using LIKE for partial match
+  }
+  // if (queryParams.status) {
+  //   conditions.push("status = ?");
+  //   values.push(queryParams.status);
+  // }
+  if (queryParams.registrationType) {
+    conditions.push("registration_type = ?");
+    values.push(queryParams.registrationType);
+  }
+  // if (queryParams.registrationNumber) {
+  //   conditions.push("registration_number LIKE ?");
+  //   values.push(queryParams.registrationNumber);
+  // }
+  if (queryParams.birthStartDate) {
+    conditions.push("birth_date >= ?");
+    values.push(queryParams.birthStartDate);
+  }
+  if (queryParams.birthEndDate) {
+    conditions.push("birth_date <= ?");
+    values.push(queryParams.birthEndDate);
+  }
+  if (queryParams.deathStartDate) {
+    conditions.push("death_date >= ?");
+    values.push(queryParams.deathStartDate);
+  }
+  if (queryParams.deathEndDate) {
+    conditions.push("death_date <= ?");
+    values.push(queryParams.deathEndDate);
+  }
+
+  // Append conditions to the query
+  if (conditions.length > 0) {
+    animalQuery += " WHERE " + conditions.join(" AND ");
+  }
+
+  // Add limit for safety
+  animalQuery += " LIMIT 100";
+
+  console.log("Final Query:", animalQuery);
+  console.log("Query Values:", values);
+
   return new Promise((resolve, reject) => {
-    db.all(animalQuery, (err, rows) => {
+    db.all(animalQuery, values, (err, rows) => {
       if (err) {
         reject(err);
       } else {
         // Map rows to Animal objects
-        const animals = rows.map((row: any) => {
-          const { animal_name, birth_date, death_date } = row;
-          return {
-            name: animal_name,
-            birthDate: birth_date,
-            deathDate: death_date || null, // Use null for missing deathDate
-          } as AnimalSearchResults; // Ensure the object adheres to the Animal interface
-        });
+        const animals = rows.map((row: any) => ({
+          name: row.animal_name,
+          birthDate: row.birth_date,
+          deathDate: row.death_date || null,
+        })) as AnimalSearchResults[];
         resolve(animals);
       }
     });
   });
 };
+
