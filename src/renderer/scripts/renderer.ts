@@ -4,26 +4,37 @@ const navLinks = document.querySelectorAll(".sidebar a");
 
 // Attach page-specific JavaScript logic
 const pageScripts: Record<string, () => Promise<any>> = {
-  // home:         () => import("./renderer/scripts/common/home.js").then((module) => module.init()),
-  home:         () => import("./common/home.js").then((module) => module.init()),
-  animalSearch: () => import("./common/animalSearch.js").then((module) => module.init()),
+  home:          () => import("./common/home.js").then((module) => module.init()),
+  animalSearch:  () => import("./common/animalSearch.js").then((module) => module.init()),
+  createDefault: () => import("./common/schemaDefaultPages/createDefault.js").then((module) => module.init()),
+  editDefault:   () => import("./common/schemaDefaultPages/editDefault.js").then((module) => module.init()),
 };
 
-// Define a mapping of pages to their paths
-const pagePaths: Record<string, string> = {
+// mapping of HTML pages to their paths
+const htmlPaths: Record<string, string> = {
   home: "common/home.html",
   animalSearch: "common/animalSearch.html",
+  createDefault: "common/schemaDefaultPages/createDefault.html",
+  editDefault: "common/schemaDefaultPages/editDefault.html"
+};
+
+// mapping of TypeScript pages to their paths
+const scriptPaths: Record<string, string> = {
+  home: "./common/home.js",
+  animalSearch: "./common/animalSearch.js",
+  createDefault: "./common/schemaDefaultPages/createDefault.js",
+  editDefault: "./common/schemaDefaultPages/editDefault.js"
 };
 
 // Function to load a page dynamically
 const loadPage = async (page: string) => {
   try {
-    if (!pagePaths[page]) {
+    if (!htmlPaths[page]) {
       throw new Error("Page not found in map");
     }
 
     // Load HTML
-    const response = await fetch(`${pagePaths[page]}`);
+    const response = await fetch(`${htmlPaths[page]}`);
     if (!response.ok) throw new Error("Page not found");
 
     const html = await response.text();
@@ -32,8 +43,12 @@ const loadPage = async (page: string) => {
       content.innerHTML = html;
     }
 
-    // Dynamically import page-specific JS
-    const scriptPath = `./common/${page}.js`;
+    if (!pageScripts[page]) {
+      throw new Error("Page not found in map");
+    }
+
+    const scriptPath = `${scriptPaths[page]}`
+
     import(scriptPath)
       .then((module) => {
         if (module.init) module.init();
