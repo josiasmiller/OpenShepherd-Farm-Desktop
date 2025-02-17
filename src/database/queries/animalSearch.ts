@@ -1,6 +1,5 @@
 import { getDatabase } from "../dbConnection.js";
 
-// Define the Animal interface
 export interface AnimalSearchResults {
   flock_prefix: string | null,
   name: string;
@@ -8,7 +7,18 @@ export interface AnimalSearchResults {
   deathDate: string | null;
 }
 
-export const animalSearch = async (): Promise<AnimalSearchResults[]> => {
+export interface AnimalSearchQueryParameters {
+  name?: string | null;
+  status?: string | null;         // Status could be a dropdown field
+  registrationType?: string | null;  // Registration Type
+  registrationNumber?: string | null;
+  birthStartDate?: string | null;   // Start date for birth range
+  birthEndDate?: string | null;     // End date for birth range
+  deathStartDate?: string | null;   // Start date for death range
+  deathEndDate?: string | null;     // End date for death range
+}
+
+export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}): Promise<AnimalSearchResults[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");

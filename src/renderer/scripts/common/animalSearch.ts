@@ -48,8 +48,29 @@ const moveToNextPage = async () => {
 
 const fetchAndDisplayAnimals = async () => {
   try {
-    const animals = await (window as any).electronAPI.animalSearch();
-    console.log("🐾 Animals retrieved:", animals);
+    const name = (document.getElementById("searchName") as HTMLInputElement).value;
+    const status = (document.getElementById("searchStatus") as HTMLSelectElement).value;
+    const registrationType = (document.getElementById("searchRegistrationType") as HTMLSelectElement).value;
+    const registrationNumber = (document.getElementById("searchRegistrationNumber") as HTMLInputElement).value;
+  
+    const birthStartDate = (document.getElementById("searchBirthDateStart") as HTMLInputElement).value;
+    const birthEndDate = (document.getElementById("searchBirthDateEnd") as HTMLInputElement).value;
+    const deathStartDate = (document.getElementById("searchDeathDateStart") as HTMLInputElement).value;
+    const deathEndDate = (document.getElementById("searchDeathDateEnd") as HTMLInputElement).value;
+  
+    const queryParams = {
+      name: name || null,
+      status: status || null,
+      registrationType: registrationType || null,
+      registrationNumber: registrationNumber || null,
+      birthStartDate: birthStartDate || null,
+      birthEndDate: birthEndDate || null,
+      deathStartDate: deathStartDate || null,
+      deathEndDate: deathEndDate || null,
+    };
+
+    const animals = await (window as any).electronAPI.animalSearch(queryParams);
+    console.log("-- Animals retrieved:", animals);
 
     const resultsMessage = document.getElementById("resultsMessage");
     const resultsTableContainer = document.getElementById("resultsTableContainer");
