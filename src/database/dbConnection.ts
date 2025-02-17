@@ -1,3 +1,4 @@
+import { dialog } from "electron";
 import pkg from 'sqlite3';
 
 // Destructure the Database class as a value
@@ -17,4 +18,22 @@ export const openDb = async (dbPath: string): Promise<InstanceType<typeof Databa
 // Function to get the existing database instance
 export const getDatabase = (): InstanceType<typeof Database> | null => {
   return dbInstance;
+};
+
+export const selectNewDb = async () => {
+  const { filePaths } = await dialog.showOpenDialog({
+    title: "Select Database File",
+    properties: ["openFile"],
+    filters: [{ name: "SQLite Database", extensions: ["db", "sqlite"] }],
+  });
+
+  if (filePaths.length > 0) {
+    const databasePath = filePaths[0]; // Save the selected file path
+
+    openDb(databasePath); // Open the database in dbConnection
+
+    return databasePath;
+  }
+
+  return null; // No file selected
 };
