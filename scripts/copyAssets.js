@@ -40,14 +40,19 @@ try {
   exitOnError("Error copying scripts: ", err);
 }
 
-// Copy styles
+// Copy styles directory (recursively copy all styles)
 try {
-  const stylesSrc = join(srcRenderer, 'styles.css');
-  const stylesDest = join(destRenderer, 'styles.css');
-  copyFileSync(stylesSrc, stylesDest);
-  console.log("Copied styles successfully!");
+  const stylesSrc = join(srcRenderer, 'styles');
+  const stylesDest = join(destRenderer, 'styles');
+
+  // Ensure the destination directory exists
+  mkdirSync(stylesDest, { recursive: true });
+
+  cpSync(stylesSrc, stylesDest, { recursive: true }); // Recursively copy all files
+  console.log("Copied styles directory successfully!");
 } catch (err) {
-  exitOnError("Error copying styles: ", err);
+  exitOnError("Error copying styles directory: ", err);
 }
+
 
 console.log("Assets copied successfully!");

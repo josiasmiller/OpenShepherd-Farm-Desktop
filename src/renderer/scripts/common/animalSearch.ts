@@ -84,7 +84,7 @@ const fetchAndDisplayAnimals = async () => {
 
       const selectButton = document.createElement("button");
       selectButton.textContent = "Select";
-      selectButton.classList.add("select-animal-button"); // Add a CSS class for styling
+      selectButton.classList.add("standard-button"); // Add a CSS class for styling
 
       selectButton.addEventListener("click", () => addToChosenAnimals(animal));
 
@@ -144,7 +144,7 @@ const addToChosenAnimals = (animal: AnimalSearchResults) => {
 
   const removeButton = document.createElement("button");
   removeButton.textContent = "Remove";
-  removeButton.classList.add("remove-animal-button"); // Add a CSS class for styling
+  removeButton.classList.add("cancel-button"); // Add a CSS class for styling
 
   removeButton.addEventListener("click", () => row.remove());
 
