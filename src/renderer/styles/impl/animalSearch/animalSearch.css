@@ -107,3 +107,42 @@
   .results-table th, .chosen-table th {
     background-color: #f4f4f4;
   }
+
+
+
+  /* Styling for the different divs surrounding hte inputs on the top search section */
+  .search-filters {
+    padding: 10px 0; /* Adds 10px padding on top and bottom */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Adds spacing between elements inside */
+    align-items: center; /* Aligns items properly */
+  }
+
+  .search-filters div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-filters label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .search-filters input,
+  .search-filters select {
+    height: 36px; /* Adjust as needed */
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  /* Ensure consistent box-sizing */
+  .search-filters select {
+    appearance: none; /* Removes default browser styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    cursor: pointer;
+  }

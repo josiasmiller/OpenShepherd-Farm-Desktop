@@ -1,13 +1,67 @@
 <div class="animal-search-container">
     <!-- SEARCH SECTION -->
-    <div class="search-section">
-        <h2>Search for an Animal</h2>
+<div class="search-section">
+    <h2>Search for an Animal</h2>
+        <!-- First Row -->
         <div class="search-filters">
-            <input type="text" id="searchName" placeholder="Enter Name">
-            <input type="text" id="searchType" placeholder="Enter Type">
-            <button id="searchButton">Search</button>
+            <div>
+                <label for="searchName">Animal Name</label>
+                <input type="text" id="searchName" placeholder="Enter Name">
+            </div>
+            <div>
+                <label for="searchStatus">Animal Status</label>
+                <select id="searchStatus">
+                    <option value="">Select Status</option>
+                    <!-- Add status options here -->
+                </select>
+            </div>
+            <div>
+                <label for="registrationType">Registration Type</label>
+                <select id="registrationType">
+                    <option value="">Select Type</option>
+                    <!-- Add registration type options here -->
+                </select>
+            </div>
+            <div>
+                <label for="registrationNumber">Registration Number</label>
+                <input type="text" id="registrationNumber" placeholder="Enter Number">
+            </div>
+        </div>
+
+        <!-- Second Row -->
+        <div class="search-filters">
+            <div>
+                <label for="birthDateStart">Birth Date (Start)</label>
+                <input type="date" id="birthDateStart">
+            </div>
+            <div>
+                <label for="birthDateEnd">Birth Date (End)</label>
+                <input type="date" id="birthDateEnd">
+            </div>
+            <div>
+                <label for="deathDateStart">Death Date (Start)</label>
+                <input type="date" id="deathDateStart">
+            </div>
+            <div>
+                <label for="deathDateEnd">Death Date (End)</label>
+                <input type="date" id="deathDateEnd">
+            </div>
+        </div>
+
+        <!-- Third Row -->
+        <div class="search-filters">
+            <div>
+                <label for="federalTag">Federal Tag</label>
+                <input type="text" id="federalTag" placeholder="Enter Federal Tag">
+            </div>
+            <div>
+                <label for="farmTag">Farm Tag</label>
+                <input type="text" id="farmTag" placeholder="Enter Farm Tag">
+            </div>
         </div>
     </div>
+
+
   
     <!-- RESULTS SECTION -->
     <div class="results-section">
