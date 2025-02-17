@@ -18,6 +18,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    // icon: path.join(currentDirectory, "..", "assets", "icon.ico"), // FIXME -- update this when trying out initial release build
     webPreferences: {
       preload: absolutePreloadPath,
       nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
