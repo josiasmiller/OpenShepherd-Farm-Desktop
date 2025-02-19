@@ -1,0 +1,90 @@
+/* src/renderer/styles.css */
+@import url("impl/sidebar.css");
+
+
+
+/* Reset margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  
+
+  /*   */
+  
+  /* Main content area */
+  .main-content {
+    width: 100%;
+    margin-left: 240px; /* Adjust margin to match sidebar width + padding */
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto; /* Allows scrolling if content overflows */
+    transition: margin-left 0.3s ease;
+    background-color: white; /* Ensures visibility */
+  }
+  
+  /* Content sections (initially hidden) */
+  .content {
+    width: 100%;
+    display: none;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .content[style*="display: block"] {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Basic page styling */
+  h1 {
+    font-size: 24px;
+    color: #000;
+  }
+
+  h2 {
+    font-size: 18px;
+    color: #000;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #000;
+  }
+
+  /* error popups */
+
+  #error-popup {
+    position: fixed; /* Stay on screen even when scrolling */
+    bottom: 10px;    /* Position near the bottom */
+    left: 50%;       /* Center horizontally */
+    transform: translate(-50%, -50%); /* Perfect centering */
+    background-color: rgba(153, 33, 33, 0.9); /* Red background with some transparency */
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 10000; /* Make sure it's above everything */
+    text-align: center;
+  }
+  
+  #error-popup button {
+    margin-top: 10px;
+    background: white;
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  #error-popup button:hover {
+    background: #ffcccc;
+  }
+  

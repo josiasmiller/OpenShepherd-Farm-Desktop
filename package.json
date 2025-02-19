@@ -1,0 +1,31 @@
+{
+  "name": "animaltrakker_farm_desktop",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "tsc && node scripts/copyAssets.js",
+    "start": "electron .",
+    "dev": "npm run build && electron . --no-sandbox",
+    "start_windows": "npm run build && npm start",
+    "start_mac": "npm run build && npm start",
+    "start_linux": "npm run build && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/electron": "^1.6.12",
+    "@types/node": "^22.13.1",
+    "@types/sqlite3": "^5.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^34.1.1",
+    "electron-builder": "^25.1.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}
