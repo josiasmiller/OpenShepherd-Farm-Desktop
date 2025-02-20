@@ -1,0 +1,147 @@
+/* Container for the entire page */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Create Defaults Top Section */
+.create-defaults-top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    height: 10%;
+}
+
+.create-defaults-top-section h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+#create-default-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#create-default-btn:hover {
+    background-color: #218838;
+}
+
+/* Create Defaults Bottom Section */
+.create-defaults-bottom-section {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: white;
+    overflow-y: auto;
+    height: 90%;
+}
+
+/* * * * * * * * * * * * * * * * * * */
+
+/* Apply styles only to labels inside create-defaults-bottom-section */
+.create-defaults-bottom-section label {
+    font-weight: bold;
+    display: block;  /* Ensures labels take full width */
+    margin-top: 15px; /* Adds space above each label */
+}
+
+.create-defaults-bottom-section input, 
+.create-defaults-bottom-section select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px; /* Adds space below each input/select */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+/* Apply styles only to submit buttons inside create-defaults-bottom-section */
+.create-defaults-bottom-section button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.create-defaults-bottom-section button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+
+
+/* Container for Existing Setting Dropdown */
+.existing-setting-container {
+    margin-bottom: 20px; /* Adds spacing below */
+    padding: 10px;
+    background-color: #f8f9fa; /* Light gray background */
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 6px;
+    text-align: center; /* Centers label */
+    gap: 10px; /* Adds spacing between elements */
+}
+
+/* Styling for the label */
+.existing-setting-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #0056b3;
+}
+
+/* Unique Styling for Dropdown */
+.existing-setting-container select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+}
+
+/* On Hover */
+.existing-setting-container select:hover {
+    border-color: #0056b3;
+}
+
+/* On Focus */
+.existing-setting-container select:focus {
+    outline: none;
+    border-color: #003d82;
+    box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+}
+
+
+#load-default-btn {
+    background-color: #28a745; /* Green color */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: fit-content;
+    align-self: flex-start; /* Aligns the button to the left */
+}
+
+#load-default-btn:hover {
+    background-color: #218838;
+}
+
+

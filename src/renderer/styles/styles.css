@@ -9,6 +9,8 @@
 
 @import url("impl/dbSelector/dbSelector.css");
 
+@import url("impl/schemaDefaultPages/createDefault.css");
+
 /* Reset margin and padding */
 * {
     margin: 0;
