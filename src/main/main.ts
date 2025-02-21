@@ -1,19 +1,19 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { registerIpcHandlers } from "./ipcHandlers.js";
+import { fileURLToPath } from 'url';
 
-// Helper function to get the current directory path in ES Modules
+
 const getCurrentDirectory = () => {
-  return path.dirname(new URL(import.meta.url).pathname);
+  return path.dirname(fileURLToPath(import.meta.url));
 };
 
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
-  let currentDirectory = getCurrentDirectory();
-  currentDirectory = currentDirectory.replace(/^\/+/, ''); 
+  const currentDirectory = getCurrentDirectory();
   const preloadPath = path.join(currentDirectory, 'preload.cjs');
-  const absolutePreloadPath = path.resolve(preloadPath); // Ensure absolute path
+  const absolutePreloadPath = path.resolve(preloadPath);
 
   mainWindow = new BrowserWindow({
     width: 1200,
