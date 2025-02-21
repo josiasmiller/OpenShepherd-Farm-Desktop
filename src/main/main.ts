@@ -25,7 +25,8 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL('file://' + path.join(currentDirectory, '../renderer/pages/index.html'));
+  const indexPath = path.resolve(path.join(currentDirectory, '..', 'renderer', 'pages', 'index.html'));
+  mainWindow.loadURL('file://' + indexPath);
 
   // Register all IPC handlers in ipcHandlers.ts
   registerIpcHandlers();
