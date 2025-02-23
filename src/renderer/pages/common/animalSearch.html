@@ -1,0 +1,96 @@
+<div class="animal-search-container">
+    <!-- SEARCH SECTION -->
+    <div class="search-section">
+        <h2>Search for an Animal</h2>
+            <!-- First Row -->
+            <div class="search-filters">
+                <div>
+                    <label for="searchName">Animal Name</label>
+                    <input type="text" id="searchName" placeholder="Enter Name">
+                </div>
+                <div>
+                    <label for="searchStatus">Animal Status</label>
+                    <select id="searchStatus">
+                        <option value="">Select Status</option>
+                        <!-- Add status options here -->
+                    </select>
+                </div>
+                <div>
+                    <label for="searchRegistrationType">Registration Type</label>
+                    <select id="searchRegistrationType">
+                        <option value="">Select Type</option>
+                        <!-- Add registration type options here -->
+                    </select>
+                </div>
+                <div>
+                    <label for="searchRegistrationNumber">Registration Number</label>
+                    <input type="text" id="searchRegistrationNumber" placeholder="Enter Number">
+                </div>
+            </div>
+
+            <!-- Second Row -->
+            <div class="search-filters">
+                <div>
+                    <label for="searchBirthDateStart">Birth Date (Start)</label>
+                    <input type="date" id="searchBirthDateStart">
+                </div>
+                <div>
+                    <label for="searchBirthDateEnd">Birth Date (End)</label>
+                    <input type="date" id="searchBirthDateEnd">
+                </div>
+                <div>
+                    <label for="searchDeathDateStart">Death Date (Start)</label>
+                    <input type="date" id="searchDeathDateStart">
+                </div>
+                <div>
+                    <label for="searchDeathDateEnd">Death Date (End)</label>
+                    <input type="date" id="searchDeathDateEnd">
+                </div>
+            </div>
+
+            <!-- Third Row -->
+            <div class="search-filters">
+                <div>
+                    <label for="searchFederalTag">Federal Tag</label>
+                    <input type="text" id="searchFederalTag" placeholder="Enter Federal Tag">
+                </div>
+                <div>
+                    <label for="searchFarmTag">Farm Tag</label>
+                    <input type="text" id="searchFarmTag" placeholder="Enter Farm Tag">
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <div class="search-filters">
+                <button id="searchButton" class="forward-button">Search</button>
+            </div>
+        </div>
+
+
+    
+        <!-- RESULTS SECTION -->
+        <div class="results-section">
+            <h2>Results</h2>
+            <!-- Placeholder Message (Initially Visible) -->
+            <div id="resultsMessage" class="results-message">
+                Search for animals to display results.
+            </div>
+
+            <!-- Table will be dynamically inserted here -->
+            <div id="resultsTableContainer"></div>
+        </div>
+    
+        <!-- CHOSEN SECTION -->
+        <div class="chosen-section">
+            <div class="chosen-header">
+                <h2>Selected Animals</h2>
+                <button id="moveToNextPage" class="forward-button">Choose Animals</button>
+            </div>
+
+            <!-- The table will be inserted here dynamically -->
+            <div id="chosenTableContainer"></div>
+        </div>
+
+    </div>
+</div>
+  

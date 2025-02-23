@@ -5,16 +5,19 @@ const navLinks = document.querySelectorAll(".sidebar a");
 // Attach page-specific JavaScript logic
 const pageScripts: Record<string, () => Promise<any>> = {
   home: () => import("./common/home.js").then((module) => module.init()),
+  animalSearch:  () => import("./common/animalSearch.js").then((module) => module.init()),
 };
 
 // mapping of HTML pages to their paths
 const htmlPaths: Record<string, string> = {
   home: "common/home.html",
+  animalSearch: "common/animalSearch.html",
 };
 
 // mapping of TypeScript pages to their paths
 const scriptPaths: Record<string, string> = {
   home: "./common/home.js",
+  animalSearch: "./common/animalSearch.js",
 };
 
 // Function to load a page dynamically
@@ -66,6 +69,22 @@ navLinks.forEach((button) => {
     const page = target.dataset.page;
     if (page) loadPage(page);
   });
+});
+
+// allow user to click on the button at the bottom of the left sidebar to select a new DB file
+document.addEventListener("DOMContentLoaded", () => {
+  const selectDbButton = document.getElementById("selectDbButton") as HTMLButtonElement;
+  const dbFileName = document.getElementById("dbFileName") as HTMLParagraphElement;
+
+  if (selectDbButton && dbFileName) {
+    // Request main process to open file dialog
+    selectDbButton.addEventListener("click", async () => {
+      const filePath: string | null = await (window as any).electronAPI.selectDatabase();
+      if (filePath) {
+        dbFileName.textContent = filePath; // Display chosen database file
+      }
+    });
+  }
 });
 
 // Load the default page (Home)

@@ -1,0 +1,16 @@
+  /* Style for the "cancel" buttons */
+  .cancel-button {
+    background-color: #e74c3c; /* Darker red */
+    color: white; /* White text */
+    border: none;
+    padding: 8px 16px; /* More padding for a bigger button */
+    font-size: 16px; /* Make text a bit bigger */
+    cursor: pointer;
+    border-radius: 5px; /* Slightly rounded edges */
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  /* Hover effect for cancel button */
+  .cancel-button:hover {
+    background-color: #c0392b; /* Darker red on hover */
+  }
