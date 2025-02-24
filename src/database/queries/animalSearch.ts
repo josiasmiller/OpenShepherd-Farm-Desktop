@@ -1,6 +1,7 @@
 import { getDatabase } from "../dbConnections.js";
 
 export interface AnimalSearchResults {
+  animal_id?: string | null;
   flock_prefix: string | null,
   name: string;
   birthDate: string | null;
@@ -25,39 +26,38 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
   }
 
   // Base query
-  let animalQuery = "SELECT animal_name, birth_date, death_date FROM animal_table";
+  let animalQuery = "SELECT id_animalid, animal_name, birth_date, death_date FROM animal_table";
   const conditions: string[] = [];
   const values: any[] = [];
 
   // Conditionally add WHERE clauses based on provided parameters
   if (queryParams.name) {
     conditions.push("animal_name LIKE ?");
-    values.push(`%${queryParams.name}%`); // Using LIKE for partial match
+    const escapedName = escapeLikeString(queryParams.name);
+    conditions.push("animal_name LIKE ?");
+    values.push(`%${escapedName}%`);
   }
-  // if (queryParams.status) {
-  //   conditions.push("status = ?");
-  //   values.push(queryParams.status);
-  // }
+
   if (queryParams.registrationType) {
     conditions.push("registration_type = ?");
     values.push(queryParams.registrationType);
   }
-  // if (queryParams.registrationNumber) {
-  //   conditions.push("registration_number LIKE ?");
-  //   values.push(queryParams.registrationNumber);
-  // }
+
   if (queryParams.birthStartDate) {
     conditions.push("birth_date >= ?");
     values.push(queryParams.birthStartDate);
   }
+
   if (queryParams.birthEndDate) {
     conditions.push("birth_date <= ?");
     values.push(queryParams.birthEndDate);
   }
+
   if (queryParams.deathStartDate) {
     conditions.push("death_date >= ?");
     values.push(queryParams.deathStartDate);
   }
+
   if (queryParams.deathEndDate) {
     conditions.push("death_date <= ?");
     values.push(queryParams.deathEndDate);
@@ -71,9 +71,6 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
   // Add limit for safety
   animalQuery += " LIMIT 100";
 
-  console.log("Final Query:", animalQuery);
-  console.log("Query Values:", values);
-
   return new Promise((resolve, reject) => {
     db.all(animalQuery, values, (err, rows) => {
       if (err) {
@@ -81,6 +78,7 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
       } else {
         // Map rows to Animal objects
         const animals = rows.map((row: any) => ({
+          animal_id: row.id_animalid,
           name: row.animal_name,
           birthDate: row.birth_date,
           deathDate: row.death_date || null,
