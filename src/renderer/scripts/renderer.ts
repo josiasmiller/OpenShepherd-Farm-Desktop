@@ -1,4 +1,3 @@
-
 const content = document.getElementById("content");
 const navLinks = document.querySelectorAll(".sidebar a");
 

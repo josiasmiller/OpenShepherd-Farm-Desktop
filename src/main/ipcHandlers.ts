@@ -1,7 +1,7 @@
 
 import { ipcMain } from "electron";
 import { animalSearch } from "../database/queries/animalSearch.js";
-import { selectNewDb } from "../database/dbConnections.js";
+import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 
 export const registerIpcHandlers = () => {
   
