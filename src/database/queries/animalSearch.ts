@@ -1,4 +1,5 @@
 import { getDatabase } from "../dbConnections.js";
+import { escapeLikeString } from "../dbUtils.js";
 
 export interface AnimalSearchResults {
   animal_id?: string | null;
@@ -32,7 +33,6 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
 
   // Conditionally add WHERE clauses based on provided parameters
   if (queryParams.name) {
-    conditions.push("animal_name LIKE ?");
     const escapedName = escapeLikeString(queryParams.name);
     conditions.push("animal_name LIKE ?");
     values.push(`%${escapedName}%`);
