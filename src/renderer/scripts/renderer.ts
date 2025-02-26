@@ -5,18 +5,24 @@ const navLinks = document.querySelectorAll(".sidebar a");
 const pageScripts: Record<string, () => Promise<any>> = {
   home: () => import("./common/home.js").then((module) => module.init()),
   animalSearch:  () => import("./common/animalSearch.js").then((module) => module.init()),
+  createDefault: () => import("./common/animalDefaults/createDefault.js").then((module) => module.init()),
+  editDefault:   () => import("./common/animalDefaults/editDefault.js").then((module) => module.init()),
 };
 
 // mapping of HTML pages to their paths
 const htmlPaths: Record<string, string> = {
   home: "common/home.html",
   animalSearch: "common/animalSearch.html",
+  createDefault: "common/animalDefaults/createDefault.html",
+  editDefault: "common/animalDefaults/editDefault.html"
 };
 
 // mapping of TypeScript pages to their paths
 const scriptPaths: Record<string, string> = {
   home: "./common/home.js",
   animalSearch: "./common/animalSearch.js",
+  createDefault: "./common/animalDefaults/createDefault.js",
+  editDefault: "./common/animalDefaults/editDefault.js"
 };
 
 // Function to load a page dynamically

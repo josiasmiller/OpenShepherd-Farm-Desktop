@@ -4,6 +4,7 @@ import { AnimalSearchQueryParameters } from "../database/queries/animalSearch";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchQueryParameters) => ipcRenderer.invoke("animal-search", queryParams),
+  animalDefaults: () => ipcRenderer.invoke("animal-defaults"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
 });
 

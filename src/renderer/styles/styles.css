@@ -1,6 +1,8 @@
 /* src/renderer/styles.css */
 @import url("impl/sidebar.css");
 
+@import url("impl/animalDefaults/createDefault.css");
+
 @import url("impl/animalSearch/animalSearch.css");
 
 @import url("impl/buttons/cancelButton.css");
