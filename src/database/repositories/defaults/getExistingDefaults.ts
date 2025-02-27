@@ -1,9 +1,5 @@
 import { getDatabase } from "../../dbConnections.js";
-
-export interface DefaultSettingsResults {
-  id: string;
-  name: string;
-}
+import { DefaultSettingsResults } from "../../models/defaults/getExistingDefaults";
 
 export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> => {
   const db = await getDatabase();
