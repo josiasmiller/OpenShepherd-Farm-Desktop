@@ -1,7 +1,8 @@
 
 import { ipcMain } from "electron";
-import { animalSearch, getExistingDefaults, getOwners } from "../database/index.js";
+import { animalSearch, getCompanies, getExistingDefaults, getOwners } from "../database/index.js";
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
+import { getPremises } from "../database/repositories/premises/getPremises.js";
 
 export const registerIpcHandlers = () => {
   
@@ -13,6 +14,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("select-database", selectNewDb);
 
+  ipcMain.handle("get-company-info", getCompanies);
+
   ipcMain.handle("get-owner-info", getOwners);
+
+  ipcMain.handle("get-premise-info", getPremises);
 };
 

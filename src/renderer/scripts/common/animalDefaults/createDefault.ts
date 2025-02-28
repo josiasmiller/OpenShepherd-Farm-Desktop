@@ -1,4 +1,4 @@
-import { OwnerInfo } from "../../../../database";
+import { CompanyInfo, OwnerInfo, PremiseInfo } from "../../../../database";
 
 export const init = () => {
   console.log("Create Default Schema Page loaded");
@@ -61,15 +61,39 @@ const populateAllDropdowns = async () => {
   
   populateExistingDefaults();
 
+  // Owners
   const ownerInfo : OwnerInfo[] = await (window as any).electronAPI.getOwnerInfo();
-  let ownerNames : string[] = []; 
+  let owners : string[] = []; 
   ownerInfo.forEach((info : OwnerInfo) =>{
     let name = info.firstName + " " + info.lastName;
-    ownerNames.push(name);
+    owners.push(name);
   });
-  populateDropdown("owner_id_contactid", ownerNames);
+  populateDropdown("owner_id_contactid", owners);
+  populateDropdown("breeder_id_contactid", owners);
+  populateDropdown("vet_id_contactid", owners);
 
-  
+  // Companies
+  const companyInfo : CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo();
+  let companies : string[] = []; 
+  companyInfo.forEach((info : CompanyInfo) =>{
+    companies.push(info.name);
+  });
+  populateDropdown("owner_id_companyid", companies);
+  populateDropdown("breeder_id_companyid", companies);
+  populateDropdown("lab_id_companyid", companies);
+
+  // Premises
+  const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
+  let premises : string[] = []; 
+  premiseInfo.forEach((info : PremiseInfo) =>{
+    let premiseName = info.address + " " + info.city + ", " + info.postcode + ", " + info.country;
+    premises.push(premiseName);
+  });
+  populateDropdown("owner_id_premiseid", premises);
+  populateDropdown("breeder_id_premiseid", premises);
+  populateDropdown("vet_id_premiseid", premises);
+  populateDropdown("lab_id_premiseid", premises);
+
 };
 
 /**
