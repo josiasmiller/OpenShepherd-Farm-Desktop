@@ -1,7 +1,6 @@
 
 import { ipcMain } from "electron";
-import { animalSearch, getExistingDefaults } from "../database/index.js";
-// import { getExistingDefaults } from "../database";
+import { animalSearch, getExistingDefaults, getOwners } from "../database/index.js";
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 
 export const registerIpcHandlers = () => {
@@ -10,8 +9,10 @@ export const registerIpcHandlers = () => {
     return animalSearch(queryParams);
   });
 
-  ipcMain.handle("animal-defaults", getExistingDefaults);
+  ipcMain.handle("get-existing-defaults", getExistingDefaults);
 
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("get-owner-info", getOwners);
 };
 

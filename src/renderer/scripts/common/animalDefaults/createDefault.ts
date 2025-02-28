@@ -1,3 +1,4 @@
+import { OwnerInfo } from "../../../../database";
 
 export const init = () => {
   console.log("Create Default Schema Page loaded");
@@ -11,7 +12,7 @@ export const init = () => {
     return;
   }
 
-  populateExistingDefaults();
+  populateAllDropdowns();
 
   // Populate dropdowns with sample data (this will be implemented in another merge request)
   populateDropdown("existing-settings", ["Default 1", "Default 2", "Default 3"]);
@@ -19,26 +20,6 @@ export const init = () => {
   populateDropdown("id_countyid", ["Los Angeles County", "Harris County", "Cook County"]);
   populateDropdown("id_speciesid", ["Cattle", "Sheep", "Goat"]);
 };
-
-/**
- * Populates the existing defaults dropdown with data from the database.
- */
-const populateExistingDefaults = async () => {
-  const existingDefaults = await (window as any).electronAPI.animalDefaults();
-  const selectElement = document.getElementById("existing-settings") as HTMLSelectElement;
-
-  // Clear previous options (except the placeholder)
-  selectElement.innerHTML = `<option value="" disabled selected>Select a setting...</option>`;
-
-  // Populate the dropdown with fetched results
-  existingDefaults.forEach((setting: { id: string; name: string }) => {
-    const option = document.createElement("option");
-    option.value = setting.id;
-    option.textContent = setting.name;
-    selectElement.appendChild(option);
-  });
-};
-
 
 /**
  * Populates a dropdown with given terms.
@@ -69,6 +50,43 @@ const populateDropdown = (elementId: string, terms: string[]) => {
     const option = document.createElement("option");
     option.value = term.toLowerCase().replace(/\s+/g, "_"); // Format as lowercase with underscores
     option.textContent = term;
+    selectElement.appendChild(option);
+  });
+};
+
+/**
+ * Populates all dropdowns of the page
+ */
+const populateAllDropdowns = async () => {
+  
+  populateExistingDefaults();
+
+  const ownerInfo : OwnerInfo[] = await (window as any).electronAPI.getOwnerInfo();
+  let ownerNames : string[] = []; 
+  ownerInfo.forEach((info : OwnerInfo) =>{
+    let name = info.firstName + " " + info.lastName;
+    ownerNames.push(name);
+  });
+  populateDropdown("owner_id_contactid", ownerNames);
+
+  
+};
+
+/**
+ * Populates the existing defaults dropdown with data from the database.
+ */
+const populateExistingDefaults = async () => {
+  const existingDefaults = await (window as any).electronAPI.getExistingDefaults();
+  const selectElement = document.getElementById("existing-settings") as HTMLSelectElement;
+
+  // Clear previous options (except the placeholder)
+  selectElement.innerHTML = `<option value="" disabled selected>Select a setting...</option>`;
+
+  // Populate the dropdown with fetched results
+  existingDefaults.forEach((setting: { id: string; name: string }) => {
+    const option = document.createElement("option");
+    option.value = setting.id;
+    option.textContent = setting.name;
     selectElement.appendChild(option);
   });
 };

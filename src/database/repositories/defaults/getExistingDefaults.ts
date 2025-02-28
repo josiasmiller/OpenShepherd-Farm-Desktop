@@ -8,7 +8,7 @@ export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> =
   }
 
   let animalQuery = `
-    SELECT id_animaltrakkerdefaultsettingsid AS id, user_name AS name 
+    SELECT id_animaltrakkerdefaultsettingsid AS id, default_settings_name AS name 
     FROM animaltrakker_default_settings_table`;
 
   return new Promise((resolve, reject) => {
