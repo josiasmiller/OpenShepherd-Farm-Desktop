@@ -3,6 +3,7 @@ import { ipcMain } from "electron";
 
 import { 
   animalSearch,
+  getBreeds,
   getColors,
   getCompanies, 
   getCounties, 
@@ -25,6 +26,8 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("get-breeds", getBreeds);
 
   ipcMain.handle("get-colors", getColors);
 

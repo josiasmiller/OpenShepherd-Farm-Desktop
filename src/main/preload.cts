@@ -4,6 +4,7 @@ import { AnimalSearchQueryParameters } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchQueryParameters) => ipcRenderer.invoke("animal-search", queryParams),
+  getBreeds: () => ipcRenderer.invoke("get-breeds"),
   getColors: () => ipcRenderer.invoke("get-colors"),
   getCompanyInfo: () => ipcRenderer.invoke("get-company-info"),
   getCounties: () => ipcRenderer.invoke("get-counties"),

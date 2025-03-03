@@ -1,6 +1,7 @@
 
 // export models 
 export { AnimalSearchResults, AnimalSearchQueryParameters } from "./models/animal/animalSeach/animalSearch.js";
+export { BreedInfo } from "./models/animal/general/breed.js";
 export { CompanyInfo } from "./models/owners/company.js";
 export { ColorInfo } from "./models/tags/color.js";
 export { CountryInfo } from "./models/locations/country.js";
@@ -15,6 +16,7 @@ export { StateInfo } from "./models/locations/state.js";
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
+export { getBreeds } from "./repositories/animal/general/getBreeds.js";
 export { getColors } from "./repositories/tags/getColors.js";
 export { getCompanies } from "./repositories/owners/getCompany.js";
 export { getCountries } from "./repositories/locations/getCountries.js";

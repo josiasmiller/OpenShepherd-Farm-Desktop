@@ -1,4 +1,5 @@
 import { 
+  BreedInfo,
   ColorInfo, 
   CompanyInfo, 
   CountyInfo, 
@@ -185,6 +186,16 @@ const populateAllDropdowns = async () => {
     species.push(info.common_name);
   });
   populateDropdown("id_speciesid", species);
+
+  // Breeds
+  const breedInfo : BreedInfo[] = await (window as any).electronAPI.getBreeds();
+  breedInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let breeds : string[] = []; 
+  breedInfo.forEach((info : BreedInfo) => {
+    breeds.push(info.name);
+  });
+  populateDropdown("id_breedid", breeds);
 };
 
 /**
