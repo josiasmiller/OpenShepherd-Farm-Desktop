@@ -10,6 +10,7 @@ import {
   getExistingDefaults, 
   getLocations,
   getOwners,
+  getStates,
 } from "../database/index.js";
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
@@ -38,5 +39,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-owner-info", getOwners);
 
   ipcMain.handle("get-premise-info", getPremises);
+
+  ipcMain.handle("get-states", getStates);
 };
 

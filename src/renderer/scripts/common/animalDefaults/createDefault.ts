@@ -1,4 +1,4 @@
-import { ColorInfo, CompanyInfo, CountyInfo, LocationInfo, OwnerInfo, PremiseInfo } from "../../../../database";
+import { ColorInfo, CompanyInfo, CountyInfo, LocationInfo, OwnerInfo, PremiseInfo, StateInfo } from "../../../../database";
 
 export const init = () => {
   console.log("Create Default Schema Page loaded");
@@ -150,6 +150,15 @@ const populateAllDropdowns = async () => {
   populateDropdown("tattoo_location", locations);
   populateDropdown("freeze_brand_location", locations);
 
+  // States
+  const stateInfo : StateInfo[] = await (window as any).electronAPI.getStates();
+  stateInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let states : string[] = []; 
+  stateInfo.forEach((info : StateInfo) => {
+    states.push(info.name);
+  });
+  populateDropdown("id_stateid", states);
 };
 
 /**

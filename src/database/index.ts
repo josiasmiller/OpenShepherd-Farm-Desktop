@@ -9,6 +9,7 @@ export { DefaultSettingsResults } from "./models/defaults/getExistingDefaults.js
 export { LocationInfo } from "./models/tags/location.js";
 export { OwnerInfo } from "./models/owners/owner.js";
 export { PremiseInfo } from "./models/premises/premise.js";
+export { StateInfo } from "./models/locations/state.js";
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
@@ -20,3 +21,4 @@ export { getExistingDefaults } from "./repositories/defaults/getExistingDefaults
 export { getLocations } from "./repositories/tags/getLocations.js";
 export { getOwners } from "./repositories/owners/getOwner.js";
 export { getPremises } from "./repositories/premises/getPremises.js";
+export { getStates } from "./repositories/locations/getStates.js"
