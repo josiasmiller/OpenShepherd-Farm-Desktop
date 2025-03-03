@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getCounties: () => ipcRenderer.invoke("get-counties"),
   getCountries: () => ipcRenderer.invoke("get-countries"),
   getExistingDefaults: () => ipcRenderer.invoke("get-existing-defaults"),
+  getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),
   getLocations: () => ipcRenderer.invoke("get-locations"),
   getOwnerInfo: () => ipcRenderer.invoke("get-owner-info"),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),

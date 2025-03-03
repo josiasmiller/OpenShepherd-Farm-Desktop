@@ -1,4 +1,13 @@
-import { ColorInfo, CompanyInfo, CountyInfo, LocationInfo, OwnerInfo, PremiseInfo, StateInfo } from "../../../../database";
+import { 
+  ColorInfo, 
+  CompanyInfo, 
+  CountyInfo, 
+  FlockPrefixInfo, 
+  LocationInfo, 
+  OwnerInfo, 
+  PremiseInfo, 
+  StateInfo,
+} from "../../../../database";
 
 export const init = () => {
   console.log("Create Default Schema Page loaded");
@@ -78,6 +87,7 @@ const populateAllDropdowns = async () => {
   populateDropdown("owner_id_companyid", companies);
   populateDropdown("breeder_id_companyid", companies);
   populateDropdown("lab_id_companyid", companies);
+  populateDropdown("id_registry_id_companyid", companies);
 
   // Premises
   const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
@@ -159,6 +169,13 @@ const populateAllDropdowns = async () => {
     states.push(info.name);
   });
   populateDropdown("id_stateid", states);
+
+  // Flock Prefixes
+  const flockPrefixInfo : FlockPrefixInfo[] = await (window as any).electronAPI.getFlockPrefixes();
+  const flockPrefixes: string[] = flockPrefixInfo
+    .map(info => info.name)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  populateDropdown("id_flockprefixid", flockPrefixes);
 };
 
 /**

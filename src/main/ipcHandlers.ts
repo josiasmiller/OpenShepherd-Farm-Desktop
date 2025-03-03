@@ -8,6 +8,7 @@ import {
   getCounties, 
   getCountries,
   getExistingDefaults, 
+  getFlockPrefixes,
   getLocations,
   getOwners,
   getStates,
@@ -33,6 +34,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-countries", getCountries);
 
   ipcMain.handle("get-existing-defaults", getExistingDefaults);
+
+  ipcMain.handle("get-flock-prefixes", getFlockPrefixes);
 
   ipcMain.handle("get-locations", getLocations);
 
