@@ -10,6 +10,7 @@ export { FlockPrefixInfo } from "./models/animal/flocks/flockPrefix.js"
 export { LocationInfo } from "./models/tags/location.js";
 export { OwnerInfo } from "./models/owners/owner.js";
 export { PremiseInfo } from "./models/premises/premise.js";
+export { SpeciesInfo } from "./models/animal/general/species.js";
 export { StateInfo } from "./models/locations/state.js";
 
 // export repositories
@@ -23,4 +24,5 @@ export { getFlockPrefixes } from "./repositories/animal/flock/getFlockPrefixes.j
 export { getLocations } from "./repositories/tags/getLocations.js";
 export { getOwners } from "./repositories/owners/getOwner.js";
 export { getPremises } from "./repositories/premises/getPremises.js";
+export { getSpecies } from "./repositories/animal/general/getSpecies.js";
 export { getStates } from "./repositories/locations/getStates.js"

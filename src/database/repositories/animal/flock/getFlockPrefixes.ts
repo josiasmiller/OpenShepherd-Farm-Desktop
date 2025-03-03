@@ -7,7 +7,7 @@ export const getFlockPrefixes = async (): Promise<FlockPrefixInfo[]> => {
     throw new TypeError("DB Instance is null");
   }
 
-  let stateQuery = `
+  let flockPrefixQuery = `
     SELECT 
         id_flockprefixid AS id, 
         flock_prefix AS name,
@@ -17,7 +17,7 @@ export const getFlockPrefixes = async (): Promise<FlockPrefixInfo[]> => {
     FROM flock_prefix_table`;
 
   return new Promise((resolve, reject) => {
-    db.all(stateQuery, [], (err, rows) => {
+    db.all(flockPrefixQuery, [], (err, rows) => {
       if (err) {
         reject(err);
       } else {

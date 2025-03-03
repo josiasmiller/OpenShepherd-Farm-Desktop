@@ -11,6 +11,7 @@ import {
   getFlockPrefixes,
   getLocations,
   getOwners,
+  getSpecies,
   getStates,
 } from "../database/index.js";
 
@@ -42,6 +43,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-owner-info", getOwners);
 
   ipcMain.handle("get-premise-info", getPremises);
+
+  ipcMain.handle("get-species", getSpecies);
 
   ipcMain.handle("get-states", getStates);
 };

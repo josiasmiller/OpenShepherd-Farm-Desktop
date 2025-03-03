@@ -6,6 +6,7 @@ import {
   LocationInfo, 
   OwnerInfo, 
   PremiseInfo, 
+  SpeciesInfo, 
   StateInfo,
 } from "../../../../database";
 
@@ -176,6 +177,14 @@ const populateAllDropdowns = async () => {
     .map(info => info.name)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   populateDropdown("id_flockprefixid", flockPrefixes);
+
+  // Species
+  const speciesInfo : SpeciesInfo[] = await (window as any).electronAPI.getSpecies();
+  let species : string[] = []; 
+  speciesInfo.forEach((info : SpeciesInfo) => {
+    species.push(info.common_name);
+  });
+  populateDropdown("id_speciesid", species);
 };
 
 /**
