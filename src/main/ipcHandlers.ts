@@ -1,6 +1,17 @@
 
 import { ipcMain } from "electron";
-import { animalSearch, getCompanies, getExistingDefaults, getOwners } from "../database/index.js";
+
+import { 
+  animalSearch,
+  getColors,
+  getCompanies, 
+  getCounties, 
+  getCountries,
+  getExistingDefaults, 
+  getLocations,
+  getOwners,
+} from "../database/index.js";
+
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getPremises } from "../database/repositories/premises/getPremises.js";
 
@@ -10,11 +21,19 @@ export const registerIpcHandlers = () => {
     return animalSearch(queryParams);
   });
 
-  ipcMain.handle("get-existing-defaults", getExistingDefaults);
-
   ipcMain.handle("select-database", selectNewDb);
 
+  ipcMain.handle("get-colors", getColors);
+
   ipcMain.handle("get-company-info", getCompanies);
+
+  ipcMain.handle("get-counties", getCounties);
+
+  ipcMain.handle("get-countries", getCountries);
+
+  ipcMain.handle("get-existing-defaults", getExistingDefaults);
+
+  ipcMain.handle("get-locations", getLocations);
 
   ipcMain.handle("get-owner-info", getOwners);
 

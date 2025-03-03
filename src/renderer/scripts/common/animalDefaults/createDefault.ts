@@ -1,4 +1,4 @@
-import { CompanyInfo, OwnerInfo, PremiseInfo } from "../../../../database";
+import { ColorInfo, CompanyInfo, CountyInfo, LocationInfo, OwnerInfo, PremiseInfo } from "../../../../database";
 
 export const init = () => {
   console.log("Create Default Schema Page loaded");
@@ -16,9 +16,6 @@ export const init = () => {
 
   // Populate dropdowns with sample data (this will be implemented in another merge request)
   populateDropdown("existing-settings", ["Default 1", "Default 2", "Default 3"]);
-  populateDropdown("id_stateid", ["California", "Texas", "New York"]);
-  populateDropdown("id_countyid", ["Los Angeles County", "Harris County", "Cook County"]);
-  populateDropdown("id_speciesid", ["Cattle", "Sheep", "Goat"]);
 };
 
 /**
@@ -93,6 +90,65 @@ const populateAllDropdowns = async () => {
   populateDropdown("breeder_id_premiseid", premises);
   populateDropdown("vet_id_premiseid", premises);
   populateDropdown("lab_id_premiseid", premises);
+  populateDropdown("registry_id_premiseid", premises);
+
+  // True/False inputs
+  const tf : string[] = ["True", "False"];
+  populateDropdown("id_eid_tag_male_color_female_color_same", tf);
+  populateDropdown("id_farm_tag_male_color_female_color_same", tf);
+  populateDropdown("farm_tag_based_on_eid_tag", tf);
+  populateDropdown("id_fed_tag_male_color_female_color_same", tf);
+  populateDropdown("id_nues_tag_male_color_female_color_same", tf);
+  populateDropdown("id_trich_tag_male_color_female_color_same", tf);
+  populateDropdown("trich_tag_auto_increment", tf);
+  populateDropdown("use_paint_marks", tf);
+  populateDropdown("evaluation_update_alert", tf);
+
+  // Counties
+  const countyInfo : CountyInfo[] = await (window as any).electronAPI.getCounties();
+  let counties : string[] = []; 
+  countyInfo.forEach((info : CountyInfo) => {
+    counties.push(info.name);
+  });
+  populateDropdown("id_countyid", counties);
+
+  // Colors
+  const colorInfo : ColorInfo[] = await (window as any).electronAPI.getColors();
+  colorInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let colors : string[] = []; 
+  colorInfo.forEach((info : ColorInfo) => {
+    colors.push(info.name);
+  });
+  populateDropdown("eid_tag_color_male", colors);
+  populateDropdown("eid_tag_color_female", colors);
+  populateDropdown("farm_tag_color_male", colors);
+  populateDropdown("farm_tag_color_female", colors);
+  populateDropdown("fed_tag_color_male", colors);
+  populateDropdown("fed_tag_color_female", colors);
+  populateDropdown("nues_tag_color_male", colors);
+  populateDropdown("nues_tag_color_female", colors);
+  populateDropdown("trich_tag_color_male", colors);
+  populateDropdown("trich_tag_color_female", colors);
+  populateDropdown("paint_mark_color", colors);
+  populateDropdown("tattoo_color", colors);
+
+  // Locations
+  const locationInfo : LocationInfo[] = await (window as any).electronAPI.getLocations();
+  locationInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let locations : string[] = []; 
+  locationInfo.forEach((info : LocationInfo) => {
+    locations.push(info.name);
+  });
+  populateDropdown("eid_tag_location", locations);
+  populateDropdown("farm_tag_location", locations);
+  populateDropdown("fed_tag_location", locations);
+  populateDropdown("nues_tag_location", locations);
+  populateDropdown("trich_tag_location", locations);
+  populateDropdown("paint_mark_location", locations);
+  populateDropdown("tattoo_location", locations);
+  populateDropdown("freeze_brand_location", locations);
 
 };
 
