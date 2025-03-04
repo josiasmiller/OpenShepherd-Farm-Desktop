@@ -18,6 +18,7 @@ export { StateInfo } from "./models/locations/state.js";
 export { TagTypeInfo } from "./models/tags/tagType.js";
 export { TissueSampleTypeInfo } from "./models/tissues/tissueSampleType.js"
 export { TissueSampleContainerTypeInfo } from "./models/tissues/tissueSampleContainerType.js"
+export { TissueTestInfo } from "./models/tissues/tissueTest.js"
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
@@ -38,3 +39,4 @@ export { getStates } from "./repositories/locations/getStates.js"
 export { getTagTypes } from "./repositories/tags/getTagTypes.js";
 export { getTissueSampleTypes } from "./repositories/tissues/getTissueSampleTypes.js";
 export { getTissueSampleContainerTypes } from "./repositories/tissues/getTissueSampleContainerTypes.js";
+export { getTissueTests } from "./repositories/tissues/getTissueTests.js";

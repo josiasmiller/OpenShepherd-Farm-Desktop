@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getTagTypes: () => ipcRenderer.invoke("get-tag-types"),
   getTissueSampleTypes: () => ipcRenderer.invoke("get-tissue-sample-types"),
   getTissueSampleContainerTypes: () => ipcRenderer.invoke("get-tissue-sample-container-types"),
+  getTissueTests: () => ipcRenderer.invoke("get-tissue-tests"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
 });
 

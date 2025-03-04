@@ -14,6 +14,7 @@ import {
   TagTypeInfo,
   TissueSampleContainerTypeInfo,
   TissueSampleTypeInfo,
+  TissueTestInfo,
 } from "../../../../database";
 
 export const init = () => {
@@ -253,6 +254,16 @@ const populateAllDropdowns = async () => {
     tissueSampleContainerTypes.push(info.name);
   });
   populateDropdown("id_tissuesamplecontainertypeid", tissueSampleContainerTypes);
+
+  // TissueTests
+  const tissueTestInfo : TissueTestInfo[] = await (window as any).electronAPI.getTissueTests();
+  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let tissueTests : string[] = []; 
+  tissueTestInfo.forEach((info : TissueTestInfo) => {
+    tissueTests.push(info.name);
+  });
+  populateDropdown("id_tissuetestid", tissueTests);
 };
 
 /**
