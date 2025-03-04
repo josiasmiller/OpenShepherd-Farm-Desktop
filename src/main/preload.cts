@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),
+  getTagTypes: () => ipcRenderer.invoke("get-tag-types"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
 });
 

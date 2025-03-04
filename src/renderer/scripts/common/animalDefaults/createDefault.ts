@@ -10,6 +10,7 @@ import {
   SexInfo, 
   SpeciesInfo, 
   StateInfo,
+  TagTypeInfo,
 } from "../../../../database";
 
 export const init = () => {
@@ -207,6 +208,18 @@ const populateAllDropdowns = async () => {
     sexes.push(info.name);
   });
   populateDropdown("id_sexid", sexes);
+
+  // TagTypes
+  const tagTypeInfo : TagTypeInfo[] = await (window as any).electronAPI.getTagTypes();
+  tagTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let tagTypes : string[] = []; 
+  tagTypeInfo.forEach((info : TagTypeInfo) => {
+    tagTypes.push(info.name);
+  });
+  populateDropdown("id_idtypeid_primary", tagTypes);
+  populateDropdown("id_idtypeid_secondary", tagTypes);
+  populateDropdown("id_idtypeid_tertiary", tagTypes);
 };
 
 /**
