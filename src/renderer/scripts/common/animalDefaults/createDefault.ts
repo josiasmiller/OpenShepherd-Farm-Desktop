@@ -12,6 +12,7 @@ import {
   SpeciesInfo, 
   StateInfo,
   TagTypeInfo,
+  TissueSampleContainerTypeInfo,
   TissueSampleTypeInfo,
 } from "../../../../database";
 
@@ -242,6 +243,16 @@ const populateAllDropdowns = async () => {
     tissueSampleTypes.push(info.name);
   });
   populateDropdown("id_tissuesampletypeid", tissueSampleTypes);
+
+  // TissueSampleContainerTypes
+  const tissueSampleContainerTypeInfo : TissueSampleContainerTypeInfo[] = await (window as any).electronAPI.getTissueSampleContainerTypes();
+  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let tissueSampleContainerTypes : string[] = []; 
+  tissueSampleContainerTypeInfo.forEach((info : TissueSampleContainerTypeInfo) => {
+    tissueSampleContainerTypes.push(info.name);
+  });
+  populateDropdown("id_tissuesamplecontainertypeid", tissueSampleContainerTypes);
 };
 
 /**

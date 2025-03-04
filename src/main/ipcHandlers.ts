@@ -17,6 +17,7 @@ import {
   getSpecies,
   getStates,
   getTagTypes,
+  getTissueSampleContainerTypes,
   getTissueSampleTypes,
 } from "../database/index.js";
 
@@ -62,5 +63,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-tag-types", getTagTypes);
 
   ipcMain.handle("get-tissue-sample-types", getTissueSampleTypes);
+
+  ipcMain.handle("get-tissue-sample-container-types", getTissueSampleContainerTypes);
 };
 
