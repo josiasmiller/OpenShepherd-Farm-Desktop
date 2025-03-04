@@ -7,6 +7,7 @@ import {
   LocationInfo, 
   OwnerInfo, 
   PremiseInfo, 
+  SexInfo, 
   SpeciesInfo, 
   StateInfo,
 } from "../../../../database";
@@ -196,6 +197,16 @@ const populateAllDropdowns = async () => {
     breeds.push(info.name);
   });
   populateDropdown("id_breedid", breeds);
+
+  // Sexes
+  const sexInfo : SexInfo[] = await (window as any).electronAPI.getSexes();
+  sexInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let sexes : string[] = []; 
+  sexInfo.forEach((info : SexInfo) => {
+    sexes.push(info.name);
+  });
+  populateDropdown("id_sexid", sexes);
 };
 
 /**

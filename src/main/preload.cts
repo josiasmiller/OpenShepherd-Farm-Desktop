@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getLocations: () => ipcRenderer.invoke("get-locations"),
   getOwnerInfo: () => ipcRenderer.invoke("get-owner-info"),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
+  getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
