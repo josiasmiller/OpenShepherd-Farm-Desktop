@@ -12,6 +12,7 @@ import {
   getFlockPrefixes,
   getLocations,
   getOwners,
+  getRemoveReasons,
   getSexes,
   getSpecies,
   getStates,
@@ -48,6 +49,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-owner-info", getOwners);
 
   ipcMain.handle("get-premise-info", getPremises);
+
+  ipcMain.handle("get-remove-reasons", getRemoveReasons);
 
   ipcMain.handle("get-sexes", getSexes);
 

@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-import { AnimalSearchQueryParameters } from "../database";
+import { AnimalSearchQueryParameters, getRemoveReasons } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchQueryParameters) => ipcRenderer.invoke("animal-search", queryParams),
@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getLocations: () => ipcRenderer.invoke("get-locations"),
   getOwnerInfo: () => ipcRenderer.invoke("get-owner-info"),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
+  getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
   getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),

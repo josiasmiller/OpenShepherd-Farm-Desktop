@@ -7,6 +7,7 @@ import {
   LocationInfo, 
   OwnerInfo, 
   PremiseInfo, 
+  RemoveReasonInfo, 
   SexInfo, 
   SpeciesInfo, 
   StateInfo,
@@ -220,6 +221,16 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_idtypeid_primary", tagTypes);
   populateDropdown("id_idtypeid_secondary", tagTypes);
   populateDropdown("id_idtypeid_tertiary", tagTypes);
+
+  // RemoveReasons
+  const removeReasonInfo : RemoveReasonInfo[] = await (window as any).electronAPI.getRemoveReasons();
+  removeReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let removeReasons : string[] = []; 
+  removeReasonInfo.forEach((info : RemoveReasonInfo) => {
+    removeReasons.push(info.name);
+  });
+  populateDropdown("id_idremovereasonid", removeReasons);
 };
 
 /**
