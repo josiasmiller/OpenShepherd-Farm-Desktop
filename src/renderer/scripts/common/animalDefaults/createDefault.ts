@@ -3,6 +3,7 @@ import {
   ColorInfo, 
   CompanyInfo, 
   CountyInfo, 
+  DeathReasonInfo, 
   FlockPrefixInfo, 
   LocationInfo, 
   OwnerInfo, 
@@ -257,13 +258,23 @@ const populateAllDropdowns = async () => {
 
   // TissueTests
   const tissueTestInfo : TissueTestInfo[] = await (window as any).electronAPI.getTissueTests();
-  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  tissueTestInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
   let tissueTests : string[] = []; 
   tissueTestInfo.forEach((info : TissueTestInfo) => {
     tissueTests.push(info.name);
   });
   populateDropdown("id_tissuetestid", tissueTests);
+
+  // DeathReaons
+  const deathReasonInfo : DeathReasonInfo[] = await (window as any).electronAPI.getDeathReasons();
+  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let deathReasons : string[] = []; 
+  deathReasonInfo.forEach((info : DeathReasonInfo) => {
+    deathReasons.push(info.name);
+  });
+  populateDropdown("id_deathreasonid", deathReasons);
 };
 
 /**

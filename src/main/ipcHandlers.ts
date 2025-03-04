@@ -8,6 +8,7 @@ import {
   getCompanies, 
   getCounties, 
   getCountries,
+  getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
   getLocations,
@@ -42,6 +43,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-counties", getCounties);
 
   ipcMain.handle("get-countries", getCountries);
+
+  ipcMain.handle("get-death-reasons", getDeathReasons);
 
   ipcMain.handle("get-existing-defaults", getExistingDefaults);
 

@@ -6,6 +6,7 @@ export { CompanyInfo } from "./models/owners/company.js";
 export { ColorInfo } from "./models/tags/color.js";
 export { CountryInfo } from "./models/locations/country.js";
 export { CountyInfo } from "./models/locations/county.js";
+export { DeathReasonInfo } from "./models/deaths/deathReason.js";
 export { DefaultSettingsResults } from "./models/defaults/getExistingDefaults.js";
 export { FlockPrefixInfo } from "./models/animal/flocks/flockPrefix.js"
 export { LocationInfo } from "./models/tags/location.js";
@@ -27,6 +28,7 @@ export { getColors } from "./repositories/tags/getColors.js";
 export { getCompanies } from "./repositories/owners/getCompany.js";
 export { getCountries } from "./repositories/locations/getCountries.js";
 export { getCounties } from "./repositories/locations/getCounties.js";
+export { getDeathReasons } from "./repositories/deaths/getDeathReaons.js";
 export { getExistingDefaults } from "./repositories/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/animal/flock/getFlockPrefixes.js";
 export { getLocations } from "./repositories/tags/getLocations.js";
