@@ -16,6 +16,7 @@ export { SexInfo } from "./models/animal/general/sex.js";
 export { SpeciesInfo } from "./models/animal/general/species.js";
 export { StateInfo } from "./models/locations/state.js";
 export { TagTypeInfo } from "./models/tags/tagType.js";
+export { TissueSampleTypeInfo } from "./models/tissues/tissueSampleType.js"
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
@@ -34,3 +35,4 @@ export { getSexes } from "./repositories/animal/general/getSexes.js";
 export { getSpecies } from "./repositories/animal/general/getSpecies.js";
 export { getStates } from "./repositories/locations/getStates.js"
 export { getTagTypes } from "./repositories/tags/getTagTypes.js";
+export { getTissueSampleTypes } from "./repositories/tissues/getTissueSampleTypes.js";

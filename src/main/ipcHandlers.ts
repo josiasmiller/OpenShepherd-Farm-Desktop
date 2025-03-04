@@ -17,6 +17,7 @@ import {
   getSpecies,
   getStates,
   getTagTypes,
+  getTissueSampleTypes,
 } from "../database/index.js";
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
@@ -59,5 +60,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-states", getStates);
 
   ipcMain.handle("get-tag-types", getTagTypes);
+
+  ipcMain.handle("get-tissue-sample-types", getTissueSampleTypes);
 };
 

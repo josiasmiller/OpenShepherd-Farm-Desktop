@@ -12,6 +12,7 @@ import {
   SpeciesInfo, 
   StateInfo,
   TagTypeInfo,
+  TissueSampleTypeInfo,
 } from "../../../../database";
 
 export const init = () => {
@@ -231,6 +232,16 @@ const populateAllDropdowns = async () => {
     removeReasons.push(info.name);
   });
   populateDropdown("id_idremovereasonid", removeReasons);
+
+  // TissueSampleTypes
+  const tissueSampleTypeInfo : TissueSampleTypeInfo[] = await (window as any).electronAPI.getTissueSampleTypes();
+  tissueSampleTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let tissueSampleTypes : string[] = []; 
+  tissueSampleTypeInfo.forEach((info : TissueSampleTypeInfo) => {
+    tissueSampleTypes.push(info.name);
+  });
+  populateDropdown("id_tissuesampletypeid", tissueSampleTypes);
 };
 
 /**
