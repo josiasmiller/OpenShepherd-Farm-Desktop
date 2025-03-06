@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-import { AnimalSearchQueryParameters, getDeathReasons } from "../database";
+import { AnimalSearchQueryParameters, getDeathReasons, getTransferReasons } from "../database";
 import { getBirthTypes } from "../database/repositories/animal/births/getBirthTypes";
 
 contextBridge.exposeInMainWorld("electronAPI", {
@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getTissueSampleTypes: () => ipcRenderer.invoke("get-tissue-sample-types"),
   getTissueSampleContainerTypes: () => ipcRenderer.invoke("get-tissue-sample-container-types"),
   getTissueTests: () => ipcRenderer.invoke("get-tissue-tests"),
+  getTransferReasons: () => ipcRenderer.invoke("get-transfer-reasons"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
 });
 

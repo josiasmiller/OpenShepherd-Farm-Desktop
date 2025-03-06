@@ -21,6 +21,7 @@ export { TagTypeInfo } from "./models/tags/tagType.js";
 export { TissueSampleTypeInfo } from "./models/tissues/tissueSampleType.js"
 export { TissueSampleContainerTypeInfo } from "./models/tissues/tissueSampleContainerType.js"
 export { TissueTestInfo } from "./models/tissues/tissueTest.js"
+export { TransferReasonInfo } from "./models/animal/transfers/transferReaon.js"
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
@@ -44,3 +45,4 @@ export { getTagTypes } from "./repositories/tags/getTagTypes.js";
 export { getTissueSampleTypes } from "./repositories/tissues/getTissueSampleTypes.js";
 export { getTissueSampleContainerTypes } from "./repositories/tissues/getTissueSampleContainerTypes.js";
 export { getTissueTests } from "./repositories/tissues/getTissueTests.js";
+export { getTransferReasons } from "./repositories/animal/transfers/getTransferReasons.js";

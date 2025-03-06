@@ -17,6 +17,7 @@ import {
   TissueSampleContainerTypeInfo,
   TissueSampleTypeInfo,
   TissueTestInfo,
+  TransferReasonInfo,
 } from "../../../../database";
 
 export const init = () => {
@@ -283,6 +284,16 @@ const populateAllDropdowns = async () => {
   });
   populateDropdown("birth_type", birthTypes);
   populateDropdown("rear_type", birthTypes);
+
+  // TransferReasons
+  const transferReasonInfo : TransferReasonInfo[] = await (window as any).electronAPI.getTransferReasons();
+  transferReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let transferReasons : string[] = []; 
+  transferReasonInfo.forEach((info : TransferReasonInfo) => {
+    transferReasons.push(info.name);
+  });
+  populateDropdown("id_transferreasonid", transferReasons);
 };
 
 /**
