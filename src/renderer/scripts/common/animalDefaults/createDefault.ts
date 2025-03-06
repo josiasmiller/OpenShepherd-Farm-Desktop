@@ -18,6 +18,7 @@ import {
   TissueSampleTypeInfo,
   TissueTestInfo,
   TransferReasonInfo,
+  UnitInfo,
 } from "../../../../database";
 
 export const init = () => {
@@ -294,6 +295,18 @@ const populateAllDropdowns = async () => {
     transferReasons.push(info.name);
   });
   populateDropdown("id_transferreasonid", transferReasons);
+
+  // Units
+  const unitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits();
+  unitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let units : string[] = []; 
+  unitInfo.forEach((info : UnitInfo) => {
+    units.push(info.name);
+  });
+  populateDropdown("birth_weight_id_unitsid", units);
+  populateDropdown("weight_id_unitsid", units);
+  populateDropdown("sale_price_id_unitsid", units);
 };
 
 /**

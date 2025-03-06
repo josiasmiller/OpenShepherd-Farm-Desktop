@@ -22,6 +22,8 @@ export { TissueSampleTypeInfo } from "./models/tissues/tissueSampleType.js"
 export { TissueSampleContainerTypeInfo } from "./models/tissues/tissueSampleContainerType.js"
 export { TissueTestInfo } from "./models/tissues/tissueTest.js"
 export { TransferReasonInfo } from "./models/animal/transfers/transferReaon.js"
+export { UnitInfo } from "./models/units/unit.js";
+export { UnitTypeInfo } from "./models/units/unitType.js";
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
@@ -46,3 +48,5 @@ export { getTissueSampleTypes } from "./repositories/tissues/getTissueSampleType
 export { getTissueSampleContainerTypes } from "./repositories/tissues/getTissueSampleContainerTypes.js";
 export { getTissueTests } from "./repositories/tissues/getTissueTests.js";
 export { getTransferReasons } from "./repositories/animal/transfers/getTransferReasons.js";
+export { getUnits } from "./repositories/units/getUnits.js";
+export { getUnitTypes } from "./repositories/units/getUnitTypes.js";

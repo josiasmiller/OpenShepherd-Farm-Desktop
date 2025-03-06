@@ -3,6 +3,7 @@ import { ipcMain } from "electron";
 
 import { 
   animalSearch,
+  getBirthTypes,
   getBreeds,
   getColors,
   getCompanies, 
@@ -13,6 +14,7 @@ import {
   getFlockPrefixes,
   getLocations,
   getOwners,
+  getPremises,
   getRemoveReasons,
   getSexes,
   getSpecies,
@@ -22,11 +24,11 @@ import {
   getTissueSampleTypes,
   getTissueTests,
   getTransferReasons,
+  getUnits,
+  getUnitTypes,
 } from "../database/index.js";
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
-import { getPremises } from "../database/repositories/premises/getPremises.js";
-import { getBirthTypes } from "../database/repositories/animal/births/getBirthTypes.js";
 
 export const registerIpcHandlers = () => {
   
@@ -77,5 +79,9 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-tissue-tests", getTissueTests);
 
   ipcMain.handle("get-transfer-reasons", getTransferReasons);
+
+  ipcMain.handle("get-units", getUnits);
+
+  ipcMain.handle("get-unit-types", getUnitTypes);
 };
 
