@@ -1,4 +1,5 @@
 import { 
+  BirthTypeInfo,
   BreedInfo,
   ColorInfo, 
   CompanyInfo, 
@@ -82,7 +83,6 @@ const populateAllDropdowns = async () => {
     .map(info => `${info.firstName} ${info.lastName}`)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
-  // Populate dropdowns with sorted owners
   let contactFields = ["owner_id_contactid", "breeder_id_contactid", "vet_id_contactid", "transfer_reason_id_contactid", "death_reason_id_contactid"];
   contactFields.forEach(id => populateDropdown(id, owners));
 
@@ -92,10 +92,8 @@ const populateAllDropdowns = async () => {
     .map(info => info.name)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
-  // Populate dropdowns with sorted companies
   let companyFields = ["owner_id_companyid", "breeder_id_companyid", "lab_id_companyid", "id_registry_id_companyid", "transfer_reason_id_companyid", "death_reason_id_companyid"];
   companyFields.forEach(id => populateDropdown(id, companies));
-
 
   // Premises
   const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
@@ -267,13 +265,23 @@ const populateAllDropdowns = async () => {
 
   // DeathReaons
   const deathReasonInfo : DeathReasonInfo[] = await (window as any).electronAPI.getDeathReasons();
-  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  deathReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
   let deathReasons : string[] = []; 
   deathReasonInfo.forEach((info : DeathReasonInfo) => {
     deathReasons.push(info.name);
   });
   populateDropdown("id_deathreasonid", deathReasons);
+
+  // BirthTypes
+  const birthTypeInfo : BirthTypeInfo[] = await (window as any).electronAPI.getBirthTypes();
+  birthTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  let birthTypes : string[] = []; 
+  birthTypeInfo.forEach((info : BirthTypeInfo) => {
+    birthTypes.push(info.name);
+  });
+  populateDropdown("birth_type", birthTypes);
 };
 
 /**

@@ -1,6 +1,7 @@
 
 // export models 
 export { AnimalSearchResults, AnimalSearchQueryParameters } from "./models/animal/animalSeach/animalSearch.js";
+export { BirthTypeInfo } from "./models/animal/births/birthType.js";
 export { BreedInfo } from "./models/animal/general/breed.js";
 export { CompanyInfo } from "./models/owners/company.js";
 export { ColorInfo } from "./models/tags/color.js";
@@ -23,6 +24,7 @@ export { TissueTestInfo } from "./models/tissues/tissueTest.js"
 
 // export repositories
 export { animalSearch } from "./repositories/animal/animalSearch/animalSearch.js";
+export { getBirthTypes } from "./repositories/animal/births/getBirthTypes.js";
 export { getBreeds } from "./repositories/animal/general/getBreeds.js";
 export { getColors } from "./repositories/tags/getColors.js";
 export { getCompanies } from "./repositories/owners/getCompany.js";

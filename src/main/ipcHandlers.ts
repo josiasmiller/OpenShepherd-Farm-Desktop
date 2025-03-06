@@ -25,6 +25,7 @@ import {
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getPremises } from "../database/repositories/premises/getPremises.js";
+import { getBirthTypes } from "../database/repositories/animal/births/getBirthTypes.js";
 
 export const registerIpcHandlers = () => {
   
@@ -33,6 +34,8 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("get-birth-types", getBirthTypes);
 
   ipcMain.handle("get-breeds", getBreeds);
 
