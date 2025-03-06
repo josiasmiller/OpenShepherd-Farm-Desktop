@@ -282,6 +282,7 @@ const populateAllDropdowns = async () => {
     birthTypes.push(info.name);
   });
   populateDropdown("birth_type", birthTypes);
+  populateDropdown("rear_type", birthTypes);
 };
 
 /**
