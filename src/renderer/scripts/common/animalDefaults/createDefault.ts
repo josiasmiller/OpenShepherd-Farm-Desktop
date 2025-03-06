@@ -76,27 +76,26 @@ const populateAllDropdowns = async () => {
   
   populateExistingDefaults();
 
-  // Owners
-  const ownerInfo : OwnerInfo[] = await (window as any).electronAPI.getOwnerInfo();
-  let owners : string[] = []; 
-  ownerInfo.forEach((info : OwnerInfo) =>{
-    let name = info.firstName + " " + info.lastName;
-    owners.push(name);
-  });
-  populateDropdown("owner_id_contactid", owners);
-  populateDropdown("breeder_id_contactid", owners);
-  populateDropdown("vet_id_contactid", owners);
+  // Fetch and sort owners alphabetically by full name
+  const ownerInfo: OwnerInfo[] = await (window as any).electronAPI.getOwnerInfo();
+  const owners: string[] = ownerInfo
+    .map(info => `${info.firstName} ${info.lastName}`)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 
-  // Companies
-  const companyInfo : CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo();
-  let companies : string[] = []; 
-  companyInfo.forEach((info : CompanyInfo) =>{
-    companies.push(info.name);
-  });
-  populateDropdown("owner_id_companyid", companies);
-  populateDropdown("breeder_id_companyid", companies);
-  populateDropdown("lab_id_companyid", companies);
-  populateDropdown("id_registry_id_companyid", companies);
+  // Populate dropdowns with sorted owners
+  let contactFields = ["owner_id_contactid", "breeder_id_contactid", "vet_id_contactid", "transfer_reason_id_contactid", "death_reason_id_contactid"];
+  contactFields.forEach(id => populateDropdown(id, owners));
+
+  // Fetch and sort companies alphabetically by name
+  const companyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo();
+  const companies: string[] = companyInfo
+    .map(info => info.name)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+  // Populate dropdowns with sorted companies
+  let companyFields = ["owner_id_companyid", "breeder_id_companyid", "lab_id_companyid", "id_registry_id_companyid", "transfer_reason_id_companyid", "death_reason_id_companyid"];
+  companyFields.forEach(id => populateDropdown(id, companies));
+
 
   // Premises
   const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
