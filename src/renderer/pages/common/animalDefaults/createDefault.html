@@ -24,6 +24,10 @@
             <label for="settings_name">Settings Name:</label>
             <input type="text" id="settings_name" name="settings_name">
 
+            <div class="section-break"></div>
+            <h2>Contacts, Companies, & Premises</h2>
+            <hr>
+
             <label for="owner_id_contactid">Owner Contact:</label>
             <select id="owner_id_contactid" name="owner_id_contactid"></select>
 
@@ -60,23 +64,25 @@
             <label for="registry_id_premiseid">Registry Premise:</label>
             <select id="registry_id_premiseid" name="registry_id_premiseid"></select>
 
+            <label for="transfer_reason_id_contactid">Transfer Reason Contact:</label>
+            <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid"></select>
+
+            <label for="transfer_reason_id_companyid">Transfer Reason Company:</label>
+            <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid"></select>
+
+            <div class="section-break"></div>
+            <h2>Locations</h2>
+            <hr>
+
             <label for="id_stateid">State:</label>
             <select id="id_stateid" name="id_stateid"></select>
 
             <label for="id_countyid">County:</label>
             <select id="id_countyid" name="id_countyid"></select>
 
-            <label for="id_flockprefixid">Flock Prefix:</label>
-            <select id="id_flockprefixid" name="id_flockprefixid"></select>
-
-            <label for="id_speciesid">Species:</label>
-            <select id="id_speciesid" name="id_speciesid"></select>
-
-            <label for="id_breedid">Breed:</label>
-            <select id="id_breedid" name="id_breedid"></select>
-
-            <label for="id_sexid">Sex:</label>
-            <select id="id_sexid" name="id_sexid"></select>
+            <div class="section-break"></div>
+            <h2>Tag Information</h2>
+            <hr>
 
             <label for="id_idtypeid_primary">Primary ID Type:</label>
             <select id="id_idtypeid_primary" name="id_idtypeid_primary"></select>
@@ -90,6 +96,10 @@
             <label for="id_eid_tag_male_color_female_color_same">EID Tag Male/Female Same Color:</label>
             <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same"></select>
 
+            <div class="section-break"></div>
+            <h3>EID Tag Information</h3>
+            <hr>
+
             <label for="eid_tag_color_male">EID Tag Color Male:</label>
             <select type="text" id="eid_tag_color_male" name="eid_tag_color_male"></select>
 
@@ -98,6 +108,10 @@
 
             <label for="eid_tag_location">EID Tag Location:</label>
             <select type="text" id="eid_tag_location" name="eid_tag_location"></select>
+
+            <div class="section-break"></div>
+            <h3>Farm Tag Information</h3>
+            <hr>
 
             <label for="id_farm_tag_male_color_female_color_same">Farm Tag Male/Female Same Color:</label>
             <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same"></select>
@@ -117,6 +131,10 @@
             <label for="farm_tag_location">Farm Tag Location:</label>
             <select type="text" id="farm_tag_location" name="farm_tag_location"></select>
 
+            <div class="section-break"></div>
+            <h3>Federal Tag Information</h3>
+            <hr>
+
             <label for="id_fed_tag_male_color_female_color_same">Federal Tag Male/Female Same Color:</label>
             <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same"></select>
 
@@ -129,6 +147,10 @@
             <label for="fed_tag_location">Federal Tag Location:</label>
             <select type="text" id="fed_tag_location" name="fed_tag_location"></select>
 
+            <div class="section-break"></div>
+            <h3>NUES Tag Information</h3>
+            <hr>
+
             <label for="id_nues_tag_male_color_female_color_same">NUES Tag Male/Female Same Color:</label>
             <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same"></select>
 
@@ -140,6 +162,10 @@
 
             <label for="nues_tag_location">NUES Tag Location:</label>
             <select type="text" id="nues_tag_location" name="nues_tag_location"></select>
+
+            <div class="section-break"></div>
+            <h3>Trich Tag Information</h3>
+            <hr>
 
             <label for="id_trich_tag_male_color_female_color_same">Trich Tag Male/Female Same Color:</label>
             <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same"></select>
@@ -156,8 +182,9 @@
             <label for="trich_tag_auto_increment">Trich Tag Auto Increment:</label>
             <select id="trich_tag_auto_increment" name="trich_tag_auto_increment"></select>
 
-            <label for="trich_tag_next_tag_number">Trich Tag Next Tag Number:</label>
-            <select type="number" id="trich_tag_next_tag_number" name="trich_tag_next_tag_number"></select>
+            <div class="section-break"></div>
+            <h3>Misc Tag Information</h3>
+            <hr>
 
             <label for="use_paint_marks">Use Paint Marks:</label>
             <select id="use_paint_marks" name="use_paint_marks"></select>
@@ -180,6 +207,10 @@
             <label for="id_idremovereasonid">ID Remove Reason:</label>
             <select id="id_idremovereasonid" name="id_idremovereasonid"></select>
 
+            <div class="section-break"></div>
+            <h3>Tissue Sample Information</h3>
+            <hr>
+
             <label for="id_tissuesampletypeid">Tissue Sample Type:</label>
             <select id="id_tissuesampletypeid" name="id_tissuesampletypeid"></select>
 
@@ -188,6 +219,54 @@
 
             <label for="id_tissuesamplecontainertypeid">Tissue Sample Container Type:</label>
             <select id="id_tissuesamplecontainertypeid" name="id_tissuesamplecontainertypeid"></select>
+
+            <div class="section-break"></div>
+            <h3>Bangs Tag Information</h3>
+            <hr>
+
+            <label for="bangs_tag_color_male">Bangs Tag Color Male:</label>
+            <select id="bangs_tag_color_male" name="bangs_tag_color_male"></select>
+
+            <label for="bangs_tag_color_female">Bangs Tag Color Female:</label>
+            <select id="bangs_tag_color_female" name="bangs_tag_color_female"></select>
+
+            <label for="bangs_tag_location">Bangs Tag Location:</label>
+            <select id="bangs_tag_location" name="bangs_tag_location"></select>
+
+            <label for="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
+            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
+
+            <div class="section-break"></div>
+            <h3>Sale Order Tag Information</h3>
+            <hr>
+
+            <label for="sale_order_tag_color_male">Sale Order Tag Color Male:</label>
+            <select id="sale_order_tag_color_male" name="bangs_tag_color_male"></select>
+
+            <label for="sale_order_tag_color_female">Sale Order Tag Color Female:</label>
+            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female"></select>
+
+            <label for="sale_order_tag_location">Sale Order Tag Location:</label>
+            <select id="sale_order_tag_location" name="sale_order_tag_location"></select>
+
+            <label for="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
+            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
+
+            <div class="section-break"></div>
+            <h2>Animal Information</h2>
+            <hr>
+
+            <label for="id_flockprefixid">Flock Prefix:</label>
+            <select id="id_flockprefixid" name="id_flockprefixid"></select>
+
+            <label for="id_speciesid">Species:</label>
+            <select id="id_speciesid" name="id_speciesid"></select>
+
+            <label for="id_breedid">Breed:</label>
+            <select id="id_breedid" name="id_breedid"></select>
+
+            <label for="id_sexid">Sex:</label>
+            <select id="id_sexid" name="id_sexid"></select>
 
             <label for="birth_type">Birth Type:</label>
             <select type="text" id="birth_type" name="birth_type"></select>
@@ -210,50 +289,18 @@
             <label for="sale_price_id_unitsid">Sale Price Units:</label>
             <select id="sale_price_id_unitsid" name="sale_price_id_unitsid"></select>
 
-            <label for="evaluation_update_alert">Evaluation Update Alert:</label>
-            <select id="evaluation_update_alert" name="evaluation_update_alert"></select>
-
-            <label for="death_reason_id_contactid">Death Reason Contact:</label>
-            <select id="death_reason_id_contactid" name="death_reason_id_contactid"></select>
-
-            <label for="death_reason_id_companyid">Death Reason Company:</label>
-            <select id="death_reason_id_companyid" name="death_reason_id_companyid"></select>
-
             <label for="id_deathreasonid">Death Reason:</label>
             <select id="id_deathreasonid" name="id_deathreasonid"></select>
-
-            <label for="transfer_reason_id_contactid">Transfer Reason Contact:</label>
-            <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid"></select>
-
-            <label for="transfer_reason_id_companyid">Transfer Reason Company:</label>
-            <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid"></select>
 
             <label for="id_transferreasonid">Transfer Reason:</label>
             <select id="id_transferreasonid" name="id_transferreasonid"></select>
 
-            <label for="bangs_tag_color_male">Bangs Tag Color Male:</label>
-            <select id="bangs_tag_color_male" name="bangs_tag_color_male"></select>
+            <div class="section-break"></div>
+            <h3>Miscellaneous</h3>
+            <hr>
 
-            <label for="bangs_tag_color_female">Bangs Tag Color Female:</label>
-            <select id="bangs_tag_color_female" name="bangs_tag_color_female"></select>
-
-            <label for="bangs_tag_location">Bangs Tag Location:</label>
-            <select id="bangs_tag_location" name="bangs_tag_location"></select>
-
-            <label for="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
-            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
-
-            <label for="sale_order_tag_color_male">Sale Order Tag Color Male:</label>
-            <select id="sale_order_tag_color_male" name="bangs_tag_color_male"></select>
-
-            <label for="sale_order_tag_color_female">Sale Order Tag Color Female:</label>
-            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female"></select>
-
-            <label for="sale_order_tag_location">Sale Order Tag Location:</label>
-            <select id="sale_order_tag_location" name="sale_order_tag_location"></select>
-
-            <label for="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
-            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
+            <label for="evaluation_update_alert">Evaluation Update Alert:</label>
+            <select id="evaluation_update_alert" name="evaluation_update_alert"></select>
 
         </form>
     </div>
