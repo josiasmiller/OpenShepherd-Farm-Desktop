@@ -26,13 +26,14 @@ import {
   getTransferReasons,
   getUnits,
   getUnitTypes,
+  writeNewDefaultSettings,
 } from "../database/index.js";
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 
 export const registerIpcHandlers = () => {
   
-  ipcMain.handle("animal-search", async (event, queryParams) => {
+  ipcMain.handle("animal-search", async (_, queryParams) => {
     return animalSearch(queryParams);
   });
 
@@ -83,5 +84,9 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-units", getUnits);
 
   ipcMain.handle("get-unit-types", getUnitTypes);
+
+  ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
+    return writeNewDefaultSettings(queryParams);
+  });
 };
 

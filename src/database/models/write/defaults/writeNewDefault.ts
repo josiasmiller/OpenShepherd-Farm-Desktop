@@ -1,6 +1,6 @@
-export interface DefaultSettingsResults {
-  id: string;
-  name: string;
+
+export interface WriteNewDefaultParameters {
+  default_settings_name: string;
   owner_id_contactid: number;
   owner_id_companyid: number;
   owner_id_premiseid: number;
@@ -78,4 +78,6 @@ export interface DefaultSettingsResults {
   transfer_reason_id_contactid: number;
   transfer_reason_id_companyid: number;
   id_transferreasonid: number;
+  created: string;
+  modified: string;
 }

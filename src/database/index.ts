@@ -1,5 +1,5 @@
 
-// export models 
+// export read models 
 export { AnimalSearchResults, AnimalSearchQueryParameters } from "./models/read/animal/animalSeach/animalSearch.js";
 export { BirthTypeInfo } from "./models/read/animal/births/birthType.js";
 export { BreedInfo } from "./models/read/animal/general/breed.js";
@@ -25,7 +25,7 @@ export { TransferReasonInfo } from "./models/read/animal/transfers/transferReaon
 export { UnitInfo } from "./models/read/units/unit.js";
 export { UnitTypeInfo } from "./models/read/units/unitType.js";
 
-// export repositories
+// export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
 export { getBirthTypes } from "./repositories/read/animal/births/getBirthTypes.js";
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
@@ -50,3 +50,11 @@ export { getTissueTests } from "./repositories/read/tissues/getTissueTests.js";
 export { getTransferReasons } from "./repositories/read/animal/transfers/getTransferReasons.js";
 export { getUnits } from "./repositories/read/units/getUnits.js";
 export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// export write models
+export { WriteNewDefaultParameters } from "./models/write/defaults/writeNewDefault.js";
+
+// export write repositories
+export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 

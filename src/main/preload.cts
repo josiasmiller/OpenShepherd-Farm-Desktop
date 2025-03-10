@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-import { AnimalSearchQueryParameters } from "../database";
+import { AnimalSearchQueryParameters, WriteNewDefaultParameters } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchQueryParameters) => ipcRenderer.invoke("animal-search", queryParams),
@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getUnits: () => ipcRenderer.invoke("get-units"),
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
+  writeNewDefaultSettings: (queryParams: WriteNewDefaultParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 
 console.log("✅ Preload script loaded!"); // debug line
