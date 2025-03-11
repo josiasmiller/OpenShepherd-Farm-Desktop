@@ -1,4 +1,8 @@
 
+export interface BreedQueryParameters {
+  species_id: string | null;
+}
+
 export interface BreedInfo {
   id: string;
   name: string;

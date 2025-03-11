@@ -41,7 +41,9 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-birth-types", getBirthTypes);
 
-  ipcMain.handle("get-breeds", getBreeds);
+  ipcMain.handle("get-breeds", async (_, queryParams) => {
+    return getBreeds(queryParams);
+  });
 
   ipcMain.handle("get-colors", getColors);
 

@@ -1,7 +1,7 @@
-import { loadEnvFile } from "process";
 import { 
   BirthTypeInfo,
   BreedInfo,
+  BreedQueryParameters,
   ColorInfo, 
   CompanyInfo, 
   CountyInfo, 
@@ -48,6 +48,14 @@ export const init = () => {
   }
 
   populateAllDropdowns();
+
+  const speciesSelect = document.getElementById("id_speciesid") as HTMLSelectElement;
+
+  speciesSelect.addEventListener("change", async () => {
+    updateBreeds();
+  });
+
+
 };
 
 /**
@@ -270,14 +278,14 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_speciesid", species);
 
   // Breeds
-  const breedInfo : BreedInfo[] = await (window as any).electronAPI.getBreeds();
-  breedInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  // const breedInfo : BreedInfo[] = await (window as any).electronAPI.getBreeds();
+  // breedInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const breeds = breedInfo.map((info: BreedInfo) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_breedid", breeds);
+  // const breeds = breedInfo.map((info: BreedInfo) => ({
+  //   label: info.name,
+  //   id: info.id,
+  // }));
+  // populateDropdown("id_breedid", breeds);
 
   // Sexes
   const sexInfo : SexInfo[] = await (window as any).electronAPI.getSexes();
@@ -404,7 +412,7 @@ const populateExistingDefaults = async () => {
   });
 };
 
-const loadExistingDefault = () => {
+const loadExistingDefault = async () => {
   const selectElement = document.getElementById("existing-settings") as HTMLSelectElement;
   const selectedId = selectElement.value;
 
@@ -417,6 +425,11 @@ const loadExistingDefault = () => {
   }
 
   const selectedSetting = selectedDefault;
+
+  // populate species first, followed by populating the breed since breed relies on species
+  selectDropdownOption("id_speciesid", selectedSetting.id_speciesid);
+  await updateBreeds(); // must update the breeds before selecting a new one, since the species may change when loading
+  selectDropdownOption("id_breedid", selectedSetting.id_breedid);
 
   selectDropdownOption("owner_id_contactid", selectedSetting.owner_id_contactid);
   selectDropdownOption("breeder_id_contactid", selectedSetting.breeder_id_contactid);
@@ -472,8 +485,6 @@ const loadExistingDefault = () => {
   selectDropdownOption("sale_order_tag_location", selectedSetting.sale_order_tag_location);
   selectDropdownOption("id_stateid", selectedSetting.id_stateid);
   selectDropdownOption("id_flockprefixid", selectedSetting.id_flockprefixid);
-  selectDropdownOption("id_speciesid", selectedSetting.id_speciesid);
-  selectDropdownOption("id_breedid", selectedSetting.id_breedid);
   selectDropdownOption("id_sexid", selectedSetting.id_sexid);
   selectDropdownOption("id_idtypeid_primary", selectedSetting.id_idtypeid_primary);
   selectDropdownOption("id_idtypeid_secondary", selectedSetting.id_idtypeid_secondary);
@@ -641,3 +652,30 @@ const getFormattedTimestamp = () => {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+async function updateBreeds() {
+  const breedSelect = document.getElementById("id_breedid") as HTMLSelectElement;
+
+  breedSelect.disabled = false;
+
+  const species_id: string = getSelectedDatabaseId("id_speciesid").toString();
+
+  try {
+      const queryParams: BreedQueryParameters = { 
+        species_id: species_id, 
+      };
+      const breedInfo: BreedInfo[] = await (window as any).electronAPI.getBreeds(queryParams);
+
+
+      breedInfo.sort((a, b) => a.display_order - b.display_order);
+
+      const breeds = breedInfo.map((info) => ({
+          label: info.name,
+          id: info.id,
+      }));
+
+      populateDropdown("id_breedid", breeds);
+  } catch (error) {
+      console.error("Error fetching breed data:", error);
+  }
+}

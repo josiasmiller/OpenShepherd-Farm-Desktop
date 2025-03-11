@@ -148,3 +148,12 @@
     margin-top: 20px; /* Adjust this value to your desired spacing */
 }
 
+.form-group {
+    display: flex;
+    flex-direction: column;  /* Stack label & dropdown */
+    gap: 10px;               /* Spacing between elements */
+    padding: 0 15px;           
+    border: 1px solid #ccc;  /* Light border to define the section */
+    border-radius: 5px;      /* Rounded edges */
+    background-color: #f9f9f9; /* Light background */
+}
