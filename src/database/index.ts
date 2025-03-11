@@ -22,7 +22,7 @@ export { TissueSampleTypeInfo } from "./models/read/tissues/tissueSampleType.js"
 export { TissueSampleContainerTypeInfo } from "./models/read/tissues/tissueSampleContainerType.js"
 export { TissueTestInfo } from "./models/read/tissues/tissueTest.js"
 export { TransferReasonInfo } from "./models/read/animal/transfers/transferReaon.js"
-export { UnitInfo } from "./models/read/units/unit.js";
+export { UnitQueryParameters, UnitInfo } from "./models/read/units/unit.js";
 export { UnitTypeInfo } from "./models/read/units/unitType.js";
 
 // export read repositories

@@ -83,7 +83,9 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-transfer-reasons", getTransferReasons);
 
-  ipcMain.handle("get-units", getUnits);
+  ipcMain.handle("get-units", async (_, queryParams) => {
+    return getUnits(queryParams);
+  });
 
   ipcMain.handle("get-unit-types", getUnitTypes);
 

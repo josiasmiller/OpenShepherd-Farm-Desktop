@@ -21,6 +21,7 @@ import {
   TissueTestInfo,
   TransferReasonInfo,
   UnitInfo,
+  UnitQueryParameters,
   WriteNewDefaultParameters,
 } from "../../../../database";
 
@@ -380,17 +381,36 @@ const populateAllDropdowns = async () => {
   }));
   populateDropdown("id_transferreasonid", transferReasons);
 
-  // Units
-  const unitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits();
-  unitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  // Weight Units
+  const weightUnitsQueryParams: UnitQueryParameters = {
+    unit_type_name: "Weight",
+    unit_type_id: null,
+  } 
 
-  const units = unitInfo.map((info: UnitInfo) => ({
+  const weightUnitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits(weightUnitsQueryParams);
+  weightUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  const weightUnits = weightUnitInfo.map((info: UnitInfo) => ({
     label: info.name,
     id: info.id,
   }));
-  populateDropdown("birth_weight_id_unitsid", units);
-  populateDropdown("weight_id_unitsid", units);
-  populateDropdown("sale_price_id_unitsid", units);
+  populateDropdown("birth_weight_id_unitsid", weightUnits);
+  populateDropdown("weight_id_unitsid", weightUnits);
+
+  // Currency Units
+  const currencyUnitsQueryParams: UnitQueryParameters = {
+    unit_type_name: "Currency",
+    unit_type_id: null,
+  } 
+
+  const currencyUnitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits(currencyUnitsQueryParams);
+  currencyUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+  const currencyUnits = currencyUnitInfo.map((info: UnitInfo) => ({
+    label: info.name,
+    id: info.id,
+  }));
+  populateDropdown("sale_price_id_unitsid", currencyUnits);
 };
 
 /**
