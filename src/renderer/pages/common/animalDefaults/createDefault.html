@@ -20,19 +20,34 @@
                 <button id="load-default-btn" type="button">Load Default</button>
             </div>
             
-
             <label for="settings_name">Settings Name:</label>
             <input type="text" id="settings_name" name="settings_name">
+
 
             <div class="section-break"></div>
             <h2>Contacts, Companies, & Premises</h2>
             <hr>
 
-            <label for="owner_id_contactid">Owner Contact:</label>
-            <select id="owner_id_contactid" name="owner_id_contactid"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="select_contact" name="owner_selection"> Contact
+                    </label>
+                    <label>
+                        <input type="radio" id="select_company" name="owner_selection"> Company
+                    </label>
+                </div>
+            
+                <label for="owner_id_contactid">Owner Contact:</label>
+                <select id="owner_id_contactid" name="owner_id_contactid" disabled></select>
+            
+                <label for="owner_id_companyid">Owner Company:</label>
+                <select id="owner_id_companyid" name="owner_id_companyid" disabled></select>
+            </div>
+            
+            
 
-            <label for="owner_id_companyid">Owner Company:</label>
-            <select id="owner_id_companyid" name="owner_id_companyid"></select>
 
             <label for="owner_id_premiseid">Owner Premise:</label>
             <select id="owner_id_premiseid" name="owner_id_premiseid"></select>
@@ -70,6 +85,7 @@
             <label for="transfer_reason_id_companyid">Transfer Reason Company:</label>
             <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid"></select>
 
+
             <div class="section-break"></div>
             <h2>Locations</h2>
             <hr>
@@ -79,6 +95,7 @@
 
             <label for="id_countyid">County:</label>
             <select id="id_countyid" name="id_countyid"></select>
+
 
             <div class="section-break"></div>
             <h2>Tag Information</h2>
@@ -93,28 +110,43 @@
             <label for="id_idtypeid_tertiary">Tertiary ID Type:</label>
             <select id="id_idtypeid_tertiary" name="id_idtypeid_tertiary"></select>
 
-            <label for="id_eid_tag_male_color_female_color_same">EID Tag Male/Female Same Color:</label>
-            <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same"></select>
 
             <div class="section-break"></div>
             <h3>EID Tag Information</h3>
             <hr>
+            
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_eid_tag_male_color_female_color_same">EID Tag Male/Female Same Color:</label>
+                <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same"></select>
 
-            <label for="eid_tag_color_male">EID Tag Color Male:</label>
-            <select type="text" id="eid_tag_color_male" name="eid_tag_color_male"></select>
+                <label for="eid_tag_color_male">EID Tag Color Male:</label>
+                <select type="text" id="eid_tag_color_male" name="eid_tag_color_male"></select>
 
-            <label for="eid_tag_color_female">EID Tag Color Female:</label>
-            <select type="text" id="eid_tag_color_female" name="eid_tag_color_female"></select>
+                <label for="eid_tag_color_female">EID Tag Color Female:</label>
+                <select type="text" id="eid_tag_color_female" name="eid_tag_color_female"></select>
+            </div>
+
 
             <label for="eid_tag_location">EID Tag Location:</label>
             <select type="text" id="eid_tag_location" name="eid_tag_location"></select>
+
 
             <div class="section-break"></div>
             <h3>Farm Tag Information</h3>
             <hr>
 
-            <label for="id_farm_tag_male_color_female_color_same">Farm Tag Male/Female Same Color:</label>
-            <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_farm_tag_male_color_female_color_same">Farm Tag Male/Female Same Color:</label>
+                <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same"></select>
+
+                <label for="farm_tag_color_male">Farm Tag Color Male:</label>
+                <select type="text" id="farm_tag_color_male" name="farm_tag_color_male"></select>
+
+                <label for="farm_tag_color_female">Farm Tag Color Female:</label>
+                <select type="text" id="farm_tag_color_female" name="farm_tag_color_female"></select>
+            </div>
 
             <label for="farm_tag_based_on_eid_tag">Farm Tag Based on EID Tag:</label>
             <select id="farm_tag_based_on_eid_tag" name="farm_tag_based_on_eid_tag"></select>
@@ -122,65 +154,72 @@
             <label for="farm_tag_number_digits_from_eid">Farm Tag Number Digits from EID:</label>
             <select type="number" id="farm_tag_number_digits_from_eid" name="farm_tag_number_digits_from_eid"></select>
 
-            <label for="farm_tag_color_male">Farm Tag Color Male:</label>
-            <select type="text" id="farm_tag_color_male" name="farm_tag_color_male"></select>
-
-            <label for="farm_tag_color_female">Farm Tag Color Female:</label>
-            <select type="text" id="farm_tag_color_female" name="farm_tag_color_female"></select>
-
             <label for="farm_tag_location">Farm Tag Location:</label>
             <select type="text" id="farm_tag_location" name="farm_tag_location"></select>
+
 
             <div class="section-break"></div>
             <h3>Federal Tag Information</h3>
             <hr>
 
-            <label for="id_fed_tag_male_color_female_color_same">Federal Tag Male/Female Same Color:</label>
-            <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_fed_tag_male_color_female_color_same">Federal Tag Male/Female Same Color:</label>
+                <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same"></select>
 
-            <label for="fed_tag_color_male">Federal Tag Color Male:</label>
-            <select type="text" id="fed_tag_color_male" name="fed_tag_color_male"></select>
+                <label for="fed_tag_color_male">Federal Tag Color Male:</label>
+                <select type="text" id="fed_tag_color_male" name="fed_tag_color_male"></select>
 
-            <label for="fed_tag_color_female">Federal Tag Color Female:</label>
-            <select type="text" id="fed_tag_color_female" name="fed_tag_color_female"></select>
+                <label for="fed_tag_color_female">Federal Tag Color Female:</label>
+                <select type="text" id="fed_tag_color_female" name="fed_tag_color_female"></select>
+            </div>
 
             <label for="fed_tag_location">Federal Tag Location:</label>
             <select type="text" id="fed_tag_location" name="fed_tag_location"></select>
+
 
             <div class="section-break"></div>
             <h3>NUES Tag Information</h3>
             <hr>
 
-            <label for="id_nues_tag_male_color_female_color_same">NUES Tag Male/Female Same Color:</label>
-            <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_nues_tag_male_color_female_color_same">NUES Tag Male/Female Same Color:</label>
+                <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same"></select>
 
-            <label for="nues_tag_color_male">NUES Tag Color Male:</label>
-            <select type="text" id="nues_tag_color_male" name="nues_tag_color_male"></select>
+                <label for="nues_tag_color_male">NUES Tag Color Male:</label>
+                <select type="text" id="nues_tag_color_male" name="nues_tag_color_male"></select>
 
-            <label for="nues_tag_color_female">NUES Tag Color Female:</label>
-            <select type="text" id="nues_tag_color_female" name="nues_tag_color_female"></select>
+                <label for="nues_tag_color_female">NUES Tag Color Female:</label>
+                <select type="text" id="nues_tag_color_female" name="nues_tag_color_female"></select>
+            </div>
 
             <label for="nues_tag_location">NUES Tag Location:</label>
             <select type="text" id="nues_tag_location" name="nues_tag_location"></select>
+
 
             <div class="section-break"></div>
             <h3>Trich Tag Information</h3>
             <hr>
 
-            <label for="id_trich_tag_male_color_female_color_same">Trich Tag Male/Female Same Color:</label>
-            <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_trich_tag_male_color_female_color_same">Trich Tag Male/Female Same Color:</label>
+                <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same"></select>
 
-            <label for="trich_tag_color_male">Trich Tag Color Male:</label>
-            <select type="text" id="trich_tag_color_male" name="trich_tag_color_male"></select>
+                <label for="trich_tag_color_male">Trich Tag Color Male:</label>
+                <select type="text" id="trich_tag_color_male" name="trich_tag_color_male"></select>
 
-            <label for="trich_tag_color_female">Trich Tag Color Female:</label>
-            <select type="text" id="trich_tag_color_female" name="trich_tag_color_female"></select>
+                <label for="trich_tag_color_female">Trich Tag Color Female:</label>
+                <select type="text" id="trich_tag_color_female" name="trich_tag_color_female"></select>
+            </div>
 
             <label for="trich_tag_location">Trich Tag Location:</label>
             <select type="text" id="trich_tag_location" name="trich_tag_location"></select>
 
             <label for="trich_tag_auto_increment">Trich Tag Auto Increment:</label>
             <select id="trich_tag_auto_increment" name="trich_tag_auto_increment"></select>
+
 
             <div class="section-break"></div>
             <h3>Misc Tag Information</h3>
@@ -207,6 +246,7 @@
             <label for="id_idremovereasonid">ID Remove Reason:</label>
             <select id="id_idremovereasonid" name="id_idremovereasonid"></select>
 
+
             <div class="section-break"></div>
             <h3>Tissue Sample Information</h3>
             <hr>
@@ -220,44 +260,53 @@
             <label for="id_tissuesamplecontainertypeid">Tissue Sample Container Type:</label>
             <select id="id_tissuesamplecontainertypeid" name="id_tissuesamplecontainertypeid"></select>
 
+
             <div class="section-break"></div>
             <h3>Bangs Tag Information</h3>
             <hr>
 
-            <label for="bangs_tag_color_male">Bangs Tag Color Male:</label>
-            <select id="bangs_tag_color_male" name="bangs_tag_color_male"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
+                <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
 
-            <label for="bangs_tag_color_female">Bangs Tag Color Female:</label>
-            <select id="bangs_tag_color_female" name="bangs_tag_color_female"></select>
+                <label for="bangs_tag_color_male">Bangs Tag Color Male:</label>
+                <select id="bangs_tag_color_male" name="bangs_tag_color_male"></select>
+
+                <label for="bangs_tag_color_female">Bangs Tag Color Female:</label>
+                <select id="bangs_tag_color_female" name="bangs_tag_color_female"></select>
+            </div>
+
 
             <label for="bangs_tag_location">Bangs Tag Location:</label>
             <select id="bangs_tag_location" name="bangs_tag_location"></select>
 
-            <label for="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
-            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
 
             <div class="section-break"></div>
             <h3>Sale Order Tag Information</h3>
             <hr>
 
-            <label for="sale_order_tag_color_male">Sale Order Tag Color Male:</label>
-            <select id="sale_order_tag_color_male" name="bangs_tag_color_male"></select>
+            <div class="section-break"></div>
+            <div class="form-group">
+                <label for="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
+                <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
 
-            <label for="sale_order_tag_color_female">Sale Order Tag Color Female:</label>
-            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female"></select>
+                <label for="sale_order_tag_color_male">Sale Order Tag Color Male:</label>
+                <select id="sale_order_tag_color_male" name="bangs_tag_color_male"></select>
+
+                <label for="sale_order_tag_color_female">Sale Order Tag Color Female:</label>
+                <select id="sale_order_tag_color_female" name="sale_order_tag_color_female"></select>
+            </div>
 
             <label for="sale_order_tag_location">Sale Order Tag Location:</label>
             <select id="sale_order_tag_location" name="sale_order_tag_location"></select>
 
-            <label for="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
-            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
 
             <div class="section-break"></div>
             <h2>Animal Information</h2>
             <hr>
-            
-            <div class="section-break"></div>
 
+            <div class="section-break"></div>
             <div class="form-group">
                 <label for="id_speciesid">Species:</label>
                 <select id="id_speciesid" name="id_speciesid">

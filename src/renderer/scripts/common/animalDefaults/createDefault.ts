@@ -56,7 +56,15 @@ export const init = () => {
     updateBreeds();
   });
 
+  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
+  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
 
+  if (contactRadio && companyRadio) {
+      contactRadio.addEventListener("change", handleOwnerXOR);
+      companyRadio.addEventListener("change", handleOwnerXOR);
+  } else {
+      console.error("Radio buttons for company & contact IDs not found!");
+  }
 };
 
 /**
@@ -277,16 +285,6 @@ const populateAllDropdowns = async () => {
     id: info.id,
   }));
   populateDropdown("id_speciesid", species);
-
-  // Breeds
-  // const breedInfo : BreedInfo[] = await (window as any).electronAPI.getBreeds();
-  // breedInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
-
-  // const breeds = breedInfo.map((info: BreedInfo) => ({
-  //   label: info.name,
-  //   id: info.id,
-  // }));
-  // populateDropdown("id_breedid", breeds);
 
   // Sexes
   const sexInfo : SexInfo[] = await (window as any).electronAPI.getSexes();
@@ -527,12 +525,24 @@ const writeNewDefault = async () => {
 
   const currentTimestamp: string = getFormattedTimestamp();
 
+  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
+  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
+
+  var contact_id: number = 0;
+  var company_id: number = 0;
+
+  if (contactRadio?.checked) {
+    contact_id = getSelectedDatabaseId("owner_id_contactid")
+  } else {
+    company_id = getSelectedDatabaseId("owner_id_companyid")
+  }
+
   // Construct the WriteNewDefaultParameters object
   const formData: WriteNewDefaultParameters = {
     default_settings_name: (document.getElementById("settings_name") as HTMLInputElement).value,
 
-    owner_id_contactid: getSelectedDatabaseId("owner_id_contactid"),
-    owner_id_companyid: getSelectedDatabaseId("owner_id_companyid"),
+    owner_id_contactid: contact_id,
+    owner_id_companyid: company_id,
     owner_id_premiseid: getSelectedDatabaseId("owner_id_premiseid"),
 
     breeder_id_contactid: getSelectedDatabaseId("breeder_id_contactid"),
@@ -697,5 +707,36 @@ async function updateBreeds() {
       populateDropdown("id_breedid", breeds);
   } catch (error) {
       console.error("Error fetching breed data:", error);
+  }
+}
+
+/*
+ * Handles allowing the user to choose only a contact or company ID.
+ */
+function handleOwnerXOR() {
+  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
+  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
+  const contactSelect = document.getElementById("owner_id_contactid") as HTMLSelectElement | null;
+  const companySelect = document.getElementById("owner_id_companyid") as HTMLSelectElement | null;
+
+  if (!contactRadio || !companyRadio || !contactSelect || !companySelect) {
+      console.error("One or more elements are missing!");
+      return;
+  }
+
+  if (contactRadio.checked) {
+      contactSelect.disabled = false;
+      companySelect.disabled = true;
+      companySelect.value = ""; // Reset company selection
+  } else if (companyRadio.checked) {
+      companySelect.disabled = false;
+      contactSelect.disabled = true;
+      contactSelect.value = ""; // Reset contact selection
+  } else {
+      // If neither is selected, disable both
+      contactSelect.disabled = true;
+      companySelect.disabled = true;
+      contactSelect.value = "";
+      companySelect.value = "";
   }
 }

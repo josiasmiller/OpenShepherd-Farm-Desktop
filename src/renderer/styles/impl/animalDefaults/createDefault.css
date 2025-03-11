@@ -157,3 +157,16 @@
     border-radius: 5px;      /* Rounded edges */
     background-color: #f9f9f9; /* Light background */
 }
+
+.radio-group {
+    display: flex;
+    gap: 15px; /* Space between radio buttons */
+    align-items: center;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between radio button and text */
+}
+
