@@ -75,6 +75,15 @@ export const init = () => {
     console.error(farmTagBasedOnEidTitle + " dropdown not found!");
   }
 
+  const trichtagAutoIncTitle = "trich_tag_auto_increment";
+  const trichtagAutoIncDropDown = document.getElementById(trichtagAutoIncTitle) as HTMLInputElement | null;
+
+  if (trichtagAutoIncDropDown) {
+    trichtagAutoIncDropDown.addEventListener("change", handleTrichTagStartingVal);
+  } else {
+    console.error(trichtagAutoIncTitle + " dropdown not found!");
+  }
+
   // handle radio XOR on page startup, otherwise the radio buttons aren't 'XOR'ed
   handleOwnerXOR();
 };
@@ -210,7 +219,6 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_fed_tag_male_color_female_color_same", tf);
   populateDropdown("id_nues_tag_male_color_female_color_same", tf);
   populateDropdown("id_trich_tag_male_color_female_color_same", tf);
-  populateDropdown("trich_tag_auto_increment", tf);
   populateDropdown("use_paint_marks", tf);
   populateDropdown("evaluation_update_alert", tf);
   populateDropdown("id_bangs_tag_male_color_female_color_same", tf);
@@ -223,6 +231,13 @@ const populateAllDropdowns = async () => {
     ftBasedOnEid.selectedIndex = 1; // Select the first option (exclude "select an option")
   }
   handleFarmtagBasedOnEID();
+
+  populateDropdown("trich_tag_auto_increment", tf);
+  const trichAutoIncDropDown = document.getElementById("trich_tag_auto_increment") as HTMLSelectElement;
+  if (trichAutoIncDropDown.options.length > 2) {
+    trichAutoIncDropDown.selectedIndex = 1; // Select the first option (exclude "select an option")
+  }
+  handleTrichTagStartingVal();
 
 
   // Counties
@@ -781,6 +796,31 @@ function handleFarmtagBasedOnEID() {
     ftNumDigitsFromEID.value = '1'; // default to 1 when set to true 
   } else {
     ftNumDigitsFromEID.disabled = true;
-    ftNumDigitsFromEID.value = '';      // Clear the value of the field, since it is disabled
+    ftNumDigitsFromEID.value = ''; // Clear the value of the field, since it is disabled
+  }
+}
+
+function handleTrichTagStartingVal() {
+
+  const trichTagAutoIncTitle = "trich_tag_auto_increment";
+  const trichTagAutoIncDropDown = document.getElementById(trichTagAutoIncTitle) as HTMLInputElement | null;
+  if (!trichTagAutoIncDropDown) {
+    console.error("unable to find HTML element: " + trichTagAutoIncTitle);
+    return;
+  }
+
+  const trichTagStartingValTitle = "trich_tag_starting_value";
+  const trichTagStartingValDropDown = document.getElementById(trichTagStartingValTitle) as HTMLInputElement | null;
+  if (!trichTagStartingValDropDown) {
+    console.error("unable to find HTML element: " + trichTagStartingValTitle);
+    return;
+  }
+
+  if (trichTagAutoIncDropDown.value == "true") {
+    trichTagStartingValDropDown.disabled = false;
+    trichTagStartingValDropDown.value = '1'; // default to 1 when set to true 
+  } else {
+    trichTagStartingValDropDown.disabled = true;
+    trichTagStartingValDropDown.value = ''; // Clear the value of the field, since it is disabled
   }
 }
