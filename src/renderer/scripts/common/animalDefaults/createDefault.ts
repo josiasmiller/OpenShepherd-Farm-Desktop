@@ -65,6 +65,9 @@ export const init = () => {
   } else {
       console.error("Radio buttons for company & contact IDs not found!");
   }
+
+  // handle radio XOR on page startup
+  handleOwnerXOR();
 };
 
 /**
