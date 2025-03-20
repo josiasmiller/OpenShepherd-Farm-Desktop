@@ -60,13 +60,22 @@ export const init = () => {
   const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
 
   if (contactRadio && companyRadio) {
-      contactRadio.addEventListener("change", handleOwnerXOR);
-      companyRadio.addEventListener("change", handleOwnerXOR);
+    contactRadio.addEventListener("change", handleOwnerXOR);
+    companyRadio.addEventListener("change", handleOwnerXOR);
   } else {
-      console.error("Radio buttons for company & contact IDs not found!");
+    console.error("Radio buttons for company & contact IDs not found!");
   }
 
-  // handle radio XOR on page startup
+  const farmTagBasedOnEidTitle = "farm_tag_based_on_eid_tag";
+  const farmTagBasedOnEidTagDropDown = document.getElementById(farmTagBasedOnEidTitle) as HTMLInputElement | null;
+
+  if (farmTagBasedOnEidTagDropDown) {
+    farmTagBasedOnEidTagDropDown.addEventListener("change", handleFarmtagBasedOnEID);
+  } else {
+    console.error(farmTagBasedOnEidTitle + " dropdown not found!");
+  }
+
+  // handle radio XOR on page startup, otherwise the radio buttons aren't 'XOR'ed
   handleOwnerXOR();
 };
 
@@ -198,7 +207,6 @@ const populateAllDropdowns = async () => {
 
   populateDropdown("id_eid_tag_male_color_female_color_same", tf);
   populateDropdown("id_farm_tag_male_color_female_color_same", tf);
-  populateDropdown("farm_tag_based_on_eid_tag", tf);
   populateDropdown("id_fed_tag_male_color_female_color_same", tf);
   populateDropdown("id_nues_tag_male_color_female_color_same", tf);
   populateDropdown("id_trich_tag_male_color_female_color_same", tf);
@@ -207,6 +215,15 @@ const populateAllDropdowns = async () => {
   populateDropdown("evaluation_update_alert", tf);
   populateDropdown("id_bangs_tag_male_color_female_color_same", tf);
   populateDropdown("id_sale_order_tag_male_color_female_color_same", tf);
+
+  // ensure farm_tag_based_on_eid_tag starts populated to force other dropdowns that are reliant on it to enable/disable input based on the selected value
+  populateDropdown("farm_tag_based_on_eid_tag", tf);
+  const ftBasedOnEid = document.getElementById("farm_tag_based_on_eid_tag") as HTMLSelectElement;
+  if (ftBasedOnEid.options.length > 2) {
+    ftBasedOnEid.selectedIndex = 1; // Select the first option (exclude "select an option")
+  }
+  handleFarmtagBasedOnEID();
+
 
   // Counties
   const countyInfo : CountyInfo[] = await (window as any).electronAPI.getCounties();
@@ -741,5 +758,29 @@ function handleOwnerXOR() {
       companySelect.disabled = true;
       contactSelect.value = "";
       companySelect.value = "";
+  }
+}
+
+function handleFarmtagBasedOnEID() {
+  const farmTagBasedOnEidTitle = "farm_tag_based_on_eid_tag";
+  const farmTagBasedOnEidTagDropDown = document.getElementById(farmTagBasedOnEidTitle) as HTMLInputElement | null;
+  if (!farmTagBasedOnEidTagDropDown) {
+    console.error("unable to find HTML element: " + farmTagBasedOnEidTitle);
+    return;
+  }
+
+  const ftNumDigitsFromEIDTitle = "farm_tag_number_digits_from_eid";
+  const ftNumDigitsFromEID = document.getElementById(ftNumDigitsFromEIDTitle) as HTMLInputElement | null;
+  if (!ftNumDigitsFromEID) {
+    console.error("unable to find HTML element: " + ftNumDigitsFromEIDTitle);
+    return;
+  }
+
+  if (farmTagBasedOnEidTagDropDown.value == "true") {
+    ftNumDigitsFromEID.disabled = false;
+    ftNumDigitsFromEID.value = '1'; // default to 1 when set to true 
+  } else {
+    ftNumDigitsFromEID.disabled = true;
+    ftNumDigitsFromEID.value = '';      // Clear the value of the field, since it is disabled
   }
 }
