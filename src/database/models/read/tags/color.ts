@@ -1,5 +1,5 @@
 
-export interface ColorInfo {
+export type ColorInfo = {
   id: string;
   name: string;
   display_order: number;

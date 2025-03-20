@@ -1,5 +1,5 @@
 
-export interface StateInfo {
+export type StateInfo = {
   id: string;
   name: string;
   abbreviation: string;

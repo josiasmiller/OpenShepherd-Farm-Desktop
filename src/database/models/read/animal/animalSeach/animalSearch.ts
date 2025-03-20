@@ -1,6 +1,6 @@
   
   
-export interface AnimalSearchResults {
+export type AnimalSearchResults = {
   animal_id?: string | null;
   flock_prefix: string | null,
   name: string;
@@ -8,7 +8,7 @@ export interface AnimalSearchResults {
   deathDate: string | null;
 }
 
-export interface AnimalSearchQueryParameters {
+export type AnimalSearchQueryParameters = {
   name?: string | null;
   status?: string | null;         // Status could be a dropdown field
   registrationType?: string | null;  // Registration Type

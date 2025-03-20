@@ -1,5 +1,5 @@
 
-export interface WriteNewDefaultParameters {
+export type WriteNewDefaultParameters = {
   default_settings_name: string;
   owner_id_contactid: number;
   owner_id_companyid: number;

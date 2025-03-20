@@ -1,5 +1,5 @@
 
-export interface CountryInfo {
+export type CountryInfo = {
   id: string;
   name: string;
   abbreviation: string;

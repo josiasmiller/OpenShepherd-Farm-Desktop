@@ -1,4 +1,4 @@
-export interface DefaultSettingsResults {
+export type DefaultSettingsResults = {
   id: string;
   name: string;
   owner_id_contactid: number;

@@ -1,5 +1,5 @@
 
-export interface LocationInfo {
+export type LocationInfo = {
   id: string;
   name: string;
   abbreviation: string;

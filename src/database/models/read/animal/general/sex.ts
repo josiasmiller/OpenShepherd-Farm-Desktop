@@ -1,5 +1,5 @@
 
-export interface SexInfo {
+export type SexInfo = {
   id: string;
   name: string;
   display_order: number;

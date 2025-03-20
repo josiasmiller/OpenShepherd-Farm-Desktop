@@ -1,5 +1,5 @@
 
-export interface FlockPrefixInfo {
+export type FlockPrefixInfo = {
   id: string;
   name: string;
   owner_contact_id: number;

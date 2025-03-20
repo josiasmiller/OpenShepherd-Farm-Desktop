@@ -1,10 +1,10 @@
 
-export interface UnitQueryParameters {
+export type UnitQueryParameters = {
   unit_type_id: string | null;
   unit_type_name: string | null;
 }
 
-export interface UnitInfo {
+export type UnitInfo = {
   id: string;
   name: string;
   unit_type: number;

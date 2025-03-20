@@ -1,5 +1,5 @@
 
-export interface OwnerInfo {
+export type OwnerInfo = {
   id: string;
   firstName: string;
   lastName: string;

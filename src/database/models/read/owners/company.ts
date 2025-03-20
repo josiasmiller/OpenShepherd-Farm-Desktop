@@ -1,5 +1,5 @@
 
-export interface CompanyInfo {
+export type CompanyInfo = {
   id: string;
   name: string;
 }

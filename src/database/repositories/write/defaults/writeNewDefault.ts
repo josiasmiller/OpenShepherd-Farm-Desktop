@@ -112,7 +112,6 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
 };
 
 
-
 // columns for creating a new Default Settings
 const columns = [
   "default_settings_name",

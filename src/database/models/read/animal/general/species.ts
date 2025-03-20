@@ -1,5 +1,5 @@
 
-export interface SpeciesInfo {
+export type SpeciesInfo = {
   id: string;
   common_name: string;
   generic_name: string;

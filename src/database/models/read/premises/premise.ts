@@ -1,5 +1,5 @@
 
-export interface PremiseInfo {
+export type PremiseInfo = {
   id: string;
   address: string;
   city: string;
