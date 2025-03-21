@@ -221,7 +221,7 @@ const populateAllDropdowns = async () => {
     }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 
-  populateDropdown("id_registry_id_companyid", registryCompanies)
+  populateDropdown("id_registry_id_companyid", registryCompanies);
 
   // Premises
   const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
