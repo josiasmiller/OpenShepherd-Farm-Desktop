@@ -89,11 +89,14 @@ export const init = () => {
 };
 
 /**
- * Populates a dropdown with given terms.
+ * Populates a dropdown with given terms and allows custom attributes.
  * @param {string} elementId - The ID of the dropdown element to update.
- * @param {Array<string>} terms - The options to populate in the dropdown.
+ * @param {Array<{ label: string, id: string, [key: string]: string }>} terms - The options to populate in the dropdown.
  */
-const populateDropdown = (elementId: string, terms: { label: string, id: string }[]) => {
+const populateDropdown = (
+  elementId: string,
+  terms: { label: string; id: string; [key: string]: string }[]
+) => {
   const selectElement = document.getElementById(elementId);
 
   if (!selectElement) {
@@ -116,14 +119,19 @@ const populateDropdown = (elementId: string, terms: { label: string, id: string 
   terms.forEach((term) => {
     const option = document.createElement("option");
     option.value = term.label.toLowerCase().replace(/\s+/g, "_"); // Format value for internal usage
-    option.textContent = term.label; // Display label (address, city, etc.)
+    option.textContent = term.label; // Display label
 
-    // Add custom attribute to store the numeric ID
-    option.setAttribute("data-database-id", term.id);
+    // Loop through the properties of `term` and set them as data attributes
+    Object.keys(term).forEach((key) => {
+      if (key !== "label") {
+        option.setAttribute(`data-${key}`, term[key]);
+      }
+    });
 
     selectElement.appendChild(option);
   });
 };
+
 
 
 const selectDropdownOption = (elementId: string, selectedId: number) => {
@@ -182,17 +190,38 @@ const populateAllDropdowns = async () => {
   populateDropdown("transfer_reason_id_contactid", owners);
 
 
-  // Fetch and sort companies alphabetically by name
-  const companyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo();
+  // Fetch and sort all companies alphabetically by name 
+  const companyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo(false);
+
   const companies = companyInfo
     .map((info: CompanyInfo) => ({
       label: info.name,
-      id: info.id
+      id: info.id,
+      ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
     }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 
-  let companyFields = ["owner_id_companyid", "breeder_id_companyid", "lab_id_companyid", "id_registry_id_companyid", "transfer_reason_id_companyid"];
-  companyFields.forEach(id => populateDropdown(id, companies));
+  let companyFields = [
+    "owner_id_companyid",
+    "breeder_id_companyid",
+    "lab_id_companyid",
+    "transfer_reason_id_companyid"
+  ];
+
+  companyFields.forEach((id) => populateDropdown(id, companies));
+
+  // Fetch and sort all registry companies alphabetically by name 
+  const registryCompanyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo(true);
+
+  const registryCompanies = registryCompanyInfo
+    .map((info: CompanyInfo) => ({
+      label: info.name,
+      id: info.id,
+      ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+
+  populateDropdown("id_registry_id_companyid", registryCompanies)
 
   // Premises
   const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
@@ -561,7 +590,6 @@ const writeNewDefault = async () => {
   const currentTimestamp: string = getFormattedTimestamp();
 
   const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
-  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
 
   var contact_id: number = 0;
   var company_id: number = 0;

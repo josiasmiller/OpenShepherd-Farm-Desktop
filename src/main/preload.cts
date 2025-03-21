@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedQueryParameters) => ipcRenderer.invoke("get-breeds", queryParams),
   getColors: () => ipcRenderer.invoke("get-colors"),
-  getCompanyInfo: () => ipcRenderer.invoke("get-company-info"),
+  getCompanyInfo: (onlyGetRegistryCompanies: boolean) => ipcRenderer.invoke("get-company-info", onlyGetRegistryCompanies),
   getCounties: () => ipcRenderer.invoke("get-counties"),
   getCountries: () => ipcRenderer.invoke("get-countries"),
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),

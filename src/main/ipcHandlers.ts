@@ -47,7 +47,9 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-colors", getColors);
 
-  ipcMain.handle("get-company-info", getCompanies);
+  ipcMain.handle("get-company-info", async (_, onlyGetRegistryCompanies) => {
+    return getCompanies(onlyGetRegistryCompanies);
+  });
 
   ipcMain.handle("get-counties", getCounties);
 
