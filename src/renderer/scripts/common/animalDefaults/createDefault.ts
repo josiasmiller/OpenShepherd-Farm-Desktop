@@ -121,9 +121,11 @@ const populateDropdown = (
     option.value = term.label.toLowerCase().replace(/\s+/g, "_"); // Format value for internal usage
     option.textContent = term.label; // Display label
 
+    option.setAttribute(`data-database-id`, term.id);
+
     // Loop through the properties of `term` and set them as data attributes
     Object.keys(term).forEach((key) => {
-      if (key !== "label") {
+      if (key !== "label" && key !== "id") {
         option.setAttribute(`data-${key}`, term[key]);
       }
     });
@@ -727,7 +729,17 @@ const getSelectedDatabaseId = (elementId: string): number => {
   }
 
   const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+  if (selectedOption === null) {
+    console.warn(`Unable to get option ${selectElement.selectedIndex} from \"${elementId}\"`);
+    return 0;
+  }
+
   const dataId = selectedOption?.getAttribute("data-database-id");
+  if (dataId === null) {
+    console.warn(`Unable to get key \"data-database-id\" for \"${elementId}\"`);
+    return 0;
+  }
 
   return dataId ? parseInt(dataId, 10) || 0 : 0;
 };
@@ -758,7 +770,6 @@ async function updateBreeds() {
         species_id: species_id, 
       };
       const breedInfo: BreedInfo[] = await (window as any).electronAPI.getBreeds(queryParams);
-
 
       breedInfo.sort((a, b) => a.display_order - b.display_order);
 
