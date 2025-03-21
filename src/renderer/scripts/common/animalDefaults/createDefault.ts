@@ -84,6 +84,8 @@ export const init = () => {
     console.error(trichtagAutoIncTitle + " dropdown not found!");
   }
 
+  connectTagSameColors();
+
   // handle radio XOR on page startup, otherwise the radio buttons aren't 'XOR'ed
   handleOwnerXOR();
 };
@@ -862,4 +864,231 @@ function handleTrichTagStartingVal() {
     trichTagStartingValDropDown.disabled = true;
     trichTagStartingValDropDown.value = ''; // Clear the value of the field, since it is disabled
   }
+}
+
+function connectTagSameColors() {
+  ////////////////////////////////////////////////////////////////
+  // handle "male/female tag color same" dropdown functionality //
+  ////////////////////////////////////////////////////////////////
+  
+  ////////////////////////////////////////////////////////////////
+  // eid tag
+  const eidTagSameColorTitle : string = "id_eid_tag_male_color_female_color_same";
+  const eidTagColorMaleTitle : string = "eid_tag_color_male";
+  const eidTagColorFemaleTitle : string = "eid_tag_color_female";
+  const eidTagSameColorDropdown = document.getElementById(eidTagSameColorTitle) as HTMLInputElement | null;
+  const eidTagMaleDropdown = document.getElementById(eidTagColorMaleTitle) as HTMLInputElement | null;
+  const eidTagFemaleDropdown = document.getElementById(eidTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (eidTagSameColorDropdown) {
+    eidTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(eidTagSameColorTitle, eidTagColorMaleTitle, eidTagColorFemaleTitle));
+  } else {
+    console.error(eidTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (eidTagMaleDropdown) {
+    eidTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(eidTagSameColorTitle, eidTagColorMaleTitle, eidTagColorFemaleTitle));
+  } else {
+    console.error(eidTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (eidTagFemaleDropdown) {
+    eidTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(eidTagSameColorTitle, eidTagColorMaleTitle, eidTagColorFemaleTitle));
+  } else {
+    console.error(eidTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // farm tag
+  const farmTagSameColorTitle : string = "id_farm_tag_male_color_female_color_same";
+  const farmTagColorMaleTitle : string = "farm_tag_color_male";
+  const farmTagColorFemaleTitle : string = "farm_tag_color_female";
+  const farmTagSameColorDropdown = document.getElementById(farmTagSameColorTitle) as HTMLInputElement | null;
+  const farmTagMaleDropdown = document.getElementById(farmTagColorMaleTitle) as HTMLInputElement | null;
+  const farmTagFemaleDropdown = document.getElementById(farmTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (farmTagSameColorDropdown) {
+    farmTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(farmTagSameColorTitle, farmTagColorMaleTitle, farmTagColorFemaleTitle));
+  } else {
+    console.error(farmTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (farmTagMaleDropdown) {
+    farmTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(farmTagSameColorTitle, farmTagColorMaleTitle, farmTagColorFemaleTitle));
+  } else {
+    console.error(farmTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (farmTagFemaleDropdown) {
+    farmTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(farmTagSameColorTitle, farmTagColorMaleTitle, farmTagColorFemaleTitle));
+  } else {
+    console.error(farmTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // federal tag
+  const fedTagSameColorTitle : string = "id_fed_tag_male_color_female_color_same";
+  const fedTagColorMaleTitle : string = "fed_tag_color_male";
+  const fedTagColorFemaleTitle : string = "fed_tag_color_female";
+  const fedTagSameColorDropdown = document.getElementById(fedTagSameColorTitle) as HTMLInputElement | null;
+  const fedTagMaleDropdown = document.getElementById(fedTagColorMaleTitle) as HTMLInputElement | null;
+  const fedTagFemaleDropdown = document.getElementById(fedTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (fedTagSameColorDropdown) {
+    fedTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(fedTagSameColorTitle, fedTagColorMaleTitle, fedTagColorFemaleTitle));
+  } else {
+    console.error(fedTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (fedTagMaleDropdown) {
+    fedTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(fedTagSameColorTitle, fedTagColorMaleTitle, fedTagColorFemaleTitle));
+  } else {
+    console.error(fedTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (fedTagFemaleDropdown) {
+    fedTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(fedTagSameColorTitle, fedTagColorMaleTitle, fedTagColorFemaleTitle));
+  } else {
+    console.error(fedTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // NUES tag
+  const nuesTagSameColorTitle : string = "id_nues_tag_male_color_female_color_same";
+  const nuesTagColorMaleTitle : string = "nues_tag_color_male";
+  const nuesTagColorFemaleTitle : string = "nues_tag_color_female";
+  const nuesTagSameColorDropdown = document.getElementById(nuesTagSameColorTitle) as HTMLInputElement | null;
+  const nuesTagMaleDropdown = document.getElementById(nuesTagColorMaleTitle) as HTMLInputElement | null;
+  const nuesTagFemaleDropdown = document.getElementById(nuesTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (nuesTagSameColorDropdown) {
+    nuesTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(nuesTagSameColorTitle, nuesTagColorMaleTitle, nuesTagColorFemaleTitle));
+  } else {
+    console.error(nuesTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (nuesTagMaleDropdown) {
+    nuesTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(nuesTagSameColorTitle, nuesTagColorMaleTitle, nuesTagColorFemaleTitle));
+  } else {
+    console.error(nuesTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (nuesTagFemaleDropdown) {
+    nuesTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(nuesTagSameColorTitle, nuesTagColorMaleTitle, nuesTagColorFemaleTitle));
+  } else {
+    console.error(nuesTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Trich tag
+  const trichTagSameColorTitle : string = "id_trich_tag_male_color_female_color_same";
+  const trichTagColorMaleTitle : string = "trich_tag_color_male";
+  const trichTagColorFemaleTitle : string = "trich_tag_color_female";
+  const trichTagSameColorDropdown = document.getElementById(trichTagSameColorTitle) as HTMLInputElement | null;
+  const trichTagMaleDropdown = document.getElementById(trichTagColorMaleTitle) as HTMLInputElement | null;
+  const trichTagFemaleDropdown = document.getElementById(trichTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (trichTagSameColorDropdown) {
+    trichTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(trichTagSameColorTitle, trichTagColorMaleTitle, trichTagColorFemaleTitle));
+  } else {
+    console.error(eidTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (trichTagMaleDropdown) {
+    trichTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(trichTagSameColorTitle, trichTagColorMaleTitle, trichTagColorFemaleTitle));
+  } else {
+    console.error(trichTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (trichTagFemaleDropdown) {
+    trichTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(trichTagSameColorTitle, trichTagColorMaleTitle, trichTagColorFemaleTitle));
+  } else {
+    console.error(trichTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Bangs tag
+  const bangsTagSameColorTitle : string = "id_bangs_tag_male_color_female_color_same";
+  const bangsTagColorMaleTitle : string = "bangs_tag_color_male";
+  const bangsTagColorFemaleTitle : string = "bangs_tag_color_female";
+  const bangsTagSameColorDropdown = document.getElementById(bangsTagSameColorTitle) as HTMLInputElement | null;
+  const bangsTagMaleDropdown = document.getElementById(bangsTagColorMaleTitle) as HTMLInputElement | null;
+  const bangsTagFemaleDropdown = document.getElementById(bangsTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (bangsTagSameColorDropdown) {
+    bangsTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(bangsTagSameColorTitle, bangsTagColorMaleTitle, bangsTagColorFemaleTitle));
+  } else {
+    console.error(bangsTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (bangsTagMaleDropdown) {
+    bangsTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(bangsTagSameColorTitle, bangsTagColorMaleTitle, bangsTagColorFemaleTitle));
+  } else {
+    console.error(bangsTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (bangsTagFemaleDropdown) {
+    bangsTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(bangsTagSameColorTitle, bangsTagColorMaleTitle, bangsTagColorFemaleTitle));
+  } else {
+    console.error(bangsTagSameColorTitle + " dropdown not found!");
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // sale order tag
+  const saleOrderTagSameColorTitle : string = "id_sale_order_tag_male_color_female_color_same";
+  const saleOrderTagColorMaleTitle : string = "sale_order_tag_color_male";
+  const saleOrderTagColorFemaleTitle : string = "sale_order_tag_color_female";
+  const saleOrderTagSameColorDropdown = document.getElementById(saleOrderTagSameColorTitle) as HTMLInputElement | null;
+  const saleOrderTagMaleDropdown = document.getElementById(saleOrderTagColorMaleTitle) as HTMLInputElement | null;
+  const saleOrderTagFemaleDropdown = document.getElementById(saleOrderTagColorFemaleTitle) as HTMLInputElement | null;
+
+  if (saleOrderTagSameColorDropdown) {
+    saleOrderTagSameColorDropdown.addEventListener("change", (_) => handleTagSameColor(saleOrderTagSameColorTitle, saleOrderTagColorMaleTitle, saleOrderTagColorFemaleTitle));
+  } else {
+    console.error(saleOrderTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (saleOrderTagMaleDropdown) {
+    saleOrderTagMaleDropdown.addEventListener("change", (_) => handleTagSameColor(saleOrderTagSameColorTitle, saleOrderTagColorMaleTitle, saleOrderTagColorFemaleTitle));
+  } else {
+    console.error(saleOrderTagSameColorTitle + " dropdown not found!");
+  }
+
+  if (saleOrderTagFemaleDropdown) {
+    saleOrderTagFemaleDropdown.addEventListener("change", (_) => handleTagSameColor(saleOrderTagSameColorTitle, saleOrderTagColorMaleTitle, saleOrderTagColorFemaleTitle));
+  } else {
+    console.error(saleOrderTagSameColorTitle + " dropdown not found!");
+  }
+}
+
+function handleTagSameColor(sameDropdownId : string, maleDropdownId : string, femaleDropdownId: string) {
+
+  const sameColorDropdown = document.getElementById(sameDropdownId) as HTMLSelectElement | null;
+  if (!sameColorDropdown) {
+    console.error("unable to find HTML element: " + sameDropdownId);
+    return;
+  }
+
+  const maleDropdown = document.getElementById(maleDropdownId) as HTMLSelectElement | null;
+  if (!maleDropdown) {
+    console.error("unable to find HTML element: " + maleDropdownId);
+    return;
+  }
+
+  const femaleDropdown = document.getElementById(femaleDropdownId) as HTMLSelectElement | null;
+  if (!femaleDropdown) {
+    console.error("unable to find HTML element: " + femaleDropdownId);
+    return;
+  }
+
+  if (sameColorDropdown.value == "false") {
+    femaleDropdown.disabled = false;
+    return; 
+  } else if (sameColorDropdown.value == "true") {
+    femaleDropdown.disabled = true;
+    femaleDropdown.selectedIndex = maleDropdown.selectedIndex;
+    return;
+  }
+
+  // if neither true or false, then dont do anything (for example, if the option is "select an option...")
 }
