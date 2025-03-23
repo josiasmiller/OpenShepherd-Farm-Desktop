@@ -1,6 +1,6 @@
   
   
-export type AnimalSearchResults = {
+export type AnimalSearchResult = {
   animal_id?: string | null;
   flock_prefix: string | null,
   name: string;
@@ -8,7 +8,7 @@ export type AnimalSearchResults = {
   deathDate: string | null;
 }
 
-export type AnimalSearchQueryParameters = {
+export type AnimalSearchRequest = {
   name?: string | null;
   status?: string | null;         // Status could be a dropdown field
   registrationType?: string | null;  // Registration Type

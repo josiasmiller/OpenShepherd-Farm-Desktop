@@ -1,8 +1,8 @@
 import { getDatabase } from "../../../../dbConnections.js";
 import { escapeLikeString } from "../../../../dbUtils.js";
-import { AnimalSearchQueryParameters, AnimalSearchResults } from "../../../../models/read/animal/animalSeach/animalSearch.js";
+import { AnimalSearchRequest, AnimalSearchResult } from "../../../../models/read/animal/animalSeach/animalSearch.js";
 
-export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}): Promise<AnimalSearchResults[]> => {
+export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promise<AnimalSearchResult[]> => {
     const db = await getDatabase();
     if (db == null) {
       throw new TypeError("DB Instance is null");
@@ -64,7 +64,7 @@ export const animalSearch = async (queryParams: AnimalSearchQueryParameters = {}
             name: row.animal_name,
             birthDate: row.birth_date,
             deathDate: row.death_date || null,
-          })) as AnimalSearchResults[];
+          })) as AnimalSearchResult[];
           resolve(animals);
         }
       });

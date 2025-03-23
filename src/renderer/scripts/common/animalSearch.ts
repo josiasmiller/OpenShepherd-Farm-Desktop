@@ -1,4 +1,4 @@
-import { AnimalSearchResults } from "../../../database";
+import { AnimalSearchResult } from "../../../database";
 import { showErrorPopup } from "./utils/notifications.js";
 
 export const init = () => {
@@ -96,7 +96,7 @@ const fetchAndDisplayAnimals = async () => {
     resultsTableBody.innerHTML = ''; // Clear previous results
 
     // Populate table
-    animals.forEach((animal: AnimalSearchResults) => {
+    animals.forEach((animal: AnimalSearchResult) => {
       const row = resultsTableBody.insertRow();
 
       // Create button cell
@@ -132,7 +132,7 @@ const fetchAndDisplayAnimals = async () => {
 };
 
 
-const addToChosenAnimals = (animal: AnimalSearchResults) => {
+const addToChosenAnimals = (animal: AnimalSearchResult) => {
   const chosenTableContainer = document.getElementById("chosenTableContainer");
 
   if (!chosenTableContainer) {

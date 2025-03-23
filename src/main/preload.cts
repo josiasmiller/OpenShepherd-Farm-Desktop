@@ -1,14 +1,14 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 import { 
-  AnimalSearchQueryParameters, 
+  AnimalSearchRequest, 
   BreedQueryParameters, 
   UnitQueryParameters, 
   WriteNewDefaultParameters 
 } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  animalSearch: (queryParams: AnimalSearchQueryParameters) => ipcRenderer.invoke("animal-search", queryParams),
+  animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedQueryParameters) => ipcRenderer.invoke("get-breeds", queryParams),
   getColors: () => ipcRenderer.invoke("get-colors"),

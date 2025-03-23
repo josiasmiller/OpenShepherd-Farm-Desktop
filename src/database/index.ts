@@ -1,6 +1,6 @@
 
 // export read models 
-export { AnimalSearchResults, AnimalSearchQueryParameters } from "./models/read/animal/animalSeach/animalSearch.js";
+export { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
 export { BirthTypeInfo } from "./models/read/animal/births/birthType.js";
 export { BreedQueryParameters, BreedInfo } from "./models/read/animal/general/breed.js";
 export { CompanyInfo } from "./models/read/owners/company.js";
