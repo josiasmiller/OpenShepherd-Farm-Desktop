@@ -138,10 +138,20 @@ const populateDropdown = (
 
 
 
-const selectDropdownOption = (elementId: string, selectedId: number) => {
+const selectDropdownOption = (elementId: string, selectedId: string) => {
+
+  if (elementId === "breeder_id_companyid") {
+    console.log("MITCH DEBUG!!");
+    console.log(elementId);
+    console.log(selectedId);
+    console.log(typeof selectedId);
+    console.log(selectedId === "0");
+    console.log(selectedId == "0");
+    console.log(`"${selectedId}"`);
+  }
 
   // do not handle cases where 0 is the "key"
-  if (selectedId === 0) {
+  if (selectedId == "0") {
     return;
   }
 

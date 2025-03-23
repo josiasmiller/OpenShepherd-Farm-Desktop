@@ -7,7 +7,7 @@ export type UnitRequest = {
 export type Unit = {
   id: string;
   name: string;
-  unit_type: number;
+  unit_type: string;
   display_order: number;
 }
           

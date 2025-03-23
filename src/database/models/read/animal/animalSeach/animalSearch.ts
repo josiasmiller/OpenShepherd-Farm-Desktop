@@ -1,7 +1,7 @@
   
   
 export type AnimalSearchResult = {
-  animal_id?: string | null;
+  animal_id: string;
   flock_prefix: string | null,
   name: string;
   birthDate: string | null;
@@ -10,8 +10,8 @@ export type AnimalSearchResult = {
 
 export type AnimalSearchRequest = {
   name?: string | null;
-  status?: string | null;         // Status could be a dropdown field
-  registrationType?: string | null;  // Registration Type
+  status?: string | null;         
+  registrationType?: string | null;
   registrationNumber?: string | null;
   birthStartDate?: string | null;   // Start date for birth range
   birthEndDate?: string | null;     // End date for birth range

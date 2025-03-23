@@ -2,8 +2,8 @@
 export type FlockPrefix = {
   id: string;
   name: string;
-  owner_contact_id: number;
-  owner_company_id: number;
-  registry_company_id: number;
+  owner_contact_id: string;
+  owner_company_id: string;
+  registry_company_id: string;
 }
       

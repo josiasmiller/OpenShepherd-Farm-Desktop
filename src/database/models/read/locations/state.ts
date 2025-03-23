@@ -4,6 +4,6 @@ export type State = {
   name: string;
   abbreviation: string;
   display_order: number;
-  country_id: number;
+  country_id: string;
 }
     
