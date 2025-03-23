@@ -1,10 +1,10 @@
 
-export type UnitQueryParameters = {
+export type UnitRequest = {
   unit_type_id: string | null;
   unit_type_name: string | null;
 }
 
-export type UnitInfo = {
+export type Unit = {
   id: string;
   name: string;
   unit_type: number;

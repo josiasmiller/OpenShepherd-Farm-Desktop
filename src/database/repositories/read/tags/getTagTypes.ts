@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { TagTypeInfo } from "../../../models/read/tags/tagType.js";
+import { TagType } from "../../../models/read/tags/tagType.js";
 
-export const getTagTypes = async (): Promise<TagTypeInfo[]> => {
+export const getTagTypes = async (): Promise<TagType[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getTagTypes = async (): Promise<TagTypeInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: TagTypeInfo[] = rows.map((row: any) => ({
+        const results: TagType[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

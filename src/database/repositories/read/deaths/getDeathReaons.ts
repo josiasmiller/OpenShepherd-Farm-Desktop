@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { DeathReasonInfo } from "../../../models/read/deaths/deathReason.js";
+import { DeathReason } from "../../../models/read/deaths/deathReason.js";
 
-export const getDeathReasons = async (): Promise<DeathReasonInfo[]> => {
+export const getDeathReasons = async (): Promise<DeathReason[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getDeathReasons = async (): Promise<DeathReasonInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: DeathReasonInfo[] = rows.map((row: any) => ({
+        const results: DeathReason[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

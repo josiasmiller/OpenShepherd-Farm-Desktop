@@ -1,5 +1,5 @@
 
-export type ColorInfo = {
+export type Color = {
   id: string;
   name: string;
   display_order: number;

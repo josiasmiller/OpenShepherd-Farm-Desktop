@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../../dbConnections.js";
-import { TransferReasonInfo } from "../../../../models/read/animal/transfers/transferReaon.js";
+import { TransferReason } from "../../../../models/read/animal/transfers/transferReaon.js";
 
-export const getTransferReasons = async (): Promise<TransferReasonInfo[]> => {
+export const getTransferReasons = async (): Promise<TransferReason[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getTransferReasons = async (): Promise<TransferReasonInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: TransferReasonInfo[] = rows.map((row: any) => ({
+        const results: TransferReason[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

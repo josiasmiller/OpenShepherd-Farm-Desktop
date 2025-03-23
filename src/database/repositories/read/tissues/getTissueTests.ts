@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { TissueTestInfo } from "../../../models/read/tissues/tissueTest.js";
+import { TissueTest } from "../../../models/read/tissues/tissueTest.js";
 
-export const getTissueTests = async (): Promise<TissueTestInfo[]> => {
+export const getTissueTests = async (): Promise<TissueTest[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getTissueTests = async (): Promise<TissueTestInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: TissueTestInfo[] = rows.map((row: any) => ({
+        const results: TissueTest[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

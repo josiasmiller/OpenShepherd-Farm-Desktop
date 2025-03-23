@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { PremiseInfo } from "../../../models/read/premises/premise.js";
+import { Premise } from "../../../models/read/premises/premise.js";
 
-export const getPremises = async (): Promise<PremiseInfo[]> => {
+export const getPremises = async (): Promise<Premise[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -26,7 +26,7 @@ export const getPremises = async (): Promise<PremiseInfo[]> => {
         reject(err);
       } else {
 
-        const results: PremiseInfo[] = rows.map((row: any) => ({
+        const results: Premise[] = rows.map((row: any) => ({
           id: row.premise_id,
           address: row.address_one,
           city: row.city,

@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { StateInfo } from "../../../models/read/locations/state.js";
+import { State } from "../../../models/read/locations/state.js";
 
-export const getStates = async (): Promise<StateInfo[]> => {
+export const getStates = async (): Promise<State[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -21,7 +21,7 @@ export const getStates = async (): Promise<StateInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: StateInfo[] = rows.map((row: any) => ({
+        const results: State[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           abbreviation: row.abbrev,

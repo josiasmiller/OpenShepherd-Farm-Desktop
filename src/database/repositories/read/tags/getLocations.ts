@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { LocationInfo } from "../../../models/read/tags/location.js";
+import { Location } from "../../../models/read/tags/location.js";
 
-export const getLocations = async (): Promise<LocationInfo[]> => {
+export const getLocations = async (): Promise<Location[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -20,7 +20,7 @@ export const getLocations = async (): Promise<LocationInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: LocationInfo[] = rows.map((row: any) => ({
+        const results: Location[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           abbreviation: row.abbrev,

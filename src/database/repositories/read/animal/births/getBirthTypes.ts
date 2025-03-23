@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../../dbConnections.js";
-import { BirthTypeInfo } from "../../../../models/read/animal/births/birthType.js";
+import { BirthType } from "../../../../models/read/animal/births/birthType.js";
 
-export const getBirthTypes = async (): Promise<BirthTypeInfo[]> => {
+export const getBirthTypes = async (): Promise<BirthType[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -20,7 +20,7 @@ export const getBirthTypes = async (): Promise<BirthTypeInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: BirthTypeInfo[] = rows.map((row: any) => ({
+        const results: BirthType[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           abbreviation: row.abbrev,

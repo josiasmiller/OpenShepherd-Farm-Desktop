@@ -1,5 +1,5 @@
 
-export type BirthTypeInfo = {
+export type BirthType = {
   id: string;
   name: string;
   abbreviation: string;

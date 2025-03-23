@@ -1,8 +1,8 @@
 import { Database } from "sqlite3";
 import { getDatabase } from "../../../dbConnections.js";
-import { UnitQueryParameters, UnitInfo } from "../../../models/read/units/unit.js";
+import { UnitRequest, Unit } from "../../../models/read/units/unit.js";
 
-export const getUnits = async (queryParams: UnitQueryParameters): Promise<UnitInfo[]> => {
+export const getUnits = async (queryParams: UnitRequest): Promise<Unit[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -18,7 +18,7 @@ export const getUnits = async (queryParams: UnitQueryParameters): Promise<UnitIn
 };
 
 // Get Units based on the unit type
-const getUnitsByUnitTypeId = (db: Database, id: string): Promise<UnitInfo[]> => {
+const getUnitsByUnitTypeId = (db: Database, id: string): Promise<Unit[]> => {
   const query = `
     SELECT 
         id_unitsid AS id, 
@@ -32,7 +32,7 @@ const getUnitsByUnitTypeId = (db: Database, id: string): Promise<UnitInfo[]> => 
 };
 
 // Get Units based on the unit type
-const getUnitsByUnitTypeName = (db: Database, unit_type_name: string): Promise<UnitInfo[]> => {
+const getUnitsByUnitTypeName = (db: Database, unit_type_name: string): Promise<Unit[]> => {
   const query = `
     SELECT 
         id_unitsid AS id, 
@@ -48,7 +48,7 @@ const getUnitsByUnitTypeName = (db: Database, unit_type_name: string): Promise<U
 };
 
 // Get all units (default)
-const getAllunits = (db: Database): Promise<UnitInfo[]> => {
+const getAllunits = (db: Database): Promise<Unit[]> => {
   let unitTypeQuery = `
     SELECT 
         id_unitsid AS id, 
@@ -61,13 +61,13 @@ const getAllunits = (db: Database): Promise<UnitInfo[]> => {
 };
 
 // Helper function to execute queries
-const executeQuery = (db: any, query: string, params: any[]): Promise<UnitInfo[]> => {
+const executeQuery = (db: any, query: string, params: any[]): Promise<Unit[]> => {
   return new Promise((resolve, reject) => {
     db.all(query, params, (err: any, rows: any[]) => {
       if (err) {
         reject(err);
       } else {
-        const results: UnitInfo[] = rows.map((row: any) => ({
+        const results: Unit[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           unit_type: row.unit_type,

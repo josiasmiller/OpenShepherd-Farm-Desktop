@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../../dbConnections.js";
-import { SpeciesInfo } from "../../../../models/read/animal/general/species.js";
+import { Species } from "../../../../models/read/animal/general/species.js";
 
-export const getSpecies = async (): Promise<SpeciesInfo[]> => {
+export const getSpecies = async (): Promise<Species[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -20,7 +20,7 @@ export const getSpecies = async (): Promise<SpeciesInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: SpeciesInfo[] = rows.map((row: any) => ({
+        const results: Species[] = rows.map((row: any) => ({
           id: row.id,
           common_name: row.common_name,
           generic_name: row.generic_name,

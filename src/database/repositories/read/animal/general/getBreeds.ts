@@ -1,8 +1,8 @@
 import { Database } from "sqlite3";
 import { getDatabase } from "../../../../dbConnections.js";
-import { BreedInfo, BreedQueryParameters } from "../../../../models/read/animal/general/breed.js";
+import { Breed, BreedRequest } from "../../../../models/read/animal/general/breed.js";
 
-export const getBreeds = async (queryParams: BreedQueryParameters): Promise<BreedInfo[]> => {
+export const getBreeds = async (queryParams: BreedRequest): Promise<Breed[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -16,7 +16,7 @@ export const getBreeds = async (queryParams: BreedQueryParameters): Promise<Bree
 };
 
 // Get breed by ID
-const getBreedsById = (db: Database, id: string): Promise<BreedInfo[]> => {
+const getBreedsById = (db: Database, id: string): Promise<Breed[]> => {
   const query = `
     SELECT 
         id_breedid AS id, 
@@ -30,7 +30,7 @@ const getBreedsById = (db: Database, id: string): Promise<BreedInfo[]> => {
 };
 
 // Get all breeds (default)
-const getAllBreeds = (db: Database): Promise<BreedInfo[]> => {
+const getAllBreeds = (db: Database): Promise<Breed[]> => {
   const query = `
     SELECT 
         id_breedid AS id, 
@@ -43,13 +43,13 @@ const getAllBreeds = (db: Database): Promise<BreedInfo[]> => {
 };
 
 // Helper function to execute queries
-const executeQuery = (db: any, query: string, params: any[]): Promise<BreedInfo[]> => {
+const executeQuery = (db: any, query: string, params: any[]): Promise<Breed[]> => {
   return new Promise((resolve, reject) => {
     db.all(query, params, (err: any, rows: any[]) => {
       if (err) {
         reject(err);
       } else {
-        const results: BreedInfo[] = rows.map((row: any) => ({
+        const results: Breed[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

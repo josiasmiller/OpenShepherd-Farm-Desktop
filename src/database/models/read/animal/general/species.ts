@@ -1,5 +1,5 @@
 
-export type SpeciesInfo = {
+export type Species = {
   id: string;
   common_name: string;
   generic_name: string;

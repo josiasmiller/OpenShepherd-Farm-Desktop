@@ -1,5 +1,5 @@
 
-export type SexInfo = {
+export type Sex = {
   id: string;
   name: string;
   display_order: number;

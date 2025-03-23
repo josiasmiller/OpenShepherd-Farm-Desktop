@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { ColorInfo } from "../../../models/read/tags/color.js";
+import { Color } from "../../../models/read/tags/color.js";
 
-export const getColors = async (): Promise<ColorInfo[]> => {
+export const getColors = async (): Promise<Color[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getColors = async (): Promise<ColorInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: ColorInfo[] = rows.map((row: any) => ({
+        const results: Color[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

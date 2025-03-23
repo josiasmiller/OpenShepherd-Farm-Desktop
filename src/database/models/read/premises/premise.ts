@@ -1,5 +1,5 @@
 
-export type PremiseInfo = {
+export type Premise = {
   id: string;
   address: string;
   city: string;

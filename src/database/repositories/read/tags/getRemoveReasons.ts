@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { RemoveReasonInfo } from "../../../models/read/tags/removeReason.js";
+import { RemoveReason } from "../../../models/read/tags/removeReason.js";
 
-export const getRemoveReasons = async (): Promise<RemoveReasonInfo[]> => {
+export const getRemoveReasons = async (): Promise<RemoveReason[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getRemoveReasons = async (): Promise<RemoveReasonInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: RemoveReasonInfo[] = rows.map((row: any) => ({
+        const results: RemoveReason[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

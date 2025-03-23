@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { TissueSampleTypeInfo } from "../../../models/read/tissues/tissueSampleType.js";
+import { TissueSampleType } from "../../../models/read/tissues/tissueSampleType.js";
 
-export const getTissueSampleTypes = async (): Promise<TissueSampleTypeInfo[]> => {
+export const getTissueSampleTypes = async (): Promise<TissueSampleType[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getTissueSampleTypes = async (): Promise<TissueSampleTypeInfo[]> =>
       if (err) {
         reject(err);
       } else {
-        const results: TissueSampleTypeInfo[] = rows.map((row: any) => ({
+        const results: TissueSampleType[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { CountyInfo } from "../../../models/read/locations/county.js";
+import { County } from "../../../models/read/locations/county.js";
 
-export const getCounties = async (): Promise<CountyInfo[]> => {
+export const getCounties = async (): Promise<County[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getCounties = async (): Promise<CountyInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: CountyInfo[] = rows.map((row: any) => ({
+        const results: County[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           state_id: row.state_id,

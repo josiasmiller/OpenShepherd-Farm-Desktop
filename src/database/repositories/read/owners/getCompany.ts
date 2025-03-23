@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { CompanyInfo } from "../../../models/read/owners/company.js";
+import { Company } from "../../../models/read/owners/company.js";
 
-export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<CompanyInfo[]> => {
+export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<Company[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -41,7 +41,7 @@ export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<
       if (err) {
         reject(err);
       } else {
-        const results: CompanyInfo[] = rows.map((row: any) => ({
+        const results: Company[] = rows.map((row: any) => ({
           id: row.company_id,
           name: row.name,
           registry_id: row.registry_info_id,

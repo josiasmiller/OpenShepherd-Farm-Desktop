@@ -1,29 +1,29 @@
 
 // export read models 
 export { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
-export { BirthTypeInfo } from "./models/read/animal/births/birthType.js";
-export { BreedQueryParameters, BreedInfo } from "./models/read/animal/general/breed.js";
-export { CompanyInfo } from "./models/read/owners/company.js";
-export { ColorInfo } from "./models/read/tags/color.js";
-export { CountryInfo } from "./models/read/locations/country.js";
-export { CountyInfo } from "./models/read/locations/county.js";
-export { DeathReasonInfo } from "./models/read/deaths/deathReason.js";
+export { BirthType } from "./models/read/animal/births/birthType.js";
+export { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
+export { Company } from "./models/read/owners/company.js";
+export { Color } from "./models/read/tags/color.js";
+export { Country } from "./models/read/locations/country.js";
+export { County } from "./models/read/locations/county.js";
+export { DeathReason } from "./models/read/deaths/deathReason.js";
 export { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
-export { FlockPrefixInfo } from "./models/read/animal/flocks/flockPrefix.js"
-export { LocationInfo } from "./models/read/tags/location.js";
-export { OwnerInfo } from "./models/read/owners/owner.js";
-export { PremiseInfo } from "./models/read/premises/premise.js";
-export { RemoveReasonInfo } from "./models/read/tags/removeReason.js";
-export { SexInfo } from "./models/read/animal/general/sex.js";
-export { SpeciesInfo } from "./models/read/animal/general/species.js";
-export { StateInfo } from "./models/read/locations/state.js";
-export { TagTypeInfo } from "./models/read/tags/tagType.js";
-export { TissueSampleTypeInfo } from "./models/read/tissues/tissueSampleType.js"
-export { TissueSampleContainerTypeInfo } from "./models/read/tissues/tissueSampleContainerType.js"
-export { TissueTestInfo } from "./models/read/tissues/tissueTest.js"
-export { TransferReasonInfo } from "./models/read/animal/transfers/transferReaon.js"
-export { UnitQueryParameters, UnitInfo } from "./models/read/units/unit.js";
-export { UnitTypeInfo } from "./models/read/units/unitType.js";
+export { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
+export { Location } from "./models/read/tags/location.js";
+export { Owner } from "./models/read/owners/owner.js";
+export { Premise } from "./models/read/premises/premise.js";
+export { RemoveReason } from "./models/read/tags/removeReason.js";
+export { Sex } from "./models/read/animal/general/sex.js";
+export { Species } from "./models/read/animal/general/species.js";
+export { State } from "./models/read/locations/state.js";
+export { TagType } from "./models/read/tags/tagType.js";
+export { TissueSampleType } from "./models/read/tissues/tissueSampleType.js"
+export { TissueSampleContainerType } from "./models/read/tissues/tissueSampleContainerType.js"
+export { TissueTest } from "./models/read/tissues/tissueTest.js"
+export { TransferReason } from "./models/read/animal/transfers/transferReaon.js"
+export { UnitRequest, Unit } from "./models/read/units/unit.js";
+export { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";

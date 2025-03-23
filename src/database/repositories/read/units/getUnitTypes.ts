@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { UnitTypeInfo } from "../../../models/read/units/unitType.js";
+import { UnitType } from "../../../models/read/units/unitType.js";
 
-export const getUnitTypes = async (): Promise<UnitTypeInfo[]> => {
+export const getUnitTypes = async (): Promise<UnitType[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -19,7 +19,7 @@ export const getUnitTypes = async (): Promise<UnitTypeInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: UnitTypeInfo[] = rows.map((row: any) => ({
+        const results: UnitType[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,

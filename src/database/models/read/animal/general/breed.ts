@@ -1,9 +1,9 @@
 
-export type BreedQueryParameters = {
+export type BreedRequest = {
   species_id: string | null;
 }
 
-export type BreedInfo = {
+export type Breed = {
   id: string;
   name: string;
   display_order: number;

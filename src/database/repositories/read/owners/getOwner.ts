@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { OwnerInfo } from "../../../models/read/owners/owner.js";
+import { Owner } from "../../../models/read/owners/owner.js";
 
-export const getOwners = async (): Promise<OwnerInfo[]> => {
+export const getOwners = async (): Promise<Owner[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -21,7 +21,7 @@ export const getOwners = async (): Promise<OwnerInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: OwnerInfo[] = rows.map((row: any) => ({
+        const results: Owner[] = rows.map((row: any) => ({
           id: row.contact_id,
           firstName: row.first_name,
           lastName: row.last_name,

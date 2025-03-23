@@ -1,7 +1,7 @@
 import { getDatabase } from "../../../../dbConnections.js";
-import { FlockPrefixInfo } from "../../../../models/read/animal/flocks/flockPrefix.js";
+import { FlockPrefix } from "../../../../models/read/animal/flocks/flockPrefix.js";
 
-export const getFlockPrefixes = async (): Promise<FlockPrefixInfo[]> => {
+export const getFlockPrefixes = async (): Promise<FlockPrefix[]> => {
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -21,7 +21,7 @@ export const getFlockPrefixes = async (): Promise<FlockPrefixInfo[]> => {
       if (err) {
         reject(err);
       } else {
-        const results: FlockPrefixInfo[] = rows.map((row: any) => ({
+        const results: FlockPrefix[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           owner_contact_id: row.owner_contact_id,

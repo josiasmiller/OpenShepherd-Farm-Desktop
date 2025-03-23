@@ -2,15 +2,15 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 import { 
   AnimalSearchRequest, 
-  BreedQueryParameters, 
-  UnitQueryParameters, 
+  BreedRequest, 
+  UnitRequest, 
   WriteNewDefaultParameters 
 } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
-  getBreeds: (queryParams: BreedQueryParameters) => ipcRenderer.invoke("get-breeds", queryParams),
+  getBreeds: (queryParams: BreedRequest) => ipcRenderer.invoke("get-breeds", queryParams),
   getColors: () => ipcRenderer.invoke("get-colors"),
   getCompanyInfo: (onlyGetRegistryCompanies: boolean) => ipcRenderer.invoke("get-company-info", onlyGetRegistryCompanies),
   getCounties: () => ipcRenderer.invoke("get-counties"),
@@ -30,7 +30,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getTissueSampleContainerTypes: () => ipcRenderer.invoke("get-tissue-sample-container-types"),
   getTissueTests: () => ipcRenderer.invoke("get-tissue-tests"),
   getTransferReasons: () => ipcRenderer.invoke("get-transfer-reasons"),
-  getUnits: (queryParams: UnitQueryParameters) => ipcRenderer.invoke("get-units", queryParams),
+  getUnits: (queryParams: UnitRequest) => ipcRenderer.invoke("get-units", queryParams),
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
   writeNewDefaultSettings: (queryParams: WriteNewDefaultParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),

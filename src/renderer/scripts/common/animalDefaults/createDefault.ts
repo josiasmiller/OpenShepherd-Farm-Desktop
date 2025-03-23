@@ -1,27 +1,27 @@
 import { 
-  BirthTypeInfo,
-  BreedInfo,
-  BreedQueryParameters,
-  ColorInfo, 
-  CompanyInfo, 
-  CountyInfo, 
-  DeathReasonInfo, 
+  BirthType,
+  Breed,
+  BreedRequest,
+  Color, 
+  Company, 
+  County, 
+  DeathReason, 
   DefaultSettingsResults, 
-  FlockPrefixInfo, 
-  LocationInfo, 
-  OwnerInfo, 
-  PremiseInfo, 
-  RemoveReasonInfo, 
-  SexInfo, 
-  SpeciesInfo, 
-  StateInfo,
-  TagTypeInfo,
-  TissueSampleContainerTypeInfo,
-  TissueSampleTypeInfo,
-  TissueTestInfo,
-  TransferReasonInfo,
-  UnitInfo,
-  UnitQueryParameters,
+  FlockPrefix, 
+  Location, 
+  Owner, 
+  Premise, 
+  RemoveReason, 
+  Sex, 
+  Species, 
+  State,
+  TagType,
+  TissueSampleContainerType,
+  TissueSampleType,
+  TissueTest,
+  TransferReason,
+  Unit,
+  UnitRequest,
   WriteNewDefaultParameters,
 } from "../../../../database";
 
@@ -177,11 +177,11 @@ const populateAllDropdowns = async () => {
   populateExistingDefaults();
 
   // Fetch and sort owners alphabetically by full name
-  const ownerInfo: OwnerInfo[] = await (window as any).electronAPI.getOwnerInfo();
+  const ownerInfo: Owner[] = await (window as any).electronAPI.getOwnerInfo();
 
   // Sort owners alphabetically by full name
   const owners = ownerInfo
-    .map((info: OwnerInfo) => ({
+    .map((info: Owner) => ({
       label: `${info.firstName} ${info.lastName}`,
       id: info.id
     }))
@@ -195,10 +195,10 @@ const populateAllDropdowns = async () => {
 
 
   // Fetch and sort all companies alphabetically by name 
-  const companyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo(false);
+  const companyInfo: Company[] = await (window as any).electronAPI.getCompanyInfo(false);
 
   const companies = companyInfo
-    .map((info: CompanyInfo) => ({
+    .map((info: Company) => ({
       label: info.name,
       id: info.id,
       ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
@@ -215,10 +215,10 @@ const populateAllDropdowns = async () => {
   companyFields.forEach((id) => populateDropdown(id, companies));
 
   // Fetch and sort all registry companies alphabetically by name 
-  const registryCompanyInfo: CompanyInfo[] = await (window as any).electronAPI.getCompanyInfo(true);
+  const registryCompanyInfo: Company[] = await (window as any).electronAPI.getCompanyInfo(true);
 
   const registryCompanies = registryCompanyInfo
-    .map((info: CompanyInfo) => ({
+    .map((info: Company) => ({
       label: info.name,
       id: info.id,
       ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
@@ -228,9 +228,9 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_registry_id_companyid", registryCompanies);
 
   // Premises
-  const premiseInfo : PremiseInfo[] = await (window as any).electronAPI.getPremiseInfo();
+  const premiseInfo : Premise[] = await (window as any).electronAPI.getPremiseInfo();
 
-  const premises = premiseInfo.map((info: PremiseInfo) => ({
+  const premises = premiseInfo.map((info: Premise) => ({
     label: `${info.address} ${info.city}, ${info.postcode}, ${info.country}`, // Full address crafted from DB information
     id: info.id,
   }));
@@ -274,18 +274,18 @@ const populateAllDropdowns = async () => {
 
 
   // Counties
-  const countyInfo : CountyInfo[] = await (window as any).electronAPI.getCounties();
-  const counties = countyInfo.map((info: CountyInfo) => ({
+  const countyInfo : County[] = await (window as any).electronAPI.getCounties();
+  const counties = countyInfo.map((info: County) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_countyid", counties);
 
   // Colors
-  const colorInfo : ColorInfo[] = await (window as any).electronAPI.getColors();
+  const colorInfo : Color[] = await (window as any).electronAPI.getColors();
   colorInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const colors = colorInfo.map((info: ColorInfo) => ({
+  const colors = colorInfo.map((info: Color) => ({
     label: info.name,
     id: info.id,
   }));
@@ -307,10 +307,10 @@ const populateAllDropdowns = async () => {
   populateDropdown("sale_order_tag_color_female", colors);
 
   // Locations
-  const locationInfo : LocationInfo[] = await (window as any).electronAPI.getLocations();
+  const locationInfo : Location[] = await (window as any).electronAPI.getLocations();
   locationInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const locations = locationInfo.map((info: LocationInfo) => ({
+  const locations = locationInfo.map((info: Location) => ({
     label: info.name,
     id: info.id,
   }));
@@ -326,19 +326,19 @@ const populateAllDropdowns = async () => {
   populateDropdown("sale_order_tag_location", locations);
 
   // States
-  const stateInfo : StateInfo[] = await (window as any).electronAPI.getStates();
+  const stateInfo : State[] = await (window as any).electronAPI.getStates();
   stateInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const states = stateInfo.map((info: StateInfo) => ({
+  const states = stateInfo.map((info: State) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_stateid", states);
 
   // Flock Prefixes
-  const flockPrefixInfo : FlockPrefixInfo[] = await (window as any).electronAPI.getFlockPrefixes();
+  const flockPrefixInfo : FlockPrefix[] = await (window as any).electronAPI.getFlockPrefixes();
   const flockPrefixes = flockPrefixInfo
-    .map((info: FlockPrefixInfo) => ({
+    .map((info: FlockPrefix) => ({
       label: info.name,
       id: info.id
     }))
@@ -346,29 +346,29 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_flockprefixid", flockPrefixes);
 
   // Species
-  const speciesInfo : SpeciesInfo[] = await (window as any).electronAPI.getSpecies();
+  const speciesInfo : Species[] = await (window as any).electronAPI.getSpecies();
    
-  const species = speciesInfo.map((info: SpeciesInfo) => ({
+  const species = speciesInfo.map((info: Species) => ({
     label: info.common_name,
     id: info.id,
   }));
   populateDropdown("id_speciesid", species);
 
   // Sexes
-  const sexInfo : SexInfo[] = await (window as any).electronAPI.getSexes();
+  const sexInfo : Sex[] = await (window as any).electronAPI.getSexes();
   sexInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const sexes = sexInfo.map((info: SexInfo) => ({
+  const sexes = sexInfo.map((info: Sex) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_sexid", sexes);
 
   // TagTypes
-  const tagTypeInfo : TagTypeInfo[] = await (window as any).electronAPI.getTagTypes();
+  const tagTypeInfo : TagType[] = await (window as any).electronAPI.getTagTypes();
   tagTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const tagTypes = tagTypeInfo.map((info: TagTypeInfo) => ({
+  const tagTypes = tagTypeInfo.map((info: TagType) => ({
     label: info.name,
     id: info.id,
   }));
@@ -377,60 +377,60 @@ const populateAllDropdowns = async () => {
   populateDropdown("id_idtypeid_tertiary", tagTypes);
 
   // RemoveReasons
-  const removeReasonInfo : RemoveReasonInfo[] = await (window as any).electronAPI.getRemoveReasons();
+  const removeReasonInfo : RemoveReason[] = await (window as any).electronAPI.getRemoveReasons();
   removeReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const removeReasons = removeReasonInfo.map((info: RemoveReasonInfo) => ({
+  const removeReasons = removeReasonInfo.map((info: RemoveReason) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_idremovereasonid", removeReasons);
 
   // TissueSampleTypes
-  const tissueSampleTypeInfo : TissueSampleTypeInfo[] = await (window as any).electronAPI.getTissueSampleTypes();
+  const tissueSampleTypeInfo : TissueSampleType[] = await (window as any).electronAPI.getTissueSampleTypes();
   tissueSampleTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const tissueSampleTypes = tissueSampleTypeInfo.map((info: TissueSampleTypeInfo) => ({
+  const tissueSampleTypes = tissueSampleTypeInfo.map((info: TissueSampleType) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_tissuesampletypeid", tissueSampleTypes);
 
   // TissueSampleContainerTypes
-  const tissueSampleContainerTypeInfo : TissueSampleContainerTypeInfo[] = await (window as any).electronAPI.getTissueSampleContainerTypes();
+  const tissueSampleContainerTypeInfo : TissueSampleContainerType[] = await (window as any).electronAPI.getTissueSampleContainerTypes();
   tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const tissueSampleContainerTypes = tissueSampleContainerTypeInfo.map((info: TissueSampleContainerTypeInfo) => ({
+  const tissueSampleContainerTypes = tissueSampleContainerTypeInfo.map((info: TissueSampleContainerType) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_tissuesamplecontainertypeid", tissueSampleContainerTypes);
 
   // TissueTests
-  const tissueTestInfo : TissueTestInfo[] = await (window as any).electronAPI.getTissueTests();
+  const tissueTestInfo : TissueTest[] = await (window as any).electronAPI.getTissueTests();
   tissueTestInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const tissueTests = tissueTestInfo.map((info: TissueTestInfo) => ({
+  const tissueTests = tissueTestInfo.map((info: TissueTest) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_tissuetestid", tissueTests);
 
   // DeathReaons
-  const deathReasonInfo : DeathReasonInfo[] = await (window as any).electronAPI.getDeathReasons();
+  const deathReasonInfo : DeathReason[] = await (window as any).electronAPI.getDeathReasons();
   deathReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const deathReasons = deathReasonInfo.map((info: DeathReasonInfo) => ({
+  const deathReasons = deathReasonInfo.map((info: DeathReason) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_deathreasonid", deathReasons);
 
   // BirthTypes
-  const birthTypeInfo : BirthTypeInfo[] = await (window as any).electronAPI.getBirthTypes();
+  const birthTypeInfo : BirthType[] = await (window as any).electronAPI.getBirthTypes();
   birthTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const birthTypes = birthTypeInfo.map((info: BirthTypeInfo) => ({
+  const birthTypes = birthTypeInfo.map((info: BirthType) => ({
     label: info.name,
     id: info.id,
   }));
@@ -438,25 +438,25 @@ const populateAllDropdowns = async () => {
   populateDropdown("rear_type", birthTypes);
 
   // TransferReasons
-  const transferReasonInfo : TransferReasonInfo[] = await (window as any).electronAPI.getTransferReasons();
+  const transferReasonInfo : TransferReason[] = await (window as any).electronAPI.getTransferReasons();
   transferReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const transferReasons = transferReasonInfo.map((info: TransferReasonInfo) => ({
+  const transferReasons = transferReasonInfo.map((info: TransferReason) => ({
     label: info.name,
     id: info.id,
   }));
   populateDropdown("id_transferreasonid", transferReasons);
 
   // Weight Units
-  const weightUnitsQueryParams: UnitQueryParameters = {
+  const weightUnitsQueryParams: UnitRequest = {
     unit_type_name: "Weight",
     unit_type_id: null,
   } 
 
-  const weightUnitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits(weightUnitsQueryParams);
+  const weightUnitInfo : Unit[] = await (window as any).electronAPI.getUnits(weightUnitsQueryParams);
   weightUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const weightUnits = weightUnitInfo.map((info: UnitInfo) => ({
+  const weightUnits = weightUnitInfo.map((info: Unit) => ({
     label: info.name,
     id: info.id,
   }));
@@ -464,15 +464,15 @@ const populateAllDropdowns = async () => {
   populateDropdown("weight_id_unitsid", weightUnits);
 
   // Currency Units
-  const currencyUnitsQueryParams: UnitQueryParameters = {
+  const currencyUnitsQueryParams: UnitRequest = {
     unit_type_name: "Currency",
     unit_type_id: null,
   } 
 
-  const currencyUnitInfo : UnitInfo[] = await (window as any).electronAPI.getUnits(currencyUnitsQueryParams);
+  const currencyUnitInfo : Unit[] = await (window as any).electronAPI.getUnits(currencyUnitsQueryParams);
   currencyUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  const currencyUnits = currencyUnitInfo.map((info: UnitInfo) => ({
+  const currencyUnits = currencyUnitInfo.map((info: Unit) => ({
     label: info.name,
     id: info.id,
   }));
@@ -768,10 +768,10 @@ async function updateBreeds() {
   const species_id: string = getSelectedDatabaseId("id_speciesid").toString();
 
   try {
-      const queryParams: BreedQueryParameters = { 
+      const queryParams: BreedRequest = { 
         species_id: species_id, 
       };
-      const breedInfo: BreedInfo[] = await (window as any).electronAPI.getBreeds(queryParams);
+      const breedInfo: Breed[] = await (window as any).electronAPI.getBreeds(queryParams);
 
       breedInfo.sort((a, b) => a.display_order - b.display_order);
 
