@@ -1,8 +1,10 @@
+import { OwnerType } from "../owners/ownerType";
+
 export type DefaultSettingsResults = {
   id: string;
   name: string;
-  owner_id_contactid: string;
-  owner_id_companyid: string;
+  owner_id: string;
+  owner_type: OwnerType;
   owner_id_premiseid: string;
   breeder_id_contactid: string;
   breeder_id_companyid: string;

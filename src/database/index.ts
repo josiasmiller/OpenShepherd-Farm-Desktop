@@ -12,6 +12,7 @@ export { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaul
 export { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
 export { Location } from "./models/read/tags/location.js";
 export { Owner } from "./models/read/owners/owner.js";
+export { OwnerType } from "./models/read/owners/ownerType.js"
 export { Premise } from "./models/read/premises/premise.js";
 export { RemoveReason } from "./models/read/tags/removeReason.js";
 export { Sex } from "./models/read/animal/general/sex.js";

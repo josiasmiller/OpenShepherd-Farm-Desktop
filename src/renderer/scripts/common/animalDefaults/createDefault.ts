@@ -10,6 +10,7 @@ import {
   FlockPrefix, 
   Location, 
   Owner, 
+  OwnerType,
   Premise, 
   RemoveReason, 
   Sex, 
@@ -24,6 +25,8 @@ import {
   UnitRequest,
   WriteNewDefaultParameters,
 } from "../../../../database";
+
+// import { OwnerType } from "../../../../database/index.js";;
 
 
 let existingDefaults: DefaultSettingsResults[] = [];
@@ -139,16 +142,6 @@ const populateDropdown = (
 
 
 const selectDropdownOption = (elementId: string, selectedId: string) => {
-
-  if (elementId === "breeder_id_companyid") {
-    console.log("MITCH DEBUG!!");
-    console.log(elementId);
-    console.log(selectedId);
-    console.log(typeof selectedId);
-    console.log(selectedId === "0");
-    console.log(selectedId == "0");
-    console.log(`"${selectedId}"`);
-  }
 
   // do not handle cases where 0 is the "key"
   if (selectedId == "0") {
@@ -527,11 +520,16 @@ const loadExistingDefault = async () => {
   await updateBreeds(); // must update the breeds before selecting a new one, since the species may change when loading
   selectDropdownOption("id_breedid", selectedSetting.id_breedid);
 
-  selectDropdownOption("owner_id_contactid", selectedSetting.owner_id_contactid);
+  if (selectedSetting.owner_type === OwnerType.CONTACT) {
+    selectDropdownOption("owner_id_contactid", selectedSetting.owner_id);
+  } else if (selectedSetting.owner_type === OwnerType.COMPANY) {
+    selectDropdownOption("owner_id_companyid", selectedSetting.owner_id);
+  }
+
   selectDropdownOption("breeder_id_contactid", selectedSetting.breeder_id_contactid);
   selectDropdownOption("vet_id_contactid", selectedSetting.vet_id_contactid);
   selectDropdownOption("transfer_reason_id_contactid", selectedSetting.transfer_reason_id_contactid);
-  selectDropdownOption("owner_id_companyid", selectedSetting.owner_id_companyid);
+  
   selectDropdownOption("breeder_id_companyid", selectedSetting.breeder_id_companyid);
   selectDropdownOption("lab_id_companyid", selectedSetting.lab_id_companyid);
   selectDropdownOption("id_registry_id_companyid", selectedSetting.id_registry_id_companyid);
