@@ -7,6 +7,6 @@ export type Breed = {
   id: string;
   name: string;
   display_order: number;
-  species_id: string;
+  species_id: string | null;
 }
           

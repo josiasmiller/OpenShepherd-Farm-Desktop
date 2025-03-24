@@ -26,8 +26,6 @@ import {
   WriteNewDefaultParameters,
 } from "../../../../database";
 
-// import { OwnerType } from "../../../../database/index.js";;
-
 
 let existingDefaults: DefaultSettingsResults[] = [];
 
@@ -516,9 +514,15 @@ const loadExistingDefault = async () => {
   const selectedSetting = selectedDefault;
 
   // populate species first, followed by populating the breed since breed relies on species
-  selectDropdownOption("id_speciesid", selectedSetting.id_speciesid);
+  if (selectedSetting.id_speciesid) {
+    selectDropdownOption("id_speciesid", selectedSetting.id_speciesid);
+  }
   await updateBreeds(); // must update the breeds before selecting a new one, since the species may change when loading
-  selectDropdownOption("id_breedid", selectedSetting.id_breedid);
+
+  if (selectedSetting.id_breedid) {
+    selectDropdownOption("id_breedid", selectedSetting.id_breedid);
+  }
+  
 
   if (selectedSetting.owner_type === OwnerType.CONTACT) {
     selectDropdownOption("owner_id_contactid", selectedSetting.owner_id);
@@ -526,19 +530,54 @@ const loadExistingDefault = async () => {
     selectDropdownOption("owner_id_companyid", selectedSetting.owner_id);
   }
 
-  selectDropdownOption("breeder_id_contactid", selectedSetting.breeder_id_contactid);
-  selectDropdownOption("vet_id_contactid", selectedSetting.vet_id_contactid);
-  selectDropdownOption("transfer_reason_id_contactid", selectedSetting.transfer_reason_id_contactid);
+  if (selectedSetting.breeder_id_contactid) {
+    selectDropdownOption("breeder_id_contactid", selectedSetting.breeder_id_contactid);
+  }
+
+  if (selectedSetting.vet_id_contactid) {
+    selectDropdownOption("vet_id_contactid", selectedSetting.vet_id_contactid);
+  }
   
-  selectDropdownOption("breeder_id_companyid", selectedSetting.breeder_id_companyid);
-  selectDropdownOption("lab_id_companyid", selectedSetting.lab_id_companyid);
-  selectDropdownOption("id_registry_id_companyid", selectedSetting.id_registry_id_companyid);
-  selectDropdownOption("transfer_reason_id_companyid", selectedSetting.transfer_reason_id_companyid);
-  selectDropdownOption("owner_id_premiseid", selectedSetting.owner_id_premiseid);
-  selectDropdownOption("breeder_id_premiseid", selectedSetting.breeder_id_premiseid);
-  selectDropdownOption("vet_id_premiseid", selectedSetting.vet_id_premiseid);
-  selectDropdownOption("lab_id_premiseid", selectedSetting.lab_id_premiseid);
-  selectDropdownOption("registry_id_premiseid", selectedSetting.registry_id_premiseid);
+  if (selectedSetting.transfer_reason_id_contactid) {
+    selectDropdownOption("transfer_reason_id_contactid", selectedSetting.transfer_reason_id_contactid);
+  }
+  
+  if (selectedSetting.breeder_id_companyid) {
+    selectDropdownOption("breeder_id_companyid", selectedSetting.breeder_id_companyid);
+  }
+
+  if (selectedSetting.lab_id_companyid) {
+    selectDropdownOption("lab_id_companyid", selectedSetting.lab_id_companyid);
+  }
+
+  if (selectedSetting.id_registry_id_companyid) {
+    selectDropdownOption("id_registry_id_companyid", selectedSetting.id_registry_id_companyid);
+  }
+  
+  if (selectedSetting.transfer_reason_id_companyid) {
+    selectDropdownOption("transfer_reason_id_companyid", selectedSetting.transfer_reason_id_companyid);
+  }
+
+  if (selectedSetting.owner_id_premiseid) {
+    selectDropdownOption("owner_id_premiseid", selectedSetting.owner_id_premiseid);
+  }
+
+  if (selectedSetting.breeder_id_premiseid) {
+    selectDropdownOption("breeder_id_premiseid", selectedSetting.breeder_id_premiseid);
+  }
+  
+  if (selectedSetting.vet_id_premiseid) {
+    selectDropdownOption("vet_id_premiseid", selectedSetting.vet_id_premiseid);
+  }
+
+  if (selectedSetting.lab_id_premiseid) {
+    selectDropdownOption("lab_id_premiseid", selectedSetting.lab_id_premiseid);
+  }
+
+  if (selectedSetting.registry_id_premiseid) {
+    selectDropdownOption("registry_id_premiseid", selectedSetting.registry_id_premiseid);
+  }
+  
   selectDropdownOption("id_eid_tag_male_color_female_color_same", selectedSetting.id_eid_tag_male_color_female_color_same);
   selectDropdownOption("id_farm_tag_male_color_female_color_same", selectedSetting.id_farm_tag_male_color_female_color_same);
   selectDropdownOption("farm_tag_based_on_eid_tag", selectedSetting.farm_tag_based_on_eid_tag);
@@ -550,7 +589,11 @@ const loadExistingDefault = async () => {
   selectDropdownOption("evaluation_update_alert", selectedSetting.evaluation_update_alert);
   selectDropdownOption("id_bangs_tag_male_color_female_color_same", selectedSetting.id_bangs_tag_male_color_female_color_same);
   selectDropdownOption("id_sale_order_tag_male_color_female_color_same", selectedSetting.id_sale_order_tag_male_color_female_color_same);
-  selectDropdownOption("id_countyid", selectedSetting.id_countyid);
+
+  if (selectedSetting.id_countyid) {
+    selectDropdownOption("id_countyid", selectedSetting.id_countyid);
+  }
+  
   selectDropdownOption("eid_tag_color_male", selectedSetting.eid_tag_color_male);
   selectDropdownOption("eid_tag_color_female", selectedSetting.eid_tag_color_female);
   selectDropdownOption("farm_tag_color_male", selectedSetting.farm_tag_color_male);
@@ -577,23 +620,69 @@ const loadExistingDefault = async () => {
   selectDropdownOption("freeze_brand_location", selectedSetting.freeze_brand_location);
   selectDropdownOption("bangs_tag_location", selectedSetting.bangs_tag_location);
   selectDropdownOption("sale_order_tag_location", selectedSetting.sale_order_tag_location);
-  selectDropdownOption("id_stateid", selectedSetting.id_stateid);
-  selectDropdownOption("id_flockprefixid", selectedSetting.id_flockprefixid);
-  selectDropdownOption("id_sexid", selectedSetting.id_sexid);
-  selectDropdownOption("id_idtypeid_primary", selectedSetting.id_idtypeid_primary);
-  selectDropdownOption("id_idtypeid_secondary", selectedSetting.id_idtypeid_secondary);
-  selectDropdownOption("id_idtypeid_tertiary", selectedSetting.id_idtypeid_tertiary);
-  selectDropdownOption("id_idremovereasonid", selectedSetting.id_idremovereasonid);
-  selectDropdownOption("id_tissuesampletypeid", selectedSetting.id_tissuesampletypeid);
-  selectDropdownOption("id_tissuesamplecontainertypeid", selectedSetting.id_tissuesamplecontainertypeid);
-  selectDropdownOption("id_tissuetestid", selectedSetting.id_tissuetestid);
-  selectDropdownOption("id_deathreasonid", selectedSetting.id_deathreasonid);
+
+  if (selectedSetting.id_stateid) {
+    selectDropdownOption("id_stateid", selectedSetting.id_stateid);
+  }
+  
+  if (selectedSetting.id_flockprefixid) {
+    selectDropdownOption("id_flockprefixid", selectedSetting.id_flockprefixid);
+  }
+
+  if (selectedSetting.id_sexid) {
+    selectDropdownOption("id_sexid", selectedSetting.id_sexid);
+  }
+  
+  if (selectedSetting.id_idtypeid_primary) {
+    selectDropdownOption("id_idtypeid_primary", selectedSetting.id_idtypeid_primary);
+  }
+
+  if (selectedSetting.id_idtypeid_secondary) {
+    selectDropdownOption("id_idtypeid_secondary", selectedSetting.id_idtypeid_secondary);
+  }
+
+  if (selectedSetting.id_idtypeid_tertiary) {
+    selectDropdownOption("id_idtypeid_tertiary", selectedSetting.id_idtypeid_tertiary);
+  }
+  
+  if (selectedSetting.id_idremovereasonid) {
+    selectDropdownOption("id_idremovereasonid", selectedSetting.id_idremovereasonid);
+  }
+  
+  if (selectedSetting.id_tissuesampletypeid) {
+    selectDropdownOption("id_tissuesampletypeid", selectedSetting.id_tissuesampletypeid);
+  }
+  
+  if (selectedSetting.id_tissuesamplecontainertypeid) {
+    selectDropdownOption("id_tissuesamplecontainertypeid", selectedSetting.id_tissuesamplecontainertypeid);
+  }
+  
+  if (selectedSetting.id_tissuetestid) {
+    selectDropdownOption("id_tissuetestid", selectedSetting.id_tissuetestid);
+  }
+  
+  if (selectedSetting.id_deathreasonid) {
+    selectDropdownOption("id_deathreasonid", selectedSetting.id_deathreasonid);
+  }
+  
   selectDropdownOption("birth_type", selectedSetting.birth_type);
   selectDropdownOption("rear_type", selectedSetting.rear_type);
-  selectDropdownOption("id_transferreasonid", selectedSetting.id_transferreasonid);
+
+  if (selectedSetting.id_transferreasonid) {
+    selectDropdownOption("id_transferreasonid", selectedSetting.id_transferreasonid);
+  }
+  
   selectDropdownOption("birth_weight_id_unitsid", selectedSetting.birth_weight_id_unitsid);
-  selectDropdownOption("weight_id_unitsid", selectedSetting.weight_id_unitsid);
-  selectDropdownOption("sale_price_id_unitsid", selectedSetting.sale_price_id_unitsid);
+
+  if (selectedSetting.weight_id_unitsid) {
+    selectDropdownOption("weight_id_unitsid", selectedSetting.weight_id_unitsid);
+  }
+  
+
+  if (selectedSetting.sale_price_id_unitsid) {
+    selectDropdownOption("sale_price_id_unitsid", selectedSetting.sale_price_id_unitsid);
+  }
+  
   return;
 }
 
