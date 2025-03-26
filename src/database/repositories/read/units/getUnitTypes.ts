@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { UnitType } from "../../../models/read/units/unitType.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getUnitTypes = async (): Promise<UnitType[]> => {
+
+export const getUnitTypes = async (): Promise<Result<UnitType[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure<string>("DB Instance is null"); // Return Failure with string error message
   }
 
   let unitTypeQuery = `
@@ -17,7 +19,7 @@ export const getUnitTypes = async (): Promise<UnitType[]> => {
   return new Promise((resolve, reject) => {
     db.all(unitTypeQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        reject(new Failure<string>("Error executing query")); // Return Failure with a specific error message
       } else {
         const results: UnitType[] = rows.map((row: any) => ({
           id: row.id,
@@ -25,7 +27,7 @@ export const getUnitTypes = async (): Promise<UnitType[]> => {
           display_order: row.display_order,
         }));
 
-        resolve(results);
+        resolve(new Success<UnitType[]>(results)); // Return Success with UnitType[] if query succeeds
       }
     });
   });

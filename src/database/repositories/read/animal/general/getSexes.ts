@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../../dbConnections.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-export const getSexes = async (): Promise<Sex[]> => {
+
+export const getSexes = async (): Promise<Result<Sex[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let sexQuery = `
@@ -18,7 +20,7 @@ export const getSexes = async (): Promise<Sex[]> => {
   return new Promise((resolve, reject) => {
     db.all(sexQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        reject(new Failure(err.message));
       } else {
         const results: Sex[] = rows.map((row: any) => ({
           id: row.id,
@@ -27,7 +29,7 @@ export const getSexes = async (): Promise<Sex[]> => {
           species_id: row.species_id,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

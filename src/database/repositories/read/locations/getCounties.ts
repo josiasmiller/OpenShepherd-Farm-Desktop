@@ -1,10 +1,11 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { County } from "../../../models/read/locations/county.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getCounties = async (): Promise<County[]> => {
+export const getCounties = async (): Promise<Result<County[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let countyQuery = `
@@ -14,10 +15,10 @@ export const getCounties = async (): Promise<County[]> => {
         id_stateid as state_id 
     FROM county_table`;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(countyQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
         const results: County[] = rows.map((row: any) => ({
           id: row.id,
@@ -25,7 +26,7 @@ export const getCounties = async (): Promise<County[]> => {
           state_id: row.state_id,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

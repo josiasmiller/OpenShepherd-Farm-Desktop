@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Country } from "../../../models/read/locations/country.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getCountries = async (): Promise<Country[]> => {
+// Function to fetch countries from the database
+export const getCountries = async (): Promise<Result<Country[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let countryQuery = `
@@ -15,11 +17,13 @@ export const getCountries = async (): Promise<Country[]> => {
         country_name_display_order as display_order
     FROM country_table`;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(countryQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // On query error, return Failure with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
+        // On success, map the rows into a list of Country objects and return Success
         const results: Country[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
@@ -27,7 +31,7 @@ export const getCountries = async (): Promise<Country[]> => {
           display_order: row.display_order,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

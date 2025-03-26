@@ -1,13 +1,15 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Location } from "../../../models/read/tags/location.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getLocations = async (): Promise<Location[]> => {
+// Function to fetch locations from the database
+export const getLocations = async (): Promise<Result<Location[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
-  let colorQuery = `
+  let locationQuery = `
     SELECT 
         id_idlocationid AS id, 
         id_location_name AS name,
@@ -15,11 +17,13 @@ export const getLocations = async (): Promise<Location[]> => {
         id_location_display_order as display_order
     FROM id_location_table`;
 
-  return new Promise((resolve, reject) => {
-    db.all(colorQuery, [], (err, rows) => {
+  return new Promise((resolve) => {
+    db.all(locationQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // On query error, return Failure with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
+        // On success, map the rows into a list of Location objects and return Success
         const results: Location[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
@@ -27,7 +31,7 @@ export const getLocations = async (): Promise<Location[]> => {
           display_order: row.display_order,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

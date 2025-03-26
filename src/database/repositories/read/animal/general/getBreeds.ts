@@ -1,22 +1,33 @@
-import { Database } from "sqlite3";
 import { getDatabase } from "../../../../dbConnections.js";
 import { Breed, BreedRequest } from "../../../../models/read/animal/general/breed.js";
+import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes.js";
 
-export const getBreeds = async (queryParams: BreedRequest): Promise<Breed[]> => {
+
+export const getBreeds = async (queryParams: BreedRequest): Promise<Result<Breed[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure<string>("DB Instance is null"); // Return Failure with a string error message if DB instance is null
   }
 
-  if (queryParams.species_id != null) {
-    return getBreedsById(db, queryParams.species_id);
-  } else {
-    return getAllBreeds(db);
+  try {
+    let breeds: Breed[];
+
+    // If species_id is provided, fetch breeds by species_id
+    if (queryParams.species_id != null) {
+      breeds = await getBreedsById(db, queryParams.species_id);
+    } else {
+      // If no species_id, fetch all breeds
+      breeds = await getAllBreeds(db);
+    }
+
+    return new Success<Breed[]>(breeds); // Return Success with the fetched breeds
+  } catch (error) {
+    return new Failure<string>(String(error)); // Return Failure if any error occurs during fetching
   }
 };
 
-// Get breed by ID
-const getBreedsById = (db: Database, id: string): Promise<Breed[]> => {
+// Get breed by species ID
+const getBreedsById = (db: any, id: string): Promise<Breed[]> => {
   const query = `
     SELECT 
         id_breedid AS id, 
@@ -30,7 +41,7 @@ const getBreedsById = (db: Database, id: string): Promise<Breed[]> => {
 };
 
 // Get all breeds (default)
-const getAllBreeds = (db: Database): Promise<Breed[]> => {
+const getAllBreeds = (db: any): Promise<Breed[]> => {
   const query = `
     SELECT 
         id_breedid AS id, 
@@ -42,12 +53,12 @@ const getAllBreeds = (db: Database): Promise<Breed[]> => {
   return executeQuery(db, query, []);
 };
 
-// Helper function to execute queries
+// Helper function to execute queries and return the breed data directly
 const executeQuery = (db: any, query: string, params: any[]): Promise<Breed[]> => {
   return new Promise((resolve, reject) => {
     db.all(query, params, (err: any, rows: any[]) => {
       if (err) {
-        reject(err);
+        reject("Error executing query");
       } else {
         const results: Breed[] = rows.map((row: any) => ({
           id: row.id,

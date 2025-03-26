@@ -1,19 +1,28 @@
 import { Database } from "sqlite3";
 import { getDatabase } from "../../../dbConnections.js";
 import { UnitRequest, Unit } from "../../../models/read/units/unit.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getUnits = async (queryParams: UnitRequest): Promise<Unit[]> => {
-  const db = await getDatabase();
-  if (db == null) {
-    throw new TypeError("DB Instance is null");
-  }
 
-  if (queryParams.unit_type_id != null) {
-    return getUnitsByUnitTypeId(db, queryParams.unit_type_id);
-  } else if (queryParams.unit_type_name != null) {
-    return getUnitsByUnitTypeName(db, queryParams.unit_type_name);
-  } else {
-    return getAllunits(db);
+export const getUnits = async (queryParams: UnitRequest): Promise<Result<Unit[], string>> => {
+  try {
+    const db = await getDatabase();
+    if (db == null) {
+      return new Failure<string>("DB Instance is null"); // Return Failure if DB instance is null
+    }
+
+    if (queryParams.unit_type_id != null) {
+      const dbResponse : Unit[] = await getUnitsByUnitTypeId(db, queryParams.unit_type_id);
+      return new Success<Unit[]>(dbResponse);
+    } else if (queryParams.unit_type_name != null) {
+      const dbResponse : Unit[] = await getUnitsByUnitTypeName(db, queryParams.unit_type_name);
+      return new Success<Unit[]>(dbResponse);
+    } else {
+      const dbResponse : Unit[] = await getAllUnits(db);
+      return new Success<Unit[]>(dbResponse);
+    }
+  } catch (error) {
+    return new Failure<string>(String(error)); // Return Failure if any error occurs during fetching
   }
 };
 
@@ -48,7 +57,7 @@ const getUnitsByUnitTypeName = (db: Database, unit_type_name: string): Promise<U
 };
 
 // Get all units (default)
-const getAllunits = (db: Database): Promise<Unit[]> => {
+const getAllUnits = (db: Database): Promise<Unit[]> => {
   let unitTypeQuery = `
     SELECT 
         id_unitsid AS id, 

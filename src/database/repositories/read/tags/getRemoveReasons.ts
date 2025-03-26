@@ -1,31 +1,35 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { RemoveReason } from "../../../models/read/tags/removeReason.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getRemoveReasons = async (): Promise<RemoveReason[]> => {
+// Function to fetch remove reasons from the database
+export const getRemoveReasons = async (): Promise<Result<RemoveReason[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
-  let colorQuery = `
+  const removeReasonQuery = `
     SELECT 
         id_idremovereasonid AS id, 
         id_remove_reason AS name,
         id_remove_reason_display_order as display_order
     FROM id_remove_reason_table`;
 
-  return new Promise((resolve, reject) => {
-    db.all(colorQuery, [], (err, rows) => {
+  return new Promise((resolve) => {
+    db.all(removeReasonQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // If an error occurs during the query, return a Failure result with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
+        // On success, map the rows into an array of RemoveReason objects and return a Success result
         const results: RemoveReason[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           display_order: row.display_order,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

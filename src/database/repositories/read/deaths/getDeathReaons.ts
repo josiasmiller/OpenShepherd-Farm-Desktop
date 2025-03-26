@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { DeathReason } from "../../../models/read/deaths/deathReason.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getDeathReasons = async (): Promise<DeathReason[]> => {
+
+export const getDeathReasons = async (): Promise<Result<DeathReason[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let deathReasonsQuery = `
@@ -14,10 +16,10 @@ export const getDeathReasons = async (): Promise<DeathReason[]> => {
         death_reason_display_order as display_order
     FROM death_reason_table`;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(deathReasonsQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        resolve(new Failure(`Error fetching death reasons: ${err.message}`));
       } else {
         const results: DeathReason[] = rows.map((row: any) => ({
           id: row.id,
@@ -25,7 +27,7 @@ export const getDeathReasons = async (): Promise<DeathReason[]> => {
           display_order: row.display_order,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

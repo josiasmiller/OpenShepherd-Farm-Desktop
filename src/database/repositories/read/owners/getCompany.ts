@@ -1,16 +1,17 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Company } from "../../../models/read/owners/company.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<Company[]> => {
+// Function to fetch companies from the database
+export const getCompanies = async (onlyGetRegistryCompanies: boolean): Promise<Result<Company[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
-  var companyQuery: string;
+  let companyQuery: string;
 
   if (onlyGetRegistryCompanies) {
-    // Get only companies that have a matching registry entry
     companyQuery = `
       SELECT 
           c.id_companyid AS company_id, 
@@ -22,7 +23,6 @@ export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<
           registry_info_table r ON c.id_companyid = r.id_companyid
     `;
   } else {
-    // Get all companies, including those with or without a registry reference
     companyQuery = `
       SELECT 
           c.id_companyid AS company_id, 
@@ -35,19 +35,20 @@ export const getCompanies = async (onlyGetRegistryCompanies : boolean): Promise<
     `;
   }
 
-
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(companyQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // If there's an error with the query, return Failure with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
+        // If successful, map the results into Company[] and return Success
         const results: Company[] = rows.map((row: any) => ({
           id: row.company_id,
           name: row.name,
           registry_id: row.registry_info_id,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

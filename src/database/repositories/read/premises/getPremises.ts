@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Premise } from "../../../models/read/premises/premise.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getPremises = async (): Promise<Premise[]> => {
+// Function to fetch premises from the database
+export const getPremises = async (): Promise<Result<Premise[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let premiseQuery = `
@@ -19,13 +21,13 @@ export const getPremises = async (): Promise<Premise[]> => {
     JOIN 
         country_table c ON p.premise_id_countryid = c.id_countryid`;
 
-
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(premiseQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // On query error, return Failure with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
-
+        // On success, map the rows into a list of Premise objects and return Success
         const results: Premise[] = rows.map((row: any) => ({
           id: row.premise_id,
           address: row.address_one,
@@ -34,7 +36,7 @@ export const getPremises = async (): Promise<Premise[]> => {
           country: row.country_name,
         }));
 
-        resolve(results);
+        resolve(new Success(results)); // Return success with the premises data
       }
     });
   });

@@ -26,6 +26,8 @@ import {
   WriteNewDefaultParameters,
 } from "../../../../database";
 
+import { Result, handleResult } from "../../../../shared/results/resultTypes.js";
+
 
 let existingDefaults: DefaultSettingsResults[] = [];
 
@@ -177,70 +179,117 @@ const populateAllDropdowns = async () => {
   
   populateExistingDefaults();
 
-  // Fetch and sort owners alphabetically by full name
-  const ownerInfo: Owner[] = await (window as any).electronAPI.getOwnerInfo();
+  // fetch owners
+  const ownerResult: Result<Owner[], string> = await (window as any).electronAPI.getOwnerInfo();
 
-  // Sort owners alphabetically by full name
-  const owners = ownerInfo
-    .map((info: Owner) => ({
-      label: `${info.firstName} ${info.lastName}`,
-      id: info.id
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+  // Handle the result using handleResult
+  handleResult(ownerResult, {
+    success: (ownerInfo) => {
+      // Sort owners alphabetically by full name (first + last name)
+      const owners = ownerInfo
+        .map((info: Owner) => ({
+          label: `${info.firstName} ${info.lastName}`,
+          id: info.id
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 
-  // Populate dropdowns with the sorted owners list
-  populateDropdown("owner_id_contactid", owners);
-  populateDropdown("breeder_id_contactid", owners);
-  populateDropdown("vet_id_contactid", owners);
-  populateDropdown("transfer_reason_id_contactid", owners);
+      // Populate the dropdowns with the sorted owners list
+      populateDropdown("owner_id_contactid", owners);
+      populateDropdown("breeder_id_contactid", owners);
+      populateDropdown("vet_id_contactid", owners);
+      populateDropdown("transfer_reason_id_contactid", owners);
+    },
+    error: (errorMessage) => {
+      console.error("Failed to fetch owners:", errorMessage);
+      alert("There was an error fetching owner information.");
+    }
+  });
 
 
   // Fetch and sort all companies alphabetically by name 
-  const companyInfo: Company[] = await (window as any).electronAPI.getCompanyInfo(false);
+  const companyResult: Result<Company[], string> = await (window as any).electronAPI.getCompanyInfo(false);
 
-  const companies = companyInfo
-    .map((info: Company) => ({
-      label: info.name,
-      id: info.id,
-      ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-
-  let companyFields = [
-    "owner_id_companyid",
-    "breeder_id_companyid",
-    "lab_id_companyid",
-    "transfer_reason_id_companyid"
-  ];
-
-  companyFields.forEach((id) => populateDropdown(id, companies));
+  // Handle the result of the API call using handleResult
+  handleResult(companyResult, {
+    success: (companyInfo) => {
+      // Process the companies when the result is successful
+      const companies = companyInfo
+        .map((info: Company) => ({
+          label: info.name,
+          id: info.id,
+          ...(info.registry_id !== undefined && info.registry_id !== null 
+            ? { "registry-id": info.registry_id.toString() } 
+            : {}) // Include only if registry_id is defined/not null
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  
+      // List of fields to populate dropdowns
+      let companyFields = [
+        "owner_id_companyid",
+        "breeder_id_companyid",
+        "lab_id_companyid",
+        "transfer_reason_id_companyid"
+      ];
+  
+      // Populate each dropdown with the sorted companies
+      companyFields.forEach((id) => populateDropdown(id, companies));
+    },
+    error: (error) => {
+      console.error("Failed to fetch companies:", error);
+      alert("There was an error fetching companies.");
+    }
+  });
 
   // Fetch and sort all registry companies alphabetically by name 
-  const registryCompanyInfo: Company[] = await (window as any).electronAPI.getCompanyInfo(true);
+  const registryCompanyResult: Result<Company[], string> = await (window as any).electronAPI.getCompanyInfo(true);
 
-  const registryCompanies = registryCompanyInfo
-    .map((info: Company) => ({
-      label: info.name,
-      id: info.id,
-      ...(info.registry_id !== undefined && info.registry_id !== null ? { "registry-id": info.registry_id.toString() } : {}) // Include only if registry_id is defined/not null
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-
-  populateDropdown("id_registry_id_companyid", registryCompanies);
+  // Handle the result of the API call using handleResult
+  handleResult(registryCompanyResult, {
+    success: (registryCompanyInfo) => {
+      // Process the registry companies when the result is successful
+      const registryCompanies = registryCompanyInfo
+        .map((info: Company) => ({
+          label: info.name,
+          id: info.id,
+          ...(info.registry_id !== undefined && info.registry_id !== null 
+            ? { "registry-id": info.registry_id.toString() } 
+            : {}) // Include only if registry_id is defined/not null
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  
+      // Populate the dropdown for registry companies
+      populateDropdown("id_registry_id_companyid", registryCompanies);
+    },
+    error: (error) => {
+      console.error("Failed to fetch registry companies:", error);
+      alert("There was an error fetching registry companies.");
+    }
+  });
 
   // Premises
-  const premiseInfo : Premise[] = await (window as any).electronAPI.getPremiseInfo();
+  const premiseResult: Result<Premise[], string> = await (window as any).electronAPI.getPremiseInfo();
 
-  const premises = premiseInfo.map((info: Premise) => ({
-    label: `${info.address} ${info.city}, ${info.postcode}, ${info.country}`, // Full address crafted from DB information
-    id: info.id,
-  }));
+  // Handle the result using handleResult
+  handleResult(premiseResult, {
+    success: (data) => {
+      // Process successful premises data
+      const premises = data.map((info: Premise) => ({
+        label: `${info.address} ${info.city}, ${info.postcode}, ${info.country}`, // Full address crafted from DB information
+        id: info.id,
+      }));
 
-  populateDropdown("owner_id_premiseid", premises);
-  populateDropdown("breeder_id_premiseid", premises);
-  populateDropdown("vet_id_premiseid", premises);
-  populateDropdown("lab_id_premiseid", premises);
-  populateDropdown("registry_id_premiseid", premises);
+      // Populate the dropdowns with the premises data
+      populateDropdown("owner_id_premiseid", premises);
+      populateDropdown("breeder_id_premiseid", premises);
+      populateDropdown("vet_id_premiseid", premises);
+      populateDropdown("lab_id_premiseid", premises);
+      populateDropdown("registry_id_premiseid", premises);
+    },
+    error: (error) => {
+      console.error("Failed to fetch premises:", error);
+      alert("There was an error fetching premises.");
+    }
+  });
 
   // True/False inputs
   const tf = [
@@ -275,209 +324,456 @@ const populateAllDropdowns = async () => {
 
 
   // Counties
-  const countyInfo : County[] = await (window as any).electronAPI.getCounties();
-  const counties = countyInfo.map((info: County) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_countyid", counties);
+  const result: Result<County[], string> = await (window as any).electronAPI.getCounties();
+
+  handleResult(result, {
+    success: (data) => {
+      const counties = data.map((info: County) => ({
+        label: info.name,
+        id: info.id,
+      }));
+      populateDropdown("id_countyid", counties);
+    },
+    error: (error) => {
+      console.error("Failed to fetch counties:", error);
+      alert("There was an error fetching county information.");
+    }
+  });
 
   // Colors
-  const colorInfo : Color[] = await (window as any).electronAPI.getColors();
-  colorInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const colorResult: Result<Color[], string> = await (window as any).electronAPI.getColors();
 
-  const colors = colorInfo.map((info: Color) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("eid_tag_color_male", colors);
-  populateDropdown("eid_tag_color_female", colors);
-  populateDropdown("farm_tag_color_male", colors);
-  populateDropdown("farm_tag_color_female", colors);
-  populateDropdown("fed_tag_color_male", colors);
-  populateDropdown("fed_tag_color_female", colors);
-  populateDropdown("nues_tag_color_male", colors);
-  populateDropdown("nues_tag_color_female", colors);
-  populateDropdown("trich_tag_color_male", colors);
-  populateDropdown("trich_tag_color_female", colors);
-  populateDropdown("paint_mark_color", colors);
-  populateDropdown("tattoo_color", colors);
-  populateDropdown("bangs_tag_color_male", colors);
-  populateDropdown("bangs_tag_color_female", colors);
-  populateDropdown("sale_order_tag_color_male", colors);
-  populateDropdown("sale_order_tag_color_female", colors);
+  // Handle the result using handleResult
+  handleResult(colorResult, {
+    success: (data) => {
+      // Sort the colors by display order
+      data.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the data to the format required by the dropdowns
+      const colors = data.map((info: Color) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate dropdowns with the sorted color data
+      populateDropdown("eid_tag_color_male", colors);
+      populateDropdown("eid_tag_color_female", colors);
+      populateDropdown("farm_tag_color_male", colors);
+      populateDropdown("farm_tag_color_female", colors);
+      populateDropdown("fed_tag_color_male", colors);
+      populateDropdown("fed_tag_color_female", colors);
+      populateDropdown("nues_tag_color_male", colors);
+      populateDropdown("nues_tag_color_female", colors);
+      populateDropdown("trich_tag_color_male", colors);
+      populateDropdown("trich_tag_color_female", colors);
+      populateDropdown("paint_mark_color", colors);
+      populateDropdown("tattoo_color", colors);
+      populateDropdown("bangs_tag_color_male", colors);
+      populateDropdown("bangs_tag_color_female", colors);
+      populateDropdown("sale_order_tag_color_male", colors);
+      populateDropdown("sale_order_tag_color_female", colors);
+    },
+    error: (error) => {
+      console.error("Failed to fetch colors:", error);
+      alert("There was an error fetching color information.");
+    }
+  });
+
 
   // Locations
-  const locationInfo : Location[] = await (window as any).electronAPI.getLocations();
-  locationInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const locationResult: Result<Location[], string> = await (window as any).electronAPI.getLocations();
 
-  const locations = locationInfo.map((info: Location) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("eid_tag_location", locations);
-  populateDropdown("farm_tag_location", locations);
-  populateDropdown("fed_tag_location", locations);
-  populateDropdown("nues_tag_location", locations);
-  populateDropdown("trich_tag_location", locations);
-  populateDropdown("paint_mark_location", locations);
-  populateDropdown("tattoo_location", locations);
-  populateDropdown("freeze_brand_location", locations);
-  populateDropdown("bangs_tag_location", locations);
-  populateDropdown("sale_order_tag_location", locations);
+  // Handle the result
+  handleResult(locationResult, {
+    success: (data) => {
+      // Sort the locations by display order
+      data.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the locations into the format required by the dropdowns
+      const locations = data.map((info: Location) => ({
+        label: info.name, // Use the location name for display
+        id: info.id,      // Use the location id for the value
+      }));
+
+      // Populate dropdowns with the sorted location data
+      populateDropdown("eid_tag_location", locations);
+      populateDropdown("farm_tag_location", locations);
+      populateDropdown("fed_tag_location", locations);
+      populateDropdown("nues_tag_location", locations);
+      populateDropdown("trich_tag_location", locations);
+      populateDropdown("paint_mark_location", locations);
+      populateDropdown("tattoo_location", locations);
+      populateDropdown("freeze_brand_location", locations);
+      populateDropdown("bangs_tag_location", locations);
+      populateDropdown("sale_order_tag_location", locations);
+    },
+    error: (error) => {
+      console.error("Failed to fetch locations:", error);
+      alert("There was an error fetching tag location information.");
+    }
+  });
 
   // States
-  const stateInfo : State[] = await (window as any).electronAPI.getStates();
-  stateInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const stateResult: Result<State[], string> = await (window as any).electronAPI.getStates();
 
-  const states = stateInfo.map((info: State) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_stateid", states);
+  // Handle the result with success and error callbacks
+  handleResult(stateResult, {
+    success: (data) => {
+      // Sort the states by display order
+      data.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the states to the desired dropdown format
+      const states = data.map((info: State) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate the dropdown with the states
+      populateDropdown("id_stateid", states);
+    },
+    error: (error) => {
+      console.error("Failed to fetch states:", error);
+      alert("There was an error fetching state information.");
+    }
+  });
 
   // Flock Prefixes
-  const flockPrefixInfo : FlockPrefix[] = await (window as any).electronAPI.getFlockPrefixes();
-  const flockPrefixes = flockPrefixInfo
-    .map((info: FlockPrefix) => ({
-      label: info.name,
-      id: info.id
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
-  populateDropdown("id_flockprefixid", flockPrefixes);
+  const flockPrefixResult : Result<FlockPrefix[], string> = await (window as any).electronAPI.getFlockPrefixes();
+
+  // Handle the result using handleResult
+  handleResult(flockPrefixResult, {
+    success: (flockPrefixInfo: FlockPrefix[]) => {
+      // Map the flock prefix data and sort by label
+      const flockPrefixes = flockPrefixInfo
+        .map((info: FlockPrefix) => ({
+          label: info.name,
+          id: info.id
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+
+      // Populate the dropdown with sorted flock prefixes
+      populateDropdown("id_flockprefixid", flockPrefixes);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch flock prefixes:", error);
+      alert("There was an error fetching flock prefixes.");
+    }
+  });
 
   // Species
-  const speciesInfo : Species[] = await (window as any).electronAPI.getSpecies();
-   
-  const species = speciesInfo.map((info: Species) => ({
-    label: info.common_name,
-    id: info.id,
-  }));
-  populateDropdown("id_speciesid", species);
+  const speciesResult : Result<Species[], string> = await (window as any).electronAPI.getSpecies();
+
+  // Handle the result using handleResult
+  handleResult(speciesResult, {
+    success: (speciesInfo: Species[]) => {
+      // Sort the species by common_name or another attribute, if needed
+      const species = speciesInfo
+        .map((info: Species) => ({
+          label: info.common_name,
+          id: info.id,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+
+      // Populate the dropdown with the sorted species
+      populateDropdown("id_speciesid", species);
+    },
+    error: (error: string) => {
+      // Handle the error (e.g., show an alert or log it)
+      alert(`Failed to fetch Species: ${error}`);
+      console.error("Error fetching species:", error);
+    }
+  });
 
   // Sexes
-  const sexInfo : Sex[] = await (window as any).electronAPI.getSexes();
-  sexInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const sexResult : Result<Sex[], string> = await (window as any).electronAPI.getSexes();
 
-  const sexes = sexInfo.map((info: Sex) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_sexid", sexes);
+  // Use handleResult to handle success or failure
+  handleResult(sexResult, {
+    success: (sexes: Sex[]) => {
+      // Sort the sexes by display_order
+      sexes.sort((a, b) => a.display_order - b.display_order);
 
-  // TagTypes
-  const tagTypeInfo : TagType[] = await (window as any).electronAPI.getTagTypes();
-  tagTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+      // Map to the format needed for the dropdown
+      const sexOptions = sexes.map((sex: Sex) => ({
+        label: sex.name,
+        id: sex.id,
+      }));
 
-  const tagTypes = tagTypeInfo.map((info: TagType) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_idtypeid_primary", tagTypes);
-  populateDropdown("id_idtypeid_secondary", tagTypes);
-  populateDropdown("id_idtypeid_tertiary", tagTypes);
+      // Populate the dropdown with the sorted data
+      populateDropdown("id_sexid", sexOptions);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch sexes:", error);
+      alert("There was an error fetching sex information.");
+    }
+  });
 
-  // RemoveReasons
-  const removeReasonInfo : RemoveReason[] = await (window as any).electronAPI.getRemoveReasons();
-  removeReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  // Fetch TagTypes
+  const tagTypeResult = await (window as any).electronAPI.getTagTypes();
 
-  const removeReasons = removeReasonInfo.map((info: RemoveReason) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_idremovereasonid", removeReasons);
+  // Handle the result using handleResult
+  handleResult(tagTypeResult, {
+    success: (tagTypeInfo : TagType[]) => {
+      // Sort TagTypes by display order
+      tagTypeInfo.sort((a: TagType, b: TagType) => a.display_order - b.display_order); // sort by display order
+
+      const tagTypes = tagTypeInfo.map((info: TagType) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate dropdowns with the sorted TagTypes list
+      populateDropdown("id_idtypeid_primary", tagTypes);
+      populateDropdown("id_idtypeid_secondary", tagTypes);
+      populateDropdown("id_idtypeid_tertiary", tagTypes);
+    },
+    error: (error) => {
+      console.error("Failed to fetch tag types:", error);
+    },
+  });
+
+  // Remove Reasons
+  const removeReasonResult: Result<RemoveReason[], string> = await (window as any).electronAPI.getRemoveReasons();
+
+  // Handle the result
+  handleResult(removeReasonResult, {
+    success: (data) => {
+      // Sort the remove reasons by display order
+      data.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the data to create the dropdown options
+      const removeReasons = data.map((info: RemoveReason) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate the dropdown with the sorted remove reasons
+      populateDropdown("id_idremovereasonid", removeReasons);
+    },
+    error: (error) => {
+      console.error("Failed to fetch remove reasons:", error);
+      alert("There was an error fetching Id Remove Reasons.");
+    }
+  });
+
 
   // TissueSampleTypes
-  const tissueSampleTypeInfo : TissueSampleType[] = await (window as any).electronAPI.getTissueSampleTypes();
-  tissueSampleTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const tissueSampleTypeResult = await (window as any).electronAPI.getTissueSampleTypes();
 
-  const tissueSampleTypes = tissueSampleTypeInfo.map((info: TissueSampleType) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_tissuesampletypeid", tissueSampleTypes);
+  // Handle the result using handleResult
+  handleResult(tissueSampleTypeResult, {
+    success: (tissueSampleTypeInfo: TissueSampleType[]) => {
+      // Sort the result by display_order
+      tissueSampleTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+      const tissueSampleTypes = tissueSampleTypeInfo.map((info: TissueSampleType) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate dropdown with the sorted data
+      populateDropdown("id_tissuesampletypeid", tissueSampleTypes);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch Tissue Sample Types:", error);
+      alert("There was an error fetching tissue sample types.");
+    }
+  });
+
 
   // TissueSampleContainerTypes
-  const tissueSampleContainerTypeInfo : TissueSampleContainerType[] = await (window as any).electronAPI.getTissueSampleContainerTypes();
-  tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const tissueSampleContainerTypeResult: Result<TissueSampleContainerType[], string> = await (window as any).electronAPI.getTissueSampleContainerTypes();
 
-  const tissueSampleContainerTypes = tissueSampleContainerTypeInfo.map((info: TissueSampleContainerType) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_tissuesamplecontainertypeid", tissueSampleContainerTypes);
+  // Handle the result using handleResult
+  handleResult(tissueSampleContainerTypeResult, {
+    success: (tissueSampleContainerTypeInfo) => {
+      // Sort the result by display_order
+      tissueSampleContainerTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+      const tissueSampleContainerTypes = tissueSampleContainerTypeInfo.map((info: TissueSampleContainerType) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate dropdown with the sorted data
+      populateDropdown("id_tissuesamplecontainertypeid", tissueSampleContainerTypes);
+    },
+    error: (error) => {
+      console.error("Failed to fetch Tissue Sample Container Types:", error);
+      alert("There was an error fetching tissue sample container types.");
+    }
+  });
+
 
   // TissueTests
-  const tissueTestInfo : TissueTest[] = await (window as any).electronAPI.getTissueTests();
-  tissueTestInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const tissueTestResult: Result<TissueTest[], string> = await (window as any).electronAPI.getTissueTests();
 
-  const tissueTests = tissueTestInfo.map((info: TissueTest) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_tissuetestid", tissueTests);
+  // Handle the result using handleResult
+  handleResult(tissueTestResult, {
+    success: (tissueTestInfo: TissueTest[]) => {
+      // Sort the tissue test info by display_order
+      tissueTestInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
 
-  // DeathReaons
-  const deathReasonInfo : DeathReason[] = await (window as any).electronAPI.getDeathReasons();
-  deathReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+      // Map the tissue test info to a format suitable for populating the dropdown
+      const tissueTests = tissueTestInfo.map((info: TissueTest) => ({
+        label: info.name,
+        id: info.id,
+      }));
 
-  const deathReasons = deathReasonInfo.map((info: DeathReason) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_deathreasonid", deathReasons);
+      // Populate the dropdown with the sorted tissue tests
+      populateDropdown("id_tissuetestid", tissueTests);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch Tissue Tests:", error);
+      alert("There was an error fetching tissue test results.");
+    }
+  });
+
+  // death reasons
+  const deathReasonResult: Result<DeathReason[], string> = await (window as any).electronAPI.getDeathReasons();
+
+  // Handle the result with success and error handlers
+  handleResult(deathReasonResult, {
+    success: (deathReasonInfo: DeathReason[]) => {
+      // Sort the result by display_order
+      deathReasonInfo.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the result to a format suitable for populating the dropdown
+      const deathReasons = deathReasonInfo.map((info: DeathReason) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate the dropdown with the sorted data
+      populateDropdown("id_deathreasonid", deathReasons);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch Death Reasons:", error);
+      alert("There was an error fetching death reasons.");    
+    }
+  });
 
   // BirthTypes
-  const birthTypeInfo : BirthType[] = await (window as any).electronAPI.getBirthTypes();
-  birthTypeInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const birthTypeResult: Result<BirthType[], string> = await (window as any).electronAPI.getBirthTypes();
 
-  const birthTypes = birthTypeInfo.map((info: BirthType) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("birth_type", birthTypes);
-  populateDropdown("rear_type", birthTypes);
+  // Handle the result using handleResult
+  handleResult(birthTypeResult, {
+    success: (birthTypeInfo: BirthType[]) => {
+      // Sort the result by display_order
+      birthTypeInfo.sort((a, b) => a.display_order - b.display_order);
+
+      // Map the result to a format suitable for populating the dropdown
+      const birthTypes = birthTypeInfo.map((info: BirthType) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate the dropdown with the sorted data
+      populateDropdown("birth_type", birthTypes);
+      populateDropdown("rear_type", birthTypes);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch Birth Types:", error);
+      alert("There was an error fetching birth types.");  
+    }
+  });
+
 
   // TransferReasons
-  const transferReasonInfo : TransferReason[] = await (window as any).electronAPI.getTransferReasons();
-  transferReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  const transferReasonResult: Result<TransferReason[], string> = await (window as any).electronAPI.getTransferReasons();
 
-  const transferReasons = transferReasonInfo.map((info: TransferReason) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("id_transferreasonid", transferReasons);
+  // Handle the result using handleResult
+  handleResult(transferReasonResult, {
+    success: (transferReasonInfo: TransferReason[]) => {
+      // Sort the transfer reason info by display_order
+      transferReasonInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+
+      // Map the result to a format suitable for populating the dropdown
+      const transferReasons = transferReasonInfo.map((info: TransferReason) => ({
+        label: info.name,
+        id: info.id,
+      }));
+
+      // Populate the dropdown with the transfer reasons
+      populateDropdown("id_transferreasonid", transferReasons);
+    },
+    error: (error: string) => {
+      console.error("Failed to fetch Transfer Reasons:", error);
+      alert("There was an error fetching Transfer Reasons.");  
+    }
+  });
+
 
   // Weight Units
-  const weightUnitsQueryParams: UnitRequest = {
-    unit_type_name: "Weight",
-    unit_type_id: null,
-  } 
+  try {
+    const weightUnitsQueryParams: UnitRequest = {
+      unit_type_name: "Weight",
+      unit_type_id: null,
+    };
 
-  const weightUnitInfo : Unit[] = await (window as any).electronAPI.getUnits(weightUnitsQueryParams);
-  weightUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+    // Fetch weight units with the given query params
+    const dbResponse = await (window as any).electronAPI.getUnits(weightUnitsQueryParams);
 
-  const weightUnits = weightUnitInfo.map((info: Unit) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("birth_weight_id_unitsid", weightUnits);
-  populateDropdown("weight_id_unitsid", weightUnits);
+    // Handle success or failure
+    handleResult(dbResponse, {
+      success: (weightUnitInfo: Unit[]) => {
+        // Sort by display order if the result is successful
+        weightUnitInfo.sort((a, b) => a.display_order - b.display_order);
+
+        // Map the units to the format required for the dropdown
+        const weightUnits = weightUnitInfo.map((info: Unit) => ({
+          label: info.name,
+          id: info.id,
+        }));
+
+        // Populate the dropdowns with the weight units
+        populateDropdown("birth_weight_id_unitsid", weightUnits);
+        populateDropdown("weight_id_unitsid", weightUnits);
+      },
+      error: (error: string) => {
+        console.error("Error fetching weight units:", error);
+        alert("There was an error fetching weight units.");
+      },
+    });
+  } catch (error) {
+    console.error("Unexpected error fetching weight units:", error);
+  }
+
 
   // Currency Units
   const currencyUnitsQueryParams: UnitRequest = {
     unit_type_name: "Currency",
     unit_type_id: null,
-  } 
+  };
 
-  const currencyUnitInfo : Unit[] = await (window as any).electronAPI.getUnits(currencyUnitsQueryParams);
-  currencyUnitInfo.sort((a, b) => a.display_order - b.display_order); // sort by display order
+  try {
+    // Fetch currency units with the given query params
+    const dbResponse = await (window as any).electronAPI.getUnits(currencyUnitsQueryParams);
 
-  const currencyUnits = currencyUnitInfo.map((info: Unit) => ({
-    label: info.name,
-    id: info.id,
-  }));
-  populateDropdown("sale_price_id_unitsid", currencyUnits);
+    // Handle success or failure
+    handleResult(dbResponse, {
+      success: (currencyUnitInfo: Unit[]) => {
+        // Sort by display order if the result is successful
+        currencyUnitInfo.sort((a, b) => a.display_order - b.display_order);
+
+        // Map the units to the format required for the dropdown
+        const currencyUnits = currencyUnitInfo.map((info: Unit) => ({
+          label: info.name,
+          id: info.id,
+        }));
+
+        // Populate the dropdown with the currency units
+        populateDropdown("sale_price_id_unitsid", currencyUnits);
+      },
+      error: (error: string) => {
+        console.error("Error fetching currency units:", error);
+        alert("There was an error fetching currency units.");
+      },
+    });
+  } catch (error) {
+    console.error("Unexpected error fetching currency units:", error);
+  }
+
 };
 
 /**
@@ -822,7 +1118,7 @@ const writeNewDefault = async () => {
 // Function to get the selected option's data-database-id
 const getSelectedDatabaseId = (elementId: string): number => {
   const selectElement = document.getElementById(elementId) as HTMLSelectElement;
-  if (!selectElement) {
+  if (selectElement === null || selectElement === undefined) {
     console.warn(`Dropdown with ID "${elementId}" not found.`);
     return 0;
   }
@@ -865,21 +1161,31 @@ async function updateBreeds() {
   const species_id: string = getSelectedDatabaseId("id_speciesid").toString();
 
   try {
-      const queryParams: BreedRequest = { 
-        species_id: species_id, 
-      };
-      const breedInfo: Breed[] = await (window as any).electronAPI.getBreeds(queryParams);
+    const queryParams: BreedRequest = { 
+      species_id: species_id, 
+    };
 
-      breedInfo.sort((a, b) => a.display_order - b.display_order);
+    // Call the getBreeds API which now returns a Result
+    const result = await (window as any).electronAPI.getBreeds(queryParams);
 
-      const breeds = breedInfo.map((info) => ({
+    // Use handleResult to process the result
+    handleResult(result, {
+      success: (breedInfo: Breed[]) => {
+        breedInfo.sort((a, b) => a.display_order - b.display_order);
+
+        const breeds = breedInfo.map((info) => ({
           label: info.name,
           id: info.id,
-      }));
+        }));
 
-      populateDropdown("id_breedid", breeds);
+        populateDropdown("id_breedid", breeds);
+      },
+      error: (error: string) => {
+        console.error("Error fetching breed data:", error); // Log the error message
+      },
+    });
   } catch (error) {
-      console.error("Error fetching breed data:", error);
+    console.error("Unexpected error:", error);
   }
 }
 

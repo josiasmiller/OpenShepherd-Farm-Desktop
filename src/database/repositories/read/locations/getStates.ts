@@ -1,10 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { State } from "../../../models/read/locations/state.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getStates = async (): Promise<State[]> => {
+// Function to fetch states from the database
+export const getStates = async (): Promise<Result<State[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let stateQuery = `
@@ -16,11 +18,13 @@ export const getStates = async (): Promise<State[]> => {
         id_countryid as country_id
     FROM state_table`;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.all(stateQuery, [], (err, rows) => {
       if (err) {
-        reject(err);
+        // On query error, return Failure with the error message
+        resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
+        // On success, map the rows into a list of State objects and return Success
         const results: State[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
@@ -29,7 +33,7 @@ export const getStates = async (): Promise<State[]> => {
           country_id: row.country_id,
         }));
 
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });
