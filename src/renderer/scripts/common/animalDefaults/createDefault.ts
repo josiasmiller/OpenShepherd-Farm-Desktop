@@ -996,7 +996,7 @@ const writeNewDefault = async () => {
   } else {
     company_id = getSelectedDatabaseId("owner_id_companyid")
   }
-
+  
   // Construct the WriteNewDefaultParameters object
   const formData: WriteNewDefaultParameters = {
     default_settings_name: (document.getElementById("settings_name") as HTMLInputElement).value,
@@ -1107,9 +1107,9 @@ const writeNewDefault = async () => {
   const success: boolean = await (window as any).electronAPI.writeNewDefaultSettings(formData);
 
   if (success) {
-    console.log("WROTE IT!!");
+    alert(`A new Default Setting has been created with the name \"${formData.default_settings_name}\"`);
   } else {
-    console.log("Failed to write settings.");
+    alert("Failed to write settings.");
   }
 
   return;
@@ -1120,6 +1120,11 @@ const getSelectedDatabaseId = (elementId: string): number => {
   const selectElement = document.getElementById(elementId) as HTMLSelectElement;
   if (selectElement === null || selectElement === undefined) {
     console.warn(`Dropdown with ID "${elementId}" not found.`);
+    return 0;
+  }
+
+  if (selectElement.selectedIndex === null || selectElement.selectedIndex === undefined) {
+    console.warn(`selectElement with ID "${elementId}" does not have a \"selectedIndex\" property.`);
     return 0;
   }
 
