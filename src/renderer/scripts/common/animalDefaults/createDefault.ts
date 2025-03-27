@@ -27,10 +27,14 @@ import {
 } from "../../../../database";
 
 import { Result, handleResult } from "../../../../shared/results/resultTypes.js";
+import { getCurrentFormattedTimestamp } from "../utils/times.js";
 
 
 let existingDefaults: DefaultSettingsResults[] = [];
 
+/**
+ * Function called on page startup
+ */
 export const init = () => {
   // Get important HTML elements
   const form = document.getElementById("defaults-form");
@@ -196,7 +200,11 @@ const populateDropdown = (
 };
 
 
-
+/**
+ * Selected a specific field of a dropdown tab on the document
+ * @param {string} elementId  - The ID of the dropdown element to select from
+ * @param {string} selectedId - The Id of the option that is to be selected.
+ */
 const selectDropdownOption = (elementId: string, selectedId: string) => {
 
   // do not handle cases where 0 is the "key"
@@ -851,6 +859,9 @@ const populateExistingDefaults = async () => {
   });
 };
 
+/**
+ * Loads whichever default settings is present in the `existing-settings` dropdown and loads it into the existing dropdowns
+ */
 const loadExistingDefault = async () => {
   const selectElement = document.getElementById("existing-settings") as HTMLSelectElement;
   const selectedId = selectElement.value;
@@ -1110,9 +1121,12 @@ const loadExistingDefault = async () => {
   return;
 }
 
+/**
+ * Extracts the default settings from the input elements on the document and attempts to upload said information into a new setting row of the database
+ */
 const writeNewDefault = async () => {
 
-  const currentTimestamp: string = getFormattedTimestamp();
+  const currentTimestamp: string = getCurrentFormattedTimestamp();
 
   var ownerRadioId : string = "select_contact"
   const contactRadio = document.getElementById(ownerRadioId) as HTMLInputElement | null;
@@ -1286,7 +1300,9 @@ const writeNewDefault = async () => {
   return;
 };
 
-// Function to get the selected option's data-database-id
+/**
+ * Function to get the selected option's data-database-id
+ */
 const getSelectedDatabaseId = (elementId: string): string => {
   const selectElement = document.getElementById(elementId) as HTMLSelectElement;
   if (selectElement === null || selectElement === undefined) {
@@ -1315,20 +1331,9 @@ const getSelectedDatabaseId = (elementId: string): string => {
   return dataId;
 };
 
-const getFormattedTimestamp = () => {
-  const now = new Date();
-  
-  // Get individual components
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
+/**
+ * Updates the breed options based on the chosen species
+ */
 async function updateBreeds() {
   const breedSelect = document.getElementById("id_breedid") as HTMLSelectElement;
 
@@ -1396,6 +1401,10 @@ function handleOwnerXOR(contactRadioId : string, companyRadioId: string, contact
   }
 }
 
+/**
+ * handles when the farm tag is based on the EID tag.
+ * This sets the associated HTML inputs according to what the the 'farm tag based on eid tag' HTML element indicates
+ */
 function handleFarmtagBasedOnEID() {
   const farmTagBasedOnEidTitle = "farm_tag_based_on_eid_tag";
   const farmTagBasedOnEidTagDropDown = document.getElementById(farmTagBasedOnEidTitle) as HTMLInputElement | null;
@@ -1420,6 +1429,10 @@ function handleFarmtagBasedOnEID() {
   }
 }
 
+/**
+ * handles enabling/disabling the 'trich tag starting value' HTML input based on what the
+ * 'trich tag auto increment' HTML field indicates
+ */
 function handleTrichTagStartingVal() {
 
   const trichTagAutoIncTitle = "trich_tag_auto_increment";
@@ -1445,6 +1458,9 @@ function handleTrichTagStartingVal() {
   }
 }
 
+/**
+ * connects event listeners to pertinent HTML inputs that have to do with setting tag colors the same for males and females
+ */
 function connectTagSameColors() {
   ////////////////////////////////////////////////////////////////
   // handle "male/female tag color same" dropdown functionality //
@@ -1640,6 +1656,14 @@ function connectTagSameColors() {
   }
 }
 
+/**
+ * this function is used to determine if one of the 'same color' fields is checked or not.
+ * in cases where it is true, the female dropdown is disabled and set to whatever the male dropdown is set to
+ * in cases where it is false, the female dropdown is enabled and can be chosen normally.
+ * @param {string} sameDropdownId   - The ID of the dropdown that indicates if the colors should match or not
+ * @param {string} maleDropdownId   - The ID of the male color dropdown
+ * @param {string} femaleDropdownId - The ID of the female color dropdown
+ */
 function handleTagSameColor(sameDropdownId : string, maleDropdownId : string, femaleDropdownId: string) {
 
   const sameColorDropdown = document.getElementById(sameDropdownId) as HTMLSelectElement | null;
