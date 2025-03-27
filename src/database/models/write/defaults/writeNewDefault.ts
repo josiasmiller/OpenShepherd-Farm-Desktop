@@ -2,12 +2,18 @@ import { OwnerType } from "../../read/owners/ownerType";
 
 export type WriteNewDefaultParameters = {
   default_settings_name: string;
+
   contactType: OwnerType;
   ownerId: string;
   owner_id_premiseid: string;
-  breeder_id_contactid: string;
-  breeder_id_companyid: string;
+
+  breederType: OwnerType;
+  breederId: string;
   breeder_id_premiseid: string;
+
+  transferReasonContactType: OwnerType;
+  transferReasonContactId: string;
+  
   vet_id_contactid: string;
   vet_id_premiseid: string;
   lab_id_companyid: string;
@@ -76,8 +82,6 @@ export type WriteNewDefaultParameters = {
   death_reason_id_contactid: string;
   death_reason_id_companyid: string;
   id_deathreasonid: string;
-  transfer_reason_id_contactid: string;
-  transfer_reason_id_companyid: string;
   id_transferreasonid: string;
   created: string;
   modified: string;

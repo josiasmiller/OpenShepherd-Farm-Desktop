@@ -38,13 +38,35 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
   }
 
+  var breederContactId: string = "0";
+  var breederCompanyId: string = "0";
+
+  if (queryParams.breederType === OwnerType.CONTACT) {
+    breederContactId = queryParams.breederId;
+  } else if (queryParams.breederType === OwnerType.COMPANY) {
+    breederCompanyId = queryParams.breederId;
+  } else {
+    throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
+  }
+
+  var transferReasonContactId: string = "0";
+  var transferReasonCompanyId: string = "0";
+
+  if (queryParams.transferReasonContactType === OwnerType.CONTACT) {
+    transferReasonContactId = queryParams.transferReasonContactId;
+  } else if (queryParams.transferReasonContactType === OwnerType.COMPANY) {
+    transferReasonCompanyId = queryParams.transferReasonContactId;
+  } else {
+    throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
+  }
+
   const values = [
     queryParams.default_settings_name,
     ownerContactId,
     ownerCompanyId,
     queryParams.owner_id_premiseid,
-    queryParams.breeder_id_contactid,
-    queryParams.breeder_id_companyid,
+    breederContactId,
+    breederCompanyId,
     queryParams.breeder_id_premiseid,
     queryParams.vet_id_contactid,
     queryParams.vet_id_premiseid,
@@ -114,8 +136,8 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     queryParams.death_reason_id_contactid,
     queryParams.death_reason_id_companyid,
     queryParams.id_deathreasonid,
-    queryParams.transfer_reason_id_contactid,
-    queryParams.transfer_reason_id_companyid,
+    transferReasonContactId,
+    transferReasonCompanyId,
     queryParams.id_transferreasonid,
     queryParams.created,
     queryParams.modified

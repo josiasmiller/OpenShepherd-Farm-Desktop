@@ -1103,15 +1103,9 @@ const loadExistingDefault = async () => {
   }
   
   selectDropdownOption("birth_weight_id_unitsid", selectedSetting.birth_weight_id_unitsid);
-
-  if (selectedSetting.weight_id_unitsid) {
-    selectDropdownOption("weight_id_unitsid", selectedSetting.weight_id_unitsid);
-  }
+  selectDropdownOption("weight_id_unitsid", selectedSetting.weight_id_unitsid);    
+  selectDropdownOption("sale_price_id_unitsid", selectedSetting.sale_price_id_unitsid);
   
-
-  if (selectedSetting.sale_price_id_unitsid) {
-    selectDropdownOption("sale_price_id_unitsid", selectedSetting.sale_price_id_unitsid);
-  }
   
   return;
 }
@@ -1120,17 +1114,57 @@ const writeNewDefault = async () => {
 
   const currentTimestamp: string = getFormattedTimestamp();
 
-  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
+  var ownerRadioId : string = "select_contact"
+  const contactRadio = document.getElementById(ownerRadioId) as HTMLInputElement | null;
+  if (!contactRadio) {
+    throw new TypeError(`unable to locate HTML element with id: ${ownerRadioId}`)
+  }
 
   var ownerType : OwnerType 
   var ownerId : string = "";
 
-  if (contactRadio?.checked) {
+  if (contactRadio.checked) {
     ownerType = OwnerType.CONTACT;
     ownerId = getSelectedDatabaseId("owner_id_contactid");
   } else {
     ownerType = OwnerType.COMPANY;
     ownerId = getSelectedDatabaseId("owner_id_companyid");
+  }
+
+  /////////////////////////////
+  var breederRadioId : string = "breeder_select_contact"
+  const breederRadio = document.getElementById(breederRadioId) as HTMLInputElement | null;
+  if (!breederRadio) {
+    throw new TypeError(`unable to locate HTML element with id: ${breederRadioId}`)
+  }
+
+  var breederType : OwnerType 
+  var breederId : string = "";
+
+  if (breederRadio.checked) {
+    breederType = OwnerType.CONTACT;
+    breederId = getSelectedDatabaseId("breeder_id_contactid");
+  } else {
+    breederType = OwnerType.COMPANY;
+    breederId = getSelectedDatabaseId("breeder_id_companyid");
+  }
+
+  /////////////////////////////
+  var transferReasonRadioId : string = "transfer_reason_select_contact"
+  const transferReasonRadio = document.getElementById(transferReasonRadioId) as HTMLInputElement | null;
+  if (!transferReasonRadio) {
+    throw new TypeError(`unable to locate HTML element with id: ${transferReasonRadioId}`)
+  }
+
+  var transferReasonType : OwnerType 
+  var transferReasonId : string = "";
+
+  if (transferReasonRadio.checked) {
+    transferReasonType = OwnerType.CONTACT;
+    transferReasonId = getSelectedDatabaseId("transfer_reason_id_contactid");
+  } else {
+    transferReasonType = OwnerType.COMPANY;
+    transferReasonId = getSelectedDatabaseId("transfer_reason_id_companyid");
   }
   
   // Construct the WriteNewDefaultParameters object
@@ -1141,9 +1175,12 @@ const writeNewDefault = async () => {
     ownerId: ownerId,
     owner_id_premiseid: getSelectedDatabaseId("owner_id_premiseid"),
 
-    breeder_id_contactid: getSelectedDatabaseId("breeder_id_contactid"),
-    breeder_id_companyid: getSelectedDatabaseId("breeder_id_companyid"),
+    breederId: breederId,
+    breederType: breederType,
     breeder_id_premiseid: getSelectedDatabaseId("breeder_id_premiseid"),
+
+    transferReasonContactId: transferReasonId,
+    transferReasonContactType: transferReasonType,
 
     vet_id_contactid: getSelectedDatabaseId("vet_id_contactid"),
     vet_id_premiseid: getSelectedDatabaseId("vet_id_premiseid"),
@@ -1235,8 +1272,6 @@ const writeNewDefault = async () => {
     death_reason_id_contactid: "0",
     death_reason_id_companyid: "0",
     trich_tag_next_tag_number: "0",
-    transfer_reason_id_contactid: "0",
-    transfer_reason_id_companyid: "0",
   };
 
   // Here you would call your API or service to write the default settings to the database
