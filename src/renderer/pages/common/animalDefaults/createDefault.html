@@ -52,14 +52,40 @@
 
             <div class="section-break"></div>
             <div class="form-group">
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="breeder_select_contact" name="breeder_selection" checked> Contact
+                    </label>
+                    <label>
+                        <input type="radio" id="breeder_select_company" name="breeder_selection"> Company
+                    </label>
+                </div>
+
                 <label for="breeder_id_contactid">Breeder Contact:</label>
-                <select id="breeder_id_contactid" name="breeder_id_contactid"></select>
+                <select id="breeder_id_contactid" name="breeder_id_contactid" disabled></select>
 
                 <label for="breeder_id_companyid">Breeder Company:</label>
-                <select id="breeder_id_companyid" name="breeder_id_companyid"></select>
+                <select id="breeder_id_companyid" name="breeder_id_companyid" disabled></select>
 
                 <label for="breeder_id_premiseid">Breeder Premise:</label>
                 <select id="breeder_id_premiseid" name="breeder_id_premiseid"></select>
+            </div>
+
+            <div class="section-break"></div>
+            <div class="form-group">
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="transfer_reason_select_contact" name="transfer_reason_selection" checked> Contact
+                    </label>
+                    <label>
+                        <input type="radio" id="transfer_reason_select_company" name="transfer_reason_selection"> Company
+                    </label>
+                </div>
+                <label for="transfer_reason_id_contactid">Transfer Reason Contact:</label>
+                <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid" disabled></select>
+
+                <label for="transfer_reason_id_companyid">Transfer Reason Company:</label>
+                <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid" disabled></select>
             </div>
 
             <div class="section-break"></div>
@@ -87,15 +113,6 @@
 
                 <label for="registry_id_premiseid">Registry Premise:</label>
                 <select id="registry_id_premiseid" name="registry_id_premiseid"></select>
-            </div>
-
-            <div class="section-break"></div>
-            <div class="form-group">
-                <label for="transfer_reason_id_contactid">Transfer Reason Contact:</label>
-                <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid"></select>
-
-                <label for="transfer_reason_id_companyid">Transfer Reason Company:</label>
-                <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid"></select>
             </div>
 
             <div class="section-break"></div>

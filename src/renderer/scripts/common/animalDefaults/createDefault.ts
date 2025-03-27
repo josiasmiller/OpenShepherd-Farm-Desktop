@@ -59,14 +59,73 @@ export const init = () => {
     updateBreeds();
   });
 
-  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
-  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
+  /////////////////////////////////////////////
+  // handle XOR for contact/company on owners
+  const contactRadioId : string = "select_contact";
+  const companyRadioId : string = "select_company";
+  const contactSelectId : string = "owner_id_contactid";
+  const companySelectId : string = "owner_id_companyid";
 
-  if (contactRadio && companyRadio) {
-    contactRadio.addEventListener("change", handleOwnerXOR);
-    companyRadio.addEventListener("change", handleOwnerXOR);
+  const ownerContactRadio = document.getElementById(contactRadioId) as HTMLInputElement | null;
+  const ownerCompanyRadio = document.getElementById(companyRadioId) as HTMLInputElement | null;
+
+  if (ownerContactRadio && ownerCompanyRadio) {
+    ownerContactRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(contactRadioId, companyRadioId, contactSelectId, companySelectId);
+    });
+    ownerCompanyRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(contactRadioId, companyRadioId, contactSelectId, companySelectId);
+    });
+    // update fields on page startup
+    handleOwnerXOR(contactRadioId, companyRadioId, contactSelectId, companySelectId);
   } else {
     console.error("Radio buttons for company & contact IDs not found!");
+  }
+
+  ///////////////////////////////////////////////////
+  // handle XOR for breeder contact/company fields
+  const breederContactRadioId : string = "breeder_select_contact";
+  const breederCompanyRadioId : string = "breeder_select_company";
+  const breederContactSelectId : string = "breeder_id_contactid";
+  const breederCompanySelectId : string = "breeder_id_companyid";
+
+  const breederContactRadio = document.getElementById(breederContactRadioId) as HTMLInputElement | null;
+  const breederCompanyRadio = document.getElementById(breederCompanyRadioId) as HTMLInputElement | null;
+
+  if (breederContactRadio && breederCompanyRadio) {
+    breederContactRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(breederContactRadioId, breederCompanyRadioId, breederContactSelectId, breederCompanySelectId);
+    });
+    breederCompanyRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(breederContactRadioId, breederCompanyRadioId, breederContactSelectId, breederCompanySelectId);
+    });
+    // update fields on page startup
+    handleOwnerXOR(breederContactRadioId, breederCompanyRadioId, breederContactSelectId, breederCompanySelectId);
+  } else {
+    console.error("Radio buttons for breeder company & contact IDs not found!");
+  }
+
+  ///////////////////////////////////////////////////
+  // handle XOR for breeder contact/company fields
+  const transferReasonContactRadioId : string = "transfer_reason_select_contact";
+  const transferReasonCompanyRadioId : string = "transfer_reason_select_company";
+  const transferReasonContactSelectId : string = "transfer_reason_id_contactid";
+  const transferReasonCompanySelectId : string = "transfer_reason_id_companyid";
+
+  const transferReasonContactRadio = document.getElementById(transferReasonContactRadioId) as HTMLInputElement | null;
+  const transferReasonCompanyRadio = document.getElementById(transferReasonCompanyRadioId) as HTMLInputElement | null;
+
+  if (transferReasonContactRadio && transferReasonCompanyRadio) {
+    transferReasonContactRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(transferReasonContactRadioId, transferReasonCompanyRadioId, transferReasonContactSelectId, transferReasonCompanySelectId);
+    });
+    transferReasonCompanyRadio.addEventListener("change", (_) => {
+      handleOwnerXOR(transferReasonContactRadioId, transferReasonCompanyRadioId, transferReasonContactSelectId, transferReasonCompanySelectId);
+    });
+    // update fields on page startup
+    handleOwnerXOR(transferReasonContactRadioId, transferReasonCompanyRadioId, transferReasonContactSelectId, transferReasonCompanySelectId);
+  } else {
+    console.error("Radio buttons for transfer reason company & contact IDs not found!");
   }
 
   const farmTagBasedOnEidTitle = "farm_tag_based_on_eid_tag";
@@ -88,9 +147,6 @@ export const init = () => {
   }
 
   connectTagSameColors();
-
-  // handle radio XOR on page startup, otherwise the radio buttons aren't 'XOR'ed
-  handleOwnerXOR();
 };
 
 /**
@@ -818,28 +874,108 @@ const loadExistingDefault = async () => {
   if (selectedSetting.id_breedid) {
     selectDropdownOption("id_breedid", selectedSetting.id_breedid);
   }
-  
+
+  ///////////////////////////////////////////////////
+  const contactRadioId : string = "select_contact";
+  const companyRadioId : string = "select_company";
+  const contactSelectId : string = "owner_id_contactid";
+  const companySelectId : string = "owner_id_companyid";
+
+  const ownerContactRadio = document.getElementById(contactRadioId) as HTMLInputElement | null;
+  const ownerCompanyRadio = document.getElementById(companyRadioId) as HTMLInputElement | null;
+  const ownerContactSelect = document.getElementById(contactSelectId) as HTMLSelectElement | null;
+  const ownerCompanySelect = document.getElementById(companySelectId) as HTMLSelectElement | null;
+
+  if (!ownerContactRadio || !ownerCompanyRadio || !ownerContactSelect || !ownerCompanySelect) {
+    console.error("One or more elements are missing!");
+    return;
+  }
 
   if (selectedSetting.owner_type === OwnerType.CONTACT) {
     selectDropdownOption("owner_id_contactid", selectedSetting.owner_id);
+    ownerContactRadio.checked = true;
+    ownerCompanyRadio.checked = false;
+    ownerContactSelect.disabled = false;
+    ownerCompanySelect.disabled = true;
+    ownerCompanySelect.value = "";
+
   } else if (selectedSetting.owner_type === OwnerType.COMPANY) {
     selectDropdownOption("owner_id_companyid", selectedSetting.owner_id);
+    ownerContactRadio.checked = false;
+    ownerCompanyRadio.checked = true;
+    ownerContactSelect.disabled = true;
+    ownerCompanySelect.disabled = false;
+    ownerContactSelect.value = "";
   }
 
-  if (selectedSetting.breeder_id_contactid) {
-    selectDropdownOption("breeder_id_contactid", selectedSetting.breeder_id_contactid);
+  /////////////////////////////////////////////////////////////////////////////
+  const breederContactRadioId : string = "breeder_select_contact";
+  const breederCompanyRadioId : string = "breeder_select_company";
+  const breederContactSelectId : string = "breeder_id_contactid";
+  const breederCompanySelectId : string = "breeder_id_companyid";
+
+  const contactRadio = document.getElementById(breederContactRadioId) as HTMLInputElement | null;
+  const companyRadio = document.getElementById(breederCompanyRadioId) as HTMLInputElement | null;
+  const contactSelect = document.getElementById(breederContactSelectId) as HTMLSelectElement | null;
+  const companySelect = document.getElementById(breederCompanySelectId) as HTMLSelectElement | null;
+
+  if (!contactRadio || !companyRadio || !contactSelect || !companySelect) {
+    console.error("One or more elements are missing!");
+    return;
+  }
+
+  if (selectedSetting.breederType === OwnerType.CONTACT) {
+    selectDropdownOption("breeder_id_contactid", selectedSetting.breederId);
+    contactRadio.checked = true;
+    companyRadio.checked = false;
+    contactSelect.disabled = false;
+    companySelect.disabled = true;
+    companySelect.value = "";
+
+  } else if (selectedSetting.breederType === OwnerType.COMPANY) {
+    selectDropdownOption("breeder_id_companyid", selectedSetting.breederId);
+    contactRadio.checked = false;
+    companyRadio.checked = true;
+    contactSelect.disabled = true;
+    companySelect.disabled = false;
+    contactSelect.value = "";
+  }
+
+  ///////////////////////////////////////////////////
+  const transferReasonContactRadioId : string = "transfer_reason_select_contact";
+  const transferReasonCompanyRadioId : string = "transfer_reason_select_company";
+  const transferReasonContactSelectId : string = "transfer_reason_id_contactid";
+  const transferReasonCompanySelectId : string = "transfer_reason_id_companyid";
+
+  const transferReasonContactRadio = document.getElementById(transferReasonContactRadioId) as HTMLInputElement | null;
+  const transferReasonCompanyRadio = document.getElementById(transferReasonCompanyRadioId) as HTMLInputElement | null;
+  const transferReasonOwnerContactSelect = document.getElementById(transferReasonContactSelectId) as HTMLSelectElement | null;
+  const transferReasonOwnerCompanySelect = document.getElementById(transferReasonCompanySelectId) as HTMLSelectElement | null;
+
+  if (!transferReasonContactRadio || !transferReasonCompanyRadio || !transferReasonOwnerContactSelect || !transferReasonOwnerCompanySelect) {
+    console.error("One or more elements are missing!");
+    return;
+  }
+
+  if (selectedSetting.transferReasonContactType === OwnerType.CONTACT) {
+    selectDropdownOption("transfer_reason_id_contactid", selectedSetting.transferReasonContactId);
+    transferReasonContactRadio.checked = true;
+    transferReasonCompanyRadio.checked = false;
+    transferReasonOwnerContactSelect.disabled = false;
+    transferReasonOwnerCompanySelect.disabled = true;
+    transferReasonOwnerCompanySelect.value = "";
+
+  } else if (selectedSetting.transferReasonContactType === OwnerType.COMPANY) {
+    selectDropdownOption("transfer_reason_id_companyid", selectedSetting.transferReasonContactId);
+    transferReasonContactRadio.checked = false;
+    transferReasonCompanyRadio.checked = true;
+    transferReasonOwnerContactSelect.disabled = true;
+    transferReasonOwnerCompanySelect.disabled = false;
+    transferReasonOwnerContactSelect.value = "";
   }
 
   if (selectedSetting.vet_id_contactid) {
     selectDropdownOption("vet_id_contactid", selectedSetting.vet_id_contactid);
-  }
-  
-  if (selectedSetting.transfer_reason_id_contactid) {
-    selectDropdownOption("transfer_reason_id_contactid", selectedSetting.transfer_reason_id_contactid);
-  }
-  
-  if (selectedSetting.breeder_id_companyid) {
-    selectDropdownOption("breeder_id_companyid", selectedSetting.breeder_id_companyid);
   }
 
   if (selectedSetting.lab_id_companyid) {
@@ -850,9 +986,7 @@ const loadExistingDefault = async () => {
     selectDropdownOption("id_registry_id_companyid", selectedSetting.id_registry_id_companyid);
   }
   
-  if (selectedSetting.transfer_reason_id_companyid) {
-    selectDropdownOption("transfer_reason_id_companyid", selectedSetting.transfer_reason_id_companyid);
-  }
+  
 
   if (selectedSetting.owner_id_premiseid) {
     selectDropdownOption("owner_id_premiseid", selectedSetting.owner_id_premiseid);
@@ -988,21 +1122,23 @@ const writeNewDefault = async () => {
 
   const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
 
-  var contact_id: number = 0;
-  var company_id: number = 0;
+  var ownerType : OwnerType 
+  var ownerId : string = "";
 
   if (contactRadio?.checked) {
-    contact_id = getSelectedDatabaseId("owner_id_contactid")
+    ownerType = OwnerType.CONTACT;
+    ownerId = getSelectedDatabaseId("owner_id_contactid");
   } else {
-    company_id = getSelectedDatabaseId("owner_id_companyid")
+    ownerType = OwnerType.COMPANY;
+    ownerId = getSelectedDatabaseId("owner_id_companyid");
   }
   
   // Construct the WriteNewDefaultParameters object
   const formData: WriteNewDefaultParameters = {
     default_settings_name: (document.getElementById("settings_name") as HTMLInputElement).value,
 
-    owner_id_contactid: contact_id,
-    owner_id_companyid: company_id,
+    contactType: ownerType,
+    ownerId: ownerId,
     owner_id_premiseid: getSelectedDatabaseId("owner_id_premiseid"),
 
     breeder_id_contactid: getSelectedDatabaseId("breeder_id_contactid"),
@@ -1096,11 +1232,11 @@ const writeNewDefault = async () => {
     created: currentTimestamp,
     modified: currentTimestamp,
 
-    death_reason_id_contactid: 0,
-    death_reason_id_companyid: 0,
-    trich_tag_next_tag_number: 0,
-    transfer_reason_id_contactid: 0,
-    transfer_reason_id_companyid: 0,
+    death_reason_id_contactid: "0",
+    death_reason_id_companyid: "0",
+    trich_tag_next_tag_number: "0",
+    transfer_reason_id_contactid: "0",
+    transfer_reason_id_companyid: "0",
   };
 
   // Here you would call your API or service to write the default settings to the database
@@ -1116,32 +1252,32 @@ const writeNewDefault = async () => {
 };
 
 // Function to get the selected option's data-database-id
-const getSelectedDatabaseId = (elementId: string): number => {
+const getSelectedDatabaseId = (elementId: string): string => {
   const selectElement = document.getElementById(elementId) as HTMLSelectElement;
   if (selectElement === null || selectElement === undefined) {
     console.warn(`Dropdown with ID "${elementId}" not found.`);
-    return 0;
+    return "0";
   }
 
   if (selectElement.selectedIndex === null || selectElement.selectedIndex === undefined) {
     console.warn(`selectElement with ID "${elementId}" does not have a \"selectedIndex\" property.`);
-    return 0;
+    return "0";
   }
 
   const selectedOption = selectElement.options[selectElement.selectedIndex];
 
   if (selectedOption === null) {
     console.warn(`Unable to get option ${selectElement.selectedIndex} from \"${elementId}\"`);
-    return 0;
+    return "0";
   }
 
   const dataId = selectedOption?.getAttribute("data-database-id");
   if (dataId === null) {
     console.warn(`Unable to get key \"data-database-id\" for \"${elementId}\"`);
-    return 0;
+    return "0";
   }
 
-  return dataId ? parseInt(dataId, 10) || 0 : 0;
+  return dataId;
 };
 
 const getFormattedTimestamp = () => {
@@ -1197,31 +1333,31 @@ async function updateBreeds() {
 /*
  * Handles allowing the user to choose only a contact or company ID.
  */
-function handleOwnerXOR() {
-  const contactRadio = document.getElementById("select_contact") as HTMLInputElement | null;
-  const companyRadio = document.getElementById("select_company") as HTMLInputElement | null;
-  const contactSelect = document.getElementById("owner_id_contactid") as HTMLSelectElement | null;
-  const companySelect = document.getElementById("owner_id_companyid") as HTMLSelectElement | null;
+function handleOwnerXOR(contactRadioId : string, companyRadioId: string, contactSelectId: string, companySelectId: string) {
+  const contactRadio = document.getElementById(contactRadioId) as HTMLInputElement | null;
+  const companyRadio = document.getElementById(companyRadioId) as HTMLInputElement | null;
+  const contactSelect = document.getElementById(contactSelectId) as HTMLSelectElement | null;
+  const companySelect = document.getElementById(companySelectId) as HTMLSelectElement | null;
 
   if (!contactRadio || !companyRadio || !contactSelect || !companySelect) {
-      console.error("One or more elements are missing!");
-      return;
+    console.error("One or more elements are missing!");
+    return;
   }
 
   if (contactRadio.checked) {
-      contactSelect.disabled = false;
-      companySelect.disabled = true;
-      companySelect.value = ""; // Reset company selection
+    contactSelect.disabled = false;
+    companySelect.disabled = true;
+    companySelect.value = ""; // Reset company selection
   } else if (companyRadio.checked) {
-      companySelect.disabled = false;
-      contactSelect.disabled = true;
-      contactSelect.value = ""; // Reset contact selection
+    companySelect.disabled = false;
+    contactSelect.disabled = true;
+    contactSelect.value = ""; // Reset contact selection
   } else {
-      // If neither is selected, disable both
-      contactSelect.disabled = true;
-      companySelect.disabled = true;
-      contactSelect.value = "";
-      companySelect.value = "";
+    // If neither is selected, disable both
+    contactSelect.disabled = true;
+    companySelect.disabled = true;
+    contactSelect.value = "";
+    companySelect.value = "";
   }
 }
 

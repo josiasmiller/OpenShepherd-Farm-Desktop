@@ -32,14 +32,56 @@ export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> =
             return null; // Return null if no valid owner, this is filtered later
           }
 
+          let deathReasonContactId: string;
+          let deathReasonContactType: OwnerType;
+        
+          if (row.death_reason_id_contactid) {
+            deathReasonContactId = String(row.death_reason_id_contactid);
+            deathReasonContactType = OwnerType.CONTACT;
+          } else if (row.death_reason_id_companyid) {
+            deathReasonContactId = String(row.death_reason_id_companyid);
+            deathReasonContactType = OwnerType.COMPANY;
+          } else {
+            // for now use generic data for the death reason & company
+            deathReasonContactId = "700";
+            deathReasonContactType = OwnerType.COMPANY;
+          }
+
+          let breederId: string;
+          let breederType: OwnerType;
+        
+          if (row.breeder_id_contactid) {
+            breederId = String(row.breeder_id_contactid);
+            breederType = OwnerType.CONTACT;
+          } else if (row.breeder_id_companyid) {
+            breederId = String(row.breeder_id_contactid);
+            breederType = OwnerType.COMPANY;
+          } else {
+            return null; // Return null if no valid owner, this is filtered later
+          }
+
+          let transferReasonId: string;
+          let transferReasonType: OwnerType;
+        
+          if (row.transfer_reason_id_contactid) {
+            transferReasonId = String(row.transfer_reason_id_contactid);
+            transferReasonType = OwnerType.CONTACT;
+          } else if (row.transfer_reason_id_companyid) {
+            transferReasonId = String(row.transfer_reason_id_companyid);
+            transferReasonType = OwnerType.COMPANY;
+          } else {
+            transferReasonId = "700";
+            transferReasonType = OwnerType.COMPANY;
+          }
+
           return {
             id: row.id_animaltrakkerdefaultsettingsid,
             name: row.default_settings_name,
             owner_id: owner_id,
             owner_type: owner_type,
             owner_id_premiseid: String(row.owner_id_premiseid),
-            breeder_id_contactid: String(row.breeder_id_contactid),
-            breeder_id_companyid: String(row.breeder_id_companyid),
+            breederType: breederType,
+            breederId: breederId,
             breeder_id_premiseid: String(row.breeder_id_premiseid),
             vet_id_contactid: String(row.vet_id_contactid),
             vet_id_premiseid: String(row.vet_id_premiseid),
@@ -106,11 +148,11 @@ export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> =
             weight_id_unitsid: String(row.weight_id_unitsid),
             sale_price_id_unitsid: String(row.sale_price_id_unitsid),
             evaluation_update_alert: String(row.evaluation_update_alert),
-            death_reason_id_contactid: String(row.death_reason_id_contactid),
-            death_reason_id_companyid: String(row.death_reason_id_companyid),
+            deathReasonOwnerType: deathReasonContactType,
+            deathReasonContactId: deathReasonContactId,
             id_deathreasonid: String(row.id_deathreasonid),
-            transfer_reason_id_contactid: String(row.transfer_reason_id_contactid),
-            transfer_reason_id_companyid: String(row.transfer_reason_id_companyid),
+            transferReasonContactType: transferReasonType,
+            transferReasonContactId: transferReasonId,
             id_transferreasonid: String(row.id_transferreasonid),
           };
         })

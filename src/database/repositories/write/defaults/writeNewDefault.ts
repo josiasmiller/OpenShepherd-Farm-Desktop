@@ -1,4 +1,5 @@
 import { getDatabase } from "../../../dbConnections.js";
+import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { WriteNewDefaultParameters } from "../../../models/write/defaults/writeNewDefault.js";
 
 export const writeNewDefaultSettings = async (queryParams: WriteNewDefaultParameters): Promise<boolean> => {
@@ -25,10 +26,22 @@ export const writeNewDefaultSettings = async (queryParams: WriteNewDefaultParame
 };
 
 const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
+
+  var ownerContactId: string = "0";
+  var ownerCompanyId: string = "0";
+
+  if (queryParams.contactType === OwnerType.CONTACT) {
+    ownerContactId = queryParams.ownerId;
+  } else if (queryParams.contactType === OwnerType.COMPANY) {
+    ownerCompanyId = queryParams.ownerId;
+  } else {
+    throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
+  }
+
   const values = [
     queryParams.default_settings_name,
-    queryParams.owner_id_contactid,
-    queryParams.owner_id_companyid,
+    ownerContactId,
+    ownerCompanyId,
     queryParams.owner_id_premiseid,
     queryParams.breeder_id_contactid,
     queryParams.breeder_id_companyid,
