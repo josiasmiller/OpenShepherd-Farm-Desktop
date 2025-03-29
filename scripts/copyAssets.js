@@ -48,7 +48,7 @@ try {
   // Ensure the destination directory exists
   mkdirSync(stylesDest, { recursive: true });
 
-  cpSync(stylesSrc, stylesDest, { recursive: true }); // Recursively copy all files
+  cpSync(stylesSrc, stylesDest, { recursive: true });
   console.log("Copied styles directory successfully!");
 } catch (err) {
   exitOnError("Error copying styles directory: ", err);
