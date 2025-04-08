@@ -51,6 +51,8 @@ const CreateDefaults: React.FC = () => {
   const [tissueSampleTypes, setTissueSampleTypes] = useState<TissueSampleType[]>([]);
   const [tissueTests, setTissueTests] = useState<TissueTest[]>([]);
   const [transferReasons, setTransferReasons] = useState<TransferReason[]>([]);
+  const [birthTypes, setBirthTypes] = useState<BirthType[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
   
   
   
@@ -364,6 +366,40 @@ const CreateDefaults: React.FC = () => {
       }
 
       ///////////////////////////////////////////////////////////////////
+      // Get BirthTypes
+      try {
+        const result = await (window as any).electronAPI.getBirthTypes();
+
+        handleResult(result, {
+          success: (data: BirthType[]) => {
+            setBirthTypes(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch birth types:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getBirthTypes:", err);
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // Get Colors
+      try {
+        const result = await (window as any).electronAPI.getColors();
+  
+        handleResult(result, {
+          success: (data : Color[]) => {
+            setColors(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch colors:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getColors:", err);
+      }
+
+      ///////////////////////////////////////////////////////////////////
       // Get Unit
       // try {
       //   const result = await (window as any).electronAPI.getUnit();
@@ -615,9 +651,6 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_stateid">State:</label>
-            <select id="id_stateid" name="id_stateid"></select>
-
-            <label htmlFor="id_stateid">State:</label>
             <select id="id_stateid" name="id_stateid">
               <option value="">Select a state...</option>
               {states.map((state) => (
@@ -685,11 +718,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same"></select>
 
             <label htmlFor="eid_tag_color_male">EID Tag Color Male:</label>
-            <select id="eid_tag_color_male" name="eid_tag_color_male"></select>
+            <select id="eid_tag_color_male" name="eid_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="eid_tag_color_female">EID Tag Color Female:</label>
-            <select id="eid_tag_color_female" name="eid_tag_color_female"></select>
-
+            <select id="eid_tag_color_female" name="eid_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="eid_tag_location">EID Tag Location:</label>
             <select id="eid_tag_location" name="eid_tag_location">
@@ -714,10 +760,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same"></select>
 
             <label htmlFor="farm_tag_color_male">Farm Tag Color Male Side:</label>
-            <select id="farm_tag_color_male" name="farm_tag_color_male"></select>
+            <select id="farm_tag_color_male" name="farm_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="farm_tag_color_female">Farm Tag Color Female Side:</label>
-            <select id="farm_tag_color_female" name="farm_tag_color_female"></select>
+            <select id="farm_tag_color_female" name="farm_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="section-break"></div>
@@ -749,10 +809,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same"></select>
 
             <label htmlFor="fed_tag_color_male">Federal Tag Color Male Side:</label>
-            <select id="fed_tag_color_male" name="fed_tag_color_male"></select>
+            <select id="fed_tag_color_male" name="fed_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="fed_tag_color_female">Federal Tag Color Female Side:</label>
-            <select id="fed_tag_color_female" name="fed_tag_color_female"></select>
+            <select id="fed_tag_color_female" name="fed_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="fed_tag_location">Federal Tag Location:</label>
             <select id="fed_tag_location" name="fed_tag_location">
@@ -775,10 +849,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same"></select>
 
             <label htmlFor="nues_tag_color_male">NUES Tag Color Male Side:</label>
-            <select id="nues_tag_color_male" name="nues_tag_color_male"></select>
+            <select id="nues_tag_color_male" name="nues_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="nues_tag_color_female">NUES Tag Color Female Side:</label>
-            <select id="nues_tag_color_female" name="nues_tag_color_female"></select>
+            <select id="nues_tag_color_female" name="nues_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="nues_tag_location">NUES Tag Location:</label>
             <select id="nues_tag_location" name="nues_tag_location">
@@ -801,10 +889,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same"></select>
 
             <label htmlFor="trich_tag_color_male">Trich Tag Color Male Side:</label>
-            <select id="trich_tag_color_male" name="trich_tag_color_male"></select>
+            <select id="trich_tag_color_male" name="trich_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="trich_tag_color_female">Trich Tag Color Female Side:</label>
-            <select id="trich_tag_color_female" name="trich_tag_color_female"></select>
+            <select id="trich_tag_color_female" name="trich_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="trich_tag_location">Trich Tag Location:</label>
             <select id="trich_tag_location" name="trich_tag_location">
@@ -833,10 +935,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
 
             <label htmlFor="bangs_tag_color_male">Bangs Tag Color Male Side:</label>
-            <select id="bangs_tag_color_male" name="bangs_tag_color_male"></select>
+            <select id="bangs_tag_color_male" name="bangs_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="bangs_tag_color_female">Bangs Tag Color Female Side:</label>
-            <select id="bangs_tag_color_female" name="bangs_tag_color_female"></select>
+            <select id="bangs_tag_color_female" name="bangs_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="bangs_tag_location">Bangs Tag Location:</label>
             <select id="bangs_tag_location" name="bangs_tag_location">
@@ -859,10 +975,24 @@ const CreateDefaults: React.FC = () => {
             <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
 
             <label htmlFor="sale_order_tag_color_male">Sale Order Tag Color Male Side:</label>
-            <select id="sale_order_tag_color_male" name="sale_order_tag_color_male"></select>
+            <select id="sale_order_tag_color_male" name="sale_order_tag_color_male">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="sale_order_tag_color_female">Sale Order Tag Color Female Side:</label>
-            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female"></select>
+            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="sale_order_tag_location">Sale Order Tag Location:</label>
             <select id="sale_order_tag_location" name="sale_order_tag_location">
@@ -885,7 +1015,14 @@ const CreateDefaults: React.FC = () => {
             <select id="use_paint_marks" name="use_paint_marks"></select>
 
             <label htmlFor="paint_mark_color">Paint Mark Color:</label>
-            <select id="paint_mark_color" name="paint_mark_color"></select>
+            <select id="paint_mark_color" name="paint_mark_color">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="paint_mark_location">Paint Mark Tag Location:</label>
             <select id="paint_mark_location" name="paint_mark_location">
@@ -901,7 +1038,14 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="tattoo_color">Tattoo Color:</label>
-            <select id="tattoo_color" name="tattoo_color"></select>
+            <select id="tattoo_color" name="tattoo_color">
+              <option value="">Select a color...</option>
+              {colors.map((color) => (
+                <option key={color.id} value={color.id}>
+                  {color.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="tattoo_location">Tattoo Location:</label>
             <select id="tattoo_location" name="tattoo_location">
@@ -979,7 +1123,12 @@ const CreateDefaults: React.FC = () => {
           <div className="form-group">
             <label htmlFor="id_speciesid">Species:</label>
             <select id="id_speciesid" name="id_speciesid">
-                <option value="" selected disabled>Select a species...</option>
+              <option value="">Select a Species...</option>
+              {species.map((spec) => (
+                <option key={spec.id} value={spec.id}>
+                  {spec.common_name}
+                </option>
+              ))}
             </select>
 
             <label htmlFor="id_breedid">Breed:</label>
@@ -989,16 +1138,44 @@ const CreateDefaults: React.FC = () => {
           </div>
 
           <label htmlFor="id_flockprefixid">Flock Prefix:</label>
-          <select id="id_flockprefixid" name="id_flockprefixid"></select>
+          <select id="id_flockprefixid" name="id_flockprefixid">
+            <option value="">Select a Flock Prefix...</option>
+            {flockPrefixes.map((flockPrefix) => (
+              <option key={flockPrefix.id} value={flockPrefix.id}>
+                {flockPrefix.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="id_sexid">Sex:</label>
-          <select id="id_sexid" name="id_sexid"></select>
+          <select id="id_sexid" name="id_sexid">
+            <option value="">Select a Flock Prefix...</option>
+            {sexes.map((sex) => (
+              <option key={sex.id} value={sex.id}>
+                {sex.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="birth_type">Birth Type:</label>
-          <select id="birth_type" name="birth_type"></select>
+          <select id="birth_type" name="birth_type">
+            <option value="">Select a Birth Type...</option>
+            {birthTypes.map((bt) => (
+              <option key={bt.id} value={bt.id}>
+                {bt.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="rear_type">Rear Type:</label>
-          <select id="rear_type" name="rear_type"></select>
+          <select id="rear_type" name="rear_type">
+            <option value="">Select a Birth Type...</option>
+            {birthTypes.map((bt) => (
+              <option key={bt.id} value={bt.id}>
+                {bt.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="minimum_birth_weight">Minimum Birth Weight:</label>
           <input type="number" id="minimum_birth_weight" name="minimum_birth_weight" min="0" step="0.1" />
@@ -1014,12 +1191,27 @@ const CreateDefaults: React.FC = () => {
 
           <label htmlFor="sale_price_id_unitsid">Sale Price Units:</label>
           <select id="sale_price_id_unitsid" name="sale_price_id_unitsid"></select>
-
+          
           <label htmlFor="id_deathreasonid">Death Reason:</label>
-          <select id="id_deathreasonid" name="id_deathreasonid"></select>
+          <select id="id_deathreasonid" name="id_deathreasonid">
+            <option value="">Select a Death Reason...</option>
+            {deathReasons.map((dr) => (
+              <option key={dr.id} value={dr.id}>
+                {dr.name}
+              </option>
+            ))}
+          </select>
+
 
           <label htmlFor="id_transferreasonid">Transfer Reason:</label>
-          <select id="id_transferreasonid" name="id_transferreasonid"></select>
+          <select id="id_transferreasonid" name="id_transferreasonid">
+            <option value="">Select a Transfer Reason...</option>
+            {transferReasons.map((tr) => (
+              <option key={tr.id} value={tr.id}>
+                {tr.name}
+              </option>
+            ))}
+          </select>
 
 
           {/* Miscellaneous Section */}
