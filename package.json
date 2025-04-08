@@ -3,14 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "dist/main/main.js",
+  "main": "dist/src/main/main.js",
   "scripts": {
     "build": "tsc && node scripts/copyAssets.js",
-    "start": "electron .",
-    "dev": "npm run build && electron . --no-sandbox",
-    "start_windows": "npm run build && npm start",
-    "start_mac": "npm run build && npm start",
-    "start_linux": "npm run build && npm start"
+    "start": "cross-env NODE_ENV=production electron .",
+    "build_start": "npm run build && cross-env NODE_ENV=development electron .",
+    "vite": "vite"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +16,23 @@
   "devDependencies": {
     "@types/electron": "^1.6.12",
     "@types/node": "^22.13.1",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.1.1",
     "@types/sqlite3": "^5.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
     "electron": "^34.1.1",
     "electron-builder": "^25.1.8",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite": "^6.2.5"
   },
   "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.4.1",
     "sqlite3": "^5.1.7"
   }
 }

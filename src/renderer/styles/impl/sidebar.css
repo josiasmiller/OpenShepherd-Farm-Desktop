@@ -3,7 +3,7 @@
 .sidebar {
     width: 220px; /* Fixed width */
     height: 100vh; /* Full height */
-    background-color: #333;
+    background-color: #3DAFB9;
     color: white;
     padding: 20px;
     position: fixed; /* Keeps it in place */
@@ -16,13 +16,13 @@
 .sidebar h1 {
     font-size: 24px;
     margin-bottom: 20px;
-    color: white;
+    color: black;
 }
   
 .sidebar h2 {
     font-size: 24px;
     margin-bottom: 20px;
-    color: white;
+    color: black;
 }
   
 .sidebar ul {
@@ -35,7 +35,7 @@
 }
   
 .sidebar a {
-    color: white;
+    color: black;
     text-decoration: none;
     font-size: 18px;
     display: block;
@@ -44,4 +44,17 @@
 .sidebar a:hover {
     background-color: #444;
     padding-left: 10px;
+}
+
+.sidebar li {
+    color: black;
+    font-size: 18px;
+    display: block;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.sidebar li:hover {
+    background-color: #73f3ff;
+    padding-left: 20px;
 }
