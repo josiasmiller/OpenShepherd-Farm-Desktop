@@ -29,16 +29,14 @@ import {
 import React, { useEffect, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
 
-type DropdownTerm = {
-  label: string;
-  id: string;
-  [key: string]: string;
-};
-
 const CreateDefaults: React.FC = () => {
   const [ownerContacts, setOwnerContacts] = useState<Owner[]>([]);
+  const [breederContacts, setBreederContacts] = useState<Owner[]>([]);
+  const [vetContacts, setVetContacts] = useState<Owner[]>([]);
+  const [transferReasonContacts, setTransferReasonContactsContacts] = useState<Owner[]>([]);
+
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [premises, setPremises] = useState<DropdownTerm[]>([]);
+  const [premises, setPremises] = useState<Premise[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -50,6 +48,9 @@ const CreateDefaults: React.FC = () => {
         handleResult(result, {
           success: (data : Owner[]) => {
             setOwnerContacts(data);
+            setBreederContacts(data);
+            setVetContacts(data);
+            setTransferReasonContactsContacts(data);
           },
           error: (err) => {
             console.error("Failed to fetch owners:", err);
@@ -74,6 +75,23 @@ const CreateDefaults: React.FC = () => {
         });
       } catch (err) {
         console.error("Unexpected error during getCompanies:", err);
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // Get Premises
+      try {
+        const result = await (window as any).electronAPI.getPremiseInfo();
+  
+        handleResult(result, {
+          success: (data: Premise[]) => {
+            setPremises(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch premises:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getPremises:", err);
       }
 
     };
@@ -151,7 +169,15 @@ const CreateDefaults: React.FC = () => {
             </select>
 
             <label htmlFor="owner_id_premiseid">Owner Premise:</label>
-            <select id="owner_id_premiseid" name="owner_id_premiseid" />
+            <select id="owner_id_premiseid" name="owner_id_premiseid">
+              <option value="">Select a premise...</option>
+              {premises.map((premise) => (
+                <option key={premise.id} value={premise.id}>
+                  {premise.address}, {premise.city}, {premise.country}
+                </option>
+              ))}
+            </select>
+
           </div>
 
           {/* Breeder Selection */}
@@ -168,7 +194,14 @@ const CreateDefaults: React.FC = () => {
             </div>
 
             <label htmlFor="breeder_id_contactid">Breeder Contact:</label>
-            <select id="breeder_id_contactid" name="breeder_id_contactid" disabled />
+            <select id="breeder_id_contactid" name="breeder_id_contactid">
+              <option value="">Select a breeder contact...</option>
+              {breederContacts.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.firstName} {contact.lastName}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="breeder_id_companyid">Breeder Company:</label>
             <select id="breeder_id_companyid" name="breeder_id_companyid" disabled />
@@ -189,8 +222,16 @@ const CreateDefaults: React.FC = () => {
                 Company
               </label>
             </div>
+
             <label htmlFor="transfer_reason_id_contactid">Transfer Reason Contact:</label>
-            <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid" disabled />
+            <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid">
+              <option value="">Select a transfer reason contact...</option>
+              {transferReasonContacts.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.firstName} {contact.lastName}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="transfer_reason_id_companyid">Transfer Reason Company:</label>
             <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid" disabled />
@@ -199,7 +240,14 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="vet_id_contactid">Vet Contact:</label>
-            <select id="vet_id_contactid" name="vet_id_contactid" />
+            <select id="vet_id_contactid" name="vet_id_contactid">
+              <option value="">Select a vet contact...</option>
+              {vetContacts.map((contact) => (
+                <option key={contact.id} value={contact.id}>
+                  {contact.firstName} {contact.lastName}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="vet_id_premiseid">Vet Premise:</label>
             <select id="vet_id_premiseid" name="vet_id_premiseid" />
