@@ -234,8 +234,6 @@ const selectDropdownOption = (elementId: string, selectedId: string) => {
   }
 };
 
-
-
 /**
  * Populates all dropdowns of the page
  */

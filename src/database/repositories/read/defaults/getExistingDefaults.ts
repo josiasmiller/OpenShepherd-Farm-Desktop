@@ -1,11 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { DefaultSettingsResults } from "../../../models/read/defaults/getExistingDefaults.js";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> => {
+export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResults[], string>> => {
   const db = await getDatabase();
   if (db == null) {
-    throw new TypeError("DB Instance is null");
+    return new Failure("DB Instance is null");
   }
 
   let defaultsQuery = `
@@ -158,7 +159,7 @@ export const getExistingDefaults = async (): Promise<DefaultSettingsResults[]> =
         })
         .filter((item) => item !== null); // filter out any invalid rows
         
-        resolve(results);
+        resolve(new Success(results));
       }
     });
   });

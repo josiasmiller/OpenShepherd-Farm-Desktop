@@ -31,19 +31,19 @@ import React, { useEffect, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
 
 const CreateDefaults: React.FC = () => {
+
+  // define the arrays that are used when retrieving data from the DB
   const [contacts, setOwnerContacts] = useState<Owner[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [registryCompanies, setRegistryCompanies] = useState<Company[]>([]);
   const [premises, setPremises] = useState<Premise[]>([]);
-
   const [states, setStates] = useState<State[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
   const [counties, setCounties] = useState<County[]>([]);
-
   const [removeReasons, setRemoveReasons] = useState<RemoveReason[]>([]);
   const [deathReasons, setDeathReasons] = useState<DeathReason[]>([]);
   const [species, setSpecies] = useState<Species[]>([]);
-
+  const [breeds, setBreeds] = useState<Breed[]>([]);
   const [locations, setLocation] = useState<Location[]>([]);
   const [sexes, setSexes] = useState<Sex[]>([]);
   const [flockPrefixes, setFlockPrefixes] = useState<FlockPrefix[]>([]);
@@ -54,16 +54,33 @@ const CreateDefaults: React.FC = () => {
   const [transferReasons, setTransferReasons] = useState<TransferReason[]>([]);
   const [birthTypes, setBirthTypes] = useState<BirthType[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
-
   const [weightUnits, setWeightUnits] = useState<Unit[]>([]);
-  const [lengthUnits, setLengthUnits] = useState<Unit[]>([]);
   const [currencyUnits, setCurrencyUnits] = useState<Unit[]>([]);
-  
-  
-  
+
+  // define state-specific 
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
+  const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
+
 
   useEffect(() => {
     const loadData = async () => {
+      ///////////////////////////////////////////////////////////////////
+      // Get Existing Defaults
+      try {
+        const result = await (window as any).electronAPI.getExistingDefaults();
+  
+        handleResult(result, {
+          success: (data : DefaultSettingsResults[]) => {
+            setExistingDefaults(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch existing defaults:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getExistingDefaults:", err);
+      }
+
       ///////////////////////////////////////////////////////////////////
       // Get Owners (contacts)
       try {
@@ -473,6 +490,29 @@ const CreateDefaults: React.FC = () => {
     loadData();
   }, []);
 
+  const updateBreeds = async (speciesId : string) => {
+    if (!speciesId) return; // no species selected yet
+
+    try {
+      const queryParams: BreedRequest = {
+        species_id: speciesId,
+      };
+
+      const result = await (window as any).electronAPI.getBreeds(queryParams);
+
+      handleResult(result, {
+        success: (breedInfo: Breed[]) => {
+          const sorted = [...breedInfo].sort((a, b) => a.display_order - b.display_order);
+          setBreeds(sorted);
+        },
+        error: (error: string) => {
+          console.error("Error fetching breed data:", error);
+        },
+      });
+    } catch (error) {
+      console.error("Unexpected error while fetching breeds:", error);
+    }
+  };
 
   return (
     <div className="container">
@@ -492,9 +532,18 @@ const CreateDefaults: React.FC = () => {
           <div className="existing-setting-container">
             <label htmlFor="existing-settings">Start from Existing Setting:</label>
             <select id="existing-settings" name="existing-settings">
-              <option value="" disabled selected>Select a setting...</option>
-              {/* More options will be added dynamically */}
+              <option value="">Select an Existing Default...</option>
+              {existingDefaults.map((existingdef) => (
+                <option key={existingdef.id} value={existingdef.id}>
+                  {existingdef.name}
+                </option>
+              ))}
             </select>
+            {/* <select id="existing-settings" name="existing-settings">
+              <option value="" disabled selected>Select a setting...</option>
+            </select> */}
+
+            {/* existingDefaults */}
 
             {/* Load Default Button */}
             <button id="load-default-btn" type="button">
@@ -1226,7 +1275,16 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_speciesid">Species:</label>
-            <select id="id_speciesid" name="id_speciesid">
+            <select
+              id="id_speciesid"
+              name="id_speciesid"
+              value={selectedSpeciesId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setSelectedSpeciesId(id);
+                updateBreeds(id);
+              }}
+            >
               <option value="">Select a Species...</option>
               {species.map((spec) => (
                 <option key={spec.id} value={spec.id}>
@@ -1235,9 +1293,19 @@ const CreateDefaults: React.FC = () => {
               ))}
             </select>
 
-            <label htmlFor="id_breedid">Breed:</label>
-            <select id="id_breedid" name="id_breedid" disabled>
-                <option value="" selected disabled>Select a breed...</option>
+            <select
+              id="id_breedid"
+              name="id_breedid"
+              disabled={!breeds.length}
+            >
+              <option value="" disabled selected>
+                Select a breed...
+              </option>
+              {breeds.map((breed) => (
+                <option key={breed.id} value={breed.id}>
+                  {breed.name}
+                </option>
+              ))}
             </select>
           </div>
 
