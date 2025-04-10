@@ -53,6 +53,10 @@ const CreateDefaults: React.FC = () => {
   const [transferReasons, setTransferReasons] = useState<TransferReason[]>([]);
   const [birthTypes, setBirthTypes] = useState<BirthType[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
+
+  const [weightUnits, setWeightUnits] = useState<Unit[]>([]);
+  const [lengthUnits, setLengthUnits] = useState<Unit[]>([]);
+  const [currencyUnits, setCurrencyUnits] = useState<Unit[]>([]);
   
   
   
@@ -400,21 +404,50 @@ const CreateDefaults: React.FC = () => {
       }
 
       ///////////////////////////////////////////////////////////////////
-      // Get Unit
-      // try {
-      //   const result = await (window as any).electronAPI.getUnit();
+      // Get Weight Units
+      try {
 
-      //   handleResult(result, {
-      //     success: (data: Unit[]) => {
-      //       setUnit(data);
-      //     },
-      //     error: (err) => {
-      //       console.error("Failed to fetch unit:", err);
-      //     },
-      //   });
-      // } catch (err) {
-      //   console.error("Unexpected error during getUnit:", err);
-      // }
+        const weightReq: UnitRequest = {
+          unit_type_id: null,
+          unit_type_name: "weight",
+        };
+
+        const result = await (window as any).electronAPI.getUnits(weightReq);
+
+        handleResult(result, {
+          success: (data: Unit[]) => {
+            setWeightUnits(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch unit:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getUnit:", err);
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // Get Currency Units
+      try {
+
+        const currencyReq: UnitRequest = {
+          unit_type_id: null,
+          unit_type_name: "currency",
+        };
+
+        const result = await (window as any).electronAPI.getUnits(currencyReq);
+
+        handleResult(result, {
+          success: (data: Unit[]) => {
+            setCurrencyUnits(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch unit:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getUnit:", err);
+      }
 
 
     }; // end loadData definition
@@ -1184,13 +1217,34 @@ const CreateDefaults: React.FC = () => {
           <input type="number" id="maximum_birth_weight" name="maximum_birth_weight" min="0" step="0.1" />
 
           <label htmlFor="birth_weight_id_unitsid">Birth Weight Units:</label>
-          <select id="birth_weight_id_unitsid" name="birth_weight_id_unitsid"></select>
+          <select id="birth_weight_id_unitsid" name="birth_weight_id_unitsid">
+            <option value="">Select a Birth Weight Unit...</option>
+            {weightUnits.map((weight) => (
+              <option key={weight.id} value={weight.id}>
+                {weight.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="weight_id_unitsid">Weight Units:</label>
-          <select id="weight_id_unitsid" name="weight_id_unitsid"></select>
+          <select id="weight_id_unitsid" name="weight_id_unitsid">
+            <option value="">Select a Weight Unit...</option>
+            {weightUnits.map((weight) => (
+              <option key={weight.id} value={weight.id}>
+                {weight.name}
+              </option>
+            ))}
+          </select>
 
           <label htmlFor="sale_price_id_unitsid">Sale Price Units:</label>
-          <select id="sale_price_id_unitsid" name="sale_price_id_unitsid"></select>
+          <select id="sale_price_id_unitsid" name="sale_price_id_unitsid">
+            <option value="">Select a Currency...</option>
+            {currencyUnits.map((curr) => (
+              <option key={curr.id} value={curr.id}>
+                {curr.name}
+              </option>
+            ))}
+          </select>
           
           <label htmlFor="id_deathreasonid">Death Reason:</label>
           <select id="id_deathreasonid" name="id_deathreasonid">
