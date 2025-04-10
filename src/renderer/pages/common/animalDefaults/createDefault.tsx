@@ -64,426 +64,263 @@ const CreateDefaults: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      ///////////////////////////////////////////////////////////////////
-      // Get Existing Defaults
-      try {
-        const result = await (window as any).electronAPI.getExistingDefaults();
-  
-        handleResult(result, {
-          success: (data : DefaultSettingsResults[]) => {
-            setExistingDefaults(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch existing defaults:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getExistingDefaults:", err);
-      }
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Owners (contacts)
-      try {
-        const result = await (window as any).electronAPI.getOwnerInfo();
-  
-        handleResult(result, {
-          success: (data : Owner[]) => {
-            setOwnerContacts(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch owners:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getOwners:", err);
-      }
-  
-      ///////////////////////////////////////////////////////////////////
-      // Get Companies
-      try {
-        const result = await (window as any).electronAPI.getCompanyInfo(false);
-  
-        handleResult(result, {
-          success: (data: Company[]) => {
-            setCompanies(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch companies:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getCompanies:", err);
-      }
+      // define requests needed for specific pieces of data
+      const weightReq: UnitRequest = {
+        unit_type_id: null,
+        unit_type_name: "weight",
+      };
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Registries Companies
-      try {
-        const result = await (window as any).electronAPI.getCompanyInfo(true);
-  
-        handleResult(result, {
-          success: (data: Company[]) => {
-            setRegistryCompanies(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch registry companies:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getCompanies for registries:", err);
-      }
+      const currencyReq: UnitRequest = {
+        unit_type_id: null,
+        unit_type_name: "currency",
+      };
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Premises
-      try {
-        const result = await (window as any).electronAPI.getPremiseInfo();
-  
-        handleResult(result, {
-          success: (data: Premise[]) => {
-            setPremises(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch premises:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getPremises:", err);
-      }
+      const [
+        existingDefaultsResult,
+        ownerResult,
+        standardCompanyResult,
+        registryCompanyResult,
+        premiseResult,
+        stateResult,
+        countyResult,
+        removeReasonResult,
+        deathReasonResult,
+        speciesResult,
+        sexResult,
+        locationResult,
+        flockPrefixResult,
+        tagTypeResult,
+        tissueSampleContainerTypeResult,
+        tissueSampleTypeResult,
+        tissueTestResult,
+        transferReasonsResult,
+        birthTypeResult,
+        colorResult,
+        weightUnitsResult,
+        currencyUnitsResult,
+      ] = await Promise.all([
+        (window as any).electronAPI.getExistingDefaults(),
+        (window as any).electronAPI.getOwnerInfo(),
+        (window as any).electronAPI.getCompanyInfo(false),
+        (window as any).electronAPI.getCompanyInfo(true),
+        (window as any).electronAPI.getPremiseInfo(),
+        (window as any).electronAPI.getStates(),
+        (window as any).electronAPI.getCounties(),
+        (window as any).electronAPI.getRemoveReasons(),
+        (window as any).electronAPI.getDeathReasons(),
+        (window as any).electronAPI.getSpecies(),
+        (window as any).electronAPI.getSexes(),
+        (window as any).electronAPI.getLocations(),
+        (window as any).electronAPI.getFlockPrefixes(),
+        (window as any).electronAPI.getTagTypes(),
+        (window as any).electronAPI.getTissueSampleContainerTypes(),
+        (window as any).electronAPI.getTissueSampleTypes(),
+        (window as any).electronAPI.getTissueTests(),
+        (window as any).electronAPI.getTransferReasons(),
+        (window as any).electronAPI.getBirthTypes(),
+        (window as any).electronAPI.getColors(),
+        (window as any).electronAPI.getUnits(weightReq),
+        (window as any).electronAPI.getUnits(currencyReq),
+      ]);
 
-      ///////////////////////////////////////////////////////////////////
-      // Get States
-      try {
-        const result = await (window as any).electronAPI.getStates();
-  
-        handleResult(result, {
-          success: (data: State[]) => {
-            setStates(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch states:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getStates:", err);
-      }
+      handleResult(existingDefaultsResult, {
+        success: (data : DefaultSettingsResults[]) => {
+          setExistingDefaults(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch existing defaults:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Countries
-      try {
-        const result = await (window as any).electronAPI.getCountries();
-  
-        handleResult(result, {
-          success: (data: Country[]) => {
-            setCountries(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch countries:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getCountries:", err);
-      }
+      handleResult(ownerResult, {
+        success: (data : Owner[]) => {
+          setOwnerContacts(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch owners:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Counties
-      try {
-        const result = await (window as any).electronAPI.getCounties();
-  
-        handleResult(result, {
-          success: (data: County[]) => {
-            setCounties(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch counties:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getCounties:", err);
-      }
+      handleResult(standardCompanyResult, {
+        success: (data: Company[]) => {
+          setCompanies(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch companies:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Breeds
-      // try {
-      //   const result = await (window as any).electronAPI.getBreeds();
+      handleResult(registryCompanyResult, {
+        success: (data: Company[]) => {
+          setRegistryCompanies(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch registry companies:", err);
+        },
+      });
 
-      //   handleResult(result, {
-      //     success: (data: Breed[]) => {
-      //       setBreeds(data);
-      //     },
-      //     error: (err) => {
-      //       console.error("Failed to fetch breeds:", err);
-      //     },
-      //   });
-      // } catch (err) {
-      //   console.error("Unexpected error during getBreeds:", err);
-      // }
+      handleResult(premiseResult, {
+        success: (data: Premise[]) => {
+          setPremises(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch premises:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get RemoveReasons
-      try {
-        const result = await (window as any).electronAPI.getRemoveReasons();
+      handleResult(stateResult, {
+        success: (data: State[]) => {
+          setStates(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch states:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: RemoveReason[]) => {
-            setRemoveReasons(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch remove reasons:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getRemoveReasons:", err);
-      }
+      handleResult(countyResult, {
+        success: (data: County[]) => {
+          setCounties(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch counties:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get DeathReasons
-      try {
-        const result = await (window as any).electronAPI.getDeathReasons();
+      handleResult(removeReasonResult, {
+        success: (data: RemoveReason[]) => {
+          setRemoveReasons(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch remove reasons:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: DeathReason[]) => {
-            setDeathReasons(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch death reasons:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getDeathReasons:", err);
-      }
+      handleResult(deathReasonResult, {
+        success: (data: DeathReason[]) => {
+          setDeathReasons(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch death reasons:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Species
-      try {
-        const result = await (window as any).electronAPI.getSpecies();
+      handleResult(speciesResult, {
+        success: (data: Species[]) => {
+          setSpecies(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch species:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: Species[]) => {
-            setSpecies(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch species:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getSpecies:", err);
-      }
+      handleResult(sexResult, {
+        success: (data: Sex[]) => {
+          setSexes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch sex:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Sex
-      try {
-        const result = await (window as any).electronAPI.getSexes();
+      handleResult(locationResult, {
+        success: (data: Location[]) => {
+          setLocation(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch location:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: Sex[]) => {
-            setSexes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch sex:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getSex:", err);
-      }
+      handleResult(flockPrefixResult, {
+        success: (data: FlockPrefix[]) => {
+          setFlockPrefixes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch flock prefix:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get Location
-      try {
-        const result = await (window as any).electronAPI.getLocations();
+      handleResult(tagTypeResult, {
+        success: (data: TagType[]) => {
+          setTagTypes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch tag type:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: Location[]) => {
-            setLocation(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch location:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getLocation:", err);
-      }
+      handleResult(tissueSampleContainerTypeResult, {
+        success: (data: TissueSampleContainerType[]) => {
+          setTissueSampleContainerTypes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch tissue sample container type:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get FlockPrefix
-      try {
-        const result = await (window as any).electronAPI.getFlockPrefixes();
+      handleResult(tissueSampleTypeResult, {
+        success: (data: TissueSampleType[]) => {
+          setTissueSampleTypes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch tissue sample type:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: FlockPrefix[]) => {
-            setFlockPrefixes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch flock prefix:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getFlockPrefix:", err);
-      }
+      handleResult(tissueTestResult, {
+        success: (data: TissueTest[]) => {
+          setTissueTests(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch tissue tests:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get TagType
-      try {
-        const result = await (window as any).electronAPI.getTagTypes();
+      handleResult(transferReasonsResult, {
+        success: (data: TransferReason[]) => {
+          setTransferReasons(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch transfer reason:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: TagType[]) => {
-            setTagTypes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch tag type:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getTagType:", err);
-      }
+      handleResult(birthTypeResult, {
+        success: (data: BirthType[]) => {
+          setBirthTypes(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch birth types:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get TissueSampleContainerType
-      try {
-        const result = await (window as any).electronAPI.getTissueSampleContainerTypes();
+      handleResult(colorResult, {
+        success: (data : Color[]) => {
+          setColors(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch colors:", err);
+        },
+      });
 
-        handleResult(result, {
-          success: (data: TissueSampleContainerType[]) => {
-            setTissueSampleContainerTypes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch tissue sample container type:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getTissueSampleContainerType:", err);
-      }
+      handleResult(weightUnitsResult, {
+        success: (data: Unit[]) => {
+          setWeightUnits(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch unit:", err);
+        },
+      });
 
-      ///////////////////////////////////////////////////////////////////
-      // Get TissueSampleType
-      try {
-        const result = await (window as any).electronAPI.getTissueSampleTypes();
-
-        handleResult(result, {
-          success: (data: TissueSampleType[]) => {
-            setTissueSampleTypes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch tissue sample type:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getTissueSampleType:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get TissueTest
-      try {
-        const result = await (window as any).electronAPI.getTissueTests();
-
-        handleResult(result, {
-          success: (data: TissueTest[]) => {
-            setTissueTests(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch tissue tests:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getTissueTest:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get TransferReason
-      try {
-        const result = await (window as any).electronAPI.getTransferReasons();
-
-        handleResult(result, {
-          success: (data: TransferReason[]) => {
-            setTransferReasons(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch transfer reason:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getTransferReason:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get BirthTypes
-      try {
-        const result = await (window as any).electronAPI.getBirthTypes();
-
-        handleResult(result, {
-          success: (data: BirthType[]) => {
-            setBirthTypes(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch birth types:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getBirthTypes:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get Colors
-      try {
-        const result = await (window as any).electronAPI.getColors();
-  
-        handleResult(result, {
-          success: (data : Color[]) => {
-            setColors(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch colors:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getColors:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get Weight Units
-      try {
-
-        const weightReq: UnitRequest = {
-          unit_type_id: null,
-          unit_type_name: "weight",
-        };
-
-        const result = await (window as any).electronAPI.getUnits(weightReq);
-
-        handleResult(result, {
-          success: (data: Unit[]) => {
-            setWeightUnits(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch unit:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getUnit:", err);
-      }
-
-      ///////////////////////////////////////////////////////////////////
-      // Get Currency Units
-      try {
-
-        const currencyReq: UnitRequest = {
-          unit_type_id: null,
-          unit_type_name: "currency",
-        };
-
-        const result = await (window as any).electronAPI.getUnits(currencyReq);
-
-        handleResult(result, {
-          success: (data: Unit[]) => {
-            setCurrencyUnits(data);
-          },
-          error: (err) => {
-            console.error("Failed to fetch unit:", err);
-          },
-        });
-      } catch (err) {
-        console.error("Unexpected error during getUnit:", err);
-      }
-
+      handleResult(currencyUnitsResult, {
+        success: (data: Unit[]) => {
+          setCurrencyUnits(data);
+        },
+        error: (err) => {
+          console.error("Failed to fetch unit:", err);
+        },
+      });
 
     }; // end loadData definition
   
