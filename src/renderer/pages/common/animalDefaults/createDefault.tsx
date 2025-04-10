@@ -33,6 +33,7 @@ import { handleResult } from "../../../../shared/results/resultTypes";
 const CreateDefaults: React.FC = () => {
   const [contacts, setOwnerContacts] = useState<Owner[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [registryCompanies, setRegistryCompanies] = useState<Company[]>([]);
   const [premises, setPremises] = useState<Premise[]>([]);
 
   const [states, setStates] = useState<State[]>([]);
@@ -83,7 +84,7 @@ const CreateDefaults: React.FC = () => {
       ///////////////////////////////////////////////////////////////////
       // Get Companies
       try {
-        const result = await (window as any).electronAPI.getCompanyInfo(false); // or true if filtering registry companies
+        const result = await (window as any).electronAPI.getCompanyInfo(false);
   
         handleResult(result, {
           success: (data: Company[]) => {
@@ -95,6 +96,23 @@ const CreateDefaults: React.FC = () => {
         });
       } catch (err) {
         console.error("Unexpected error during getCompanies:", err);
+      }
+
+      ///////////////////////////////////////////////////////////////////
+      // Get Registries Companies
+      try {
+        const result = await (window as any).electronAPI.getCompanyInfo(true);
+  
+        handleResult(result, {
+          success: (data: Company[]) => {
+            setRegistryCompanies(data);
+          },
+          error: (err) => {
+            console.error("Failed to fetch registry companies:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Unexpected error during getCompanies for registries:", err);
       }
 
       ///////////////////////////////////////////////////////////////////
@@ -490,6 +508,7 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <h2>Contacts, Companies, & Premises</h2>
           <hr />
+          <div className="section-break"></div>
 
           {/* Owner Selection */}
           <div className="form-group">
@@ -533,8 +552,9 @@ const CreateDefaults: React.FC = () => {
                 </option>
               ))}
             </select>
-
           </div>
+
+          <div className="section-break"></div>
 
           {/* Breeder Selection */}
           <div className="form-group">
@@ -579,6 +599,8 @@ const CreateDefaults: React.FC = () => {
               ))}
             </select>
           </div>
+
+          <div className="section-break"></div>
 
           {/* Transfer Reason Selection */}
           <div className="form-group">
@@ -637,6 +659,8 @@ const CreateDefaults: React.FC = () => {
             </select>
           </div>
 
+          <div className="section-break"></div>
+
           {/* More sections follow in similar structure */}
           <div className="section-break"></div>
           <div className="form-group">
@@ -664,7 +688,14 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_registry_id_companyid">Registry Company:</label>
-            <select id="id_registry_id_companyid" name="id_registry_id_companyid"></select>
+            <select id="id_registry_id_companyid" name="id_registry_id_companyid">
+              <option value="">Select a Registry Company...</option>
+              {registryCompanies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
 
             <label htmlFor="registry_id_premiseid">Registry Premise:</label>
             <select id="registry_id_premiseid" name="registry_id_premiseid">
@@ -748,7 +779,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_eid_tag_male_color_female_color_same">EID Tag Male/Female Same Color:</label>
-            <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same"></select>
+            <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="eid_tag_color_male">EID Tag Color Male:</label>
             <select id="eid_tag_color_male" name="eid_tag_color_male">
@@ -790,7 +825,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_farm_tag_male_color_female_color_same">Farm Tag Male/Female Same Color:</label>
-            <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same"></select>
+            <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="farm_tag_color_male">Farm Tag Color Male Side:</label>
             <select id="farm_tag_color_male" name="farm_tag_color_male">
@@ -816,7 +855,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="farm_tag_based_on_eid_tag">Farm Tag Based on EID Tag:</label>
-            <select id="farm_tag_based_on_eid_tag" name="farm_tag_based_on_eid_tag"></select>
+            <select id="farm_tag_based_on_eid_tag" name="farm_tag_based_on_eid_tag">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="farm_tag_number_digits_from_eid">Farm Tag Number Digits from EID:</label>
             <input type="number" id="farm_tag_number_digits_from_eid" name="farm_tag_number_digits_from_eid" min="0" step="1" />
@@ -839,7 +882,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_fed_tag_male_color_female_color_same">Federal Tag Male/Female Same Color:</label>
-            <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same"></select>
+            <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="fed_tag_color_male">Federal Tag Color Male Side:</label>
             <select id="fed_tag_color_male" name="fed_tag_color_male">
@@ -879,7 +926,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_nues_tag_male_color_female_color_same">NUES Tag Male/Female Same Color:</label>
-            <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same"></select>
+            <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="nues_tag_color_male">NUES Tag Color Male Side:</label>
             <select id="nues_tag_color_male" name="nues_tag_color_male">
@@ -919,7 +970,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_trich_tag_male_color_female_color_same">Trich Tag Male/Female Same Color:</label>
-            <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same"></select>
+            <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="trich_tag_color_male">Trich Tag Color Male Side:</label>
             <select id="trich_tag_color_male" name="trich_tag_color_male">
@@ -952,7 +1007,11 @@ const CreateDefaults: React.FC = () => {
             </select>
 
             <label htmlFor="trich_tag_auto_increment">Trich Tag Auto Increment:</label>
-            <select id="trich_tag_auto_increment" name="trich_tag_auto_increment"></select>
+            <select id="trich_tag_auto_increment" name="trich_tag_auto_increment">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="trich_tag_starting_value">Trich Tag Auto Increment Starting Value:</label>
             <input type="number" id="trich_tag_starting_value" name="trich_tag_starting_value" min="0" step="1" />
@@ -965,7 +1024,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
-            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same"></select>
+            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="bangs_tag_color_male">Bangs Tag Color Male Side:</label>
             <select id="bangs_tag_color_male" name="bangs_tag_color_male">
@@ -1005,7 +1068,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
-            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same"></select>
+            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="sale_order_tag_color_male">Sale Order Tag Color Male Side:</label>
             <select id="sale_order_tag_color_male" name="sale_order_tag_color_male">
@@ -1045,7 +1112,11 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="use_paint_marks">Use Paint Marks:</label>
-            <select id="use_paint_marks" name="use_paint_marks"></select>
+            <select id="use_paint_marks" name="use_paint_marks">
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
 
             <label htmlFor="paint_mark_color">Paint Mark Color:</label>
             <select id="paint_mark_color" name="paint_mark_color">
