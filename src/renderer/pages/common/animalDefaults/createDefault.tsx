@@ -61,7 +61,10 @@ const CreateDefaults: React.FC = () => {
   // define state-specific 
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
+
   const [ownerSelection, setOwnerSelection] = useState<OwnerType>(OwnerType.CONTACT);
+  const [breederSelection, setBreederSelection] = useState<OwnerType>(OwnerType.CONTACT);
+
 
 
 
@@ -358,6 +361,11 @@ const CreateDefaults: React.FC = () => {
     setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
   };
 
+  const handleBreederSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBreederSelection(e.target.id === "breeder_select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+  };
+  
+
   const contactOptions = useMemo(() => (
     contacts.map((contact) => (
       <option key={contact.id} value={contact.id}>
@@ -635,23 +643,43 @@ const CreateDefaults: React.FC = () => {
           <div className="form-group">
             <div className="radio-group">
               <label>
-                <input type="radio" id="breeder_select_contact" name="breeder_selection" defaultChecked />
+                <input
+                  type="radio"
+                  id="breeder_select_contact"
+                  name="breeder_selection"
+                  checked={breederSelection === OwnerType.CONTACT}
+                  onChange={handleBreederSelectionChange}
+                />
                 Contact
               </label>
               <label>
-                <input type="radio" id="breeder_select_company" name="breeder_selection" />
+                <input
+                  type="radio"
+                  id="breeder_select_company"
+                  name="breeder_selection"
+                  checked={breederSelection === OwnerType.COMPANY}
+                  onChange={handleBreederSelectionChange}
+                />
                 Company
               </label>
             </div>
 
             <label htmlFor="breeder_id_contactid">Breeder Contact:</label>
-            <select id="breeder_id_contactid" name="breeder_id_contactid">
+            <select
+              id="breeder_id_contactid"
+              name="breeder_id_contactid"
+              disabled={breederSelection !== OwnerType.CONTACT}
+            >
               <option value="">Select a breeder contact...</option>
               {contactOptions}
             </select>
 
             <label htmlFor="breeder_id_companyid">Breeder Company:</label>
-            <select id="breeder_id_companyid" name="breeder_id_companyid">
+            <select
+              id="breeder_id_companyid"
+              name="breeder_id_companyid"
+              disabled={breederSelection !== OwnerType.COMPANY}
+            >
               <option value="">Select a breeder company...</option>
               {companyOptions}
             </select>
