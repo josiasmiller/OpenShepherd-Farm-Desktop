@@ -10,7 +10,7 @@ import {
   FlockPrefix, 
   Location, 
   Owner, 
-  OwnerType,
+  // OwnerType,
   Premise, 
   RemoveReason, 
   Sex, 
@@ -25,6 +25,8 @@ import {
   UnitRequest,
   WriteNewDefaultParameters,
 } from "../../../../database";
+
+import { OwnerType } from "../../../../database/client-types";
 
 import { Result, handleResult } from "../../../../shared/results/resultTypes.js";
 import { getCurrentFormattedTimestamp } from "../utils/times.js";
@@ -233,6 +235,8 @@ const selectDropdownOption = (elementId: string, selectedId: string) => {
     console.warn(`No option with data-database-id="${selectedId}" found in dropdown "${elementId}".`);
   }
 };
+
+
 
 /**
  * Populates all dropdowns of the page

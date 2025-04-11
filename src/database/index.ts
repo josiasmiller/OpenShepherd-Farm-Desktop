@@ -1,30 +1,30 @@
 
 // export read models 
-export { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
-export { BirthType } from "./models/read/animal/births/birthType.js";
-export { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
-export { Company } from "./models/read/owners/company.js";
-export { Color } from "./models/read/tags/color.js";
-export { Country } from "./models/read/locations/country.js";
-export { County } from "./models/read/locations/county.js";
-export { DeathReason } from "./models/read/deaths/deathReason.js";
-export { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
-export { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
-export { Location } from "./models/read/tags/location.js";
-export { Owner } from "./models/read/owners/owner.js";
-export { OwnerType } from "./models/read/owners/ownerType.js"
-export { Premise } from "./models/read/premises/premise.js";
-export { RemoveReason } from "./models/read/tags/removeReason.js";
-export { Sex } from "./models/read/animal/general/sex.js";
-export { Species } from "./models/read/animal/general/species.js";
-export { State } from "./models/read/locations/state.js";
-export { TagType } from "./models/read/tags/tagType.js";
-export { TissueSampleType } from "./models/read/tissues/tissueSampleType.js"
-export { TissueSampleContainerType } from "./models/read/tissues/tissueSampleContainerType.js"
-export { TissueTest } from "./models/read/tissues/tissueTest.js"
-export { TransferReason } from "./models/read/animal/transfers/transferReaon.js"
-export { UnitRequest, Unit } from "./models/read/units/unit.js";
-export { UnitType } from "./models/read/units/unitType.js";
+export type { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
+export type { BirthType } from "./models/read/animal/births/birthType.js";
+export type { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
+export type { Company } from "./models/read/owners/company.js";
+export type { Color } from "./models/read/tags/color.js";
+export type { Country } from "./models/read/locations/country.js";
+export type { County } from "./models/read/locations/county.js";
+export type { DeathReason } from "./models/read/deaths/deathReason.js";
+export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
+export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
+export type { Location } from "./models/read/tags/location.js";
+export type { Owner } from "./models/read/owners/owner.js";
+// export { OwnerType } from "./models/read/owners/ownerType.js"
+export type { Premise } from "./models/read/premises/premise.js";
+export type { RemoveReason } from "./models/read/tags/removeReason.js";
+export type { Sex } from "./models/read/animal/general/sex.js";
+export type { Species } from "./models/read/animal/general/species.js";
+export type { State } from "./models/read/locations/state.js";
+export type { TagType } from "./models/read/tags/tagType.js";
+export type { TissueSampleType } from "./models/read/tissues/tissueSampleType.js"
+export type { TissueSampleContainerType } from "./models/read/tissues/tissueSampleContainerType.js"
+export type { TissueTest } from "./models/read/tissues/tissueTest.js"
+export type { TransferReason } from "./models/read/animal/transfers/transferReaon.js"
+export type { UnitRequest, Unit } from "./models/read/units/unit.js";
+export type { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
@@ -55,7 +55,7 @@ export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // export write models
-export { WriteNewDefaultParameters } from "./models/write/defaults/writeNewDefault.js";
+export type { WriteNewDefaultParameters } from "./models/write/defaults/writeNewDefault.js";
 
 // export write repositories
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 

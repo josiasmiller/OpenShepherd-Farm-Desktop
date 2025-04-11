@@ -11,7 +11,6 @@ import {
   FlockPrefix, 
   Location, 
   Owner, 
-  OwnerType,
   Premise, 
   RemoveReason, 
   Sex, 
@@ -27,7 +26,9 @@ import {
   WriteNewDefaultParameters,
 } from "../../../../database";
 
-import React, { useEffect, useState } from "react";
+import { OwnerType } from "../../../../database/client-types";
+
+import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
 
 const CreateDefaults: React.FC = () => {
@@ -60,6 +61,8 @@ const CreateDefaults: React.FC = () => {
   // define state-specific 
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
+  const [ownerSelection, setOwnerSelection] = useState<OwnerType>(OwnerType.CONTACT);
+
 
 
   useEffect(() => {
@@ -351,6 +354,148 @@ const CreateDefaults: React.FC = () => {
     }
   };
 
+  const handleOwnerSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+  };
+
+  const contactOptions = useMemo(() => (
+    contacts.map((contact) => (
+      <option key={contact.id} value={contact.id}>
+        {contact.firstName} {contact.lastName}
+      </option>
+    ))
+  ), [contacts]);
+
+  const companyOptions = useMemo(() => (
+    companies.map((company) => (
+      <option key={company.id} value={company.id}>
+        {company.name}
+      </option>
+    ))
+  ), [companies]);
+  
+  const premiseOptions = useMemo(() => (
+    premises.map((premise) => (
+      <option key={premise.id} value={premise.id}>
+        {premise.address}, {premise.city}, {premise.country}
+      </option>
+    ))
+  ), [premises]);
+
+  const registryCompanyOptions = useMemo(() => (
+    registryCompanies.map((company) => (
+      <option key={company.id} value={company.id}>
+        {company.name}
+      </option>
+    ))
+  ), [registryCompanies]);
+  
+
+  const colorOptions = useMemo(() => (
+    colors.map((color) => (
+      <option key={color.id} value={color.id}>
+        {color.name}
+      </option>
+    ))
+  ), [premises]);
+
+  const stateOptions = useMemo(() => (
+    states.map((state) => (
+      <option key={state.id} value={state.id}>
+        {state.name}
+      </option>
+    ))
+  ), [states]);
+  
+  const countyOptions = useMemo(() => (
+    counties.map((county) => (
+      <option key={county.id} value={county.id}>
+        {county.name}
+      </option>
+    ))
+  ), [counties]);
+
+  const tagTypeOptions = useMemo(() => (
+    tagTypes.map((tagType) => (
+      <option key={tagType.id} value={tagType.id}>
+        {tagType.name}
+      </option>
+    ))
+  ), [tagTypes]);
+
+  const locationOptions = useMemo(() => (
+    locations.map((location) => (
+      <option key={location.id} value={location.id}>
+        {location.name}
+      </option>
+    ))
+  ), [locations]);
+  
+  const tissueSampleTypeOptions = useMemo(() => (
+    tissueSampleTypes.map((type) => (
+      <option key={type.id} value={type.id}>
+        {type.name}
+      </option>
+    ))
+  ), [tissueSampleTypes]);
+  
+  const tissueTestOptions = useMemo(() => (
+    tissueTests.map((test) => (
+      <option key={test.id} value={test.id}>
+        {test.name}
+      </option>
+    ))
+  ), [tissueTests]);
+  
+  const tissueSampleContainerTypeOptions = useMemo(() => (
+    tissueSampleContainerTypes.map((container) => (
+      <option key={container.id} value={container.id}>
+        {container.name}
+      </option>
+    ))
+  ), [tissueSampleContainerTypes]);
+
+  const flockPrefixOptions = useMemo(() => (
+    flockPrefixes.map((flockPrefix) => (
+      <option key={flockPrefix.id} value={flockPrefix.id}>
+        {flockPrefix.name}
+      </option>
+    ))
+  ), [flockPrefixes]);
+  
+  const sexOptions = useMemo(() => (
+    sexes.map((sex) => (
+      <option key={sex.id} value={sex.id}>
+        {sex.name}
+      </option>
+    ))
+  ), [sexes]);
+  
+  const birthTypeOptions = useMemo(() => (
+    birthTypes.map((bt) => (
+      <option key={bt.id} value={bt.id}>
+        {bt.name}
+      </option>
+    ))
+  ), [birthTypes]);
+
+  const deathReasonOptions = useMemo(() => (
+    deathReasons.map((dr) => (
+      <option key={dr.id} value={dr.id}>
+        {dr.name}
+      </option>
+    ))
+  ), [deathReasons]);
+
+  const transferReasonOptions = useMemo(() => (
+    transferReasons.map((tr) => (
+      <option key={tr.id} value={tr.id}>
+        {tr.name}
+      </option>
+    ))
+  ), [transferReasons]);
+  
+
   return (
     <div className="container">
       {/* Top Section */}
@@ -376,9 +521,6 @@ const CreateDefaults: React.FC = () => {
                 </option>
               ))}
             </select>
-            {/* <select id="existing-settings" name="existing-settings">
-              <option value="" disabled selected>Select a setting...</option>
-            </select> */}
 
             {/* existingDefaults */}
 
@@ -400,43 +542,51 @@ const CreateDefaults: React.FC = () => {
           <div className="form-group">
             <div className="radio-group">
               <label>
-                <input type="radio" id="select_contact" name="owner_selection" defaultChecked />
+                <input
+                  type="radio"
+                  id="select_contact"
+                  name="owner_selection"
+                  checked={ownerSelection === OwnerType.CONTACT}
+                  onChange={handleOwnerSelectionChange}
+                />
                 Contact
               </label>
               <label>
-                <input type="radio" id="select_company" name="owner_selection" />
+                <input
+                  type="radio"
+                  id="select_company"
+                  name="owner_selection"
+                  checked={ownerSelection === OwnerType.COMPANY}
+                  onChange={handleOwnerSelectionChange}
+                />
                 Company
               </label>
             </div>
 
             <label htmlFor="owner_id_contactid">Owner Contact:</label>
-            <select id="owner_id_contactid" name="owner_id_contactid">
+            <select
+              id="owner_id_contactid"
+              name="owner_id_contactid"
+              disabled={ownerSelection !== OwnerType.CONTACT}
+            >
               <option value="">Select a contact...</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.firstName} {contact.lastName}
-                </option>
-              ))}
+              {contactOptions}
             </select>
 
             <label htmlFor="owner_id_companyid">Owner Company:</label>
-            <select id="owner_id_companyid" name="owner_id_companyid">
+            <select
+              id="owner_id_companyid"
+              name="owner_id_companyid"
+              disabled={ownerSelection !== OwnerType.COMPANY}
+            >
               <option value="">Select a company...</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
+              {companyOptions}
             </select>
 
             <label htmlFor="owner_id_premiseid">Owner Premise:</label>
             <select id="owner_id_premiseid" name="owner_id_premiseid">
               <option value="">Select a premise...</option>
-              {premises.map((premise) => (
-                <option key={premise.id} value={premise.id}>
-                  {premise.address}, {premise.city}, {premise.country}
-                </option>
-              ))}
+              {premiseOptions}
             </select>
           </div>
 
@@ -458,31 +608,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="breeder_id_contactid">Breeder Contact:</label>
             <select id="breeder_id_contactid" name="breeder_id_contactid">
               <option value="">Select a breeder contact...</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.firstName} {contact.lastName}
-                </option>
-              ))}
+              {contactOptions}
             </select>
 
             <label htmlFor="breeder_id_companyid">Breeder Company:</label>
             <select id="breeder_id_companyid" name="breeder_id_companyid">
               <option value="">Select a breeder company...</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
+              {companyOptions}
             </select>
 
             <label htmlFor="breeder_id_premiseid">Breeder Premise:</label>
             <select id="breeder_id_premiseid" name="breeder_id_premiseid">
               <option value="">Select a premise...</option>
-              {premises.map((premise) => (
-                <option key={premise.id} value={premise.id}>
-                  {premise.address}, {premise.city}, {premise.country}
-                </option>
-              ))}
+              {premiseOptions}
             </select>
           </div>
 
@@ -504,21 +642,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="transfer_reason_id_contactid">Transfer Reason Contact:</label>
             <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid">
               <option value="">Select a transfer reason contact...</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.firstName} {contact.lastName}
-                </option>
-              ))}
+              {contactOptions}
             </select>
 
             <label htmlFor="transfer_reason_id_companyid">Transfer Reason Company:</label>
             <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid">
               <option value="">Select a Transfer Reason company...</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
+              {companyOptions}
             </select>
           </div>
 
@@ -527,21 +657,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="vet_id_contactid">Vet Contact:</label>
             <select id="vet_id_contactid" name="vet_id_contactid">
               <option value="">Select a vet contact...</option>
-              {contacts.map((contact) => (
-                <option key={contact.id} value={contact.id}>
-                  {contact.firstName} {contact.lastName}
-                </option>
-              ))}
+              {contactOptions}
             </select>
 
             <label htmlFor="vet_id_premiseid">Vet Premise:</label>
             <select id="vet_id_premiseid" name="vet_id_premiseid">
               <option value="">Select a premise...</option>
-              {premises.map((premise) => (
-                <option key={premise.id} value={premise.id}>
-                  {premise.address}, {premise.city}, {premise.country}
-                </option>
-              ))}
+              {premiseOptions}
             </select>
           </div>
 
@@ -553,21 +675,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="lab_id_companyid">Lab Company:</label>
               <select id="lab_id_companyid" name="lab_id_companyid">
                 <option value="">Select a lab company...</option>
-                {companies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
-                ))}
+                {companyOptions}
               </select>
 
             <label htmlFor="lab_id_premiseid">Lab Premise:</label>
             <select id="lab_id_premiseid" name="lab_id_premiseid">
               <option value="">Select a premise...</option>
-              {premises.map((premise) => (
-                <option key={premise.id} value={premise.id}>
-                  {premise.address}, {premise.city}, {premise.country}
-                </option>
-              ))}
+              {premiseOptions}
             </select>
           </div>
 
@@ -576,21 +690,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="id_registry_id_companyid">Registry Company:</label>
             <select id="id_registry_id_companyid" name="id_registry_id_companyid">
               <option value="">Select a Registry Company...</option>
-              {registryCompanies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
+              {registryCompanyOptions}
             </select>
 
             <label htmlFor="registry_id_premiseid">Registry Premise:</label>
             <select id="registry_id_premiseid" name="registry_id_premiseid">
               <option value="">Select a premise...</option>
-              {premises.map((premise) => (
-                <option key={premise.id} value={premise.id}>
-                  {premise.address}, {premise.city}, {premise.country}
-                </option>
-              ))}
+              {premiseOptions}
             </select>
           </div>
 
@@ -603,21 +709,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="id_stateid">State:</label>
             <select id="id_stateid" name="id_stateid">
               <option value="">Select a state...</option>
-              {states.map((state) => (
-                <option key={state.id} value={state.id}>
-                  {state.name}
-                </option>
-              ))}
+              {stateOptions}
             </select>
 
             <label htmlFor="id_countyid">County:</label>
             <select id="id_countyid" name="id_countyid">
               <option value="">Select a county...</option>
-              {counties.map((county) => (
-                <option key={county.id} value={county.id}>
-                  {county.name}
-                </option>
-              ))}
+              {countyOptions}
             </select>
           </div>
 
@@ -630,31 +728,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="id_idtypeid_primary">Primary ID Type:</label>
             <select id="id_idtypeid_primary" name="id_idtypeid_primary">
               <option value="">Select a tag type...</option>
-              {tagTypes.map((tagType) => (
-                <option key={tagType.id} value={tagType.id}>
-                  {tagType.name}
-                </option>
-              ))}
+              {tagTypeOptions}
             </select>
 
             <label htmlFor="id_idtypeid_secondary">Secondary ID Type:</label>
             <select id="id_idtypeid_secondary" name="id_idtypeid_secondary">
               <option value="">Select a tag type...</option>
-              {tagTypes.map((tagType) => (
-                <option key={tagType.id} value={tagType.id}>
-                  {tagType.name}
-                </option>
-              ))}
+              {tagTypeOptions}
             </select>
 
             <label htmlFor="id_idtypeid_tertiary">Tertiary ID Type:</label>
             <select id="id_idtypeid_tertiary" name="id_idtypeid_tertiary">
               <option value="">Select a tag type...</option>
-              {tagTypes.map((tagType) => (
-                <option key={tagType.id} value={tagType.id}>
-                  {tagType.name}
-                </option>
-              ))}
+              {tagTypeOptions}
             </select>
           </div>
 
@@ -674,31 +760,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="eid_tag_color_male">EID Tag Color Male:</label>
             <select id="eid_tag_color_male" name="eid_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="eid_tag_color_female">EID Tag Color Female:</label>
             <select id="eid_tag_color_female" name="eid_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="eid_tag_location">EID Tag Location:</label>
             <select id="eid_tag_location" name="eid_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
 
 
@@ -720,21 +794,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="farm_tag_color_male">Farm Tag Color Male Side:</label>
             <select id="farm_tag_color_male" name="farm_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="farm_tag_color_female">Farm Tag Color Female Side:</label>
             <select id="farm_tag_color_female" name="farm_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
           </div>
 
@@ -753,11 +819,7 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="farm_tag_location">Farm Tag Location:</label>
             <select id="farm_tag_location" name="farm_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -777,31 +839,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="fed_tag_color_male">Federal Tag Color Male Side:</label>
             <select id="fed_tag_color_male" name="fed_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="fed_tag_color_female">Federal Tag Color Female Side:</label>
             <select id="fed_tag_color_female" name="fed_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="fed_tag_location">Federal Tag Location:</label>
             <select id="fed_tag_location" name="fed_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -821,31 +871,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="nues_tag_color_male">NUES Tag Color Male Side:</label>
             <select id="nues_tag_color_male" name="nues_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="nues_tag_color_female">NUES Tag Color Female Side:</label>
             <select id="nues_tag_color_female" name="nues_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="nues_tag_location">NUES Tag Location:</label>
             <select id="nues_tag_location" name="nues_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -865,11 +903,7 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="trich_tag_color_male">Trich Tag Color Male Side:</label>
             <select id="trich_tag_color_male" name="trich_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="trich_tag_color_female">Trich Tag Color Female Side:</label>
@@ -885,11 +919,7 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="trich_tag_location">Trich Tag Location:</label>
             <select id="trich_tag_location" name="trich_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
 
             <label htmlFor="trich_tag_auto_increment">Trich Tag Auto Increment:</label>
@@ -919,31 +949,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="bangs_tag_color_male">Bangs Tag Color Male Side:</label>
             <select id="bangs_tag_color_male" name="bangs_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="bangs_tag_color_female">Bangs Tag Color Female Side:</label>
             <select id="bangs_tag_color_female" name="bangs_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="bangs_tag_location">Bangs Tag Location:</label>
             <select id="bangs_tag_location" name="bangs_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -963,31 +981,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="sale_order_tag_color_male">Sale Order Tag Color Male Side:</label>
             <select id="sale_order_tag_color_male" name="sale_order_tag_color_male">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="sale_order_tag_color_female">Sale Order Tag Color Female Side:</label>
             <select id="sale_order_tag_color_female" name="sale_order_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="sale_order_tag_location">Sale Order Tag Location:</label>
             <select id="sale_order_tag_location" name="sale_order_tag_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -1007,21 +1013,13 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="paint_mark_color">Paint Mark Color:</label>
             <select id="paint_mark_color" name="paint_mark_color">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="paint_mark_location">Paint Mark Tag Location:</label>
             <select id="paint_mark_location" name="paint_mark_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
@@ -1030,32 +1028,20 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="tattoo_color">Tattoo Color:</label>
             <select id="tattoo_color" name="tattoo_color">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="tattoo_location">Tattoo Location:</label>
             <select id="tattoo_location" name="tattoo_location">
               <option value="">Select a Tag Location...</option>
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
+              {locationOptions}
             </select>
           </div>
 
           <label htmlFor="freeze_brand_location">Freeze Brand Tag Location:</label>
           <select id="freeze_brand_location" name="freeze_brand_location">
             <option value="">Select a Tag Location...</option>
-            {locations.map((location) => (
-              <option key={location.id} value={location.id}>
-                {location.name}
-              </option>
-            ))}
+            {locationOptions}
           </select>
 
           <label htmlFor="id_idremovereasonid">ID Remove Reason:</label>
@@ -1077,31 +1063,19 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="id_tissuesampletypeid">Tissue Sample Type:</label>
             <select id="id_tissuesampletypeid" name="id_tissuesampletypeid">
               <option value="">Select a Tissue Sample type...</option>
-              {tissueSampleTypes.map((tissueSampleType) => (
-                <option key={tissueSampleType.id} value={tissueSampleType.id}>
-                  {tissueSampleType.name}
-                </option>
-              ))}
+              {tissueSampleTypeOptions}
             </select>
 
             <label htmlFor="id_tissuetestid">Tissue Test:</label>
             <select id="id_tissuetestid" name="id_tissuetestid">
               <option value="">Select a Tissue Test...</option>
-              {tissueTests.map((tissueTest) => (
-                <option key={tissueTest.id} value={tissueTest.id}>
-                  {tissueTest.name}
-                </option>
-              ))}
+              {tissueTestOptions}
             </select>
 
             <label htmlFor="id_tissuesamplecontainertypeid">Tissue Sample Container Type:</label>
             <select id="id_tissuesamplecontainertypeid" name="id_tissuesamplecontainertypeid">
               <option value="">Select a Tissue Sample Container Type...</option>
-              {tissueSampleContainerTypes.map((tissueSampleContainerTypes) => (
-                <option key={tissueSampleContainerTypes.id} value={tissueSampleContainerTypes.id}>
-                  {tissueSampleContainerTypes.name}
-                </option>
-              ))}
+              {tissueSampleContainerTypeOptions}
             </select>
           </div>
 
@@ -1149,41 +1123,25 @@ const CreateDefaults: React.FC = () => {
           <label htmlFor="id_flockprefixid">Flock Prefix:</label>
           <select id="id_flockprefixid" name="id_flockprefixid">
             <option value="">Select a Flock Prefix...</option>
-            {flockPrefixes.map((flockPrefix) => (
-              <option key={flockPrefix.id} value={flockPrefix.id}>
-                {flockPrefix.name}
-              </option>
-            ))}
+            {flockPrefixOptions}
           </select>
 
           <label htmlFor="id_sexid">Sex:</label>
           <select id="id_sexid" name="id_sexid">
             <option value="">Select a Flock Prefix...</option>
-            {sexes.map((sex) => (
-              <option key={sex.id} value={sex.id}>
-                {sex.name}
-              </option>
-            ))}
+            {sexOptions}
           </select>
 
           <label htmlFor="birth_type">Birth Type:</label>
           <select id="birth_type" name="birth_type">
             <option value="">Select a Birth Type...</option>
-            {birthTypes.map((bt) => (
-              <option key={bt.id} value={bt.id}>
-                {bt.name}
-              </option>
-            ))}
+            {birthTypeOptions}
           </select>
 
           <label htmlFor="rear_type">Rear Type:</label>
           <select id="rear_type" name="rear_type">
             <option value="">Select a Birth Type...</option>
-            {birthTypes.map((bt) => (
-              <option key={bt.id} value={bt.id}>
-                {bt.name}
-              </option>
-            ))}
+            {birthTypeOptions}
           </select>
 
           <label htmlFor="minimum_birth_weight">Minimum Birth Weight:</label>
@@ -1225,22 +1183,14 @@ const CreateDefaults: React.FC = () => {
           <label htmlFor="id_deathreasonid">Death Reason:</label>
           <select id="id_deathreasonid" name="id_deathreasonid">
             <option value="">Select a Death Reason...</option>
-            {deathReasons.map((dr) => (
-              <option key={dr.id} value={dr.id}>
-                {dr.name}
-              </option>
-            ))}
+            {deathReasonOptions}
           </select>
 
 
           <label htmlFor="id_transferreasonid">Transfer Reason:</label>
           <select id="id_transferreasonid" name="id_transferreasonid">
             <option value="">Select a Transfer Reason...</option>
-            {transferReasons.map((tr) => (
-              <option key={tr.id} value={tr.id}>
-                {tr.name}
-              </option>
-            ))}
+            {transferReasonOptions}
           </select>
 
 
