@@ -494,7 +494,46 @@ const CreateDefaults: React.FC = () => {
       </option>
     ))
   ), [transferReasons]);
+
+  const weightUnitOptions = useMemo(() => (
+    weightUnits.map((weight) => (
+      <option key={weight.id} value={weight.id}>
+        {weight.name}
+      </option>
+    ))
+  ), [weightUnits]);
   
+  const currencyUnitOptions = useMemo(() => (
+    currencyUnits.map((curr) => (
+      <option key={curr.id} value={curr.id}>
+        {curr.name}
+      </option>
+    ))
+  ), [currencyUnits]);
+
+  const speciesOptions = useMemo(() => (
+    species.map((spec) => (
+      <option key={spec.id} value={spec.id}>
+        {spec.common_name}
+      </option>
+    ))
+  ), [species]);
+
+  const breedOptions = useMemo(() => (
+    breeds.map((breed) => (
+      <option key={breed.id} value={breed.id}>
+        {breed.name}
+      </option>
+    ))
+  ), [breeds]); 
+
+  const removeReasonOptions = useMemo(() => (
+    removeReasons.map((removeReason) => (
+      <option key={removeReason.id} value={removeReason.id}>
+        {removeReason.name}
+      </option>
+    ))
+  ), [removeReasons]);   
 
   return (
     <div className="container">
@@ -909,11 +948,7 @@ const CreateDefaults: React.FC = () => {
             <label htmlFor="trich_tag_color_female">Trich Tag Color Female Side:</label>
             <select id="trich_tag_color_female" name="trich_tag_color_female">
               <option value="">Select a color...</option>
-              {colors.map((color) => (
-                <option key={color.id} value={color.id}>
-                  {color.name}
-                </option>
-              ))}
+              {colorOptions}
             </select>
 
             <label htmlFor="trich_tag_location">Trich Tag Location:</label>
@@ -1047,11 +1082,7 @@ const CreateDefaults: React.FC = () => {
           <label htmlFor="id_idremovereasonid">ID Remove Reason:</label>
           <select id="id_idremovereasonid" name="id_idremovereasonid">
             <option value="">Select a Remove Reason...</option>
-            {removeReasons.map((removeReason) => (
-              <option key={removeReason.id} value={removeReason.id}>
-                {removeReason.name}
-              </option>
-            ))}
+            {removeReasonOptions}
           </select>
 
           <div className="section-break"></div>
@@ -1097,11 +1128,7 @@ const CreateDefaults: React.FC = () => {
               }}
             >
               <option value="">Select a Species...</option>
-              {species.map((spec) => (
-                <option key={spec.id} value={spec.id}>
-                  {spec.common_name}
-                </option>
-              ))}
+              {speciesOptions}
             </select>
 
             <select
@@ -1112,11 +1139,7 @@ const CreateDefaults: React.FC = () => {
               <option value="" disabled selected>
                 Select a breed...
               </option>
-              {breeds.map((breed) => (
-                <option key={breed.id} value={breed.id}>
-                  {breed.name}
-                </option>
-              ))}
+              {breedOptions}
             </select>
           </div>
 
@@ -1153,31 +1176,19 @@ const CreateDefaults: React.FC = () => {
           <label htmlFor="birth_weight_id_unitsid">Birth Weight Units:</label>
           <select id="birth_weight_id_unitsid" name="birth_weight_id_unitsid">
             <option value="">Select a Birth Weight Unit...</option>
-            {weightUnits.map((weight) => (
-              <option key={weight.id} value={weight.id}>
-                {weight.name}
-              </option>
-            ))}
+            {weightUnitOptions}
           </select>
 
           <label htmlFor="weight_id_unitsid">Weight Units:</label>
           <select id="weight_id_unitsid" name="weight_id_unitsid">
             <option value="">Select a Weight Unit...</option>
-            {weightUnits.map((weight) => (
-              <option key={weight.id} value={weight.id}>
-                {weight.name}
-              </option>
-            ))}
+            {weightUnitOptions}
           </select>
 
           <label htmlFor="sale_price_id_unitsid">Sale Price Units:</label>
           <select id="sale_price_id_unitsid" name="sale_price_id_unitsid">
             <option value="">Select a Currency...</option>
-            {currencyUnits.map((curr) => (
-              <option key={curr.id} value={curr.id}>
-                {curr.name}
-              </option>
-            ))}
+            {currencyUnitOptions}
           </select>
           
           <label htmlFor="id_deathreasonid">Death Reason:</label>
