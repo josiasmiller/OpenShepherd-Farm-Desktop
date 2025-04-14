@@ -67,8 +67,103 @@ const CreateDefaults: React.FC = () => {
   const [ownerContactId, setOwnerContactId] = useState<string>('');
   const [ownerCompanyId, setOwnerCompanyId] = useState<string>('');
   const [ownerPremiseId, setOwnerPremiseId] = useState<string>('');
-  const [breederSelection, setBreederSelection] = useState<OwnerType>(OwnerType.CONTACT);
 
+  // Breeder
+  const [breederSelection, setBreederSelection] = useState<OwnerType>(OwnerType.CONTACT);
+  const [breederContactId, setBreederContactId] = useState<string>('');
+  const [breederCompanyId, setBreederCompanyId] = useState<string>('');
+  const [breederPremiseId, setBreederPremiseId] = useState<string>('');
+
+  // Transfer Reason
+  const [transferReasonSelection, setTransferReasonSelection] = useState<OwnerType>(OwnerType.CONTACT);
+  const [transferReasonContactId, setTransferReasonContactId] = useState<string>('');
+  const [transferReasonCompanyId, setTransferReasonCompanyId] = useState<string>('');
+
+  // Vet
+  const [vetContactId, setVetContactId] = useState<string>('');
+  const [vetPremiseId, setVetPremiseId] = useState<string>('');
+
+  // Lab
+  const [labCompanyId, setLabCompanyId] = useState<string>('');
+  const [labPremiseId, setLabPremiseId] = useState<string>('');
+
+  // Registry
+  const [registryCompanyId, setRegistryCompanyId] = useState<string>('');
+  const [registryPremiseId, setRegistryPremiseId] = useState<string>('');
+
+  // Location
+  const [stateId, setStateId] = useState<string>('');
+  const [countyId, setCountyId] = useState<string>('');
+
+  // ID Types
+  const [primaryIdTypeId, setPrimaryIdTypeId] = useState<string>('');
+  const [secondaryIdTypeId, setSecondaryIdTypeId] = useState<string>('');
+  const [tertiaryIdTypeId, setTertiaryIdTypeId] = useState<string>('');
+
+  // EID Tag 
+  const [eidTagMaleFemaleColorSame, setEidTagMaleFemaleColorSame] = useState('');
+  const [eidTagColorMale, setEidTagColorMale] = useState('');
+  const [eidTagColorFemale, setEidTagColorFemale] = useState('');
+  const [eidTagLocation, setEidTagLocation] = useState('');
+  
+  // Farm Tag
+  const [farmTagMaleFemaleColorSame, setFarmTagMaleFemaleColorSame] = useState('');
+  const [farmTagColorMale, setFarmTagColorMale] = useState('');
+  const [farmTagColorFemale, setFarmTagColorFemale] = useState('');
+  const [farmTagBasedOnEidTag, setFarmTagBasedOnEidTag] = useState('');
+  const [farmTagNumberDigitsFromEid, setFarmTagNumberDigitsFromEid] = useState('');
+  const [farmTagLocation, setFarmTagLocation] = useState('');
+  
+
+  // Federal Tags
+  const [fedSameColor, setFedSameColor] = useState<string>('');
+  const [fedColorMale, setFedColorMale] = useState<string>('');
+  const [fedColorFemale, setFedColorFemale] = useState<string>('');
+  const [fedLocation, setFedLocation] = useState<string>('');
+
+  // NUES Tags
+  const [nuesSameColor, setNuesSameColor] = useState<string>('');
+  const [nuesColorMale, setNuesColorMale] = useState<string>('');
+  const [nuesColorFemale, setNuesColorFemale] = useState<string>('');
+  const [nuesLocation, setNuesLocation] = useState<string>('');
+
+  // Trich Tags
+  const [trichSameColor, setTrichSameColor] = useState<string>('');
+  const [trichColorMale, setTrichColorMale] = useState<string>('');
+  const [trichColorFemale, setTrichColorFemale] = useState<string>('');
+  const [trichLocation, setTrichLocation] = useState<string>('');
+  const [trichAutoIncrement, setTrichAutoIncrement] = useState<string>('');
+  const [trichStartingValue, setTrichStartingValue] = useState<string>('');
+
+  // Bangs Tags
+  const [bangsSameColor, setBangsSameColor] = useState<string>('');
+  const [bangsColorMale, setBangsColorMale] = useState<string>('');
+  const [bangsColorFemale, setBangsColorFemale] = useState<string>('');
+  const [bangsLocation, setBangsLocation] = useState<string>('');
+
+  // Sale Order Tags
+  const [saleOrderSameColor, setSaleOrderSameColor] = useState<string>('');
+  const [saleOrderColorMale, setSaleOrderColorMale] = useState<string>('');
+  const [saleOrderColorFemale, setSaleOrderColorFemale] = useState<string>('');
+  const [saleOrderLocation, setSaleOrderLocation] = useState<string>('');
+
+  // Paint Mark
+  const [usePaintMarks, setUsePaintMarks] = useState<string>('');
+  const [paintMarkColor, setPaintMarkColor] = useState<string>('');
+  const [paintMarkLocation, setPaintMarkLocation] = useState<string>('');
+  
+  const [flockPrefixId, setFlockPrefixId] = useState('');
+  const [sexId, setSexId] = useState('');
+  const [birthType, setBirthType] = useState('');
+  const [rearType, setRearType] = useState('');
+  const [minimumBirthWeight, setMinimumBirthWeight] = useState('');
+  const [maximumBirthWeight, setMaximumBirthWeight] = useState('');
+  const [birthWeightUnitsId, setBirthWeightUnitsId] = useState('');
+  const [weightUnitsId, setWeightUnitsId] = useState('');
+  const [salePriceUnitsId, setSalePriceUnitsId] = useState('');
+  const [deathReasonId, setDeathReasonId] = useState('');
+  const [transferReasonId, setTransferReasonId] = useState('');
+  const [evaluationUpdateAlert, setEvaluationUpdateAlert] = useState('');
 
 
 
@@ -336,56 +431,7 @@ const CreateDefaults: React.FC = () => {
     }; // end loadData definition
   
     loadData();
-  }, []);
-
-  const updateBreeds = async (speciesId : string) => {
-    if (!speciesId) return; // no species selected yet
-
-    try {
-      const queryParams: BreedRequest = {
-        species_id: speciesId,
-      };
-
-      const result = await (window as any).electronAPI.getBreeds(queryParams);
-
-      handleResult(result, {
-        success: (breedInfo: Breed[]) => {
-          const sorted = [...breedInfo].sort((a, b) => a.display_order - b.display_order);
-          setBreeds(sorted);
-        },
-        error: (error: string) => {
-          console.error("Error fetching breed data:", error);
-        },
-      });
-    } catch (error) {
-      console.error("Unexpected error while fetching breeds:", error);
-    }
-  };
-
-  const handleOwnerSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
-  };
-
-  const handleBreederSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBreederSelection(e.target.id === "breeder_select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
-  };
-
-  const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
-    setOwnerSelection(defaultSetting.owner_type ?? null);
-
-    if (defaultSetting.owner_type === OwnerType.CONTACT) {
-      setOwnerContactId(defaultSetting.owner_id ?? "");
-      setOwnerCompanyId("");
-    } else if (defaultSetting.owner_type === OwnerType.COMPANY) {
-      setOwnerCompanyId(defaultSetting.owner_id ?? "");
-      setOwnerContactId("");
-    }
-
-    setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
-
-    // Continue for breeder, vet, registry, etc.
-  };
-  
+  }, []); 
 
   const contactOptions = useMemo(() => (
     contacts.map((contact) => (
@@ -564,6 +610,133 @@ const CreateDefaults: React.FC = () => {
     ))
   ), [removeReasons]);   
 
+  const updateBreeds = async (speciesId : string) => {
+    if (!speciesId) return; // no species selected yet
+
+    try {
+      const queryParams: BreedRequest = {
+        species_id: speciesId,
+      };
+
+      const result = await (window as any).electronAPI.getBreeds(queryParams);
+
+      handleResult(result, {
+        success: (breedInfo: Breed[]) => {
+          const sorted = [...breedInfo].sort((a, b) => a.display_order - b.display_order);
+          setBreeds(sorted);
+        },
+        error: (error: string) => {
+          console.error("Error fetching breed data:", error);
+        },
+      });
+    } catch (error) {
+      console.error("Unexpected error while fetching breeds:", error);
+    }
+  };
+
+  const handleOwnerSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+  };
+
+  const handleBreederSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBreederSelection(e.target.id === "breeder_select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+  };
+
+  const handleTransferReasonSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.id === 'transfer_reason_select_contact' ? OwnerType.CONTACT : OwnerType.COMPANY;
+    setTransferReasonSelection(value);
+  };
+  
+
+  const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
+    setOwnerSelection(defaultSetting.owner_type ?? null);
+
+    if (defaultSetting.owner_type === OwnerType.CONTACT) {
+      setOwnerContactId(defaultSetting.owner_id);
+      setOwnerCompanyId("");
+    } else if (defaultSetting.owner_type === OwnerType.COMPANY) {
+      setOwnerCompanyId(defaultSetting.owner_id);
+      setOwnerContactId("");
+    }
+
+    setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
+
+    
+    setBreederSelection(defaultSetting.breederType);
+
+    if (defaultSetting.breederType === OwnerType.CONTACT) {
+      setBreederContactId(defaultSetting.breederId);
+      setBreederCompanyId("");
+    } else if (defaultSetting.breederType === OwnerType.COMPANY) {
+      setBreederCompanyId(defaultSetting.breederId);
+      setBreederContactId("");
+    }
+
+    setBreederPremiseId(defaultSetting.breeder_id_premiseid || '');
+
+
+    setTransferReasonSelection(defaultSetting.transferReasonContactType);
+
+    if (defaultSetting.transferReasonContactType === OwnerType.CONTACT) {
+      setTransferReasonContactId(defaultSetting.transferReasonContactId);
+      setTransferReasonCompanyId("");
+    } else if (defaultSetting.transferReasonContactType === OwnerType.COMPANY) {
+      setTransferReasonCompanyId(defaultSetting.transferReasonContactId);
+      setTransferReasonContactId("");
+    }
+
+    setVetContactId(defaultSetting.vet_id_contactid);
+    setVetPremiseId(defaultSetting.vet_id_premiseid);
+
+    setLabCompanyId(defaultSetting.lab_id_companyid);
+    setLabPremiseId(defaultSetting.lab_id_premiseid);
+    setRegistryCompanyId(defaultSetting.id_registry_id_companyid);
+    setRegistryPremiseId(defaultSetting.registry_id_premiseid);
+    setStateId(defaultSetting.id_stateid);
+    setCountyId(defaultSetting.id_countyid);
+    setPrimaryIdTypeId(defaultSetting.id_idtypeid_primary);
+    setSecondaryIdTypeId(defaultSetting.id_idtypeid_secondary);
+    setTertiaryIdTypeId(defaultSetting.id_idtypeid_tertiary);
+
+    setEidTagMaleFemaleColorSame(defaultSetting.id_eid_tag_male_color_female_color_same);
+    setEidTagColorMale(defaultSetting.eid_tag_color_male);
+    setEidTagColorFemale(defaultSetting.eid_tag_color_female);
+    setEidTagLocation(defaultSetting.eid_tag_location);
+
+    setFarmTagMaleFemaleColorSame(defaultSetting.id_farm_tag_male_color_female_color_same);
+    setFarmTagColorMale(defaultSetting.farm_tag_color_male);
+    setFarmTagColorFemale(defaultSetting.farm_tag_color_female);
+    setFarmTagBasedOnEidTag(defaultSetting.farm_tag_based_on_eid_tag);
+    setFarmTagNumberDigitsFromEid(defaultSetting.farm_tag_number_digits_from_eid);
+    setFarmTagLocation(defaultSetting.farm_tag_location);
+
+    console.log("MITCH DEBUG FED COLOR");
+    console.log(defaultSetting.fed_tag_color_male);
+    console.log(defaultSetting.fed_tag_color_female);
+
+    // Federal Tags
+    setFedSameColor(defaultSetting.id_fed_tag_male_color_female_color_same);
+    setFedColorMale(defaultSetting.fed_tag_color_male);
+    setFedColorFemale(defaultSetting.fed_tag_color_female);
+    setFedLocation(defaultSetting.fed_tag_location);
+  
+    // NUES Tags
+    setNuesSameColor(defaultSetting.id_nues_tag_male_color_female_color_same);
+    setNuesColorMale(defaultSetting.nues_tag_color_male);
+    setNuesColorFemale(defaultSetting.nues_tag_color_female);
+    setNuesLocation(defaultSetting.nues_tag_location);
+  
+    // Trich Tags
+    setTrichSameColor(defaultSetting.id_trich_tag_male_color_female_color_same);
+    setTrichColorMale(defaultSetting.trich_tag_color_male);
+    setTrichColorFemale(defaultSetting.trich_tag_color_female);
+    setTrichLocation(defaultSetting.trich_tag_location);
+    setTrichAutoIncrement(defaultSetting.trich_tag_auto_increment);
+    setTrichStartingValue(defaultSetting.trich_tag_next_tag_number);
+    
+
+  };
+
   return (
     <div className="container">
       {/* Top Section */}
@@ -716,6 +889,8 @@ const CreateDefaults: React.FC = () => {
             <select
               id="breeder_id_contactid"
               name="breeder_id_contactid"
+              value={breederContactId}
+              onChange={(e) => setBreederContactId(e.target.value)}
               disabled={breederSelection !== OwnerType.CONTACT}
             >
               <option value="">Select a breeder contact...</option>
@@ -726,6 +901,8 @@ const CreateDefaults: React.FC = () => {
             <select
               id="breeder_id_companyid"
               name="breeder_id_companyid"
+              value={breederCompanyId}
+              onChange={(e) => setBreederCompanyId(e.target.value)}
               disabled={breederSelection !== OwnerType.COMPANY}
             >
               <option value="">Select a breeder company...</option>
@@ -733,11 +910,17 @@ const CreateDefaults: React.FC = () => {
             </select>
 
             <label htmlFor="breeder_id_premiseid">Breeder Premise:</label>
-            <select id="breeder_id_premiseid" name="breeder_id_premiseid">
+            <select
+              id="breeder_id_premiseid"
+              name="breeder_id_premiseid"
+              value={breederPremiseId}
+              onChange={(e) => setBreederPremiseId(e.target.value)}
+            >
               <option value="">Select a premise...</option>
               {premiseOptions}
             </select>
           </div>
+
 
           <div className="section-break"></div>
 
@@ -745,23 +928,47 @@ const CreateDefaults: React.FC = () => {
           <div className="form-group">
             <div className="radio-group">
               <label>
-                <input type="radio" id="transfer_reason_select_contact" name="transfer_reason_selection" defaultChecked />
+                <input
+                  type="radio"
+                  id="transfer_reason_select_contact"
+                  name="transfer_reason_selection"
+                  checked={transferReasonSelection === OwnerType.CONTACT}
+                  onChange={handleTransferReasonSelectionChange}
+                />
                 Contact
               </label>
               <label>
-                <input type="radio" id="transfer_reason_select_company" name="transfer_reason_selection" />
+                <input
+                  type="radio"
+                  id="transfer_reason_select_company"
+                  name="transfer_reason_selection"
+                  checked={transferReasonSelection === OwnerType.COMPANY}
+                  onChange={handleTransferReasonSelectionChange}
+                />
                 Company
               </label>
             </div>
 
             <label htmlFor="transfer_reason_id_contactid">Transfer Reason Contact:</label>
-            <select id="transfer_reason_id_contactid" name="transfer_reason_id_contactid">
+            <select
+              id="transfer_reason_id_contactid"
+              name="transfer_reason_id_contactid"
+              value={transferReasonContactId}
+              onChange={(e) => setTransferReasonContactId(e.target.value)}
+              disabled={transferReasonSelection !== OwnerType.CONTACT}
+            >
               <option value="">Select a transfer reason contact...</option>
               {contactOptions}
             </select>
 
             <label htmlFor="transfer_reason_id_companyid">Transfer Reason Company:</label>
-            <select id="transfer_reason_id_companyid" name="transfer_reason_id_companyid">
+            <select
+              id="transfer_reason_id_companyid"
+              name="transfer_reason_id_companyid"
+              value={transferReasonCompanyId}
+              onChange={(e) => setTransferReasonCompanyId(e.target.value)}
+              disabled={transferReasonSelection !== OwnerType.COMPANY}
+            >
               <option value="">Select a Transfer Reason company...</option>
               {companyOptions}
             </select>
@@ -770,31 +977,51 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="vet_id_contactid">Vet Contact:</label>
-            <select id="vet_id_contactid" name="vet_id_contactid">
+            <select
+              id="vet_id_contactid"
+              name="vet_id_contactid"
+              value={vetContactId}
+              onChange={(e) => setVetContactId(e.target.value)}
+            >
               <option value="">Select a vet contact...</option>
               {contactOptions}
             </select>
 
             <label htmlFor="vet_id_premiseid">Vet Premise:</label>
-            <select id="vet_id_premiseid" name="vet_id_premiseid">
+            <select
+              id="vet_id_premiseid"
+              name="vet_id_premiseid"
+              value={vetPremiseId}
+              onChange={(e) => setVetPremiseId(e.target.value)}
+            >
               <option value="">Select a premise...</option>
               {premiseOptions}
             </select>
           </div>
 
+
           <div className="section-break"></div>
 
-          {/* More sections follow in similar structure */}
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="lab_id_companyid">Lab Company:</label>
-              <select id="lab_id_companyid" name="lab_id_companyid">
-                <option value="">Select a lab company...</option>
-                {companyOptions}
-              </select>
+            <select
+              id="lab_id_companyid"
+              name="lab_id_companyid"
+              value={labCompanyId}
+              onChange={(e) => setLabCompanyId(e.target.value)}
+            >
+              <option value="">Select a lab company...</option>
+              {companyOptions}
+            </select>
 
             <label htmlFor="lab_id_premiseid">Lab Premise:</label>
-            <select id="lab_id_premiseid" name="lab_id_premiseid">
+            <select
+              id="lab_id_premiseid"
+              name="lab_id_premiseid"
+              value={labPremiseId}
+              onChange={(e) => setLabPremiseId(e.target.value)}
+            >
               <option value="">Select a premise...</option>
               {premiseOptions}
             </select>
@@ -803,13 +1030,23 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_registry_id_companyid">Registry Company:</label>
-            <select id="id_registry_id_companyid" name="id_registry_id_companyid">
+            <select
+              id="id_registry_id_companyid"
+              name="id_registry_id_companyid"
+              value={registryCompanyId}
+              onChange={(e) => setRegistryCompanyId(e.target.value)}
+            >
               <option value="">Select a Registry Company...</option>
               {registryCompanyOptions}
             </select>
 
             <label htmlFor="registry_id_premiseid">Registry Premise:</label>
-            <select id="registry_id_premiseid" name="registry_id_premiseid">
+            <select
+              id="registry_id_premiseid"
+              name="registry_id_premiseid"
+              value={registryPremiseId}
+              onChange={(e) => setRegistryPremiseId(e.target.value)}
+            >
               <option value="">Select a premise...</option>
               {premiseOptions}
             </select>
@@ -822,13 +1059,23 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_stateid">State:</label>
-            <select id="id_stateid" name="id_stateid">
+            <select
+              id="id_stateid"
+              name="id_stateid"
+              value={stateId}
+              onChange={(e) => setStateId(e.target.value)}
+            >
               <option value="">Select a state...</option>
               {stateOptions}
             </select>
 
             <label htmlFor="id_countyid">County:</label>
-            <select id="id_countyid" name="id_countyid">
+            <select
+              id="id_countyid"
+              name="id_countyid"
+              value={countyId}
+              onChange={(e) => setCountyId(e.target.value)}
+            >
               <option value="">Select a county...</option>
               {countyOptions}
             </select>
@@ -841,23 +1088,39 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_idtypeid_primary">Primary ID Type:</label>
-            <select id="id_idtypeid_primary" name="id_idtypeid_primary">
+            <select
+              id="id_idtypeid_primary"
+              name="id_idtypeid_primary"
+              value={primaryIdTypeId}
+              onChange={(e) => setPrimaryIdTypeId(e.target.value)}
+            >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
             </select>
 
             <label htmlFor="id_idtypeid_secondary">Secondary ID Type:</label>
-            <select id="id_idtypeid_secondary" name="id_idtypeid_secondary">
+            <select
+              id="id_idtypeid_secondary"
+              name="id_idtypeid_secondary"
+              value={secondaryIdTypeId}
+              onChange={(e) => setSecondaryIdTypeId(e.target.value)}
+            >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
             </select>
 
             <label htmlFor="id_idtypeid_tertiary">Tertiary ID Type:</label>
-            <select id="id_idtypeid_tertiary" name="id_idtypeid_tertiary">
+            <select
+              id="id_idtypeid_tertiary"
+              name="id_idtypeid_tertiary"
+              value={tertiaryIdTypeId}
+              onChange={(e) => setTertiaryIdTypeId(e.target.value)}
+            >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
             </select>
           </div>
+
 
           <div className="section-break"></div>
           <h3>EID Tag Information</h3>
@@ -866,31 +1129,49 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_eid_tag_male_color_female_color_same">EID Tag Male/Female Same Color:</label>
-            <select id="id_eid_tag_male_color_female_color_same" name="id_eid_tag_male_color_female_color_same">
+            <select
+              id="id_eid_tag_male_color_female_color_same"
+              name="id_eid_tag_male_color_female_color_same"
+              value={eidTagMaleFemaleColorSame}
+              onChange={(e) => setEidTagMaleFemaleColorSame(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="eid_tag_color_male">EID Tag Color Male:</label>
-            <select id="eid_tag_color_male" name="eid_tag_color_male">
+            <select
+              id="eid_tag_color_male"
+              name="eid_tag_color_male"
+              value={eidTagColorMale}
+              onChange={(e) => setEidTagColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="eid_tag_color_female">EID Tag Color Female:</label>
-            <select id="eid_tag_color_female" name="eid_tag_color_female">
+            <select
+              id="eid_tag_color_female"
+              name="eid_tag_color_female"
+              value={eidTagColorFemale}
+              onChange={(e) => setEidTagColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="eid_tag_location">EID Tag Location:</label>
-            <select id="eid_tag_location" name="eid_tag_location">
+            <select
+              id="eid_tag_location"
+              name="eid_tag_location"
+              value={eidTagLocation}
+              onChange={(e) => setEidTagLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
-
-
           </div>
 
           <div className="section-break"></div>
@@ -900,20 +1181,35 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_farm_tag_male_color_female_color_same">Farm Tag Male/Female Same Color:</label>
-            <select id="id_farm_tag_male_color_female_color_same" name="id_farm_tag_male_color_female_color_same">
+            <select
+              id="id_farm_tag_male_color_female_color_same"
+              name="id_farm_tag_male_color_female_color_same"
+              value={farmTagMaleFemaleColorSame}
+              onChange={(e) => setFarmTagMaleFemaleColorSame(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="farm_tag_color_male">Farm Tag Color Male Side:</label>
-            <select id="farm_tag_color_male" name="farm_tag_color_male">
+            <select
+              id="farm_tag_color_male"
+              name="farm_tag_color_male"
+              value={farmTagColorMale}
+              onChange={(e) => setFarmTagColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="farm_tag_color_female">Farm Tag Color Female Side:</label>
-            <select id="farm_tag_color_female" name="farm_tag_color_female">
+            <select
+              id="farm_tag_color_female"
+              name="farm_tag_color_female"
+              value={farmTagColorFemale}
+              onChange={(e) => setFarmTagColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
@@ -922,21 +1218,40 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="farm_tag_based_on_eid_tag">Farm Tag Based on EID Tag:</label>
-            <select id="farm_tag_based_on_eid_tag" name="farm_tag_based_on_eid_tag">
+            <select
+              id="farm_tag_based_on_eid_tag"
+              name="farm_tag_based_on_eid_tag"
+              value={farmTagBasedOnEidTag}
+              onChange={(e) => setFarmTagBasedOnEidTag(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="farm_tag_number_digits_from_eid">Farm Tag Number Digits from EID:</label>
-            <input type="number" id="farm_tag_number_digits_from_eid" name="farm_tag_number_digits_from_eid" min="0" step="1" />
+            <input
+              type="number"
+              id="farm_tag_number_digits_from_eid"
+              name="farm_tag_number_digits_from_eid"
+              min="0"
+              step="1"
+              value={farmTagNumberDigitsFromEid}
+              onChange={(e) => setFarmTagNumberDigitsFromEid(e.target.value)}
+            />
 
             <label htmlFor="farm_tag_location">Farm Tag Location:</label>
-            <select id="farm_tag_location" name="farm_tag_location">
+            <select
+              id="farm_tag_location"
+              name="farm_tag_location"
+              value={farmTagLocation}
+              onChange={(e) => setFarmTagLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
           </div>
+
 
           <div className="section-break"></div>
           <h3>Federal Tag Information</h3>
@@ -945,26 +1260,46 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_fed_tag_male_color_female_color_same">Federal Tag Male/Female Same Color:</label>
-            <select id="id_fed_tag_male_color_female_color_same" name="id_fed_tag_male_color_female_color_same">
+            <select
+              id="id_fed_tag_male_color_female_color_same"
+              name="id_fed_tag_male_color_female_color_same"
+              value={fedSameColor}
+              onChange={(e) => setFedSameColor(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="fed_tag_color_male">Federal Tag Color Male Side:</label>
-            <select id="fed_tag_color_male" name="fed_tag_color_male">
+            <select
+              id="fed_tag_color_male"
+              name="fed_tag_color_male"
+              value={fedColorMale}
+              onChange={(e) => setFedColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="fed_tag_color_female">Federal Tag Color Female Side:</label>
-            <select id="fed_tag_color_female" name="fed_tag_color_female">
+            <select
+              id="fed_tag_color_female"
+              name="fed_tag_color_female"
+              value={fedColorFemale}
+              onChange={(e) => setFedColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="fed_tag_location">Federal Tag Location:</label>
-            <select id="fed_tag_location" name="fed_tag_location">
+            <select
+              id="fed_tag_location"
+              name="fed_tag_location"
+              value={fedLocation}
+              onChange={(e) => setFedLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
@@ -977,26 +1312,46 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_nues_tag_male_color_female_color_same">NUES Tag Male/Female Same Color:</label>
-            <select id="id_nues_tag_male_color_female_color_same" name="id_nues_tag_male_color_female_color_same">
+            <select
+              id="id_nues_tag_male_color_female_color_same"
+              name="id_nues_tag_male_color_female_color_same"
+              value={nuesSameColor}
+              onChange={(e) => setNuesSameColor(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="nues_tag_color_male">NUES Tag Color Male Side:</label>
-            <select id="nues_tag_color_male" name="nues_tag_color_male">
+            <select
+              id="nues_tag_color_male"
+              name="nues_tag_color_male"
+              value={nuesColorMale}
+              onChange={(e) => setNuesColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="nues_tag_color_female">NUES Tag Color Female Side:</label>
-            <select id="nues_tag_color_female" name="nues_tag_color_female">
+            <select
+              id="nues_tag_color_female"
+              name="nues_tag_color_female"
+              value={nuesColorFemale}
+              onChange={(e) => setNuesColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="nues_tag_location">NUES Tag Location:</label>
-            <select id="nues_tag_location" name="nues_tag_location">
+            <select
+              id="nues_tag_location"
+              name="nues_tag_location"
+              value={nuesLocation}
+              onChange={(e) => setNuesLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
@@ -1009,39 +1364,72 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_trich_tag_male_color_female_color_same">Trich Tag Male/Female Same Color:</label>
-            <select id="id_trich_tag_male_color_female_color_same" name="id_trich_tag_male_color_female_color_same">
+            <select
+              id="id_trich_tag_male_color_female_color_same"
+              name="id_trich_tag_male_color_female_color_same"
+              value={trichSameColor}
+              onChange={(e) => setTrichSameColor(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="trich_tag_color_male">Trich Tag Color Male Side:</label>
-            <select id="trich_tag_color_male" name="trich_tag_color_male">
+            <select
+              id="trich_tag_color_male"
+              name="trich_tag_color_male"
+              value={trichColorMale}
+              onChange={(e) => setTrichColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="trich_tag_color_female">Trich Tag Color Female Side:</label>
-            <select id="trich_tag_color_female" name="trich_tag_color_female">
+            <select
+              id="trich_tag_color_female"
+              name="trich_tag_color_female"
+              value={trichColorFemale}
+              onChange={(e) => setTrichColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="trich_tag_location">Trich Tag Location:</label>
-            <select id="trich_tag_location" name="trich_tag_location">
+            <select
+              id="trich_tag_location"
+              name="trich_tag_location"
+              value={trichLocation}
+              onChange={(e) => setTrichLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
 
             <label htmlFor="trich_tag_auto_increment">Trich Tag Auto Increment:</label>
-            <select id="trich_tag_auto_increment" name="trich_tag_auto_increment">
+            <select
+              id="trich_tag_auto_increment"
+              name="trich_tag_auto_increment"
+              value={trichAutoIncrement}
+              onChange={(e) => setTrichAutoIncrement(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="trich_tag_starting_value">Trich Tag Auto Increment Starting Value:</label>
-            <input type="number" id="trich_tag_starting_value" name="trich_tag_starting_value" min="0" step="1" />
+            <input
+              type="number"
+              id="trich_tag_starting_value"
+              name="trich_tag_starting_value"
+              value={trichStartingValue}
+              onChange={(e) => setTrichStartingValue(e.target.value)}
+              min="0"
+              step="1"
+            />
           </div>
 
           <div className="section-break"></div>
