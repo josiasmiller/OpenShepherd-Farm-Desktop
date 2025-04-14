@@ -39,7 +39,6 @@ const CreateDefaults: React.FC = () => {
   const [registryCompanies, setRegistryCompanies] = useState<Company[]>([]);
   const [premises, setPremises] = useState<Premise[]>([]);
   const [states, setStates] = useState<State[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
   const [counties, setCounties] = useState<County[]>([]);
   const [removeReasons, setRemoveReasons] = useState<RemoveReason[]>([]);
   const [deathReasons, setDeathReasons] = useState<DeathReason[]>([]);
@@ -59,11 +58,17 @@ const CreateDefaults: React.FC = () => {
   const [currencyUnits, setCurrencyUnits] = useState<Unit[]>([]);
 
   // define state-specific 
-  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
+  const [selectedDefault, setSelectedDefault] = useState<DefaultSettingsResults | null>(null);
+
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
 
   const [ownerSelection, setOwnerSelection] = useState<OwnerType>(OwnerType.CONTACT);
+  const [ownerContactId, setOwnerContactId] = useState<string>('');
+  const [ownerCompanyId, setOwnerCompanyId] = useState<string>('');
+  const [ownerPremiseId, setOwnerPremiseId] = useState<string>('');
   const [breederSelection, setBreederSelection] = useState<OwnerType>(OwnerType.CONTACT);
+
 
 
 
@@ -364,6 +369,22 @@ const CreateDefaults: React.FC = () => {
   const handleBreederSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBreederSelection(e.target.id === "breeder_select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
   };
+
+  const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
+    setOwnerSelection(defaultSetting.owner_type ?? null);
+
+    if (defaultSetting.owner_type === OwnerType.CONTACT) {
+      setOwnerContactId(defaultSetting.owner_id ?? "");
+      setOwnerCompanyId("");
+    } else if (defaultSetting.owner_type === OwnerType.COMPANY) {
+      setOwnerCompanyId(defaultSetting.owner_id ?? "");
+      setOwnerContactId("");
+    }
+
+    setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
+
+    // Continue for breeder, vet, registry, etc.
+  };
   
 
   const contactOptions = useMemo(() => (
@@ -560,7 +581,16 @@ const CreateDefaults: React.FC = () => {
           {/* Existing Setting Selection */}
           <div className="existing-setting-container">
             <label htmlFor="existing-settings">Start from Existing Setting:</label>
-            <select id="existing-settings" name="existing-settings">
+            <select
+              id="existing-settings"
+              name="existing-settings"
+              value={selectedDefault?.id.toString() ?? ""} // default to "" if null
+              onChange={(e) => {
+                const selectedId = e.target.value;
+                const found = existingDefaults.find((def) => def.id == selectedId) || null;
+                setSelectedDefault(found);
+              }}
+            >
               <option value="">Select an Existing Default...</option>
               {existingDefaults.map((existingdef) => (
                 <option key={existingdef.id} value={existingdef.id}>
@@ -569,12 +599,21 @@ const CreateDefaults: React.FC = () => {
               ))}
             </select>
 
-            {/* existingDefaults */}
-
             {/* Load Default Button */}
-            <button id="load-default-btn" type="button">
+            <button
+              id="load-default-btn"
+              type="button"
+              onClick={() => {
+                if (selectedDefault) {
+                  loadDefaultSettings(selectedDefault);
+                } else {
+                  console.warn("No default selected");
+                }
+              }}
+            >
               Load Default
             </button>
+
           </div>
 
           <label htmlFor="settings_name">Settings Name:</label>
@@ -615,6 +654,8 @@ const CreateDefaults: React.FC = () => {
               id="owner_id_contactid"
               name="owner_id_contactid"
               disabled={ownerSelection !== OwnerType.CONTACT}
+              value={ownerContactId}
+              onChange={(e) => setOwnerContactId(e.target.value)}
             >
               <option value="">Select a contact...</option>
               {contactOptions}
@@ -625,13 +666,20 @@ const CreateDefaults: React.FC = () => {
               id="owner_id_companyid"
               name="owner_id_companyid"
               disabled={ownerSelection !== OwnerType.COMPANY}
+              value={ownerCompanyId}
+              onChange={(e) => setOwnerCompanyId(e.target.value)}
             >
               <option value="">Select a company...</option>
               {companyOptions}
             </select>
 
             <label htmlFor="owner_id_premiseid">Owner Premise:</label>
-            <select id="owner_id_premiseid" name="owner_id_premiseid">
+            <select
+              id="owner_id_premiseid"
+              name="owner_id_premiseid"
+              value={ownerPremiseId}
+              onChange={(e) => setOwnerPremiseId(e.target.value)}
+            >
               <option value="">Select a premise...</option>
               {premiseOptions}
             </select>
