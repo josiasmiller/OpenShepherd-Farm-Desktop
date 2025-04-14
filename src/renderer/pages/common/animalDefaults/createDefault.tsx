@@ -619,6 +619,13 @@ const CreateDefaults: React.FC = () => {
     ))
   ), [removeReasons]);   
 
+  const booleanSelectOptions = (
+    <>
+      <option id="option-true" value="1">True</option>
+      <option id="option-false" value="0">False</option>
+    </>
+  );
+
   const updateBreeds = async (speciesId : string) => {
     if (!speciesId) return; // no species selected yet
 
@@ -727,6 +734,8 @@ const CreateDefaults: React.FC = () => {
   
     // NUES Tags
     setNuesSameColor(defaultSetting.id_nues_tag_male_color_female_color_same);
+    console.log("MITCH DEBUG MODE!");
+    console.log(defaultSetting.id_nues_tag_male_color_female_color_same);
     setNuesColorMale(defaultSetting.nues_tag_color_male);
     setNuesColorFemale(defaultSetting.nues_tag_color_female);
     setNuesLocation(defaultSetting.nues_tag_location);
@@ -1179,8 +1188,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setEidTagMaleFemaleColorSame(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="eid_tag_color_male">EID Tag Color Male:</label>
@@ -1231,8 +1239,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setFarmTagMaleFemaleColorSame(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="farm_tag_color_male">Farm Tag Color Male Side:</label>
@@ -1268,8 +1275,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setFarmTagBasedOnEidTag(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="farm_tag_number_digits_from_eid">Farm Tag Number Digits from EID:</label>
@@ -1310,8 +1316,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setFedSameColor(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="fed_tag_color_male">Federal Tag Color Male Side:</label>
@@ -1362,8 +1367,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setNuesSameColor(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="nues_tag_color_male">NUES Tag Color Male Side:</label>
@@ -1414,8 +1418,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setTrichSameColor(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="trich_tag_color_male">Trich Tag Color Male Side:</label>
@@ -1459,8 +1462,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setTrichAutoIncrement(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="trich_tag_starting_value">Trich Tag Auto Increment Starting Value:</label>
@@ -1489,8 +1491,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setBangsSameColor(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="bangs_tag_color_male">Bangs Tag Color Male Side:</label>
@@ -1541,8 +1542,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setSaleOrderSameColor(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="sale_order_tag_color_male">Sale Order Tag Color Male Side:</label>
@@ -1593,8 +1593,7 @@ const CreateDefaults: React.FC = () => {
               onChange={(e) => setUsePaintMarks(e.target.value)}
             >
               <option value="">Select...</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              {booleanSelectOptions}
             </select>
 
             <label htmlFor="paint_mark_color">Paint Mark Color:</label>
@@ -1877,8 +1876,7 @@ const CreateDefaults: React.FC = () => {
             onChange={(e) => setEvaluationUpdateAlert(e.target.value)}
           >
             <option value="">Select...</option>
-            <option value="true">True</option>
-            <option value="false">False</option>
+            {booleanSelectOptions}
           </select>
 
         </form>
