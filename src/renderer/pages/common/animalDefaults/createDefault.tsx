@@ -151,6 +151,11 @@ const CreateDefaults: React.FC = () => {
   const [usePaintMarks, setUsePaintMarks] = useState<string>('');
   const [paintMarkColor, setPaintMarkColor] = useState<string>('');
   const [paintMarkLocation, setPaintMarkLocation] = useState<string>('');
+
+  const [tattooColor, setTattooColor] = useState<string>('');
+  const [tattooLocation, setTattooLocation] = useState<string>('');
+  const [freezeBrandLocation, setFreezeBrandLocation] = useState<string>('');
+  const [idRemoveReason, setIdRemoveReason] = useState<string>('');
   
   const [flockPrefixId, setFlockPrefixId] = useState('');
   const [sexId, setSexId] = useState('');
@@ -710,10 +715,6 @@ const CreateDefaults: React.FC = () => {
     setFarmTagNumberDigitsFromEid(defaultSetting.farm_tag_number_digits_from_eid);
     setFarmTagLocation(defaultSetting.farm_tag_location);
 
-    console.log("MITCH DEBUG FED COLOR");
-    console.log(defaultSetting.fed_tag_color_male);
-    console.log(defaultSetting.fed_tag_color_female);
-
     // Federal Tags
     setFedSameColor(defaultSetting.id_fed_tag_male_color_female_color_same);
     setFedColorMale(defaultSetting.fed_tag_color_male);
@@ -733,6 +734,27 @@ const CreateDefaults: React.FC = () => {
     setTrichLocation(defaultSetting.trich_tag_location);
     setTrichAutoIncrement(defaultSetting.trich_tag_auto_increment);
     setTrichStartingValue(defaultSetting.trich_tag_next_tag_number);
+
+    // Bangs Tag
+    setBangsSameColor(defaultSetting.id_bangs_tag_male_color_female_color_same);
+    setBangsColorMale(defaultSetting.bangs_tag_color_male);
+    setBangsColorFemale(defaultSetting.bangs_tag_color_female);
+    setBangsLocation(defaultSetting.bangs_tag_location);
+
+    // Sale Order Tag
+    setSaleOrderSameColor(defaultSetting.id_sale_order_tag_male_color_female_color_same);
+    setSaleOrderColorMale(defaultSetting.sale_order_tag_color_male);
+    setSaleOrderColorFemale(defaultSetting.sale_order_tag_color_female);
+    setSaleOrderLocation(defaultSetting.sale_order_tag_location);
+
+    // Misc
+    setUsePaintMarks(defaultSetting.use_paint_marks);
+    setPaintMarkColor(defaultSetting.paint_mark_color);
+    setPaintMarkLocation(defaultSetting.paint_mark_location);
+    setTattooColor(defaultSetting.tattoo_color);
+    setTattooLocation(defaultSetting.tattoo_location);
+    setFreezeBrandLocation(defaultSetting.freeze_brand_location);
+    setIdRemoveReason(defaultSetting.id_idremovereasonid);
     
 
   };
@@ -1439,26 +1461,46 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_bangs_tag_male_color_female_color_same">Bangs Male and Female Color Same:</label>
-            <select id="id_bangs_tag_male_color_female_color_same" name="id_bangs_tag_male_color_female_color_same">
+            <select
+              id="id_bangs_tag_male_color_female_color_same"
+              name="id_bangs_tag_male_color_female_color_same"
+              value={bangsSameColor}
+              onChange={(e) => setBangsSameColor(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="bangs_tag_color_male">Bangs Tag Color Male Side:</label>
-            <select id="bangs_tag_color_male" name="bangs_tag_color_male">
+            <select
+              id="bangs_tag_color_male"
+              name="bangs_tag_color_male"
+              value={bangsColorMale}
+              onChange={(e) => setBangsColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="bangs_tag_color_female">Bangs Tag Color Female Side:</label>
-            <select id="bangs_tag_color_female" name="bangs_tag_color_female">
+            <select
+              id="bangs_tag_color_female"
+              name="bangs_tag_color_female"
+              value={bangsColorFemale}
+              onChange={(e) => setBangsColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="bangs_tag_location">Bangs Tag Location:</label>
-            <select id="bangs_tag_location" name="bangs_tag_location">
+            <select
+              id="bangs_tag_location"
+              name="bangs_tag_location"
+              value={bangsLocation}
+              onChange={(e) => setBangsLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
@@ -1471,26 +1513,46 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_sale_order_tag_male_color_female_color_same">Sale Order Male and Female Color Same:</label>
-            <select id="id_sale_order_tag_male_color_female_color_same" name="id_sale_order_tag_male_color_female_color_same">
+            <select
+              id="id_sale_order_tag_male_color_female_color_same"
+              name="id_sale_order_tag_male_color_female_color_same"
+              value={saleOrderSameColor}
+              onChange={(e) => setSaleOrderSameColor(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="sale_order_tag_color_male">Sale Order Tag Color Male Side:</label>
-            <select id="sale_order_tag_color_male" name="sale_order_tag_color_male">
+            <select
+              id="sale_order_tag_color_male"
+              name="sale_order_tag_color_male"
+              value={saleOrderColorMale}
+              onChange={(e) => setSaleOrderColorMale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="sale_order_tag_color_female">Sale Order Tag Color Female Side:</label>
-            <select id="sale_order_tag_color_female" name="sale_order_tag_color_female">
+            <select
+              id="sale_order_tag_color_female"
+              name="sale_order_tag_color_female"
+              value={saleOrderColorFemale}
+              onChange={(e) => setSaleOrderColorFemale(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="sale_order_tag_location">Sale Order Tag Location:</label>
-            <select id="sale_order_tag_location" name="sale_order_tag_location">
+            <select
+              id="sale_order_tag_location"
+              name="sale_order_tag_location"
+              value={saleOrderLocation}
+              onChange={(e) => setSaleOrderLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
@@ -1503,20 +1565,35 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="use_paint_marks">Use Paint Marks:</label>
-            <select id="use_paint_marks" name="use_paint_marks">
+            <select
+              id="use_paint_marks"
+              name="use_paint_marks"
+              value={usePaintMarks}
+              onChange={(e) => setUsePaintMarks(e.target.value)}
+            >
               <option value="">Select...</option>
               <option value="true">True</option>
               <option value="false">False</option>
             </select>
 
             <label htmlFor="paint_mark_color">Paint Mark Color:</label>
-            <select id="paint_mark_color" name="paint_mark_color">
+            <select
+              id="paint_mark_color"
+              name="paint_mark_color"
+              value={paintMarkColor}
+              onChange={(e) => setPaintMarkColor(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="paint_mark_location">Paint Mark Tag Location:</label>
-            <select id="paint_mark_location" name="paint_mark_location">
+            <select
+              id="paint_mark_location"
+              name="paint_mark_location"
+              value={paintMarkLocation}
+              onChange={(e) => setPaintMarkLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
@@ -1525,29 +1602,50 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="tattoo_color">Tattoo Color:</label>
-            <select id="tattoo_color" name="tattoo_color">
+            <select
+              id="tattoo_color"
+              name="tattoo_color"
+              value={tattooColor}
+              onChange={(e) => setTattooColor(e.target.value)}
+            >
               <option value="">Select a color...</option>
               {colorOptions}
             </select>
 
             <label htmlFor="tattoo_location">Tattoo Location:</label>
-            <select id="tattoo_location" name="tattoo_location">
+            <select
+              id="tattoo_location"
+              name="tattoo_location"
+              value={tattooLocation}
+              onChange={(e) => setTattooLocation(e.target.value)}
+            >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
             </select>
           </div>
 
           <label htmlFor="freeze_brand_location">Freeze Brand Tag Location:</label>
-          <select id="freeze_brand_location" name="freeze_brand_location">
+          <select
+            id="freeze_brand_location"
+            name="freeze_brand_location"
+            value={freezeBrandLocation}
+            onChange={(e) => setFreezeBrandLocation(e.target.value)}
+          >
             <option value="">Select a Tag Location...</option>
             {locationOptions}
           </select>
 
           <label htmlFor="id_idremovereasonid">ID Remove Reason:</label>
-          <select id="id_idremovereasonid" name="id_idremovereasonid">
+          <select
+            id="id_idremovereasonid"
+            name="id_idremovereasonid"
+            value={idRemoveReason}
+            onChange={(e) => setIdRemoveReason(e.target.value)}
+          >
             <option value="">Select a Remove Reason...</option>
             {removeReasonOptions}
           </select>
+
 
           <div className="section-break"></div>
           <h3>Tissue Sample Information</h3>
