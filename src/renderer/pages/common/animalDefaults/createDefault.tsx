@@ -61,8 +61,6 @@ const CreateDefaults: React.FC = () => {
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
   const [selectedDefault, setSelectedDefault] = useState<DefaultSettingsResults | null>(null);
 
-  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
-
   const [ownerSelection, setOwnerSelection] = useState<OwnerType>(OwnerType.CONTACT);
   const [ownerContactId, setOwnerContactId] = useState<string>('');
   const [ownerCompanyId, setOwnerCompanyId] = useState<string>('');
@@ -157,20 +155,26 @@ const CreateDefaults: React.FC = () => {
   const [freezeBrandLocation, setFreezeBrandLocation] = useState<string>('');
   const [idRemoveReason, setIdRemoveReason] = useState<string>('');
   
-  const [flockPrefixId, setFlockPrefixId] = useState('');
-  const [sexId, setSexId] = useState('');
-  const [birthType, setBirthType] = useState('');
-  const [rearType, setRearType] = useState('');
-  const [minimumBirthWeight, setMinimumBirthWeight] = useState('');
-  const [maximumBirthWeight, setMaximumBirthWeight] = useState('');
-  const [birthWeightUnitsId, setBirthWeightUnitsId] = useState('');
-  const [weightUnitsId, setWeightUnitsId] = useState('');
-  const [salePriceUnitsId, setSalePriceUnitsId] = useState('');
-  const [deathReasonId, setDeathReasonId] = useState('');
-  const [transferReasonId, setTransferReasonId] = useState('');
-  const [evaluationUpdateAlert, setEvaluationUpdateAlert] = useState('');
+  // Tissue Sample
+  const [tissueSampleTypeId, setTissueSampleTypeId] = useState<string>('');
+  const [tissueTestId, setTissueTestId] = useState<string>('');
+  const [tissueSampleContainerTypeId, setTissueSampleContainerTypeId] = useState<string>('');
 
-
+  // Animal Info
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
+  const [selectedBreedId, setSelectedBreedId] = useState<string>('');
+  const [flockPrefixId, setFlockPrefixId] = useState<string>('');
+  const [sexId, setSexId] = useState<string>('');
+  const [birthType, setBirthType] = useState<string>('');
+  const [rearType, setRearType] = useState<string>('');
+  const [minBirthWeight, setMinBirthWeight] = useState<number>(0);
+  const [maxBirthWeight, setMaxBirthWeight] = useState<number>(0);
+  const [birthWeightUnitsId, setBirthWeightUnitsId] = useState<string>('');
+  const [weightUnitsId, setWeightUnitsId] = useState<string>('');
+  const [salePriceUnitsId, setSalePriceUnitsId] = useState<string>('');
+  const [deathReasonId, setDeathReasonId] = useState<string>('');
+  const [transferReasonId, setTransferReasonId] = useState<string>('');
+  const [evaluationUpdateAlert, setEvaluationUpdateAlert] = useState<string>('');
 
 
   useEffect(() => {
@@ -179,12 +183,12 @@ const CreateDefaults: React.FC = () => {
       // define requests needed for specific pieces of data
       const weightReq: UnitRequest = {
         unit_type_id: null,
-        unit_type_name: "weight",
+        unit_type_name: "Weight",
       };
 
       const currencyReq: UnitRequest = {
         unit_type_id: null,
-        unit_type_name: "currency",
+        unit_type_name: "Currency",
       };
 
       const [
@@ -756,7 +760,24 @@ const CreateDefaults: React.FC = () => {
     setFreezeBrandLocation(defaultSetting.freeze_brand_location);
     setIdRemoveReason(defaultSetting.id_idremovereasonid);
     
-
+    setTissueSampleTypeId(defaultSetting.id_tissuesampletypeid);
+    setTissueTestId(defaultSetting.id_tissuetestid);
+    setTissueSampleContainerTypeId(defaultSetting.id_tissuesamplecontainertypeid);
+  
+    setSelectedSpeciesId(defaultSetting.id_speciesid);
+    setSelectedBreedId(defaultSetting.id_breedid);
+    setFlockPrefixId(defaultSetting.id_flockprefixid);
+    setSexId(defaultSetting.id_sexid);
+    setBirthType(defaultSetting.birth_type);
+    setRearType(defaultSetting.rear_type);
+    setMinBirthWeight(defaultSetting.minimum_birth_weight);
+    setMaxBirthWeight(defaultSetting.maximum_birth_weight);
+    setBirthWeightUnitsId(defaultSetting.birth_weight_id_unitsid);
+    setWeightUnitsId(defaultSetting.weight_id_unitsid);
+    setSalePriceUnitsId(defaultSetting.sale_price_id_unitsid);
+    setDeathReasonId(defaultSetting.id_deathreasonid);
+    setTransferReasonId(defaultSetting.id_transferreasonid);
+    setEvaluationUpdateAlert(defaultSetting.evaluation_update_alert);
   };
 
   return (
@@ -1654,19 +1675,34 @@ const CreateDefaults: React.FC = () => {
           <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_tissuesampletypeid">Tissue Sample Type:</label>
-            <select id="id_tissuesampletypeid" name="id_tissuesampletypeid">
+            <select
+              id="id_tissuesampletypeid"
+              name="id_tissuesampletypeid"
+              value={tissueSampleTypeId}
+              onChange={(e) => setTissueSampleTypeId(e.target.value)}
+            >
               <option value="">Select a Tissue Sample type...</option>
               {tissueSampleTypeOptions}
             </select>
 
             <label htmlFor="id_tissuetestid">Tissue Test:</label>
-            <select id="id_tissuetestid" name="id_tissuetestid">
+            <select
+              id="id_tissuetestid"
+              name="id_tissuetestid"
+              value={tissueTestId}
+              onChange={(e) => setTissueTestId(e.target.value)}
+            >
               <option value="">Select a Tissue Test...</option>
               {tissueTestOptions}
             </select>
 
             <label htmlFor="id_tissuesamplecontainertypeid">Tissue Sample Container Type:</label>
-            <select id="id_tissuesamplecontainertypeid" name="id_tissuesamplecontainertypeid">
+            <select
+              id="id_tissuesamplecontainertypeid"
+              name="id_tissuesamplecontainertypeid"
+              value={tissueSampleContainerTypeId}
+              onChange={(e) => setTissueSampleContainerTypeId(e.target.value)}
+            >
               <option value="">Select a Tissue Sample Container Type...</option>
               {tissueSampleContainerTypeOptions}
             </select>
@@ -1693,79 +1729,140 @@ const CreateDefaults: React.FC = () => {
               {speciesOptions}
             </select>
 
+            <label htmlFor="id_breedid">Breed:</label>
             <select
               id="id_breedid"
               name="id_breedid"
+              value={selectedBreedId}
+              onChange={(e) => setSelectedBreedId(e.target.value)}
               disabled={!breeds.length}
             >
-              <option value="" disabled selected>
-                Select a breed...
-              </option>
+              <option value="">Select a breed...</option>
               {breedOptions}
             </select>
           </div>
 
           <label htmlFor="id_flockprefixid">Flock Prefix:</label>
-          <select id="id_flockprefixid" name="id_flockprefixid">
+          <select
+            id="id_flockprefixid"
+            name="id_flockprefixid"
+            value={flockPrefixId}
+            onChange={(e) => setFlockPrefixId(e.target.value)}
+          >
             <option value="">Select a Flock Prefix...</option>
             {flockPrefixOptions}
           </select>
 
           <label htmlFor="id_sexid">Sex:</label>
-          <select id="id_sexid" name="id_sexid">
-            <option value="">Select a Flock Prefix...</option>
+          <select
+            id="id_sexid"
+            name="id_sexid"
+            value={sexId}
+            onChange={(e) => setSexId(e.target.value)}
+          >
+            <option value="">Select a Sex...</option>
             {sexOptions}
           </select>
 
           <label htmlFor="birth_type">Birth Type:</label>
-          <select id="birth_type" name="birth_type">
+          <select
+            id="birth_type"
+            name="birth_type"
+            value={birthType}
+            onChange={(e) => setBirthType(e.target.value)}
+          >
             <option value="">Select a Birth Type...</option>
             {birthTypeOptions}
           </select>
 
           <label htmlFor="rear_type">Rear Type:</label>
-          <select id="rear_type" name="rear_type">
-            <option value="">Select a Birth Type...</option>
+          <select
+            id="rear_type"
+            name="rear_type"
+            value={rearType}
+            onChange={(e) => setRearType(e.target.value)}
+          >
+            <option value="">Select a Rear Type...</option>
             {birthTypeOptions}
           </select>
 
           <label htmlFor="minimum_birth_weight">Minimum Birth Weight:</label>
-          <input type="number" id="minimum_birth_weight" name="minimum_birth_weight" min="0" step="0.1" />
+          <input
+            type="number"
+            id="minimum_birth_weight"
+            name="minimum_birth_weight"
+            min="0"
+            step="0.1"
+            value={minBirthWeight}
+            onChange={(e) => setMinBirthWeight(parseFloat(e.target.value) || 0)}
+          />
 
           <label htmlFor="maximum_birth_weight">Maximum Birth Weight:</label>
-          <input type="number" id="maximum_birth_weight" name="maximum_birth_weight" min="0" step="0.1" />
+          <input
+            type="number"
+            id="maximum_birth_weight"
+            name="maximum_birth_weight"
+            min="0"
+            step="0.1"
+            value={maxBirthWeight}
+            onChange={(e) => setMaxBirthWeight(parseFloat(e.target.value) || 0)}
+          />
+
 
           <label htmlFor="birth_weight_id_unitsid">Birth Weight Units:</label>
-          <select id="birth_weight_id_unitsid" name="birth_weight_id_unitsid">
+          <select
+            id="birth_weight_id_unitsid"
+            name="birth_weight_id_unitsid"
+            value={birthWeightUnitsId}
+            onChange={(e) => setBirthWeightUnitsId(e.target.value)}
+          >
             <option value="">Select a Birth Weight Unit...</option>
             {weightUnitOptions}
           </select>
 
           <label htmlFor="weight_id_unitsid">Weight Units:</label>
-          <select id="weight_id_unitsid" name="weight_id_unitsid">
+          <select
+            id="weight_id_unitsid"
+            name="weight_id_unitsid"
+            value={weightUnitsId}
+            onChange={(e) => setWeightUnitsId(e.target.value)}
+          >
             <option value="">Select a Weight Unit...</option>
             {weightUnitOptions}
           </select>
 
           <label htmlFor="sale_price_id_unitsid">Sale Price Units:</label>
-          <select id="sale_price_id_unitsid" name="sale_price_id_unitsid">
+          <select
+            id="sale_price_id_unitsid"
+            name="sale_price_id_unitsid"
+            value={salePriceUnitsId}
+            onChange={(e) => setSalePriceUnitsId(e.target.value)}
+          >
             <option value="">Select a Currency...</option>
             {currencyUnitOptions}
           </select>
-          
+
           <label htmlFor="id_deathreasonid">Death Reason:</label>
-          <select id="id_deathreasonid" name="id_deathreasonid">
+          <select
+            id="id_deathreasonid"
+            name="id_deathreasonid"
+            value={deathReasonId}
+            onChange={(e) => setDeathReasonId(e.target.value)}
+          >
             <option value="">Select a Death Reason...</option>
             {deathReasonOptions}
           </select>
 
-
           <label htmlFor="id_transferreasonid">Transfer Reason:</label>
-          <select id="id_transferreasonid" name="id_transferreasonid">
+          <select
+            id="id_transferreasonid"
+            name="id_transferreasonid"
+            value={transferReasonId}
+            onChange={(e) => setTransferReasonId(e.target.value)}
+          >
             <option value="">Select a Transfer Reason...</option>
             {transferReasonOptions}
           </select>
-
 
           {/* Miscellaneous Section */}
           <div className="section-break"></div>
@@ -1773,7 +1870,17 @@ const CreateDefaults: React.FC = () => {
           <hr />
 
           <label htmlFor="evaluation_update_alert">Evaluation Update Alert:</label>
-          <select id="evaluation_update_alert" name="evaluation_update_alert" />
+          <select
+            id="evaluation_update_alert"
+            name="evaluation_update_alert"
+            value={evaluationUpdateAlert}
+            onChange={(e) => setEvaluationUpdateAlert(e.target.value)}
+          >
+            <option value="">Select...</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+
         </form>
       </div>
     </div>
