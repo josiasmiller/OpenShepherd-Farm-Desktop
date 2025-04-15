@@ -30,8 +30,13 @@ import { OwnerType } from "../../../../database/client-types";
 
 import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
+import { getCurrentFormattedTimestamp } from "../../../scripts/common/utils/times";
 
 const CreateDefaults: React.FC = () => {
+
+  ////////////
+  // STATES //
+  ////////////
 
   // define the arrays that are used when retrieving data from the DB
   const [contacts, setOwnerContacts] = useState<Owner[]>([]);
@@ -57,9 +62,9 @@ const CreateDefaults: React.FC = () => {
   const [weightUnits, setWeightUnits] = useState<Unit[]>([]);
   const [currencyUnits, setCurrencyUnits] = useState<Unit[]>([]);
 
-  // define state-specific 
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
   const [selectedDefault, setSelectedDefault] = useState<DefaultSettingsResults | null>(null);
+  const [newDefaultName, setNewDefaultName] = useState<string>('');
 
   const [ownerSelection, setOwnerSelection] = useState<OwnerType>(OwnerType.CONTACT);
   const [ownerContactId, setOwnerContactId] = useState<string>('');
@@ -112,7 +117,6 @@ const CreateDefaults: React.FC = () => {
   const [farmTagNumberDigitsFromEid, setFarmTagNumberDigitsFromEid] = useState('');
   const [farmTagLocation, setFarmTagLocation] = useState('');
   
-
   // Federal Tags
   const [fedSameColor, setFedSameColor] = useState<string>('');
   const [fedColorMale, setFedColorMale] = useState<string>('');
@@ -176,6 +180,9 @@ const CreateDefaults: React.FC = () => {
   const [transferReasonId, setTransferReasonId] = useState<string>('');
   const [evaluationUpdateAlert, setEvaluationUpdateAlert] = useState<string>('');
 
+  /////////////
+  // ON LOAD //
+  /////////////
 
   useEffect(() => {
     const loadData = async () => {
@@ -442,6 +449,10 @@ const CreateDefaults: React.FC = () => {
     loadData();
   }, []); 
 
+  ///////////////////////
+  // Memory Management //
+  ///////////////////////
+
   const contactOptions = useMemo(() => (
     contacts.map((contact) => (
       <option key={contact.id} value={contact.id}>
@@ -650,7 +661,7 @@ const CreateDefaults: React.FC = () => {
     }
   };
 
-  const handleOwnerSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOwnerSelectionChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
   };
 
@@ -662,6 +673,133 @@ const CreateDefaults: React.FC = () => {
     const value = e.target.id === 'transfer_reason_select_contact' ? OwnerType.CONTACT : OwnerType.COMPANY;
     setTransferReasonSelection(value);
   };
+
+  const createNewDefault = async () => {
+    const currentTimestamp: string = getCurrentFormattedTimestamp();
+
+    // verify name is set
+    if (!newDefaultName || newDefaultName == '') {
+      alert("Please provide a name for the new default settings");
+      return;
+    }
+
+    // Construct the WriteNewDefaultParameters object
+    const formData: WriteNewDefaultParameters = {
+      default_settings_name: newDefaultName,
+  
+      contactType: ownerSelection,
+      ownerId: ownerContactId,
+      owner_id_premiseid: ownerPremiseId,
+  
+      breederId: breederContactId,
+      breederType: breederSelection,
+      breeder_id_premiseid: breederPremiseId,
+  
+      transferReasonContactId: transferReasonContactId,
+      transferReasonContactType: transferReasonSelection,
+  
+      vet_id_contactid: vetContactId,
+      vet_id_premiseid: vetPremiseId,
+  
+      lab_id_companyid: labCompanyId,
+      lab_id_premiseid: labPremiseId,
+  
+      id_registry_id_companyid: registryCompanyId,
+      registry_id_premiseid: registryPremiseId,
+  
+      id_stateid: stateId,
+      id_countyid: countyId,
+      id_flockprefixid: flockPrefixId,
+      id_speciesid: selectedSpeciesId,
+      id_breedid: selectedBreedId,
+      id_sexid: sexId,
+  
+      id_idtypeid_primary: primaryIdTypeId,
+      id_idtypeid_secondary: secondaryIdTypeId,
+      id_idtypeid_tertiary: tertiaryIdTypeId,
+  
+      id_eid_tag_male_color_female_color_same: eidTagMaleFemaleColorSame,
+      eid_tag_color_male: eidTagColorMale,
+      eid_tag_color_female: eidTagColorFemale,
+      eid_tag_location: eidTagLocation,
+  
+      id_farm_tag_male_color_female_color_same: farmTagMaleFemaleColorSame,
+      farm_tag_based_on_eid_tag: farmTagBasedOnEidTag,
+      farm_tag_number_digits_from_eid: farmTagNumberDigitsFromEid,
+      farm_tag_color_male: farmTagColorMale,
+      farm_tag_color_female: farmTagColorFemale,
+      farm_tag_location: farmTagLocation,
+  
+      id_fed_tag_male_color_female_color_same: fedSameColor,
+      fed_tag_color_male: fedColorMale,
+      fed_tag_color_female: fedColorFemale,
+      fed_tag_location: fedLocation,
+  
+      id_nues_tag_male_color_female_color_same: nuesSameColor,
+      nues_tag_color_male: nuesColorMale,
+      nues_tag_color_female: nuesColorFemale,
+      nues_tag_location: nuesLocation,
+  
+      id_trich_tag_male_color_female_color_same: trichSameColor,
+      trich_tag_color_male: trichColorMale,
+      trich_tag_color_female: trichColorFemale,
+      trich_tag_location: trichLocation,
+      trich_tag_auto_increment: trichAutoIncrement,
+  
+      use_paint_marks: usePaintMarks,
+      paint_mark_color: paintMarkColor,
+      paint_mark_location: paintMarkLocation,
+  
+      tattoo_color: tattooColor,
+      tattoo_location: tattooLocation,
+  
+      freeze_brand_location: freezeBrandLocation,
+  
+      id_idremovereasonid: idRemoveReason,
+      id_tissuesampletypeid: tissueSampleTypeId,
+      id_tissuetestid: tissueTestId,
+      id_tissuesamplecontainertypeid: tissueSampleContainerTypeId,
+  
+      birth_type: birthType,
+      rear_type: rearType,
+  
+      minimum_birth_weight: minBirthWeight,
+      maximum_birth_weight: maxBirthWeight,
+      birth_weight_id_unitsid: birthWeightUnitsId,
+      weight_id_unitsid: weightUnitsId,
+      sale_price_id_unitsid: salePriceUnitsId,
+  
+      evaluation_update_alert: evaluationUpdateAlert,
+  
+      id_bangs_tag_male_color_female_color_same: bangsSameColor,
+      bangs_tag_color_male: bangsColorMale,
+      bangs_tag_color_female: bangsColorFemale,
+      bangs_tag_location: bangsLocation,
+      id_sale_order_tag_male_color_female_color_same: saleOrderSameColor,
+      sale_order_tag_color_male: saleOrderColorMale,
+      sale_order_tag_color_female: saleOrderColorFemale,
+      sale_order_tag_location: saleOrderLocation,
+      id_deathreasonid: deathReasonId,
+  
+      id_transferreasonid: transferReasonId,
+      created: currentTimestamp,
+      modified: currentTimestamp,
+  
+      death_reason_id_contactid: "0",
+      death_reason_id_companyid: "0",
+      trich_tag_next_tag_number: "0",
+    };
+  
+    const success: boolean = await (window as any).electronAPI.writeNewDefaultSettings(formData);
+  
+    if (success) {
+      alert(`A new Default Setting has been created with the name \"${formData.default_settings_name}\"`);
+    } else {
+      alert("Failed to write settings.");
+    }
+  
+    return;
+  }
   
 
   const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
@@ -794,7 +932,13 @@ const CreateDefaults: React.FC = () => {
       {/* Top Section */}
       <div className="create-defaults-top-section">
         <h2>Default Settings</h2>
-        <button id="create-default-btn" className="forward-button">
+        <button
+          id="create-default-btn" 
+          className="forward-button"
+          onClick={() => {
+            createNewDefault();
+          }}
+        >
           Create New Default
         </button>
       </div>
@@ -842,7 +986,13 @@ const CreateDefaults: React.FC = () => {
           </div>
 
           <label htmlFor="settings_name">Settings Name:</label>
-          <input type="text" id="settings_name" name="settings_name" />
+          <input 
+            type="text" 
+            id="settings_name" 
+            name="settings_name"
+            value={newDefaultName}
+            onChange={(e) => setNewDefaultName(e.target.value)}
+          />
 
           <div className="section-break"></div>
           <h2>Contacts, Companies, & Premises</h2>
