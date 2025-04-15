@@ -872,8 +872,6 @@ const CreateDefaults: React.FC = () => {
   
     // NUES Tags
     setNuesSameColor(defaultSetting.id_nues_tag_male_color_female_color_same);
-    console.log("MITCH DEBUG MODE!");
-    console.log(defaultSetting.id_nues_tag_male_color_female_color_same);
     setNuesColorMale(defaultSetting.nues_tag_color_male);
     setNuesColorFemale(defaultSetting.nues_tag_color_female);
     setNuesLocation(defaultSetting.nues_tag_location);

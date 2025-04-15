@@ -8,13 +8,18 @@
     "build": "tsc && node scripts/copyAssets.js",
     "start": "cross-env NODE_ENV=production electron .",
     "build_start": "npm run build && cross-env NODE_ENV=development electron .",
-    "vite": "vite"
+    "vite": "vite",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/electron": "^1.6.12",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.1.1",
@@ -23,8 +28,12 @@
     "cross-env": "^7.0.3",
     "electron": "^34.1.1",
     "electron-builder": "^25.1.8",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "vite": "^6.2.5"
