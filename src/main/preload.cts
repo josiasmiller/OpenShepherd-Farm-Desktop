@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getTransferReasons: () => ipcRenderer.invoke("get-transfer-reasons"),
   getUnits: (queryParams: UnitRequest) => ipcRenderer.invoke("get-units", queryParams),
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
+  isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
   writeNewDefaultSettings: (queryParams: WriteNewDefaultParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
