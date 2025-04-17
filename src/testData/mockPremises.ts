@@ -1,6 +1,7 @@
 import type { Premise } from '../database';
+import { Success } from '../shared/results/resultTypes';
 
-export const mockPremises: Premise[] = [
+export const mockPremises = new Success<Premise[]>([
   { 
     id: "1", 
     address: "1234 Premise Lane", 
@@ -15,4 +16,4 @@ export const mockPremises: Premise[] = [
     postcode: "12345",
     country: "USA",
   },
-];
+]);

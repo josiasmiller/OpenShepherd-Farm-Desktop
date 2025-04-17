@@ -14,6 +14,14 @@ import { mockLocations } from './src/testData/mockLocations';
 import { mockOwners } from './src/testData/mockOwners';
 import { mockPremises } from './src/testData/mockPremises';
 
+import { mockRemoveReasons } from './src/testData/mockRemoveReasons';
+import { mockSexes } from './src/testData/mockSexes';
+import { mockSpecies } from './src/testData/mockSpecies';
+import { mockTagTypes } from './src/testData/mockTagTypes';
+import { mockTissueSampleContainerTypes } from './src/testData/mockTissueSampleContainerTypes';
+import { mockTissueTests } from './src/testData/mockTissueTests';
+import { mockTransferReasons } from './src/testData/mockTransferReasons';
+
 global.TextEncoder = TextEncoder as any;
 global.TextDecoder = TextDecoder as any;
 
@@ -36,16 +44,15 @@ beforeAll(() => {
     getFlockPrefixes: jest.fn().mockResolvedValue(mockFlockPrefixes),
     getLocations: jest.fn().mockResolvedValue(mockLocations),
     getOwnerInfo: jest.fn().mockResolvedValue(mockOwners),
-    getPremises: jest.fn().mockResolvedValue([]),
-    getRemoveReasons: jest.fn().mockResolvedValue([]),
-    getSexes: jest.fn().mockResolvedValue([]),
-    getSpecies: jest.fn().mockResolvedValue([]),
+    getRemoveReasons: jest.fn().mockResolvedValue(mockRemoveReasons),
+    getSexes: jest.fn().mockResolvedValue(mockSexes),
+    getSpecies: jest.fn().mockResolvedValue(mockSpecies),
     getStates: jest.fn().mockResolvedValue([]),
-    getTagTypes: jest.fn().mockResolvedValue([]),
+    getTagTypes: jest.fn().mockResolvedValue(mockTagTypes),
     getTissueSampleTypes: jest.fn().mockResolvedValue([]),
-    getTissueSampleContainerTypes: jest.fn().mockResolvedValue([]),
-    getTissueTests: jest.fn().mockResolvedValue([]),
-    getTransferReasons: jest.fn().mockResolvedValue([]),
+    getTissueSampleContainerTypes: jest.fn().mockResolvedValue(mockTissueSampleContainerTypes),
+    getTissueTests: jest.fn().mockResolvedValue(mockTissueTests),
+    getTransferReasons: jest.fn().mockResolvedValue(mockTransferReasons),
     getUnits: jest.fn().mockResolvedValue([]),
     getUnitTypes: jest.fn().mockResolvedValue([]),
   };

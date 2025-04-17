@@ -1,6 +1,7 @@
 import type { Location } from '../database';
+import { Success } from '../shared/results/resultTypes';
 
-export const mockLocations: Location[] = [
+export const mockLocations = new Success<Location[]>([
   { 
     id: "1", 
     name: "Right Ear",
@@ -13,4 +14,4 @@ export const mockLocations: Location[] = [
     abbreviation: "LF",
     display_order: 2,
   },
-];
+]);

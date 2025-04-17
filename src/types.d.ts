@@ -43,7 +43,6 @@ declare global {
       getExistingDefaults: () => Promise<DefaultSettingsResults[]>;
       getFlockPrefixes: () => Promise<FlockPrefix[]>;
       getLocations: () => Promise<Location[]>;
-      getPremises: () => Promise<Premise[]>;
       getRemoveReasons: () => Promise<RemoveReason[]>;
       getSexes: () => Promise<Sex[]>;
       getSpecies: () => Promise<Species[]>;

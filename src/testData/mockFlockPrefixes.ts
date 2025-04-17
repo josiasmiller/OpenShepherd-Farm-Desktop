@@ -1,7 +1,8 @@
 import type { FlockPrefix } from '../database';
 import { OwnerType } from '../database/client-types';
+import { Success } from '../shared/results/resultTypes';
 
-export const mockFlockPrefixes: FlockPrefix[] = [
+export const mockFlockPrefixes = new Success<FlockPrefix[]>([
   { 
     id: '1', 
     name: "John's Super Flock ",
@@ -16,4 +17,4 @@ export const mockFlockPrefixes: FlockPrefix[] = [
     owner_type: OwnerType.CONTACT,
     registry_company_id: null,
   },
-];
+]);
