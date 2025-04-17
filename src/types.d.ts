@@ -37,14 +37,12 @@ declare global {
       getBirthTypes: () => Promise<BirthType[]>;
       getBreeds: () => Promise<Breed[]>;
       getColors: () => Promise<Color[]>;
-      getCompanies: () => Promise<Company[]>;
       getCountries: () => Promise<Country[]>;
       getCounties: () => Promise<County[]>;
       getDeathReasons: () => Promise<DeathReason[]>;
       getExistingDefaults: () => Promise<DefaultSettingsResults[]>;
       getFlockPrefixes: () => Promise<FlockPrefix[]>;
       getLocations: () => Promise<Location[]>;
-      getOwners: () => Promise<Owner[]>;
       getPremises: () => Promise<Premise[]>;
       getRemoveReasons: () => Promise<RemoveReason[]>;
       getSexes: () => Promise<Sex[]>;
