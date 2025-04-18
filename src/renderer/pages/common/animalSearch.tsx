@@ -58,7 +58,7 @@ const AnimalSearch: React.FC = () => {
     <div className="animal-search-container">
       {/* SEARCH SECTION */}
       <div className="search-section">
-        <h2>Search for an Animal</h2>
+        <h2>Search for Animals</h2>
         <div className="search-filters">
           <div>
             <label htmlFor="name">Animal Name</label>
@@ -155,12 +155,13 @@ const AnimalSearch: React.FC = () => {
               placeholder="Enter Farm Tag"
             />
           </div>
-        </div>
-
-
-        <div className="search-filters">
           <button onClick={fetchAndDisplayAnimals} className="forward-button">Search</button>
         </div>
+
+
+        {/* <div className="search-filters">
+          <button onClick={fetchAndDisplayAnimals} className="forward-button">Search</button>
+        </div> */}
       </div>
 
       {/* RESULTS SECTION */}

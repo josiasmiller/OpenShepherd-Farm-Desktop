@@ -5,6 +5,8 @@
   justify-content: center;
   height: 100vh;
   text-align: center;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
 }
 
 .home-logo {
@@ -17,20 +19,20 @@
 .home-title {
   font-size: 2rem;
   margin-bottom: 10px;
+  color: var(--md-sys-color-primary);
 }
 
 .home-subtext {
   font-size: 1rem;
-  color: #666;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .external-link {
-  color: #0077cc;
+  color: var(--md-sys-color-secondary);
   cursor: pointer;
   text-decoration: underline;
 }
 
 .external-link:hover {
-  color: #005fa3;
+  color: var(--md-sys-color-on-secondary-container);
 }
-  

@@ -1,16 +1,16 @@
-
 .standard-button {
-    background-color: #007bff; /* Blue color */
-    color: white; /* White text */
-    border: none;
-    padding: 8px 16px; /* More padding for a bigger button */
-    font-size: 16px; /* Make text a bit bigger than default */
-    cursor: pointer;
-    border-radius: 5px; /* Slightly rounded edges */
-    transition: background-color 0.3s ease-in-out;
-  }
+  background-color: var(--md-sys-color-primary);           /* Primary theme color */
+  color: var(--md-sys-color-on-primary);                   /* Text color for contrast */
+  border: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
 
-  /* Hover effect */
-  .standard-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
+/* Hover effect */
+.standard-button:hover {
+  background-color: var(--md-sys-color-primary-container); /* Slightly shifted hue */
+  color: var(--md-sys-color-on-primary-container);         /* Adjust contrast */
+}
