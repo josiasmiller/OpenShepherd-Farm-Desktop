@@ -6,7 +6,7 @@ export const selectNewDb = async () => {
   const { filePaths } = await dialog.showOpenDialog({
     title: "Select Database File",
     properties: ["openFile"],
-    filters: [{ name: "SQLite Database", extensions: ["db", "sqlite"] }],
+    filters: [{ name: "SQLite Database", extensions: ["db", "sqlite", "sqlite3"] }],
   });
 
   if (filePaths.length > 0) {

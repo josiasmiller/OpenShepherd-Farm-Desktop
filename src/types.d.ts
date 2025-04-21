@@ -1,3 +1,5 @@
+export {};
+
 import { 
   AnimalSearchResult,
   BirthType,
@@ -23,12 +25,10 @@ import {
   UnitType
 } from "./database";
 
-export {};
-
 declare global {
   interface Window {
     electronAPI: {
-      selectDatabase: () => Promise<{ message: string }>;
+      selectDatabase: () => Promise<string>;
       isDatabaseLoaded: () => Promise<boolean>;
       getOwnerInfo: () => Promise<Owner[]>;
       getCompanyInfo: () => Promise<Company[]>;
