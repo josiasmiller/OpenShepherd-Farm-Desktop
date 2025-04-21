@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../styles/styles.css";
+import transparentLogo from "../../../assets/AnimalTrakker_icon_512x512.png";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +46,11 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="sidebar">
+      <img 
+        src={transparentLogo}
+        alt="App Icon" 
+        className="w-full h-auto max-h-32 object-contain p-4" 
+      />
       <h2>AnimalTrakker Farm Desktop</h2>
       <ul>
         <li onClick={() => handleNavClick("/")}>Home</li>
