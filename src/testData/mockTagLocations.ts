@@ -1,7 +1,7 @@
-import type { Location } from '../database';
+import type { TagLocation } from '../database';
 import { Success } from '../shared/results/resultTypes';
 
-export const mockLocations = new Success<Location[]>([
+export const mockLocations = new Success<TagLocation[]>([
   { 
     id: "1", 
     name: "Right Ear",

@@ -10,7 +10,7 @@ const Sidebar: React.FC = () => {
 
   // Check if database is already loaded (on mount and after file selection)
   const checkDbStatus = async () => {
-    const loaded: boolean = await (window as any).electronAPI.isDatabaseLoaded();
+    const loaded: boolean = await window.electronAPI.isDatabaseLoaded();
     setIsDbLoaded(loaded);
   };
 
@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => {
 
   const handleSelectDatabase = async () => {
     try {
-      const filePath: string | null = await (window as any).electronAPI.selectDatabase();
+      const filePath: string | null = await window.electronAPI.selectDatabase();
       if (filePath) {
         setDbFileName(filePath);
         await checkDbStatus(); // recheck DB loaded state after selection

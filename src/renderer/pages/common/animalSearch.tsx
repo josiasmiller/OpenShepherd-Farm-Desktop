@@ -28,10 +28,7 @@ const AnimalSearch: React.FC = () => {
   };
 
   const fetchAndDisplayAnimals = async () => {
-    console.log("Fetching animals with:", searchParams);
-
-    // Simulate API call
-    const animals: AnimalSearchResult[] = await (window as any).electronAPI.animalSearch(searchParams);
+    const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(searchParams);
 
     if (animals.length === 0) {
       setMessage("No animals found.");

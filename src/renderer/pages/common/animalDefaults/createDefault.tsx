@@ -9,13 +9,13 @@ import {
   DeathReason, 
   DefaultSettingsResults, 
   FlockPrefix, 
-  Location, 
   Owner, 
   Premise, 
   RemoveReason, 
   Sex, 
   Species, 
   State,
+  TagLocation,
   TagType,
   TissueSampleContainerType,
   TissueSampleType,
@@ -49,9 +49,9 @@ const CreateDefaults: React.FC = () => {
   const [deathReasons, setDeathReasons] = useState<DeathReason[]>([]);
   const [species, setSpecies] = useState<Species[]>([]);
   const [breeds, setBreeds] = useState<Breed[]>([]);
-  const [locations, setLocation] = useState<Location[]>([]);
   const [sexes, setSexes] = useState<Sex[]>([]);
   const [flockPrefixes, setFlockPrefixes] = useState<FlockPrefix[]>([]);
+  const [tagLocations, setTagLocation] = useState<TagLocation[]>([]);
   const [tagTypes, setTagTypes] = useState<TagType[]>([]);
   const [tissueSampleContainerTypes, setTissueSampleContainerTypes] = useState<TissueSampleContainerType[]>([]);
   const [tissueSampleTypes, setTissueSampleTypes] = useState<TissueSampleType[]>([]);
@@ -222,28 +222,28 @@ const CreateDefaults: React.FC = () => {
         weightUnitsResult,
         currencyUnitsResult,
       ] = await Promise.all([
-        (window as any).electronAPI.getExistingDefaults(),
-        (window as any).electronAPI.getOwnerInfo(),
-        (window as any).electronAPI.getCompanyInfo(false),
-        (window as any).electronAPI.getCompanyInfo(true),
-        (window as any).electronAPI.getPremiseInfo(),
-        (window as any).electronAPI.getStates(),
-        (window as any).electronAPI.getCounties(),
-        (window as any).electronAPI.getRemoveReasons(),
-        (window as any).electronAPI.getDeathReasons(),
-        (window as any).electronAPI.getSpecies(),
-        (window as any).electronAPI.getSexes(),
-        (window as any).electronAPI.getLocations(),
-        (window as any).electronAPI.getFlockPrefixes(),
-        (window as any).electronAPI.getTagTypes(),
-        (window as any).electronAPI.getTissueSampleContainerTypes(),
-        (window as any).electronAPI.getTissueSampleTypes(),
-        (window as any).electronAPI.getTissueTests(),
-        (window as any).electronAPI.getTransferReasons(),
-        (window as any).electronAPI.getBirthTypes(),
-        (window as any).electronAPI.getColors(),
-        (window as any).electronAPI.getUnits(weightReq),
-        (window as any).electronAPI.getUnits(currencyReq),
+        window.electronAPI.getExistingDefaults(),
+        window.electronAPI.getOwnerInfo(),
+        window.electronAPI.getCompanyInfo(false),
+        window.electronAPI.getCompanyInfo(true),
+        window.electronAPI.getPremiseInfo(),
+        window.electronAPI.getStates(),
+        window.electronAPI.getCounties(),
+        window.electronAPI.getRemoveReasons(),
+        window.electronAPI.getDeathReasons(),
+        window.electronAPI.getSpecies(),
+        window.electronAPI.getSexes(),
+        window.electronAPI.getLocations(),
+        window.electronAPI.getFlockPrefixes(),
+        window.electronAPI.getTagTypes(),
+        window.electronAPI.getTissueSampleContainerTypes(),
+        window.electronAPI.getTissueSampleTypes(),
+        window.electronAPI.getTissueTests(),
+        window.electronAPI.getTransferReasons(),
+        window.electronAPI.getBirthTypes(),
+        window.electronAPI.getColors(),
+        window.electronAPI.getUnits(weightReq),
+        window.electronAPI.getUnits(currencyReq),
       ]);
 
       handleResult(existingDefaultsResult, {
@@ -346,8 +346,8 @@ const CreateDefaults: React.FC = () => {
       });
 
       handleResult(locationResult, {
-        success: (data: Location[]) => {
-          setLocation(data);
+        success: (data: TagLocation[]) => {
+          setTagLocation(data);
         },
         error: (err) => {
           console.error("Failed to fetch location:", err);
@@ -519,12 +519,12 @@ const CreateDefaults: React.FC = () => {
   ), [tagTypes]);
 
   const locationOptions = useMemo(() => (
-    locations.map((location) => (
+    tagLocations.map((location) => (
       <option key={location.id} value={location.id}>
         {location.name}
       </option>
     ))
-  ), [locations]);
+  ), [tagLocations]);
   
   const tissueSampleTypeOptions = useMemo(() => (
     tissueSampleTypes.map((type) => (
@@ -645,7 +645,7 @@ const CreateDefaults: React.FC = () => {
         species_id: speciesId,
       };
 
-      const result = await (window as any).electronAPI.getBreeds(queryParams);
+      const result = await window.electronAPI.getBreeds(queryParams);
 
       handleResult(result, {
         success: (breedInfo: Breed[]) => {
@@ -790,7 +790,7 @@ const CreateDefaults: React.FC = () => {
       trich_tag_next_tag_number: "0",
     };
   
-    const success: boolean = await (window as any).electronAPI.writeNewDefaultSettings(formData);
+    const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
   
     if (success) {
       alert(`A new Default Setting has been created with the name \"${formData.default_settings_name}\"`);

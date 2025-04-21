@@ -12,13 +12,13 @@ import {
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
-  getLocations,
   getOwners,
   getPremises,
   getRemoveReasons,
   getSexes,
   getSpecies,
   getStates,
+  getTagLocations,
   getTagTypes,
   getTissueSampleContainerTypes,
   getTissueSampleTypes,
@@ -62,7 +62,7 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-flock-prefixes", getFlockPrefixes);
 
-  ipcMain.handle("get-locations", getLocations);
+  ipcMain.handle("get-locations", getTagLocations);
 
   ipcMain.handle("get-owner-info", getOwners);
 

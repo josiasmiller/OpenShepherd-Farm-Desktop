@@ -10,13 +10,13 @@ export type { County } from "./models/read/locations/county.js";
 export type { DeathReason } from "./models/read/deaths/deathReason.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
-export type { Location } from "./models/read/tags/location.js";
 export type { Owner } from "./models/read/owners/owner.js";
 export type { Premise } from "./models/read/premises/premise.js";
 export type { RemoveReason } from "./models/read/tags/removeReason.js";
 export type { Sex } from "./models/read/animal/general/sex.js";
 export type { Species } from "./models/read/animal/general/species.js";
 export type { State } from "./models/read/locations/state.js";
+export type { TagLocation } from "./models/read/tags/location.js";
 export type { TagType } from "./models/read/tags/tagType.js";
 export type { TissueSampleType } from "./models/read/tissues/tissueSampleType.js"
 export type { TissueSampleContainerType } from "./models/read/tissues/tissueSampleContainerType.js"
@@ -36,13 +36,13 @@ export { getCounties } from "./repositories/read/locations/getCounties.js";
 export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
-export { getLocations } from "./repositories/read/tags/getLocations.js";
 export { getOwners } from "./repositories/read/owners/getOwner.js";
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";
 export { getSexes } from "./repositories/read/animal/general/getSexes.js";
 export { getSpecies } from "./repositories/read/animal/general/getSpecies.js";
 export { getStates } from "./repositories/read/locations/getStates.js"
+export { getTagLocations } from "./repositories/read/tags/getLocations.js";
 export { getTagTypes } from "./repositories/read/tags/getTagTypes.js";
 export { getTissueSampleTypes } from "./repositories/read/tissues/getTissueSampleTypes.js";
 export { getTissueSampleContainerTypes } from "./repositories/read/tissues/getTissueSampleContainerTypes.js";
