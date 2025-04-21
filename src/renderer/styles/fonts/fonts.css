@@ -1,0 +1,30 @@
+/* Regular Roboto Mono */
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('/fonts/RobotoMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Bold Roboto Mono for buttons */
+@font-face {
+  font-family: 'Roboto Mono Bold';
+  src: url('/fonts/RobotoMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Global default font styling */
+body,
+input,
+select,
+textarea {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: normal;
+}
+
+/* Specific font for buttons only */
+button {
+  font-family: 'Roboto Mono Bold', monospace;
+  font-weight: bold;
+}

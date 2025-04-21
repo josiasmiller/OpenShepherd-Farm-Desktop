@@ -11,7 +11,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background-color: var(--md-sys-color-primary-container);
+  background-color: var(--md-sys-color-secondary-container);;
   color: var(--md-sys-color-on-primary-container);
   height: 10%;
 }
@@ -22,8 +22,8 @@
 }
 
 #create-default-btn {
-  background-color: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   border: none;
   padding: 10px 15px;
   font-size: 16px;
@@ -32,8 +32,8 @@
 }
 
 #create-default-btn:hover {
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
 
 /* Create Defaults Bottom Section */
@@ -129,8 +129,8 @@
 }
 
 #load-default-btn {
-  background-color: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   border: none;
   padding: 8px 12px;
   font-size: 14px;
@@ -141,8 +141,8 @@
 }
 
 #load-default-btn:hover {
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
 
 .section-break {

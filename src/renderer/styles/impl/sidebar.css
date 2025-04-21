@@ -3,8 +3,8 @@
 .sidebar {
   width: 220px; /* Fixed width */
   height: 100vh; /* Full height */
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
   padding: 20px;
   position: fixed; /* Keeps it in place */
   top: 0;
