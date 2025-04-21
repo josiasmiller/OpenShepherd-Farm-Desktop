@@ -1,5 +1,5 @@
 
-export type Location = {
+export type TagLocation = {
   id: string;
   name: string;
   abbreviation: string;

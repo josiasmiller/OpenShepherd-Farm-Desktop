@@ -1,4 +1,8 @@
-/* src/renderer/styles.css */
+
+
+@import url("materialTheme/light.css");
+@import url("materialTheme/dark.css");
+
 @import url("impl/sidebar.css");
 
 @import url("impl/animalDefaults/createDefault.css");
@@ -11,86 +15,89 @@
 
 @import url("impl/dbSelector/dbSelector.css");
 
+@import url("impl/home/home.css");
 
+@import url("fonts/fonts.css");
 
 /* Reset margin and padding */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  /* Main content area */
-  .main-content {
-    margin-left: 240px; /* Adjust margin to match sidebar width + padding */
-    padding: 20px;
-    height: 100vh;
-    overflow-y: auto; /* Allows scrolling if content overflows */
-    transition: margin-left 0.3s ease;
-    background-color: white; /* Ensures visibility */
-  }
+/* Main content area */
+.main-content {
+  margin-left: 220px; /* Adjust margin to match sidebar width + padding */
+  height: 100vh;
+  overflow-y: auto; /* Allows scrolling if content overflows */
+  transition: margin-left 0.3s ease;
+  background-color: var(--md-sys-color-surface); /* Ensures visibility */
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Content sections (initially hidden) */
-  .content {
-    display: none;
-    transition: opacity 0.3s ease-in-out;
-    opacity: 0;
-    visibility: hidden;
-  }
+/* Content sections (initially hidden) */
+.content {
+  display: none;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
 
-  .content[style*="display: block"] {
-    opacity: 1;
-    visibility: visible;
-  }
+.content[style*="display: block"] {
+  opacity: 1;
+  visibility: visible;
+}
 
-  /* Basic page styling */
-  h1 {
-    font-size: 24px;
-  }
+/* Basic page styling */
+h1 {
+  font-size: 24px;
+  color: var(--md-sys-color-on-surface); /* Text color from surface */
+}
 
-  p {
-    font-size: 16px;
-  }
+p {
+  font-size: 16px;
+  color: var(--md-sys-color-on-surface); /* Text color from surface */
+}
 
-  /* Ensure the main container takes up the full viewport height minus the sidebar */
-  .main-content {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Full viewport height */
-    margin-left: 220px; /* Same width as sidebar */
-    overflow: hidden; /* Prevent content from exceeding viewport */
-  }
+/* Ensure the main container takes up the full viewport height minus the sidebar */
+.main-content {
+  overflow: hidden; /* Prevent content from exceeding viewport */
+}
 
-  /* error popups */
+/* Error popups */
+#error-popup {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--md-sys-color-error); /* Error color */
+  color: var(--md-sys-color-on-error); /* Text color for error */
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  text-align: center;
+}
 
-  #error-popup {
-    position: fixed; /* Stay on screen even when scrolling */
-    bottom: 10px;    /* Position near the bottom */
-    left: 50%;       /* Center horizontally */
-    transform: translate(-50%, -50%); /* Perfect centering */
-    background-color: rgba(153, 33, 33, 0.9); /* Red background with some transparency */
-    color: white;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 10000; /* Make sure it's above everything */
-    text-align: center;
-  }
+/* Error popup button */
+#error-popup button {
+  margin-top: 10px;
+  background: var(--md-sys-color-surface); /* Surface background */
+  color: var(--md-sys-color-on-surface); /* Text color for surface */
+  border: none;
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
 
-  #error-popup button {
-    margin-top: 10px;
-    background: white;
-    color: black;
-    border: none;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-
-  #error-popup button:hover {
-    background: #ffcccc;
-  }
-
+/* Hover state for error popup button */
+#error-popup button:hover {
+  background: var(--md-sys-color-surface-variant); /* Slightly darker surface */
+  color: var(--md-sys-color-on-surface-variant); /* Text color for variant */
+}

@@ -1,4 +1,4 @@
-export const enum OwnerType {
+export enum OwnerType {
   CONTACT = "contact",
   COMPANY = "company",
 }

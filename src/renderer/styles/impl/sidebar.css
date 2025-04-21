@@ -1,28 +1,30 @@
 
 /* Sidebar */
 .sidebar {
-    width: 220px; /* Fixed width */
-    height: 100vh; /* Full height */
-    background-color: #333;
-    color: white;
-    padding: 20px;
-    position: fixed; /* Keeps it in place */
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
+  width: 220px; /* Fixed width */
+  height: 100vh; /* Full height */
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  padding: 20px;
+  position: fixed; /* Keeps it in place */
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h1, h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--md-sys-color-on-primary-container);
 }
 
 .sidebar h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: white;
+  font-weight: bold;
 }
-  
+
 .sidebar h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: white;
+  font-weight: normal;
 }
   
 .sidebar ul {
@@ -35,13 +37,27 @@
 }
   
 .sidebar a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    display: block;
+  color: black;
+  text-decoration: none;
+  font-size: 18px;
+  display: block;
 }
   
 .sidebar a:hover {
-    background-color: #444;
-    padding-left: 10px;
+  background-color: #444;
+  padding-left: 10px;
+}
+
+.sidebar li {
+  color: var(--md-sys-color-on-surface);
+  font-size: 18px;
+  display: block;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.sidebar li:hover {
+  background-color: var(--md-sys-color-on-secondary-container);
+  padding-left: 20px;
+  color: var(--md-sys-color-on-secondary);
 }

@@ -1,148 +1,199 @@
-  /* animal search page stylings */
+/* ========================================================
+   Animal Search Page Styles
+======================================================== */
 
-  /* Full container layout */
-  .animal-search-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Take full viewport height */
-    width: 100%; /* Take full width */
-  }
+/* Layout: Full container */
+.animal-search-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
 
-  /* SEARCH SECTION */
-  .search-section {
-    flex: 3; /* 30% of the height */
-    background-color: #f4f4f4;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+/* ========================================================
+   Section Styling
+======================================================== */
 
-  /* RESULTS SECTION */
-  .results-section {
-    flex: 4; /* 50% of the height */
-    background-color: #fff;
-    padding: 20px;
-    overflow-y: hidden;
-  }
+.search-section,
+.results-section,
+.chosen-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
-  /* CHOSEN SECTION */
-  .chosen-section {
-    flex: 3; /* 30% of the height */
-    background-color: #eef;
-    padding: 20px;
-    overflow-y: hidden;
-    margin-bottom: 20px; /* Ensures 20px space below */
-  }
+.search-section {
+  flex: 3;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-primary);
+  justify-content: center;
+}
 
-  /* Ensure parent section takes full available space */
-  .results-section, .chosen-section {
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Allow sections to respect their space */
-  }
+.results-section {
+  flex: 4;
+  background-color: var(--md-sys-color-surface);
+  overflow-y: hidden;
+}
 
-  /* Flex container for header + button */
-  .chosen-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Keeps space between title & button */
-    margin-bottom: 10px; /* Adds spacing below */
-  }
+.chosen-section {
+  flex: 3;
+  background-color: var(--md-sys-color-surface-container-low);
+  overflow-y: hidden;
+  margin-bottom: 20px;
+}
 
-  /* Search Filters */
-  .search-filters {
-    display: flex;
-    gap: 10px;
-  }
+/* Headings */
+.search-section h2,
+.results-section h2,
+.chosen-section h2 {
+  color: var(--md-sys-color-primary);
+}
 
-  .search-filters input {
-    padding: 8px;
-    flex-grow: 1;
-  }
+/* ========================================================
+   Search Filters
+======================================================== */
 
-  #searchButton {
-    padding: 8px 15px;
-  }
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+}
 
-  /* Table Styles */
-  .results-message {
-    text-align: center;
-    font-size: 1.2em;
-    color: #666;
-    margin-top: 20px;
-  }
+.search-filters div {
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Table container should grow to fill available space */
-  #resultsTableContainer, #chosenTableContainer {
-    flex-grow: 1; /* Allow the container to take up available space */
-    overflow-y: auto; /* Enable scrolling when needed */
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Prevent overflow from pushing down sections */
-  }
+.search-filters label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--md-sys-color-on-surface);
+}
 
-  
-  /* Ensure table takes full width but does not exceed its container */
-  .results-table, .chosen-table {
-    width: 100%;
-    border-collapse: collapse;
-    flex-grow: 1; /* Make sure table grows within its container */
-  }
+.search-filters input,
+.search-filters select {
+  height: 36px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 4px;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
 
-  .results-table th, .chosen-table th {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    position: sticky;
-    top: 0;
-  }
+.search-filters input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
 
-  .results-table td, .chosen-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
+.search-filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
 
-  .results-table th, .chosen-table th {
-    background-color: #f4f4f4;
-  }
+.search-filters input:focus,
+.search-filters select:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+}
 
+/* Search Button */
+#searchButton {
+  padding: 8px 15px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
 
+#searchButton:hover {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
 
-  /* Styling for the different divs surrounding hte inputs on the top search section */
-  .search-filters {
-    padding: 10px 0; /* Adds 10px padding on top and bottom */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* Adds spacing between elements inside */
-    align-items: center; /* Aligns items properly */
-  }
+/* ========================================================
+   Table Containers
+======================================================== */
 
-  .search-filters div {
-    display: flex;
-    flex-direction: column;
-  }
+#resultsTableContainer,
+#chosenTableContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
-  .search-filters label {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
+/* Table Base Styles (shared) */
+.results-table,
+.chosen-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-level1);
+}
 
-  .search-filters input,
-  .search-filters select {
-    height: 36px; /* Adjust as needed */
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+.results-table thead,
+.chosen-table thead {
+  text-align: left;
+  font-weight: 600;
+}
 
-  /* Ensure consistent box-sizing */
-  .search-filters select {
-    appearance: none; /* Removes default browser styling */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: white;
-    cursor: pointer;
-  }
+.results-table th,
+.results-table td,
+.chosen-table th,
+.chosen-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Header Colors */
+.results-table thead {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.chosen-table thead {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+/* Row Hover + Zebra Striping */
+.results-table tbody tr:hover,
+.chosen-table tbody tr:hover {
+  background-color: var(--md-sys-color-surface-variant);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.results-table tbody td,
+.chosen-table tbody td {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ========================================================
+   Miscellaneous UI
+======================================================== */
+
+.results-message {
+  text-align: center;
+  font-size: 1.2em;
+  color: var(--md-sys-color-on-surface);
+  margin-top: 20px;
+}
+
+.chosen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}

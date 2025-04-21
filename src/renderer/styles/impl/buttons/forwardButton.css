@@ -1,23 +1,24 @@
-  /* Stylized Perform Action Button */
-  .forward-button {
-    padding: 12px 20px;  /* Adds space around text */
-    font-size: 1.2em;  /* Makes text larger */
-    background-color: #007bff;  /* Blue background */
-    color: white;  /* White text */
-    border: none;  /* Removes default border */
-    cursor: pointer;  /* Changes cursor on hover */
-    border-radius: 8px;  /* Smooth rounded edges */
-    font-weight: bold;  /* Makes text bold */
-    transition: background-color 0.3s ease, transform 0.1s ease;  /* Smooth transition */
-  }
+/* Stylized Perform Action Button */
+.forward-button {
+  padding: 12px 20px;
+  font-size: 1.2em;
+  background-color: var(--md-sys-color-primary); /* Primary theme color */
+  color: var(--md-sys-color-on-primary);         /* Text color for contrast */
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
 
-  /* Hover Effect */
-  .forward-button:hover {
-    background-color: #0056b3;  /* Darker blue on hover */
-    transform: scale(1.05);  /* Slightly enlarges on hover */
-  }
+/* Hover Effect */
+.forward-button:hover {
+  background-color: var(--md-sys-color-primary-container); /* Slightly different tone */
+  color: var(--md-sys-color-on-primary-container);         /* Contrast maintained */
+  transform: scale(1.05);
+}
 
-  /* Active Effect */
-  .forward-button:active {
-    transform: scale(0.95);  /* Slightly shrinks when clicked */
-  }
+/* Active Effect */
+.forward-button:active {
+  transform: scale(0.95);
+}

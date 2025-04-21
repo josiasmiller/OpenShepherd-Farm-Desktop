@@ -1,52 +1,41 @@
 import { app, BrowserWindow } from 'electron';
-import path from 'path';
 import { registerIpcHandlers } from "./ipcHandlers.js";
+import path from "path";
 import { fileURLToPath } from 'url';
 
+let mainWindow: BrowserWindow | null;
 
 const getCurrentDirectory = () => {
   return path.dirname(fileURLToPath(import.meta.url));
 };
 
-let mainWindow: BrowserWindow | null = null;
+app.whenReady().then(() => {
 
-function createWindow() {
   const currentDirectory = getCurrentDirectory();
   const preloadPath = path.join(currentDirectory, 'preload.cjs');
   const absolutePreloadPath = path.resolve(preloadPath);
 
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: absolutePreloadPath,
-      nodeIntegration: false, // don't use nodeIntegration in the renderer for security reasons
-      contextIsolation: true,  // This must be true for `contextBridge` to work
-    },
-  });
-
-  const indexPath = path.resolve(path.join(currentDirectory, '..', 'renderer', 'pages', 'index.html'));
-  mainWindow.loadURL('file://' + indexPath);
-
-  // Register all IPC handlers in ipcHandlers.ts
-  registerIpcHandlers();
-
-  // Open the DevTools (optional)
-  mainWindow.webContents.openDevTools();
-}
-
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      contextIsolation: true,
+      nodeIntegration: false,
     }
   });
-});
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  const isDev : boolean = process.env.NODE_ENV === 'development';
+
+  if (isDev) {
+    console.log("Running Dev");
+    mainWindow.loadURL('http://localhost:5173');
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
+
+  registerIpcHandlers();
+  
+  mainWindow.webContents.openDevTools();
+  console.log("main finished running without error");
 });

@@ -1,9 +1,9 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { Location } from "../../../models/read/tags/location.js";
+import { TagLocation } from "../../../models/read/tags/location.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
 // Function to fetch locations from the database
-export const getLocations = async (): Promise<Result<Location[], string>> => {
+export const getTagLocations = async (): Promise<Result<TagLocation[], string>> => {
   const db = await getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
@@ -24,7 +24,7 @@ export const getLocations = async (): Promise<Result<Location[], string>> => {
         resolve(new Failure(`Database query failed: ${err.message}`));
       } else {
         // On success, map the rows into a list of Location objects and return Success
-        const results: Location[] = rows.map((row: any) => ({
+        const results: TagLocation[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
           abbreviation: row.abbrev,
