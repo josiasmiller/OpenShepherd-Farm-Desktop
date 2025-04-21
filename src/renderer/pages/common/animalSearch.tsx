@@ -154,11 +154,6 @@ const AnimalSearch: React.FC = () => {
           </div>
           <button onClick={fetchAndDisplayAnimals} className="forward-button">Search</button>
         </div>
-
-
-        {/* <div className="search-filters">
-          <button onClick={fetchAndDisplayAnimals} className="forward-button">Search</button>
-        </div> */}
       </div>
 
       {/* RESULTS SECTION */}
