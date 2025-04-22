@@ -104,13 +104,13 @@ const CreateDefaults: React.FC = () => {
   const [tertiaryIdTypeId, setTertiaryIdTypeId] = useState<string>('');
 
   // EID Tag 
-  const [eidTagMaleFemaleColorSame, setEidTagMaleFemaleColorSame] = useState('');
+  const [eidTagMaleFemaleColorSame, setEidTagMaleFemaleColorSame] = useState<number>(0);
   const [eidTagColorMale, setEidTagColorMale] = useState('');
   const [eidTagColorFemale, setEidTagColorFemale] = useState('');
   const [eidTagLocation, setEidTagLocation] = useState('');
   
   // Farm Tag
-  const [farmTagMaleFemaleColorSame, setFarmTagMaleFemaleColorSame] = useState('');
+  const [farmTagMaleFemaleColorSame, setFarmTagMaleFemaleColorSame] = useState<number>(0);
   const [farmTagColorMale, setFarmTagColorMale] = useState('');
   const [farmTagColorFemale, setFarmTagColorFemale] = useState('');
   const [farmTagBasedOnEidTag, setFarmTagBasedOnEidTag] = useState('');
@@ -118,19 +118,19 @@ const CreateDefaults: React.FC = () => {
   const [farmTagLocation, setFarmTagLocation] = useState('');
   
   // Federal Tags
-  const [fedSameColor, setFedSameColor] = useState<string>('');
+  const [fedSameColor, setFedSameColor] = useState<number>(0);
   const [fedColorMale, setFedColorMale] = useState<string>('');
   const [fedColorFemale, setFedColorFemale] = useState<string>('');
   const [fedLocation, setFedLocation] = useState<string>('');
 
   // NUES Tags
-  const [nuesSameColor, setNuesSameColor] = useState<string>('');
+  const [nuesSameColor, setNuesSameColor] = useState<number>(0);
   const [nuesColorMale, setNuesColorMale] = useState<string>('');
   const [nuesColorFemale, setNuesColorFemale] = useState<string>('');
   const [nuesLocation, setNuesLocation] = useState<string>('');
 
   // Trich Tags
-  const [trichSameColor, setTrichSameColor] = useState<string>('');
+  const [trichSameColor, setTrichSameColor] = useState<number>(0);
   const [trichColorMale, setTrichColorMale] = useState<string>('');
   const [trichColorFemale, setTrichColorFemale] = useState<string>('');
   const [trichLocation, setTrichLocation] = useState<string>('');
@@ -138,13 +138,13 @@ const CreateDefaults: React.FC = () => {
   const [trichStartingValue, setTrichStartingValue] = useState<string>('');
 
   // Bangs Tags
-  const [bangsSameColor, setBangsSameColor] = useState<string>('');
+  const [bangsSameColor, setBangsSameColor] = useState<number>(0);
   const [bangsColorMale, setBangsColorMale] = useState<string>('');
   const [bangsColorFemale, setBangsColorFemale] = useState<string>('');
   const [bangsLocation, setBangsLocation] = useState<string>('');
 
   // Sale Order Tags
-  const [saleOrderSameColor, setSaleOrderSameColor] = useState<string>('');
+  const [saleOrderSameColor, setSaleOrderSameColor] = useState<number>(0);
   const [saleOrderColorMale, setSaleOrderColorMale] = useState<string>('');
   const [saleOrderColorFemale, setSaleOrderColorFemale] = useState<string>('');
   const [saleOrderLocation, setSaleOrderLocation] = useState<string>('');
@@ -1333,7 +1333,8 @@ const CreateDefaults: React.FC = () => {
               id="id_eid_tag_male_color_female_color_same"
               name="id_eid_tag_male_color_female_color_same"
               value={eidTagMaleFemaleColorSame}
-              onChange={(e) => setEidTagMaleFemaleColorSame(e.target.value)}
+              onChange={(e) => setEidTagMaleFemaleColorSame(Number(e.target.value))}
+
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1384,7 +1385,7 @@ const CreateDefaults: React.FC = () => {
               id="id_farm_tag_male_color_female_color_same"
               name="id_farm_tag_male_color_female_color_same"
               value={farmTagMaleFemaleColorSame}
-              onChange={(e) => setFarmTagMaleFemaleColorSame(e.target.value)}
+              onChange={(e) => setFarmTagMaleFemaleColorSame(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1461,7 +1462,7 @@ const CreateDefaults: React.FC = () => {
               id="id_fed_tag_male_color_female_color_same"
               name="id_fed_tag_male_color_female_color_same"
               value={fedSameColor}
-              onChange={(e) => setFedSameColor(e.target.value)}
+              onChange={(e) => setFedSameColor(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1512,7 +1513,7 @@ const CreateDefaults: React.FC = () => {
               id="id_nues_tag_male_color_female_color_same"
               name="id_nues_tag_male_color_female_color_same"
               value={nuesSameColor}
-              onChange={(e) => setNuesSameColor(e.target.value)}
+              onChange={(e) => setNuesSameColor(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1563,7 +1564,7 @@ const CreateDefaults: React.FC = () => {
               id="id_trich_tag_male_color_female_color_same"
               name="id_trich_tag_male_color_female_color_same"
               value={trichSameColor}
-              onChange={(e) => setTrichSameColor(e.target.value)}
+              onChange={(e) => setTrichSameColor(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1636,7 +1637,7 @@ const CreateDefaults: React.FC = () => {
               id="id_bangs_tag_male_color_female_color_same"
               name="id_bangs_tag_male_color_female_color_same"
               value={bangsSameColor}
-              onChange={(e) => setBangsSameColor(e.target.value)}
+              onChange={(e) => setBangsSameColor(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1687,7 +1688,7 @@ const CreateDefaults: React.FC = () => {
               id="id_sale_order_tag_male_color_female_color_same"
               name="id_sale_order_tag_male_color_female_color_same"
               value={saleOrderSameColor}
-              onChange={(e) => setSaleOrderSameColor(e.target.value)}
+              onChange={(e) => setSaleOrderSameColor(Number(e.target.value))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}

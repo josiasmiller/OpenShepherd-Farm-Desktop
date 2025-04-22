@@ -1,6 +1,7 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { WriteNewDefaultParameters } from "../../../models/write/defaults/writeNewDefault.js";
+import { v4 as uuidv4 } from 'uuid';
 
 export const writeNewDefaultSettings = async (queryParams: WriteNewDefaultParameters): Promise<boolean> => {
   const db = await getDatabase();
@@ -25,10 +26,10 @@ export const writeNewDefaultSettings = async (queryParams: WriteNewDefaultParame
   });
 };
 
-const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
+const _getValues = (queryParams: WriteNewDefaultParameters): any[] => {
 
-  var ownerContactId: string = "0";
-  var ownerCompanyId: string = "0";
+  var ownerContactId: string | null = null;
+  var ownerCompanyId: string | null = null;
 
   if (queryParams.contactType === OwnerType.CONTACT) {
     ownerContactId = queryParams.ownerId;
@@ -38,8 +39,8 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
   }
 
-  var breederContactId: string = "0";
-  var breederCompanyId: string = "0";
+  var breederContactId: string | null = null;
+  var breederCompanyId: string | null = null;
 
   if (queryParams.breederType === OwnerType.CONTACT) {
     breederContactId = queryParams.breederId;
@@ -49,18 +50,10 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
   }
 
-  var transferReasonContactId: string = "0";
-  var transferReasonCompanyId: string = "0";
-
-  if (queryParams.transferReasonContactType === OwnerType.CONTACT) {
-    transferReasonContactId = queryParams.transferReasonContactId;
-  } else if (queryParams.transferReasonContactType === OwnerType.COMPANY) {
-    transferReasonCompanyId = queryParams.transferReasonContactId;
-  } else {
-    throw new TypeError(`Invalid contactType of writeDefaultParameters: ${queryParams.contactType}`)
-  }
+  const newId = uuidv4();
 
   const values = [
+    newId,
     queryParams.default_settings_name,
     ownerContactId,
     ownerCompanyId,
@@ -77,7 +70,6 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     queryParams.id_stateid,
     queryParams.id_countyid,
     queryParams.id_flockprefixid,
-    queryParams.id_speciesid,
     queryParams.id_breedid,
     queryParams.id_sexid,
     queryParams.id_idtypeid_primary,
@@ -132,16 +124,13 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
     queryParams.birth_weight_id_unitsid,
     queryParams.weight_id_unitsid,
     queryParams.sale_price_id_unitsid,
-    queryParams.evaluation_update_alert,
     queryParams.death_reason_id_contactid,
     queryParams.death_reason_id_companyid,
     queryParams.id_deathreasonid,
-    transferReasonContactId,
-    transferReasonCompanyId,
     queryParams.id_transferreasonid,
     queryParams.created,
     queryParams.modified
-  ].map(value => String(value)); // Convert each value to a string
+  ];
 
   return values;
 };
@@ -149,6 +138,7 @@ const _getValues = (queryParams: WriteNewDefaultParameters): string[] => {
 
 // columns for creating a new Default Settings
 const columns = [
+  "id_animaltrakkerdefaultsettingsid",
   "default_settings_name",
   "owner_id_contactid",
   "owner_id_companyid", 
@@ -165,7 +155,6 @@ const columns = [
   "id_stateid", 
   "id_countyid", 
   "id_flockprefixid", 
-  "id_speciesid",
   "id_breedid", 
   "id_sexid", 
   "id_idtypeid_primary", 
@@ -220,12 +209,9 @@ const columns = [
   "birth_weight_id_unitsid",
   "weight_id_unitsid", 
   "sale_price_id_unitsid", 
-  "evaluation_update_alert", 
   "death_reason_id_contactid",
   "death_reason_id_companyid", 
   "id_deathreasonid", 
-  "transfer_reason_id_contactid",
-  "transfer_reason_id_companyid", 
   "id_transferreasonid", 
   "created", 
   "modified",
