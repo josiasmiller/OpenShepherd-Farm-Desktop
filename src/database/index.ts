@@ -8,6 +8,7 @@ export type { Color } from "./models/read/tags/color.js";
 export type { Country } from "./models/read/locations/country.js";
 export type { County } from "./models/read/locations/county.js";
 export type { DeathReason } from "./models/read/deaths/deathReason.js";
+export type { DrugHistory } from "./models/read/animal/drugs/drugHistory.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
 export type { Owner } from "./models/read/owners/owner.js";
@@ -34,6 +35,7 @@ export { getCompanies } from "./repositories/read/owners/getCompany.js";
 export { getCountries } from "./repositories/read/locations/getCountries.js";
 export { getCounties } from "./repositories/read/locations/getCounties.js";
 export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
+export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugHistory.js";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
 export { getOwners } from "./repositories/read/owners/getOwner.js";

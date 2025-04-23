@@ -8,6 +8,7 @@
 @import url("impl/animalDefaults/createDefault.css");
 
 @import url("impl/animalSearch/animalSearch.css");
+@import url("impl/animalSearch/landingPage.css");
 
 @import url("impl/buttons/cancelButton.css");
 @import url("impl/buttons/forwardButton.css");

@@ -1,8 +1,13 @@
 import React from "react";
 import { useState } from "react";
-import { AnimalSearchResult } from "../../../database";
+import { useNavigate } from "react-router-dom";
+import { AnimalSearchResult } from "../../../../database";
+
+
 
 const AnimalSearch: React.FC = () => {
+  const navigate = useNavigate();
+
   // State for search filters
   const [searchParams, setSearchParams] = useState({
     name: "",
@@ -21,6 +26,10 @@ const AnimalSearch: React.FC = () => {
   const [results, setResults] = useState<AnimalSearchResult[]>([]);
   const [chosenAnimals, setChosenAnimals] = useState<AnimalSearchResult[]>([]);
   const [message, setMessage] = useState("Search for animals to display results.");
+
+  const handleChooseAnimals = () => {
+    navigate("/landing", { state: { chosenAnimals } });
+  };
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -214,7 +223,7 @@ const AnimalSearch: React.FC = () => {
       <div className="chosen-section">
         <div className="chosen-header">
           <h2>Selected Animals</h2>
-          <button className="forward-button">Choose Animals</button>
+          <button className="forward-button" onClick={handleChooseAnimals}>Choose Animals</button>
         </div>
 
         {chosenAnimals.length > 0 && (
