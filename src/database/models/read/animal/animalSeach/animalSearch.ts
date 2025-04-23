@@ -6,6 +6,15 @@ export type AnimalSearchResult = {
   name: string;
   birthDate: string | null;
   deathDate: string | null;
+  sex: string | null; 
+  birthType: string | null;
+  latestOfficialID: string | null;
+  latestFarmID: string | null;
+  sireFlockPrefix: string | null;
+  sireName: string | null;
+  damFlockPrefix: string | null;
+  damName: string | null;
+  // currentOwnerContact: string | null;
 }
 
 export type AnimalSearchRequest = {
