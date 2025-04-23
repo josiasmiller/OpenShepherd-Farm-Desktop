@@ -170,6 +170,14 @@ const AnimalSearch: React.FC = () => {
                   <th>Name</th>
                   <th>Birth Date</th>
                   <th>Death Date</th>
+                  <th>Sex</th> 
+                  <th>Birth Type</th>
+                  {/* <th>Official ID</th> */}
+                  {/* <th>Farm ID</th> */}
+                  {/* <th>Sire Flock Prefix</th> */}
+                  <th>Sire Name</th>
+                  {/* <th>Dam Flock Prefix</th> */}
+                  <th>Dam Name</th>
                 </tr>
               </thead>
               <tbody>
@@ -186,6 +194,14 @@ const AnimalSearch: React.FC = () => {
                     <td>{animal.name}</td>
                     <td>{animal.birthDate}</td>
                     <td>{animal.deathDate}</td>
+                    <td>{animal.sex}</td> 
+                    <td>{animal.birthType}</td>
+                    {/* <td>{animal.latestOfficialID}</td> */}
+                    {/* <td>{animal.latestFarmID}</td> */}
+                    {/* <td>{animal.sireFlockPrefix}</td> */}
+                    <td>{animal.sireName}</td>
+                    {/* <td>{animal.damFlockPrefix}</td> */}
+                    <td>{animal.damName}</td>
                   </tr>
                 ))}
               </tbody>
@@ -210,6 +226,14 @@ const AnimalSearch: React.FC = () => {
                   <th>Name</th>
                   <th>Birth Date</th>
                   <th>Death Date</th>
+                  <th>Sex</th> 
+                  <th>Birth Type</th>
+                  {/* <th>Official ID</th> */}
+                  {/* <th>Farm ID</th> */}
+                  {/* <th>Sire Flock Prefix</th> */}
+                  <th>Sire Name</th>
+                  {/* <th>Dam Flock Prefix</th> */}
+                  <th>Dam Name</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,6 +247,14 @@ const AnimalSearch: React.FC = () => {
                     <td>{animal.name}</td>
                     <td>{animal.birthDate}</td>
                     <td>{animal.deathDate}</td>
+                    <td>{animal.sex}</td> 
+                    <td>{animal.birthType}</td>
+                    {/* <td>{animal.latestOfficialID}</td> */}
+                    {/* <td>{animal.latestFarmID}</td> */}
+                    {/* <td>{animal.sireFlockPrefix}</td> */}
+                    <td>{animal.sireName}</td>
+                    {/* <td>{animal.damFlockPrefix}</td> */}
+                    <td>{animal.damName}</td>
                   </tr>
                 ))}
               </tbody>
