@@ -50,7 +50,6 @@ declare global {
       getCountries: () => Promise<Result<Country[], string>>;
       getCounties: () => Promise<Result<County[], string>>;
       getDeathReasons: () => Promise<Result<DeathReason[], string>>;
-      getDrugHistory: (animalId: string) => Promise<Result<DrugHistory[], string>>;
       getExistingDefaults: () => Promise<Result<DefaultSettingsResults[], string>>;
       getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
       getLocations: () => Promise<Result<TagLocation[], string>>;

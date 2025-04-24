@@ -75,10 +75,6 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-death-reasons", getDeathReasons);
 
-  ipcMain.handle("get-drug-history", async (_, animalId: string) => {
-    return getDrugHistory(animalId);
-  });
-
   ipcMain.handle("get-existing-defaults", getExistingDefaults);
 
   ipcMain.handle("get-flock-prefixes", getFlockPrefixes);
