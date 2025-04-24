@@ -1,5 +1,6 @@
 
 // export read models 
+export type { AnimalNote } from "./models/read/animal/notes/animalNote.js";
 export type { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
 export type { BirthType } from "./models/read/animal/births/birthType.js";
 export type { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
@@ -28,6 +29,7 @@ export type { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
+export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getBirthTypes } from "./repositories/read/animal/births/getBirthTypes.js";
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
 export { getColors } from "./repositories/read/tags/getColors.js";

@@ -38,6 +38,7 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
+      exportAnimalNotesCsv: (animals: AnimalInfo[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animals: AnimalInfo[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;

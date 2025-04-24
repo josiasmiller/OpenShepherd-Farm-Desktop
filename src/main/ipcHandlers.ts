@@ -33,12 +33,17 @@ import {
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getDatabase } from "../database/dbConnections.js";
 import { AnimalInfo } from "../writers/helpers/animalInfo.js";
+import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugHistory.js";
 
 export const registerIpcHandlers = () => {
   
   ipcMain.handle("animal-search", async (_, queryParams) => {
     return animalSearch(queryParams);
+  });
+
+  ipcMain.handle("export-animal-notes-csv", async (_, animals: AnimalInfo[]) => {
+    return writeAnimalNotesCsv(animals);
   });
 
   ipcMain.handle("export-drug-history-csv", async (_, animals: AnimalInfo[]) => {
