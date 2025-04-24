@@ -9,7 +9,7 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
     return new Failure("DB Instance is null");
   }
 
-  let drugHistoryQuery = `
+  let tissueTestResultsQuery = `
     SELECT 
       animal_table.id_animalid
       , flock_prefix_table.flock_prefix
@@ -40,7 +40,7 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
     `;
 
   return new Promise((resolve, reject) => {
-    db.all(drugHistoryQuery, [animalId], (err, rows) => {
+    db.all(tissueTestResultsQuery, [animalId], (err, rows) => {
       if (err) {
         reject(new Failure(err.message));
       } else {

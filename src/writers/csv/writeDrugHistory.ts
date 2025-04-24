@@ -35,7 +35,8 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
 
   // Header
   const header = [
-    "Animal ID",
+    "Flock Prefix",
+    "Animal Name",
     "Drug Lot",
     "Drug Trade Name",
     "Drug Generic Name",
@@ -65,7 +66,8 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
 
       for (const entry of drugHistory) {
         const row = [
-          animal.name,
+          entry.flockPrefix,
+          entry.animalName,
           entry.drugLot,
           entry.tradeName,
           entry.genericDrugName,
@@ -76,7 +78,7 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
           entry.dosage,
           entry.locationName
         ];
-        csvRows.push(row.map(value => `"${value}"`).join(","));
+        csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
       }
     } catch (error) {
       console.error(`Error fetching drug history for animalId ${animal.id}, Name ${animal.name}:`, error);

@@ -35,6 +35,7 @@ export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Prom
 
   // Header
   const header = [
+    "Flock Prefix",
     "Animal Name",
     "Note",
     "Predefined Note",
@@ -60,13 +61,14 @@ export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Prom
 
       for (const entry of animalNotes) {
         const row = [
-          animal.name,
+          entry.flockPrefix,
+          entry.animalName,
           entry.noteText,
           entry.predefinedNote,
           entry.noteDate,
           entry.noteTime
         ];
-        csvRows.push(row.map(value => `"${value}"`).join(","));
+        csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
       }
     } catch (error) {
       console.error(`Error fetching Animal Notes for animalId ${animal.id}, Name ${animal.name}:`, error);

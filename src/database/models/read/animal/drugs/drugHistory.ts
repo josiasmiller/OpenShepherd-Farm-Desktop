@@ -1,5 +1,7 @@
 export type DrugHistory = {
   id: string;
+  flockPrefix: string;
+  animalName: string;
   tradeName: string;
   genericDrugName: string;
   drugLot: string;
