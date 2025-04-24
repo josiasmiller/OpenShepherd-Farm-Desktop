@@ -8,61 +8,84 @@ const LandingPage = () => {
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
 
   const convertToAnimalInfo = (): AnimalInfo[] => {
-    return chosenAnimals.map((animal) => ({
+    return chosenAnimals.map((animal: AnimalSearchResult) => ({
       id: animal.animal_id,
       name: animal.name,
     }));
   };
-  
 
-  const saveEvaluationHistoryCsv = () => {
-    console.log("Saving Evaluation History as CSV...");
-    // Add logic to format and export Evaluation History CSV
+
+  const saveEvaluationHistoryCsv = async () => {
+    await window.electronAPI.showAlert({
+      title: "AnimalTrakker",
+      message: "This functionality will come in a future version.",
+      type: "warning",
+    });
   };
   
-  const saveDrugHistoryCsv = async () => {
-    console.log("Saving Drug History as CSV...");
-  
+
+  const saveDrugHistoryCsv = async () => {  
     const animalData: AnimalInfo[] = convertToAnimalInfo();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
     const success = await window.electronAPI.exportDrugHistoryCsv(animalData);
   
     if (success) {
-      alert("File saved successfully!");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "File saved successfully!",
+        type: "info",
+      });
     } else {
-      alert("There was an error saving the file.");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "There was an error saving the file.",
+        type: "error",
+      });
     }
   };
     
   
   const saveNoteHistoryCsv = async () => {
-    console.log("Saving Note History as CSV...");
-
     const animalData: AnimalInfo[] = convertToAnimalInfo();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
     const success = await window.electronAPI.exportAnimalNotesCsv(animalData);
   
     if (success) {
-      alert("File saved successfully!");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "File saved successfully!",
+        type: "info",
+      });
     } else {
-      alert("There was an error saving the file.");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "There was an error saving the file.",
+        type: "error",
+      });
     }
   };
   
-  const saveTissueTestResultHistoryCsv = async () => {
-    console.log("Saving Tissue Test Result History as CSV...");
-    
+  
+  const saveTissueTestResultHistoryCsv = async () => {    
     const animalData: AnimalInfo[] = convertToAnimalInfo();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
     const success = await window.electronAPI.exportTissueTestResultsCsv(animalData);
   
     if (success) {
-      alert("File saved successfully!");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "File saved successfully!",
+        type: "info",
+      });
     } else {
-      alert("There was an error saving the file.");
+      await window.electronAPI.showAlert({
+        title: "AnimalTrakker",
+        message: "There was an error saving the file.",
+        type: "error",
+      });
     }
   };
   

@@ -39,6 +39,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
   isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
+  showAlert: (options: { title: string; message: string; type?: "info" | "error" | "warning" | "question" }) => ipcRenderer.invoke("show-alert", options),
   writeNewDefaultSettings: (queryParams: WriteNewDefaultParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 
