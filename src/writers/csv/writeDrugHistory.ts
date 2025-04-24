@@ -37,6 +37,8 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
   const header = [
     "Animal ID",
     "Drug Lot",
+    "Drug Trade Name",
+    "Drug Generic Name",
     "Date On",
     "Time On",
     "Date Off",
@@ -65,6 +67,8 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
         const row = [
           animal.name,
           entry.drugLot,
+          entry.tradeName,
+          entry.genericDrugName,
           entry.dateOn,
           entry.timeOn,
           entry.dateOff ?? "",

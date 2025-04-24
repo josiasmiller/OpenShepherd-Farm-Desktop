@@ -1,5 +1,7 @@
 export type DrugHistory = {
   id: string;
+  tradeName: string;
+  genericDrugName: string;
   drugLot: string;
   dateOn: string;
   timeOn: string;

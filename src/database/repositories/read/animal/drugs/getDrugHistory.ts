@@ -11,18 +11,21 @@ export const getDrugHistory = async (animalId : string): Promise<Result<DrugHist
 
   let drugHistoryQuery = `
     SELECT
-      ad.id_druglotid,
-      dl.drug_lot,
-      ad.drug_date_on,
-      ad.drug_time_on,
-      ad.drug_date_off,
-      ad.drug_time_off,
-      ad.drug_dosage,
-      ad.id_druglocationid,
-      dloc.drug_location_name
+        ad.id_druglotid,
+        dl.drug_lot,
+        d.trade_drug_name,
+        d.generic_drug_name,
+        ad.drug_date_on,
+        ad.drug_time_on,
+        ad.drug_date_off,
+        ad.drug_time_off,
+        ad.drug_dosage,
+        ad.id_druglocationid,
+        dloc.drug_location_name
     FROM animal_drug_table ad
     JOIN drug_lot_table dl ON ad.id_druglotid = dl.id_druglotid
     JOIN drug_location_table dloc ON ad.id_druglocationid = dloc.id_druglocationid
+    JOIN drug_table d ON dl.id_drugid = d.id_drugid
     WHERE ad.id_animalid = ?;
     `;
 
@@ -33,6 +36,8 @@ export const getDrugHistory = async (animalId : string): Promise<Result<DrugHist
       } else {
         const results: DrugHistory[] = rows.map((row: any) => ({
             id: row.id_druglotid,
+            tradeName: row.trade_drug_name,
+            genericDrugName: row.generic_drug_name,
             drugLot: row.drug_lot,
             dateOn: row.drug_date_on,
             timeOn: row.drug_time_on,
