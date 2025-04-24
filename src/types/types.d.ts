@@ -40,6 +40,7 @@ declare global {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
       exportAnimalNotesCsv: (animals: AnimalInfo[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animals: AnimalInfo[]) => Promise<boolean>;
+      exportTissueTestResultsCsv: (animals: AnimalInfo[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;

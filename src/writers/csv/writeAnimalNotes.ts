@@ -45,11 +45,11 @@ export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Prom
 
   for (const animal of animals) {
     try {
-      const drugHistoryResult: Result<AnimalNote[], string> = await getAnimalNotes(animal.id);
+      const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(animal.id);
 
       var animalNotes: AnimalNote[] = [];
 
-      handleResult(drugHistoryResult, {
+      handleResult(animalNoteResult, {
         success: (data : AnimalNote[]) => {
           animalNotes = data;
         },

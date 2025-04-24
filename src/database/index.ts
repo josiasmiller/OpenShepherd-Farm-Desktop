@@ -23,6 +23,7 @@ export type { TagType } from "./models/read/tags/tagType.js";
 export type { TissueSampleType } from "./models/read/tissues/tissueSampleType.js"
 export type { TissueSampleContainerType } from "./models/read/tissues/tissueSampleContainerType.js"
 export type { TissueTest } from "./models/read/tissues/tissueTest.js"
+export type { TissueTestResult } from "./models/read/animal/tests/tissueTestResult.js";
 export type { TransferReason } from "./models/read/animal/transfers/transferReaon.js"
 export type { UnitRequest, Unit } from "./models/read/units/unit.js";
 export type { UnitType } from "./models/read/units/unitType.js";
@@ -51,6 +52,7 @@ export { getTagTypes } from "./repositories/read/tags/getTagTypes.js";
 export { getTissueSampleTypes } from "./repositories/read/tissues/getTissueSampleTypes.js";
 export { getTissueSampleContainerTypes } from "./repositories/read/tissues/getTissueSampleContainerTypes.js";
 export { getTissueTests } from "./repositories/read/tissues/getTissueTests.js";
+export { getTissueTestResults } from "./repositories/read/animal/tests/getTissueTestResults.js";
 export { getTransferReasons } from "./repositories/read/animal/transfers/getTransferReasons.js";
 export { getUnits } from "./repositories/read/units/getUnits.js";
 export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";

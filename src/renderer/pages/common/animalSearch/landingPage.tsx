@@ -51,9 +51,19 @@ const LandingPage = () => {
     }
   };
   
-  const saveTissueTestResultHistoryCsv = () => {
+  const saveTissueTestResultHistoryCsv = async () => {
     console.log("Saving Tissue Test Result History as CSV...");
-    // Add logic to format and export Tissue Test Result History CSV
+    
+    const animalData: AnimalInfo[] = convertToAnimalInfo();
+  
+    // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
+    const success = await window.electronAPI.exportTissueTestResultsCsv(animalData);
+  
+    if (success) {
+      alert("File saved successfully!");
+    } else {
+      alert("There was an error saving the file.");
+    }
   };
   
 
