@@ -108,15 +108,6 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-unit-types", getUnitTypes);
 
-  ipcMain.handle("show-alert", async (_, options: { title: string; message: string; type?: "info" | "error" | "warning" | "question" }) => {
-    await dialog.showMessageBox({
-      title: options.title,
-      message: options.message,
-      type: options.type || "info",
-      buttons: ["OK"]
-    });
-  });
-
   ipcMain.handle("is-database-loaded", () => {
     return getDatabase() !== null;
   });

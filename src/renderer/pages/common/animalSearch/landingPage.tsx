@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
+import Swal from "sweetalert2";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -11,31 +12,32 @@ const LandingPage = () => {
   };
 
   const saveEvaluationHistoryCsv = async () => {
-    await window.electronAPI.showAlert({
-      title: "AnimalTrakker",
-      message: "This functionality will come in a future version.",
-      type: "warning",
+    Swal.fire({
+      title: "Not implemented (yet!)",
+      text: "We are working on this functionality-- you should be able to use it soon :)",
+      icon: "warning",
+      confirmButtonText: "OK",
     });
   };
   
 
   const saveDrugHistoryCsv = async () => {  
-    const animalIds: string[] = getAnimalIds();
-  
-    // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
+    const animalIds: string[] = getAnimalIds();  
     const success = await window.electronAPI.exportDrugHistoryCsv(animalIds);
-  
+
     if (success) {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "File saved successfully!",
-        type: "info",
+      Swal.fire({
+        title: "Success",
+        text: "File saved successfully",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     } else {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "There was an error saving the file.",
-        type: "error",
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
       });
     }
   };
@@ -43,21 +45,21 @@ const LandingPage = () => {
   
   const saveNoteHistoryCsv = async () => {
     const animalIds: string[] = getAnimalIds();
-  
-    // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
     const success = await window.electronAPI.exportAnimalNotesCsv(animalIds);
   
     if (success) {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "File saved successfully!",
-        type: "info",
+      Swal.fire({
+        title: "Success",
+        text: "File saved successfully",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     } else {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "There was an error saving the file.",
-        type: "error",
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
       });
     }
   };
@@ -65,21 +67,21 @@ const LandingPage = () => {
   
   const saveTissueTestResultHistoryCsv = async () => {    
     const animalIds: string[] = getAnimalIds();
-  
-    // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
     const success = await window.electronAPI.exportTissueTestResultsCsv(animalIds);
   
     if (success) {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "File saved successfully!",
-        type: "info",
+      Swal.fire({
+        title: "Success",
+        text: "File saved successfully",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     } else {
-      await window.electronAPI.showAlert({
-        title: "AnimalTrakker",
-        message: "There was an error saving the file.",
-        type: "error",
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
       });
     }
   };

@@ -65,11 +65,6 @@ declare global {
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
       isDatabaseLoaded: () => Promise<boolean>;
       selectDatabase: () => Promise<string>;
-      showAlert: (options: {
-        title: string;
-        message: string;
-        type?: "info" | "error" | "warning" | "question";
-      }) => Promise<void>;
       writeNewDefaultSettings: (params: WriteNewDefaultParameters) => Promise<boolean>;
     };
   }

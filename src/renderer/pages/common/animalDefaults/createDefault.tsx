@@ -27,6 +27,7 @@ import {
 
 import { OwnerType } from "../../../../database/client-types";
 
+import Swal from "sweetalert2";
 import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
 import { getCurrentFormattedTimestamp } from "../../../scripts/common/utils/times";
@@ -678,7 +679,12 @@ const CreateDefaults: React.FC = () => {
 
     // verify name is set
     if (!newDefaultName || newDefaultName == '') {
-      alert("Please provide a name for the new default settings");
+      Swal.fire({
+        title: "Your new default needs a name!",
+        text: "Please provide a name for the new default settings",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
       return;
     }
 
@@ -792,9 +798,19 @@ const CreateDefaults: React.FC = () => {
     const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
   
     if (success) {
-      alert(`A new Default Setting has been created with the name \"${formData.default_settings_name}\"`);
+      Swal.fire({
+        title: "New Defaults Saved",
+        text: `A new Default Setting has been created with the name \"${formData.default_settings_name}\"`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } else {
-      alert("Failed to write settings.");
+      Swal.fire({
+        title: "Error",
+        text: "There was an error creating the default settings",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
     }
   
     return;
