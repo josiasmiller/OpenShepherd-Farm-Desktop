@@ -6,13 +6,12 @@ import {
   UnitRequest, 
   WriteNewDefaultParameters 
 } from "../database";
-import { AnimalInfo } from "../writers/helpers/animalInfo";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
-  exportAnimalNotesCsv: (animals: AnimalInfo[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
-  exportDrugHistoryCsv: (animals: AnimalInfo[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
-  exportTissueTestResultsCsv: (animals: AnimalInfo[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
+  exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
+  exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
+  exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedRequest) => ipcRenderer.invoke("get-breeds", queryParams),
   getColors: () => ipcRenderer.invoke("get-colors"),
@@ -20,7 +19,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getCounties: () => ipcRenderer.invoke("get-counties"),
   getCountries: () => ipcRenderer.invoke("get-countries"),
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),
-  getDrugHistory: (animalId: string) => ipcRenderer.invoke("get-drug-history", animalId),
   getExistingDefaults: () => ipcRenderer.invoke("get-existing-defaults"),
   getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),
   getLocations: () => ipcRenderer.invoke("get-locations"),

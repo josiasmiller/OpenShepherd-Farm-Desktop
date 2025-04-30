@@ -1,11 +1,10 @@
 import fs from "fs";
 import { TissueTestResult, getTissueTestResults } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
-import { AnimalInfo } from "../helpers/animalInfo";
 import { dialog } from "electron";
 
 
-export const writeTissueTestResults = async (animals: AnimalInfo[]): Promise<boolean> => {
+export const writeTissueTestResults = async (animalIds: string[]): Promise<boolean> => {
 
   const { filePath, canceled } = await dialog.showSaveDialog({
     title: "Save Tissue Test Results CSV",
@@ -19,7 +18,7 @@ export const writeTissueTestResults = async (animals: AnimalInfo[]): Promise<boo
   }  
 
   try {
-    const csvData = await generateTissueTestResultsCsvFromAnimalIds(animals);
+    const csvData = await generateTissueTestResultsCsvFromAnimalIds(animalIds);
     fs.writeFileSync(filePath, csvData, { encoding: "utf8" });
     console.log(`CSV successfully written to ${filePath}`);
     return true;
@@ -30,7 +29,7 @@ export const writeTissueTestResults = async (animals: AnimalInfo[]): Promise<boo
 };
   
 
-export const generateTissueTestResultsCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<string> => {
+export const generateTissueTestResultsCsvFromAnimalIds = async (animalIds: string[]): Promise<string> => {
   let csvRows: string[] = [];
 
   // Header
@@ -48,9 +47,9 @@ export const generateTissueTestResultsCsvFromAnimalIds = async (animals: AnimalI
   ];
   csvRows.push(header.join(","));
 
-  for (const animal of animals) {
+  for (const animalId of animalIds) {
     try {
-      const tissueTestResult: Result<TissueTestResult[], string> = await getTissueTestResults(animal.id);
+      const tissueTestResult: Result<TissueTestResult[], string> = await getTissueTestResults(animalId);
 
       var ttResults: TissueTestResult[] = [];
 
@@ -80,7 +79,7 @@ export const generateTissueTestResultsCsvFromAnimalIds = async (animals: AnimalI
 
       }
     } catch (error) {
-      console.error(`Error fetching tissue test results for animalId ${animal.id}, Name ${animal.name}:`, error);
+      console.error(`Error fetching tissue test results for animalId ${animalId}:`, error);
     }
   }
 

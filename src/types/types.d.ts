@@ -30,7 +30,6 @@ import {
 } from "../database";
 
 import { Result } from "../shared/results/resultTypes";
-import { AnimalInfo } from "../writers/helpers/animalInfo";
 
 export {};
 
@@ -38,9 +37,9 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
-      exportAnimalNotesCsv: (animals: AnimalInfo[]) => Promise<boolean>;
-      exportDrugHistoryCsv: (animals: AnimalInfo[]) => Promise<boolean>;
-      exportTissueTestResultsCsv: (animals: AnimalInfo[]) => Promise<boolean>;
+      exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
+      exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
+      exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;

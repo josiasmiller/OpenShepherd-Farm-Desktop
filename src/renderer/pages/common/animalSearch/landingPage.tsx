@@ -1,19 +1,14 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
-import { AnimalInfo } from "../../../../writers/helpers/animalInfo";
 
 const LandingPage = () => {
   const location = useLocation();
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
 
-  const convertToAnimalInfo = (): AnimalInfo[] => {
-    return chosenAnimals.map((animal: AnimalSearchResult) => ({
-      id: animal.animal_id,
-      name: animal.name,
-    }));
+  const getAnimalIds = (): string[] => {
+    return chosenAnimals.map(animal => animal.animal_id);
   };
-
 
   const saveEvaluationHistoryCsv = async () => {
     await window.electronAPI.showAlert({
@@ -25,10 +20,10 @@ const LandingPage = () => {
   
 
   const saveDrugHistoryCsv = async () => {  
-    const animalData: AnimalInfo[] = convertToAnimalInfo();
+    const animalIds: string[] = getAnimalIds();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
-    const success = await window.electronAPI.exportDrugHistoryCsv(animalData);
+    const success = await window.electronAPI.exportDrugHistoryCsv(animalIds);
   
     if (success) {
       await window.electronAPI.showAlert({
@@ -47,10 +42,10 @@ const LandingPage = () => {
     
   
   const saveNoteHistoryCsv = async () => {
-    const animalData: AnimalInfo[] = convertToAnimalInfo();
+    const animalIds: string[] = getAnimalIds();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
-    const success = await window.electronAPI.exportAnimalNotesCsv(animalData);
+    const success = await window.electronAPI.exportAnimalNotesCsv(animalIds);
   
     if (success) {
       await window.electronAPI.showAlert({
@@ -69,10 +64,10 @@ const LandingPage = () => {
   
   
   const saveTissueTestResultHistoryCsv = async () => {    
-    const animalData: AnimalInfo[] = convertToAnimalInfo();
+    const animalIds: string[] = getAnimalIds();
   
     // Use the exposed IPC handler instead of calling writeDrugHistoryCsv directly
-    const success = await window.electronAPI.exportTissueTestResultsCsv(animalData);
+    const success = await window.electronAPI.exportTissueTestResultsCsv(animalIds);
   
     if (success) {
       await window.electronAPI.showAlert({

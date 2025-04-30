@@ -1,11 +1,10 @@
 import fs from "fs";
 import { AnimalNote, getAnimalNotes } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
-import { AnimalInfo } from "../helpers/animalInfo";
 import { dialog } from "electron";
 
 
-export const writeAnimalNotesCsv = async (animals: AnimalInfo[]): Promise<boolean> => {
+export const writeAnimalNotesCsv = async (animalIds: string[]): Promise<boolean> => {
 
   const { filePath, canceled } = await dialog.showSaveDialog({
     title: "Save Animal Note CSV",
@@ -19,7 +18,7 @@ export const writeAnimalNotesCsv = async (animals: AnimalInfo[]): Promise<boolea
   }  
 
   try {
-    const csvData = await generateNotesCsvFromAnimalIds(animals);
+    const csvData = await generateNotesCsvFromAnimalIds(animalIds);
     fs.writeFileSync(filePath, csvData, { encoding: "utf8" });
     console.log(`CSV successfully written to ${filePath}`);
     return true;
@@ -30,7 +29,7 @@ export const writeAnimalNotesCsv = async (animals: AnimalInfo[]): Promise<boolea
 };
   
 
-export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<string> => {
+export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promise<string> => {
   let csvRows: string[] = [];
 
   // Header
@@ -44,9 +43,9 @@ export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Prom
   ];
   csvRows.push(header.join(","));
 
-  for (const animal of animals) {
+  for (const animalId of animalIds) {
     try {
-      const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(animal.id);
+      const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(animalId);
 
       var animalNotes: AnimalNote[] = [];
 
@@ -71,7 +70,7 @@ export const generateNotesCsvFromAnimalIds = async (animals: AnimalInfo[]): Prom
         csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
       }
     } catch (error) {
-      console.error(`Error fetching Animal Notes for animalId ${animal.id}, Name ${animal.name}:`, error);
+      console.error(`Error fetching Animal Notes for animalId ${animalId}:`, error);
     }
   }
 

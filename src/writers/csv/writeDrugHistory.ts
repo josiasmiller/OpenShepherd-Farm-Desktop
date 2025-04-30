@@ -1,11 +1,10 @@
 import fs from "fs";
 import { DrugHistory, getDrugHistory } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
-import { AnimalInfo } from "../helpers/animalInfo";
 import { dialog } from "electron";
 
 
-export const writeDrugHistoryCsv = async (animals: AnimalInfo[]): Promise<boolean> => {
+export const writeDrugHistoryCsv = async (animalIds: string[]): Promise<boolean> => {
 
   const { filePath, canceled } = await dialog.showSaveDialog({
     title: "Save Drug History CSV",
@@ -19,7 +18,7 @@ export const writeDrugHistoryCsv = async (animals: AnimalInfo[]): Promise<boolea
   }  
 
   try {
-    const csvData = await generateCsvFromAnimalIds(animals);
+    const csvData = await generateCsvFromAnimalIds(animalIds);
     fs.writeFileSync(filePath, csvData, { encoding: "utf8" });
     console.log(`CSV successfully written to ${filePath}`);
     return true;
@@ -30,7 +29,7 @@ export const writeDrugHistoryCsv = async (animals: AnimalInfo[]): Promise<boolea
 };
   
 
-export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<string> => {
+export const generateCsvFromAnimalIds = async (animalIds: string[]): Promise<string> => {
   let csvRows: string[] = [];
 
   // Header
@@ -49,9 +48,9 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
   ];
   csvRows.push(header.join(","));
 
-  for (const animal of animals) {
+  for (const animalId of animalIds) {
     try {
-      const drugHistoryResult: Result<DrugHistory[], string> = await getDrugHistory(animal.id);
+      const drugHistoryResult: Result<DrugHistory[], string> = await getDrugHistory(animalId);
 
       var drugHistory: DrugHistory[] = [];
 
@@ -81,7 +80,7 @@ export const generateCsvFromAnimalIds = async (animals: AnimalInfo[]): Promise<s
         csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
       }
     } catch (error) {
-      console.error(`Error fetching drug history for animalId ${animal.id}, Name ${animal.name}:`, error);
+      console.error(`Error fetching drug history for animalId ${animalId}:`, error);
     }
   }
 

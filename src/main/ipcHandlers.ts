@@ -32,7 +32,6 @@ import {
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getDatabase } from "../database/dbConnections.js";
-import { AnimalInfo } from "../writers/helpers/animalInfo.js";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugHistory.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
@@ -43,15 +42,15 @@ export const registerIpcHandlers = () => {
     return animalSearch(queryParams);
   });
 
-  ipcMain.handle("export-animal-notes-csv", async (_, animals: AnimalInfo[]) => {
+  ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
     return writeAnimalNotesCsv(animals);
   });
 
-  ipcMain.handle("export-drug-history-csv", async (_, animals: AnimalInfo[]) => {
+  ipcMain.handle("export-drug-history-csv", async (_, animals: string[]) => {
     return writeDrugHistoryCsv(animals);
   });
 
-  ipcMain.handle("export-tissue-test-results-csv", async (_, animals: AnimalInfo[]) => {
+  ipcMain.handle("export-tissue-test-results-csv", async (_, animals: string[]) => {
     return writeTissueTestResults(animals);
   });
 
