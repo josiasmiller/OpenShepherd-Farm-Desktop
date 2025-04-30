@@ -1,5 +1,5 @@
 import fs from "fs";
-import { AnimalNote, getAnimalNotes } from "../../database/index.js";
+import { AnimalIdentification, AnimalNote, getAnimalIdentification, getAnimalNotes } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
 
@@ -32,7 +32,7 @@ export const writeAnimalNotesCsv = async (animalIds: string[]): Promise<boolean>
 export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promise<string> => {
   let csvRows: string[] = [];
 
-  // Header
+  // Headers
   const header = [
     "Flock Prefix",
     "Animal Name",
@@ -45,23 +45,49 @@ export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promis
 
   for (const animalId of animalIds) {
     try {
+      // get the naimal Notes
       const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(animalId);
 
       var animalNotes: AnimalNote[] = [];
+      var animalNoteSuccessed: boolean = false;
 
       handleResult(animalNoteResult, {
         success: (data : AnimalNote[]) => {
           animalNotes = data;
+          animalNoteSuccessed = true;
         },
         error: (err) => {
           console.error("Failed to fetch Animal Notes:", err);
         },
       });
 
+      if (!animalNoteSuccessed) {
+        continue;
+      }
+
+      // get all pertinent animal Identifications
+      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(animalId);
+      var animalIdentification : AnimalIdentification | null = null;
+      var animalIdentificationSucceeded: boolean = false;
+
+      handleResult(animalIdentificationResult, {
+        success: (data : AnimalIdentification) => {
+          animalIdentification = data;
+          animalIdentificationSucceeded = true;
+        },
+        error: (err) => {
+          console.error("Failed to fetch Animal Notes:", err);
+        },
+      });
+
+      if (!animalIdentificationSucceeded) {
+        continue;
+      }
+
       for (const entry of animalNotes) {
         const row = [
-          entry.flockPrefix,
-          entry.animalName,
+          animalIdentification!.flockPrefix,
+          animalIdentification!.name,
           entry.noteText,
           entry.predefinedNote,
           entry.noteDate,

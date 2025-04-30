@@ -3,6 +3,7 @@ import { dialog, ipcMain } from "electron";
 
 import { 
   animalSearch,
+  getAnimalIdentification,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -55,6 +56,10 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
+    return getAnimalIdentification(animalId);
+  });
 
   ipcMain.handle("get-birth-types", getBirthTypes);
 

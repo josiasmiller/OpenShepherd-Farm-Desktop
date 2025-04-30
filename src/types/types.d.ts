@@ -1,4 +1,5 @@
 import { 
+  AnimalIdentification,
   AnimalSearchRequest,
   AnimalSearchResult,
   BirthType,
@@ -37,6 +38,7 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
+      getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>,
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
