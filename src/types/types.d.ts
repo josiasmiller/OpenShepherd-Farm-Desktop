@@ -11,7 +11,7 @@ import {
   County, 
   DeathReason,
   DefaultSettingsResults, 
-  DrugHistory, 
+  DrugEvent, 
   FlockPrefix, 
   Owner, 
   Premise, 

@@ -1,5 +1,5 @@
 import fs from "fs";
-import { DrugHistory, getDrugHistory } from "../../database/index.js";
+import { AnimalIdentification, DrugEvent, getAnimalIdentification, getDrugHistory } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
 
@@ -50,23 +50,42 @@ export const generateCsvFromAnimalIds = async (animalIds: string[]): Promise<str
 
   for (const animalId of animalIds) {
     try {
-      const drugHistoryResult: Result<DrugHistory[], string> = await getDrugHistory(animalId);
+      const drugEventsResult: Result<DrugEvent[], string> = await getDrugHistory(animalId);
 
-      var drugHistory: DrugHistory[] = [];
+      var drugEvents: DrugEvent[] = [];
 
-      handleResult(drugHistoryResult, {
-        success: (data : DrugHistory[]) => {
-          drugHistory = data;
+      handleResult(drugEventsResult, {
+        success: (data : DrugEvent[]) => {
+          drugEvents = data;
         },
         error: (err) => {
           console.error("Failed to fetch drug history:", err);
         },
       });
 
-      for (const entry of drugHistory) {
+      // get all pertinent animal Identifications
+      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(animalId);
+      var animalIdentification : AnimalIdentification | null = null;
+      var animalIdentificationSucceeded: boolean = false;
+
+      handleResult(animalIdentificationResult, {
+        success: (data : AnimalIdentification) => {
+          animalIdentification = data;
+          animalIdentificationSucceeded = true;
+        },
+        error: (err) => {
+          console.error("Failed to fetch Animal Notes:", err);
+        },
+      });
+
+      if (!animalIdentificationSucceeded) {
+        continue;
+      }
+
+      for (const entry of drugEvents) {
         const row = [
-          entry.flockPrefix,
-          entry.animalName,
+          animalIdentification!.flockPrefix,
+          animalIdentification!.name,
           entry.drugLot,
           entry.tradeName,
           entry.genericDrugName,

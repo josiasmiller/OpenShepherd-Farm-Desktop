@@ -1,7 +1,6 @@
-export type DrugHistory = {
-  id: string;
-  flockPrefix: string;
-  animalName: string;
+export type DrugEvent = {
+  drugHistoryId: string;
+  animalId: string;
   tradeName: string;
   genericDrugName: string;
   drugLot: string;

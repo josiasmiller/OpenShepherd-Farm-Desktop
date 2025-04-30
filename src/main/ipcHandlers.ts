@@ -11,7 +11,6 @@ import {
   getCounties, 
   getCountries,
   getDeathReasons,
-  getDrugHistory,
   getExistingDefaults, 
   getFlockPrefixes,
   getOwners,
@@ -34,7 +33,7 @@ import {
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getDatabase } from "../database/dbConnections.js";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
-import { writeDrugHistoryCsv } from "../writers/csv/writeDrugHistory.js";
+import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 export const registerIpcHandlers = () => {

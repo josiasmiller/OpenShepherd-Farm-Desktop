@@ -2,8 +2,6 @@
 
 export type TissueTestResult = {
   animalId: string;
-  flockPrefix: string | null;
-  animalName: string;
   tissueSampleDate: string;
   tissueSampleTime: string;
   tissueSampleTypeName: string;

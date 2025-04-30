@@ -12,8 +12,6 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
   let tissueTestResultsQuery = `
     SELECT 
       animal_table.id_animalid
-      , flock_prefix_table.flock_prefix
-      , animal_table.animal_name
       , animal_tissue_sample_taken_table.tissue_sample_date
       , animal_tissue_sample_taken_table.tissue_sample_time
       , tissue_sample_type_table.tissue_sample_type_name
@@ -25,8 +23,6 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
     FROM animal_table
     INNER JOIN animal_tissue_sample_taken_table ON animal_tissue_sample_taken_table.id_animalid = animal_table.id_animalid
 
-    INNER JOIN animal_flock_prefix_table ON animal_flock_prefix_table.id_animalid = animal_table.id_animalid
-    INNER JOIN flock_prefix_table on flock_prefix_table.id_flockprefixid = animal_flock_prefix_table.id_flockprefixid
     INNER JOIN tissue_test_table ON tissue_test_table.id_tissuetestid = animal_tissue_test_request_table.id_tissuetestid
     INNER JOIN tissue_sample_type_table ON tissue_sample_type_table.id_tissuesampletypeid = animal_tissue_sample_taken_table.id_tissuesampletypeid 
     INNER JOIN animal_tissue_test_request_table ON animal_tissue_test_request_table.id_animaltissuesampletakenid = animal_tissue_sample_taken_table.id_animaltissuesampletakenid
@@ -46,8 +42,6 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
       } else {
         const results: TissueTestResult[] = rows.map((row: any) => ({
           animalId: row.id_animalid,
-          flockPrefix: row.flock_prefix,
-          animalName: row.animal_name,
           tissueSampleDate: row.tissue_sample_date,
           tissueSampleTime: row.tissue_sample_time,
           tissueSampleTypeName: row.tissue_sample_type_name,

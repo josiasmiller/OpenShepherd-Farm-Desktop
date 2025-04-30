@@ -1,5 +1,5 @@
 import fs from "fs";
-import { TissueTestResult, getTissueTestResults } from "../../database/index.js";
+import { AnimalIdentification, TissueTestResult, getAnimalIdentification, getTissueTestResults } from "../../database/index.js";
 import { handleResult, Result } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
 
@@ -62,10 +62,29 @@ export const generateTissueTestResultsCsvFromAnimalIds = async (animalIds: strin
         },
       });
 
+      // get all pertinent animal Identifications
+      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(animalId);
+      var animalIdentification : AnimalIdentification | null = null;
+      var animalIdentificationSucceeded: boolean = false;
+
+      handleResult(animalIdentificationResult, {
+        success: (data : AnimalIdentification) => {
+          animalIdentification = data;
+          animalIdentificationSucceeded = true;
+        },
+        error: (err) => {
+          console.error("Failed to fetch Animal Notes:", err);
+        },
+      });
+
+      if (!animalIdentificationSucceeded) {
+        continue;
+      }
+
       for (const entry of ttResults) {
         const row = [
-          entry.flockPrefix,
-          entry.animalName,
+          animalIdentification!.flockPrefix,
+          animalIdentification!.name,
           entry.company,
           entry.tissueSampleTypeName,
           entry.tissueSampleTestName,
