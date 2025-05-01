@@ -30,12 +30,12 @@ app.whenReady().then(() => {
   if (isDev) {
     console.log("Running Dev");
     mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    const indexHtml = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
+    mainWindow.loadFile(indexHtml);
   }
 
   registerIpcHandlers();
-  
-  mainWindow.webContents.openDevTools();
   console.log("main finished running without error");
 });
