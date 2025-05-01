@@ -1,0 +1,31 @@
+.landing-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.landing-page-top {
+  padding: 1rem;
+  flex: 0 0 20%; /* 40% of the height */
+  border-bottom: 1px solid #ccc;
+}
+
+.action-buttons {
+  margin-top: 1rem;
+}
+
+.action-buttons button {
+  margin-right: 1rem;
+}
+
+.landing-page-bottom {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.scrollable-table {
+  max-height: 100%;
+  overflow-y: auto;
+}
+  

@@ -1,8 +1,9 @@
 
-import { ipcMain } from "electron";
+import { dialog, ipcMain } from "electron";
 
 import { 
   animalSearch,
+  getAnimalIdentification,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -31,6 +32,9 @@ import {
 
 import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
 import { getDatabase } from "../database/dbConnections.js";
+import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
+import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
+import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 export const registerIpcHandlers = () => {
   
@@ -38,7 +42,23 @@ export const registerIpcHandlers = () => {
     return animalSearch(queryParams);
   });
 
+  ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
+    return writeAnimalNotesCsv(animals);
+  });
+
+  ipcMain.handle("export-drug-history-csv", async (_, animals: string[]) => {
+    return writeDrugHistoryCsv(animals);
+  });
+
+  ipcMain.handle("export-tissue-test-results-csv", async (_, animals: string[]) => {
+    return writeTissueTestResults(animals);
+  });
+
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
+    return getAnimalIdentification(animalId);
+  });
 
   ipcMain.handle("get-birth-types", getBirthTypes);
 

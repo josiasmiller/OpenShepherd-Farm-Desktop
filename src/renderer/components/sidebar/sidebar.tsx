@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 import "../../styles/styles.css";
 import transparentLogo from "../../../assets/AnimalTrakker_icon_512x512.png";
@@ -33,7 +34,11 @@ const Sidebar: React.FC = () => {
 
   const handleNavClick = (path: string) => {
     if (!isDbLoaded && path !== "/") {
-      alert("Please select a valid database file first.");
+      Swal.fire({
+        title: "Please select a valid database file first.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
       return;
     }
     navigate(path);

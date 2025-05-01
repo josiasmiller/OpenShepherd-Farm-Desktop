@@ -1,4 +1,5 @@
 import { 
+  AnimalIdentification,
   AnimalSearchRequest,
   AnimalSearchResult,
   BirthType,
@@ -10,6 +11,7 @@ import {
   County, 
   DeathReason,
   DefaultSettingsResults, 
+  DrugEvent, 
   FlockPrefix, 
   Owner, 
   Premise, 
@@ -36,6 +38,10 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
+      getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>,
+      exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
+      exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
+      exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;
