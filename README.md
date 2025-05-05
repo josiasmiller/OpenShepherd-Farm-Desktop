@@ -1,47 +1,137 @@
+# AnimalTrakker Farm Desktop (Electron + Vite)
 
-# AnimalTrakker Farm Desktop Electron
+---
+
+## Overview
+
+This is the desktop application for the AnimalTrakker Farm ecosystem, built using [Electron](https://www.electronjs.org/) and [Vite](https://vitejs.dev/) for a fast and modern development experience. It leverages **TypeScript**, **Jest** for testing, and **Electron Forge** for packaging and distribution.
 
 ---
 
 ## Prerequisites
 
-Before setting up the project, ensure you have the following installed. For official guidance on setting up an Electron development environment, refer to the [Electron Prerequisites Tutorial](https://www.electronjs.org/docs/latest/tutorial/tutorial-prerequisites).
+Ensure the following are installed before you set up the project. For a general overview of setting up an Electron development environment, refer to the [Electron Prerequisites Guide](https://www.electronjs.org/docs/latest/tutorial/tutorial-prerequisites).
 
 ### Node.js & NPM
-This project requires **Node.js** (LTS recommended) and **NPM** (Node Package Manager).
+This project requires **Node.js** (LTS recommended) and **npm** (Node Package Manager).
 
 #### Installation:
-- **Download and Install** from [the official Node.js website.](https://nodejs.org/en/download)
-- Verify installation by running the following commands in your terminal:
+- Download and install from the [official Node.js website](https://nodejs.org/en/download).
+- Verify installation:
 
-  ```sh
-  node -v  # verify Node.js is installed and accessible
-  npm -v   # verify NPM is installed and accessible
-
-
-
-## How to run
-
-Navigate to the root directory of this project and run: 
+```sh
+node -v  # Node.js version
+npm -v   # npm version
 ```
+
+---
+
+## Getting Started
+
+### Install Dependencies
+
+From the project root directory, install all required dependencies:
+
+```sh
 npm install
 ```
 
-Once the `node_modules` are installed, build the project using:
+### Development Workflow
+
+In development mode, you’ll need to run both the Vite dev server **and** the Electron app in parallel:
+
+1. **Run Vite Dev Server** (in one terminal):
+
+```sh
+npm run vite
 ```
+
+2. **Start Electron App** (in a second terminal):
+
+```sh
+npm run build_start
+```
+
+---
+
+## Building the Project
+
+### Internal Build (Development/Debug)
+
+To build the TypeScript code and copy assets (for debugging or intermediate purposes):
+
+```sh
 npm run build
 ```
-The CLI should echo a few lines regarding the copying of assets. This should generate the `dist/` directory and all code required to run the project.
 
+### Production Build & Packaging
 
-From there, use this command to start the project:
+We use **[Electron Forge](https://www.electronforge.io/)** to build and package the application for distribution.
+
+To create a production-ready package:
+
+```sh
+npm run make
 ```
-npm start
+
+This will:
+- Compile the source (`tsc`)
+- Copy static assets
+- Create distributables (installers, executables, etc.) using Electron Forge
+
+You can also manually package (without making distributables) using:
+
+```sh
+npm run package
 ```
 
+---
 
+## Running Tests
 
+We use **[Jest](https://jestjs.io/)** for testing.
 
-### File Structure
+To run the test suite:
 
- We follow the [standard directory file structure for electron apps.](https://www.electronjs.org/docs/latest/development/source-code-directory-structure)
+```sh
+npm run test
+```
+
+Ensure tests are kept up to date as you develop new features.
+
+---
+
+## Project Scripts
+
+Here’s a summary of the key npm scripts:
+
+| Script         | Description                                  |
+|----------------|----------------------------------------------|
+| `npm start`    | Launches the Electron app with Vite dev server |
+| `npm run vite` | Starts the Vite development server            |
+| `npm run build`| Compiles TypeScript and copies assets         |
+| `npm run build_start`| Runs both `build` and `start`         |
+| `npm run test` | Runs Jest test suite                         |
+| `npm run package` | Creates a packaged version of the app     |
+| `npm run make` | Builds + packages app for production         |
+
+---
+
+## File Structure
+
+We follow [Electron's recommended file structure](https://www.electronjs.org/docs/latest/development/source-code-directory-structure), with custom scripts to handle asset copying and building.
+
+```
+├── src/             # Source code (renderer, main process)
+├── dist/            # Build output
+├── scripts/         # Custom build scripts (e.g., copyAssets.js)
+├── public/          # Static assets
+├── package.json     # Project metadata and scripts
+└── README.md        # This file
+```
+
+---
+
+## License
+
+[Apache 2.0](./LICENSE)
