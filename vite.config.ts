@@ -20,6 +20,7 @@ export default defineConfig({
       "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },
   },
+  root: path.resolve(__dirname, "src/renderer"),
   server: {
     port: 5173, // Port for Vite's dev server
   },
