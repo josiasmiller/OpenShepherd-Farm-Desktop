@@ -6,7 +6,7 @@
   "description": "AnimalTrakker Farm Desktop App",
   "main": "dist/main/main.js",
   "scripts": {
-    "build": "tsc && vite build --config src/vite.config.ts && node scripts/copyAssets.js",
+    "build": "tsc && vite build --config src/vite.config.ts",
     "start": "electron-forge start",
     "build_start": "npm run build && cross-env NODE_ENV=development electron .",
     "vite": "vite --config src/vite.config.ts",

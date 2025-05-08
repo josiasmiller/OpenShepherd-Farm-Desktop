@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { HashRouter  as Router, Routes, Route } from "react-router-dom";
 import Home from "./common/home"
 import AnimalSearch from "./common/animalSearch/animalSearch"
 import CreateDefault from "./common/animalDefaults/createDefault"
