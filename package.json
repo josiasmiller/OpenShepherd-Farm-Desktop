@@ -4,12 +4,12 @@
   "type": "module",
   "author": "AnimalTrakker",
   "description": "AnimalTrakker Farm Desktop App",
-  "main": "dist/src/main/main.js",
+  "main": "dist/main/main.js",
   "scripts": {
-    "build": "tsc && node scripts/copyAssets.js",
+    "build": "tsc && vite build --config src/vite.config.ts && node scripts/copyAssets.js",
     "start": "electron-forge start",
     "build_start": "npm run build && cross-env NODE_ENV=development electron .",
-    "vite": "vite",
+    "vite": "vite --config src/vite.config.ts",
     "test": "jest",
     "package": "electron-forge package",
     "make": "npm run build && electron-forge make"
@@ -52,9 +52,9 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
+    "react-router-dom": "^7.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.4.1",
     "sqlite3": "^5.1.7",
     "uuid": "^11.1.0"
   },
@@ -75,12 +75,6 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "platforms": [
-            "linux"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
           "platforms": [
             "linux"
           ]

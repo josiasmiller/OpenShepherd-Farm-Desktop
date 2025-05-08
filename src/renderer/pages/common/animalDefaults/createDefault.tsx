@@ -30,7 +30,7 @@ import { OwnerType } from "../../../../database/client-types";
 import Swal from "sweetalert2";
 import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
-import { getCurrentFormattedTimestamp } from "../../../scripts/common/utils/times";
+import { getCurrentFormattedTimestamp } from "../../../../scripts/times";
 
 const CreateDefaults: React.FC = () => {
 

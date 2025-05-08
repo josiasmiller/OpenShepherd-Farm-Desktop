@@ -32,7 +32,7 @@ app.whenReady().then(() => {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    const indexHtml = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
+    const indexHtml = path.join(getCurrentDirectory(), '..', 'renderer', 'index.html'); // for now, getCurrentDirectory routes to the `main.js`
     mainWindow.loadFile(indexHtml);
   }
 
