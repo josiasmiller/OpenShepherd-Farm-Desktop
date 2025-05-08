@@ -5,6 +5,17 @@ import { fileURLToPath } from 'url';
 
 let mainWindow: BrowserWindow | null;
 
+const getPlatformIcon = () => {
+  if (process.platform === 'win32') {
+    return path.join(getCurrentDirectory(), '..', 'renderer', 'assets', 'icon.ico');
+  } else if (process.platform === 'darwin') {
+    return path.join(getCurrentDirectory(), '..', 'renderer', 'assets', 'icon.icns');
+  } else {
+    return path.join(getCurrentDirectory(), 'assets', 'AnimalTrakker_icon_512x512.png');
+  }
+};
+
+
 const getCurrentDirectory = () => {
   return path.dirname(fileURLToPath(import.meta.url));
 };
@@ -18,6 +29,7 @@ app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: getPlatformIcon(),
     webPreferences: {
       preload: absolutePreloadPath,
       contextIsolation: true,
@@ -37,5 +49,5 @@ app.whenReady().then(() => {
   }
 
   registerIpcHandlers();
-  console.log("main finished running without error");
+  console.log("main finished");
 });
