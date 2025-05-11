@@ -30,7 +30,7 @@ import {
   writeNewDefaultSettings,
 } from "../database/index.js";
 
-import { selectNewDb } from "../renderer/scripts/common/utils/dbSelect.js";
+import { selectNewDb } from "../scripts/dbSelect.js";
 import { getDatabase } from "../database/dbConnections.js";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";

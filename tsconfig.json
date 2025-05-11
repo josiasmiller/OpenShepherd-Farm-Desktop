@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "outDir": "dist",
+    "rootDir": "./src",               // ✅ This line tells TypeScript that "src" is the base
     "strict": true,
     "moduleResolution": "bundler",
     "esModuleInterop": true,

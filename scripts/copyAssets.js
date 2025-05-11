@@ -1,31 +1,14 @@
-import { mkdirSync, cpSync } from 'fs';
-import { join } from 'path';
+import { mkdirSync, copyFileSync, readdirSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
-// Helper function to handle errors and exit early
-const exitOnError = (message, error) => {
-  console.error(message);
-  console.error(error);
-  process.exit(1);  // Exit the script with a non-zero exit code to indicate failure
-};
+const currentDir = dirname(fileURLToPath(import.meta.url));
 
-// Paths to source and destination folders
-const srcRenderer = join('src', 'renderer');
-const destRenderer = join('dist', 'src', 'renderer');
+const srcDir = join(currentDir, '..', 'src', 'assets');
+const destDir = join(currentDir, '..', 'dist', 'renderer', 'assets');
 
-// Ensure destination directory exists
-try {
-  mkdirSync(destRenderer, { recursive: true });
-  console.log("Created/Ensured directory: " + destRenderer);
-} catch (err) {
-  exitOnError("Error creating directory: " + destRenderer, err);
-}
+mkdirSync(destDir, { recursive: true });
 
-// Copy pages
-try {
-  cpSync(srcRenderer, destRenderer, { recursive: true });
-  console.log("Copied renderer content successfully!");
-} catch (err) {
-  exitOnError("Error copying pages: ", err);
-}
-
-console.log("Assets copied successfully!");
+readdirSync(srcDir).forEach(file => {
+  copyFileSync(join(srcDir, file), join(destDir, file));
+});
