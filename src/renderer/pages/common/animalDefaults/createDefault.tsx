@@ -697,19 +697,50 @@ const CreateDefaults: React.FC = () => {
 
     const currentTimestamp: string = getCurrentFormattedTimestamp();
 
+
+    // extract owner ID based on form
+    var selectedOwnerId: string;
+    if (ownerSelection == OwnerType.CONTACT) {
+      selectedOwnerId = ownerContactId;
+    } else if (ownerSelection == OwnerType.COMPANY) {
+      selectedOwnerId = ownerCompanyId;
+    } else {
+      throw new TypeError("Invalid owner selection state");
+    }
+
+    // extract breeder ID based on form
+    var selectedBreederId: string;
+    if (breederSelection == OwnerType.CONTACT) {
+      selectedBreederId = breederContactId;
+    } else if (breederSelection == OwnerType.COMPANY) {
+      selectedBreederId = breederCompanyId;
+    } else {
+      throw new TypeError("Invalid breeder selection state");
+    }
+
+    // extract transfer reason ID based on form
+    var transferReasonOwnerId: string;
+    if (transferReasonSelection == OwnerType.CONTACT) {
+      transferReasonOwnerId = transferReasonContactId;
+    } else if (ownerSelection == OwnerType.COMPANY) {
+      transferReasonOwnerId = transferReasonCompanyId;
+    } else {
+      throw new TypeError("Invalid transfer reason selection state");
+    }
+
     const formData: NewDefaultSettingsParameters = {
       id: selectedDefault!.id,
       default_settings_name: newDefaultName,
   
       contactType: ownerSelection,
-      ownerId: ownerContactId,
+      ownerId: selectedOwnerId,
       owner_id_premiseid: ownerPremiseId,
   
-      breederId: breederContactId,
+      breederId: selectedBreederId,
       breederType: breederSelection,
       breeder_id_premiseid: breederPremiseId,
   
-      transferReasonContactId: transferReasonContactId,
+      transferReasonContactId: transferReasonOwnerId,
       transferReasonContactType: transferReasonSelection,
   
       vet_id_contactid: vetContactId,
@@ -944,7 +975,6 @@ const CreateDefaults: React.FC = () => {
 
     setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
 
-    
     setBreederSelection(defaultSetting.breederType);
 
     if (defaultSetting.breederType === OwnerType.CONTACT) {

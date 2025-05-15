@@ -27,7 +27,7 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
             owner_id = String(row.owner_id_contactid);
             owner_type = OwnerType.CONTACT;
           } else if (row.owner_id_companyid != null) {
-            owner_id = String(row.owner_id_contactid);
+            owner_id = String(row.owner_id_companyid);
             owner_type = OwnerType.COMPANY;
           } else {
             return null; // Return null if no valid owner, this is filtered later
@@ -55,7 +55,7 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
             breederId = String(row.breeder_id_contactid);
             breederType = OwnerType.CONTACT;
           } else if (row.breeder_id_companyid != null) {
-            breederId = String(row.breeder_id_contactid);
+            breederId = String(row.breeder_id_companyid);
             breederType = OwnerType.COMPANY;
           } else {
             return null; // Return null if no valid owner, this is filtered later
