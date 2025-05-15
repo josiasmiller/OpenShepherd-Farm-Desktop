@@ -5,7 +5,6 @@ import { animalDefaultColumns, getAnimalDefaultValues } from "./defaultParser.js
 export const editExistingDefaultSettings = async (
   queryParams: NewDefaultSettingsParameters
 ): Promise<boolean> => {
-  console.log("\n\n\nWEWLAD!!!\n\n\n");
   const db = await getDatabase();
   if (db == null) {
     throw new TypeError("DB Instance is null");
@@ -21,25 +20,14 @@ export const editExistingDefaultSettings = async (
     .map((col) => `${col} = ?`)
     .join(", ");
 
-  console.log("UPDATE COLS:");
-  console.log(updateColumns);
-
   const query = `
     UPDATE animaltrakker_default_settings_table
     SET ${updateColumns}
     WHERE id_animaltrakkerdefaultsettingsid = ?
   `;
 
-  console.log("got here at least");
-
   const values = getAnimalDefaultValues(queryParams).slice(1); // skip the ID in values
   values.push(queryParams.id); // add ID at the end for WHERE clause
-
-  console.log("VALUES");
-  console.log(values);
-
-  console.log("row id:");
-  console.log(queryParams.id);
 
   return new Promise((resolve, reject) => {
     db.run(query, values, function (err) {
