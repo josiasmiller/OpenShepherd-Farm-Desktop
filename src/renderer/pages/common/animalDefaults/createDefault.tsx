@@ -663,15 +663,26 @@ const CreateDefaults: React.FC = () => {
 
   const handleOwnerSelectionChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setOwnerSelection(e.target.id === "select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+
+    // Clear both ID fields regardless of the new selection
+    setOwnerContactId('');
+    setOwnerCompanyId('');
   };
 
   const handleBreederSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBreederSelection(e.target.id === "breeder_select_contact" ? OwnerType.CONTACT : OwnerType.COMPANY);
+
+    // Clear both ID fields regardless of the new selection
+    setBreederContactId('');
+    setBreederCompanyId('');
   };
 
   const handleTransferReasonSelectionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.id === 'transfer_reason_select_contact' ? OwnerType.CONTACT : OwnerType.COMPANY;
-    setTransferReasonSelection(value);
+    setTransferReasonSelection(e.target.id === 'transfer_reason_select_contact' ? OwnerType.CONTACT : OwnerType.COMPANY);
+
+    // Clear both ID fields regardless of the new selection
+    setTransferReasonContactId('');
+    setTransferReasonCompanyId('');
   };
 
   type FormParamResult =
