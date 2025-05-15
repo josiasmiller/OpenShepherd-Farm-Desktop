@@ -62,7 +62,8 @@ export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // export write models
-export type { WriteNewDefaultParameters } from "./models/write/defaults/writeNewDefault.js";
+export type { NewDefaultSettingsParameters } from "./models/write/defaults/newDefaultSettings.js";
 
 // export write repositories
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 
+export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";

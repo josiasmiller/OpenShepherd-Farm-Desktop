@@ -3,7 +3,6 @@ import { HashRouter  as Router, Routes, Route } from "react-router-dom";
 import Home from "./common/home"
 import AnimalSearch from "./common/animalSearch/animalSearch"
 import CreateDefault from "./common/animalDefaults/createDefault"
-import EditDefault from "./common/animalDefaults/editDefault";
 import Sidebar from "../components/sidebar/sidebar";
 import LandingPage from "./common/animalSearch/landingPage";
 
@@ -20,7 +19,6 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/animal-search" element={<AnimalSearch />} />
             <Route path="/create-default" element={<CreateDefault />} />
-            <Route path="/edit-default" element={<EditDefault />} />
             
             <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
           </Routes>

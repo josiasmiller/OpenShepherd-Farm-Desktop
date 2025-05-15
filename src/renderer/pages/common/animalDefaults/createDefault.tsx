@@ -22,7 +22,7 @@ import {
   TransferReason,
   Unit,
   UnitRequest,
-  WriteNewDefaultParameters,
+  NewDefaultSettingsParameters,
 } from "../../../../database";
 
 import { OwnerType } from "../../../../database/client-types";
@@ -674,22 +674,20 @@ const CreateDefaults: React.FC = () => {
     setTransferReasonSelection(value);
   };
 
-  const createNewDefault = async () => {
-    const currentTimestamp: string = getCurrentFormattedTimestamp();
+  type FormParamResult =
+  | { success: true; data: NewDefaultSettingsParameters }
+  | { success: false; reason: string };
 
-    // verify name is set
-    if (!newDefaultName || newDefaultName == '') {
-      Swal.fire({
-        title: "Your new default needs a name!",
-        text: "Please provide a name for the new default settings",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
-      return;
+  const getDefaultParamsFromForm = (): FormParamResult => {
+
+    if (selectedDefault === null) {
+      return { success: false, reason: "NO_SELECTED_DEFAULT" };
     }
 
-    // Construct the WriteNewDefaultParameters object
-    const formData: WriteNewDefaultParameters = {
+    const currentTimestamp: string = getCurrentFormattedTimestamp();
+
+    const formData: NewDefaultSettingsParameters = {
+      id: selectedDefault!.id,
       default_settings_name: newDefaultName,
   
       contactType: ownerSelection,
@@ -794,6 +792,24 @@ const CreateDefaults: React.FC = () => {
       death_reason_id_companyid: "0",
       trich_tag_next_tag_number: "0",
     };
+
+    return { success: true, data: formData };
+  }
+
+  const createNewDefault = async () => {
+
+    if (!verifyForm()) {
+      return;
+    }
+
+    const result: FormParamResult = getDefaultParamsFromForm();
+
+    if (!result.success) {
+      console.warn("Form not ready:", result.reason);
+      return;
+    }
+
+    const formData: NewDefaultSettingsParameters = result.data;
   
     const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
   
@@ -815,9 +831,96 @@ const CreateDefaults: React.FC = () => {
   
     return;
   }
+
+  const editDefault = async () => {
+
+    if (!verifyForm()) {
+      return;
+    }
+
+    const result: FormParamResult = getDefaultParamsFromForm();
+
+    if (!result.success) {
+      console.warn("Form not ready:", result.reason);
+      return;
+    }
+
+    const formData: NewDefaultSettingsParameters = result.data;
   
+    const success: boolean = await window.electronAPI.editExistingDefaultSettings(formData);
+  
+    if (success) {
+      Swal.fire({
+        title: "Existing Default Updated",
+        text: `The default setting has successfully been updated`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: "There was an error editing the default settings",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
+    }
+  
+    return;
+  }
+
+  const verifyForm = (): boolean => {
+
+    // verify name is set
+    if (!newDefaultName || newDefaultName == '') {
+      Swal.fire({
+        title: "Your animal default needs a name!",
+        text: "Please provide a name for the animal default settings",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // owner is set
+    if (ownerContactId == '' && ownerCompanyId == '') {
+      Swal.fire({
+        title: "You must select an owner contact or company",
+        text: "Please select one to progress",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // breeder is set
+    if (breederContactId == '' && breederCompanyId == '') {
+      Swal.fire({
+        title: "You must select a breeder contact or company",
+        text: "Please select one to progress",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // transfer reason is set
+    if (transferReasonContactId == '' && transferReasonCompanyId == '') {
+      Swal.fire({
+        title: "You must select a transfer reason contact or company",
+        text: "Please select one to progress",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    return true;
+  }
 
   const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
+
+    setNewDefaultName(defaultSetting.name);
+
     setOwnerSelection(defaultSetting.owner_type ?? null);
 
     if (defaultSetting.owner_type === OwnerType.CONTACT) {
@@ -945,16 +1048,25 @@ const CreateDefaults: React.FC = () => {
       {/* Top Section */}
       <div className="create-defaults-top-section">
         <h2>Default Settings</h2>
-        <button
-          id="create-default-btn" 
-          className="forward-button"
-          onClick={() => {
-            createNewDefault();
-          }}
-        >
-          Create New Default
-        </button>
+        <div className="button-group">
+          <button
+            id="create-default-btn" 
+            className="forward-button"
+            onClick={createNewDefault}
+          >
+            Create New Default
+          </button>
+
+          <button
+            id="edit-default-btn" 
+            className="forward-button"
+            onClick={editDefault}
+          >
+            Edit Existing Default
+          </button>
+        </div>
       </div>
+
 
       {/* Bottom Section */}
       <div className="create-defaults-bottom-section">
@@ -962,7 +1074,7 @@ const CreateDefaults: React.FC = () => {
 
           {/* Existing Setting Selection */}
           <div className="existing-setting-container">
-            <label htmlFor="existing-settings">Start from Existing Setting:</label>
+            <label htmlFor="existing-settings">Existing Setting:</label>
             <select
               id="existing-settings"
               name="existing-settings"
@@ -971,6 +1083,10 @@ const CreateDefaults: React.FC = () => {
                 const selectedId = e.target.value;
                 const found = existingDefaults.find((def) => def.id == selectedId) || null;
                 setSelectedDefault(found);
+
+                if (found) {
+                  loadDefaultSettings(found);
+                }
               }}
             >
               <option value="">Select an Existing Default...</option>
@@ -980,22 +1096,6 @@ const CreateDefaults: React.FC = () => {
                 </option>
               ))}
             </select>
-
-            {/* Load Default Button */}
-            <button
-              id="load-default-btn"
-              type="button"
-              onClick={() => {
-                if (selectedDefault) {
-                  loadDefaultSettings(selectedDefault);
-                } else {
-                  console.warn("No default selected");
-                }
-              }}
-            >
-              Load Default
-            </button>
-
           </div>
 
           <label htmlFor="settings_name">Settings Name:</label>
