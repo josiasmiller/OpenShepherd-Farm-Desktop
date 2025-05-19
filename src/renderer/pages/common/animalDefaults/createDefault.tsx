@@ -38,6 +38,7 @@ const CreateDefaults: React.FC = () => {
   // STATES //
   ////////////
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // define the arrays that are used when retrieving data from the DB
   const [contacts, setOwnerContacts] = useState<Owner[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -61,6 +62,7 @@ const CreateDefaults: React.FC = () => {
   const [colors, setColors] = useState<Color[]>([]);
   const [weightUnits, setWeightUnits] = useState<Unit[]>([]);
   const [currencyUnits, setCurrencyUnits] = useState<Unit[]>([]);
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const [existingDefaults, setExistingDefaults] = useState<DefaultSettingsResults[]>([]);
   const [selectedDefault, setSelectedDefault] = useState<DefaultSettingsResults | null>(null);
@@ -165,7 +167,7 @@ const CreateDefaults: React.FC = () => {
   const [tissueSampleContainerTypeId, setTissueSampleContainerTypeId] = useState<string>('');
 
   // Animal Info
-  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>("");
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState<string>('');
   const [selectedBreedId, setSelectedBreedId] = useState<string>('');
   const [flockPrefixId, setFlockPrefixId] = useState<string>('');
   const [sexId, setSexId] = useState<string>('');
@@ -722,7 +724,7 @@ const CreateDefaults: React.FC = () => {
     var transferReasonOwnerId: string;
     if (transferReasonSelection == OwnerType.CONTACT) {
       transferReasonOwnerId = transferReasonContactId;
-    } else if (ownerSelection == OwnerType.COMPANY) {
+    } else if (transferReasonSelection == OwnerType.COMPANY) {
       transferReasonOwnerId = transferReasonCompanyId;
     } else {
       throw new TypeError("Invalid transfer reason selection state");
@@ -853,25 +855,25 @@ const CreateDefaults: React.FC = () => {
 
     const formData: NewDefaultSettingsParameters = result.data;
   
-    const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
-  
-    if (success) {
-      Swal.fire({
-        title: "New Defaults Saved",
-        text: `A new Default Setting has been created with the name \"${formData.default_settings_name}\"`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-    } else {
+    try {
+      const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
+
+      if (success) {
+        Swal.fire({
+          title: "New Defaults Saved",
+          text: `A new Default Setting has been created with the name \"${formData.default_settings_name}\"`,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error: any) {
       Swal.fire({
         title: "Error",
-        text: "There was an error creating the default settings",
+        text: error?.message || "There was an error creating the default settings.",
         icon: "error",
         confirmButtonText: "Continue",
       });
     }
-  
-    return;
   }
 
   const editDefault = async () => {
@@ -910,6 +912,10 @@ const CreateDefaults: React.FC = () => {
     return;
   }
 
+  const isFieldValid = (val : string): boolean => {
+    return val != '' && val != undefined && val != "undefined"
+  }
+
   const verifyForm = (): boolean => {
 
     // verify name is set
@@ -923,45 +929,670 @@ const CreateDefaults: React.FC = () => {
       return false;
     }
 
-    // owner is set
-    if (ownerContactId == '' && ownerCompanyId == '') {
+    // verify a owner company or contact has been selected
+    if (ownerSelection == OwnerType.COMPANY) {
+      if (ownerCompanyId == '') {
+        Swal.fire({
+          title: "You must select a owner contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else if (ownerSelection == OwnerType.CONTACT) {
+
+      if (ownerContactId == '') {
+        Swal.fire({
+          title: "You must select a owner contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else {
+      throw new TypeError("Invalid ownerSelection:" + ownerSelection);
+    }
+
+    // verify a breeder company or contact has been selected
+    if (breederSelection == OwnerType.COMPANY) {
+      if (breederCompanyId == '') {
+        Swal.fire({
+          title: "You must select a breeder contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else if (breederSelection == OwnerType.CONTACT) {
+
+      if (breederContactId == '') {
+        Swal.fire({
+          title: "You must select a breeder contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else {
+      throw new TypeError("Invalid breederSelection:" + breederSelection);
+    }
+
+    // verify a transfer reason company or contact has been selected
+    if (transferReasonSelection == OwnerType.COMPANY) {
+      if (transferReasonCompanyId == '') {
+        Swal.fire({
+          title: "You must select a transfer reason contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else if (transferReasonSelection == OwnerType.CONTACT) {
+
+      if (!isFieldValid(transferReasonContactId)) {
+        Swal.fire({
+          title: "You must select a transfer reason contact or company",
+          text: "Please select one",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+        return false;
+      }
+
+    } else {
+      throw new TypeError("Invalid transferReasonSelection:" + transferReasonSelection);
+    }
+
+    // Vet
+    if (!isFieldValid(vetContactId)) {
       Swal.fire({
-        title: "You must select an owner contact or company",
-        text: "Please select one to progress",
+        title: "Missing Vet Contact",
+        text: "Please select a vet contact ID.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(vetPremiseId)) {
+      Swal.fire({
+        title: "Missing Vet Premise",
+        text: "Please select a vet premise ID.",
         icon: "info",
         confirmButtonText: "OK",
       });
       return false;
     }
 
-    // breeder is set
-    if (breederContactId == '' && breederCompanyId == '') {
+    // Lab
+    if (!isFieldValid(labCompanyId)) {
       Swal.fire({
-        title: "You must select a breeder contact or company",
-        text: "Please select one to progress",
+        title: "Missing Lab Company",
+        text: "Please select a lab company ID.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(labPremiseId)) {
+      Swal.fire({
+        title: "Missing Lab Premise",
+        text: "Please select a lab premise ID.",
         icon: "info",
         confirmButtonText: "OK",
       });
       return false;
     }
 
-    // transfer reason is set
-    if (transferReasonContactId == '' && transferReasonCompanyId == '') {
+    // Registry
+    if (!isFieldValid(registryCompanyId)) {
       Swal.fire({
-        title: "You must select a transfer reason contact or company",
-        text: "Please select one to progress",
+        title: "Missing Registry Company",
+        text: "Please select a registry company ID.",
         icon: "info",
         confirmButtonText: "OK",
       });
       return false;
     }
+    if (!isFieldValid(registryPremiseId)) {
+      Swal.fire({
+        title: "Missing Registry Premise",
+        text: "Please select a registry premise ID.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Location
+    if (!isFieldValid(stateId)) {
+      Swal.fire({
+        title: "Missing State",
+        text: "Please select a state.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(countyId)) {
+      Swal.fire({
+        title: "Missing County",
+        text: "Please select a county.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // ID Types
+    if (!isFieldValid(primaryIdTypeId)) {
+      Swal.fire({
+        title: "Missing Primary ID Type",
+        text: "Please select a primary ID type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(secondaryIdTypeId)) {
+      Swal.fire({
+        title: "Missing Secondary ID Type",
+        text: "Please select a secondary ID type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(tertiaryIdTypeId)) {
+      Swal.fire({
+        title: "Missing Tertiary ID Type",
+        text: "Please select a tertiary ID type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // EID Tag
+    if (!isFieldValid(eidTagColorMale)) {
+      Swal.fire({
+        title: "Missing EID Tag Male Color",
+        text: "Please select a color for male EID tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(eidTagColorFemale)) {
+      Swal.fire({
+        title: "Missing EID Tag Female Color",
+        text: "Please select a color for female EID tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(eidTagLocation)) {
+      Swal.fire({
+        title: "Missing EID Tag Location",
+        text: "Please specify the EID tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Farm Tag
+    if (!isFieldValid(farmTagColorMale)) {
+      Swal.fire({
+        title: "Missing Farm Tag Male Color",
+        text: "Please select a color for male farm tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(farmTagColorFemale)) {
+      Swal.fire({
+        title: "Missing Farm Tag Female Color",
+        text: "Please select a color for female farm tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!farmTagBasedOnEidTag) {
+      Swal.fire({
+        title: "Missing Farm Tag EID Link",
+        text: "Please specify if the farm tag is based on the EID tag.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(farmTagNumberDigitsFromEid)) {
+      Swal.fire({
+        title: "Missing Farm Tag Digits",
+        text: "Please enter the number of digits to use from the EID tag.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(farmTagLocation)) {
+      Swal.fire({
+        title: "Missing Farm Tag Location",
+        text: "Please specify the farm tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Federal Tags
+    if (!isFieldValid(fedColorMale)) {
+      Swal.fire({
+        title: "Missing Federal Tag Male Color",
+        text: "Please select a color for male federal tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(fedColorFemale)) {
+      Swal.fire({
+        title: "Missing Federal Tag Female Color",
+        text: "Please select a color for female federal tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(fedLocation)) {
+      Swal.fire({
+        title: "Missing Federal Tag Location",
+        text: "Please specify the federal tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // NUES Tags
+    if (!isFieldValid(nuesColorMale)) {
+      Swal.fire({
+        title: "Missing NUES Tag Male Color",
+        text: "Please select a color for male NUES tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(nuesColorFemale)) {
+      Swal.fire({
+        title: "Missing NUES Tag Female Color",
+        text: "Please select a color for female NUES tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(nuesLocation)) {
+      Swal.fire({
+        title: "Missing NUES Tag Location",
+        text: "Please specify the NUES tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Trich Tags
+    if (!isFieldValid(trichColorMale)) {
+      Swal.fire({
+        title: "Missing Trich Tag Male Color",
+        text: "Please select a color for male Trich tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(trichColorFemale)) {
+      Swal.fire({
+        title: "Missing Trich Tag Female Color",
+        text: "Please select a color for female Trich tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(trichLocation)) {
+      Swal.fire({
+        title: "Missing Trich Tag Location",
+        text: "Please specify the Trich tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(trichAutoIncrement)) {
+      Swal.fire({
+        title: "Missing Trich Auto Increment",
+        text: "Please enter the Trich tag auto-increment value.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(trichStartingValue)) {
+      Swal.fire({
+        title: "Missing Trich Starting Value",
+        text: "Please enter the starting value for Trich tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Bangs Tags
+    if (!isFieldValid(bangsColorMale)) {
+      Swal.fire({
+        title: "Missing Bangs Tag Male Color",
+        text: "Please select a color for male Bangs tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(bangsColorFemale)) {
+      Swal.fire({
+        title: "Missing Bangs Tag Female Color",
+        text: "Please select a color for female Bangs tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(bangsLocation)) {
+      Swal.fire({
+        title: "Missing Bangs Tag Location",
+        text: "Please specify the Bangs tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Sale Order Tags
+    if (!isFieldValid(saleOrderColorMale)) {
+      Swal.fire({
+        title: "Missing Sale Order Tag Male Color",
+        text: "Please select a color for male Sale Order tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(saleOrderColorFemale)) {
+      Swal.fire({
+        title: "Missing Sale Order Tag Female Color",
+        text: "Please select a color for female Sale Order tags.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(saleOrderLocation)) {
+      Swal.fire({
+        title: "Missing Sale Order Tag Location",
+        text: "Please specify the Sale Order tag location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Paint Mark
+    if (!isFieldValid(usePaintMarks)) {
+      Swal.fire({
+        title: "Missing Paint Mark Usage",
+        text: "Please indicate whether paint marks are used.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(paintMarkColor)) {
+      Swal.fire({
+        title: "Missing Paint Mark Color",
+        text: "Please select a paint mark color.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(paintMarkLocation)) {
+      Swal.fire({
+        title: "Missing Paint Mark Location",
+        text: "Please specify the paint mark location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Tattoo / Freeze Brand / ID Removal
+    if (!isFieldValid(tattooColor)) {
+      Swal.fire({
+        title: "Missing Tattoo Color",
+        text: "Please select a tattoo color.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(tattooLocation)) {
+      Swal.fire({
+        title: "Missing Tattoo Location",
+        text: "Please specify the tattoo location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(freezeBrandLocation)) {
+      Swal.fire({
+        title: "Missing Freeze Brand Location",
+        text: "Please specify the freeze brand location.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(idRemoveReason)) {
+      Swal.fire({
+        title: "Missing ID Remove Reason",
+        text: "Please provide a reason for ID removal.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Tissue Sample
+    if (!isFieldValid(tissueSampleTypeId)) {
+      Swal.fire({
+        title: "Missing Tissue Sample Type",
+        text: "Please select a tissue sample type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(tissueTestId)) {
+      Swal.fire({
+        title: "Missing Tissue Test",
+        text: "Please select a tissue test.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(tissueSampleContainerTypeId)) {
+      Swal.fire({
+        title: "Missing Sample Container Type",
+        text: "Please select a tissue sample container type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+    // Animal Info
+    if (!isFieldValid(selectedSpeciesId)) {
+      Swal.fire({
+        title: "Missing Species",
+        text: "Please select a species.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(selectedBreedId)) {
+      Swal.fire({
+        title: "Missing Breed",
+        text: "Please select a breed.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(flockPrefixId)) {
+      Swal.fire({
+        title: "Missing Flock Prefix",
+        text: "Please select a flock prefix.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(sexId)) {
+      Swal.fire({
+        title: "Missing Sex",
+        text: "Please select the sex of the animal.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(birthType)) {
+      Swal.fire({
+        title: "Missing Birth Type",
+        text: "Please select the birth type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(rearType)) {
+      Swal.fire({
+        title: "Missing Rear Type",
+        text: "Please select the rear type.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (minBirthWeight <= 0) {
+      Swal.fire({
+        title: "Invalid Minimum Birth Weight",
+        text: "Minimum birth weight must be greater than 0.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (maxBirthWeight <= 0) {
+      Swal.fire({
+        title: "Invalid Maximum Birth Weight",
+        text: "Maximum birth weight must be greater than 0.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(birthWeightUnitsId)) {
+      Swal.fire({
+        title: "Missing Birth Weight Units",
+        text: "Please select birth weight units.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(weightUnitsId)) {
+      Swal.fire({
+        title: "Missing Weight Units",
+        text: "Please select weight units.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(salePriceUnitsId)) {
+      Swal.fire({
+        title: "Missing Sale Price Units",
+        text: "Please select sale price units.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(deathReasonId)) {
+      Swal.fire({
+        title: "Missing Death Reason",
+        text: "Please select a reason for death.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(transferReasonId)) {
+      Swal.fire({
+        title: "Missing Transfer Reason",
+        text: "Please select a reason for animal transfer.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+    if (!isFieldValid(evaluationUpdateAlert)) {
+      Swal.fire({
+        title: "Missing Evaluation Update Alert",
+        text: "Please provide an evaluation update alert message.",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      return false;
+    }
+
+
 
     return true;
   }
 
   const loadDefaultSettings = (defaultSetting: DefaultSettingsResults) => {
 
-    setNewDefaultName(defaultSetting.name);
+    setNewDefaultName(defaultSetting.name || '');
 
     setOwnerSelection(defaultSetting.owner_type ?? null);
 
@@ -975,7 +1606,7 @@ const CreateDefaults: React.FC = () => {
 
     setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
 
-    setBreederSelection(defaultSetting.breederType);
+    setBreederSelection(defaultSetting.breederType || '');
 
     if (defaultSetting.breederType === OwnerType.CONTACT) {
       setBreederContactId(defaultSetting.breederId);
@@ -988,100 +1619,100 @@ const CreateDefaults: React.FC = () => {
     setBreederPremiseId(defaultSetting.breeder_id_premiseid || '');
 
 
-    setTransferReasonSelection(defaultSetting.transferReasonContactType);
+    setTransferReasonSelection(defaultSetting.transferReasonContactType || '');
 
     if (defaultSetting.transferReasonContactType === OwnerType.CONTACT) {
-      setTransferReasonContactId(defaultSetting.transferReasonContactId);
+      setTransferReasonContactId(defaultSetting.transferReasonContactId || '');
       setTransferReasonCompanyId("");
     } else if (defaultSetting.transferReasonContactType === OwnerType.COMPANY) {
-      setTransferReasonCompanyId(defaultSetting.transferReasonContactId);
+      setTransferReasonCompanyId(defaultSetting.transferReasonContactId || '');
       setTransferReasonContactId("");
     }
 
-    setVetContactId(defaultSetting.vet_id_contactid);
-    setVetPremiseId(defaultSetting.vet_id_premiseid);
+    setVetContactId(defaultSetting.vet_id_contactid || '');
+    setVetPremiseId(defaultSetting.vet_id_premiseid || '');
 
-    setLabCompanyId(defaultSetting.lab_id_companyid);
-    setLabPremiseId(defaultSetting.lab_id_premiseid);
-    setRegistryCompanyId(defaultSetting.id_registry_id_companyid);
-    setRegistryPremiseId(defaultSetting.registry_id_premiseid);
-    setStateId(defaultSetting.id_stateid);
-    setCountyId(defaultSetting.id_countyid);
-    setPrimaryIdTypeId(defaultSetting.id_idtypeid_primary);
-    setSecondaryIdTypeId(defaultSetting.id_idtypeid_secondary);
-    setTertiaryIdTypeId(defaultSetting.id_idtypeid_tertiary);
+    setLabCompanyId(defaultSetting.lab_id_companyid || '');
+    setLabPremiseId(defaultSetting.lab_id_premiseid || '');
+    setRegistryCompanyId(defaultSetting.id_registry_id_companyid || '');
+    setRegistryPremiseId(defaultSetting.registry_id_premiseid || '');
+    setStateId(defaultSetting.id_stateid || '');
+    setCountyId(defaultSetting.id_countyid || '');
+    setPrimaryIdTypeId(defaultSetting.id_idtypeid_primary || '');
+    setSecondaryIdTypeId(defaultSetting.id_idtypeid_secondary || '');
+    setTertiaryIdTypeId(defaultSetting.id_idtypeid_tertiary || '');
 
     setEidTagMaleFemaleColorSame(defaultSetting.id_eid_tag_male_color_female_color_same);
-    setEidTagColorMale(defaultSetting.eid_tag_color_male);
-    setEidTagColorFemale(defaultSetting.eid_tag_color_female);
-    setEidTagLocation(defaultSetting.eid_tag_location);
+    setEidTagColorMale(defaultSetting.eid_tag_color_male || '');
+    setEidTagColorFemale(defaultSetting.eid_tag_color_female || '');
+    setEidTagLocation(defaultSetting.eid_tag_location || '');
 
     setFarmTagMaleFemaleColorSame(defaultSetting.id_farm_tag_male_color_female_color_same);
-    setFarmTagColorMale(defaultSetting.farm_tag_color_male);
-    setFarmTagColorFemale(defaultSetting.farm_tag_color_female);
-    setFarmTagBasedOnEidTag(defaultSetting.farm_tag_based_on_eid_tag);
-    setFarmTagNumberDigitsFromEid(defaultSetting.farm_tag_number_digits_from_eid);
-    setFarmTagLocation(defaultSetting.farm_tag_location);
+    setFarmTagColorMale(defaultSetting.farm_tag_color_male || '');
+    setFarmTagColorFemale(defaultSetting.farm_tag_color_female || '');
+    setFarmTagBasedOnEidTag(defaultSetting.farm_tag_based_on_eid_tag || '');
+    setFarmTagNumberDigitsFromEid(defaultSetting.farm_tag_number_digits_from_eid || '');
+    setFarmTagLocation(defaultSetting.farm_tag_location || '');
 
     // Federal Tags
     setFedSameColor(defaultSetting.id_fed_tag_male_color_female_color_same);
-    setFedColorMale(defaultSetting.fed_tag_color_male);
-    setFedColorFemale(defaultSetting.fed_tag_color_female);
-    setFedLocation(defaultSetting.fed_tag_location);
+    setFedColorMale(defaultSetting.fed_tag_color_male || '');
+    setFedColorFemale(defaultSetting.fed_tag_color_female || '');
+    setFedLocation(defaultSetting.fed_tag_location || '');
   
     // NUES Tags
     setNuesSameColor(defaultSetting.id_nues_tag_male_color_female_color_same);
-    setNuesColorMale(defaultSetting.nues_tag_color_male);
-    setNuesColorFemale(defaultSetting.nues_tag_color_female);
-    setNuesLocation(defaultSetting.nues_tag_location);
+    setNuesColorMale(defaultSetting.nues_tag_color_male || '');
+    setNuesColorFemale(defaultSetting.nues_tag_color_female || '');
+    setNuesLocation(defaultSetting.nues_tag_location || '');
   
     // Trich Tags
     setTrichSameColor(defaultSetting.id_trich_tag_male_color_female_color_same);
-    setTrichColorMale(defaultSetting.trich_tag_color_male);
-    setTrichColorFemale(defaultSetting.trich_tag_color_female);
-    setTrichLocation(defaultSetting.trich_tag_location);
-    setTrichAutoIncrement(defaultSetting.trich_tag_auto_increment);
-    setTrichStartingValue(defaultSetting.trich_tag_next_tag_number);
+    setTrichColorMale(defaultSetting.trich_tag_color_male || '');
+    setTrichColorFemale(defaultSetting.trich_tag_color_female || '');
+    setTrichLocation(defaultSetting.trich_tag_location || '');
+    setTrichAutoIncrement(defaultSetting.trich_tag_auto_increment || '');
+    setTrichStartingValue(defaultSetting.trich_tag_next_tag_number || '');
 
     // Bangs Tag
     setBangsSameColor(defaultSetting.id_bangs_tag_male_color_female_color_same);
-    setBangsColorMale(defaultSetting.bangs_tag_color_male);
-    setBangsColorFemale(defaultSetting.bangs_tag_color_female);
-    setBangsLocation(defaultSetting.bangs_tag_location);
+    setBangsColorMale(defaultSetting.bangs_tag_color_male || '');
+    setBangsColorFemale(defaultSetting.bangs_tag_color_female || '');
+    setBangsLocation(defaultSetting.bangs_tag_location || '');
 
     // Sale Order Tag
     setSaleOrderSameColor(defaultSetting.id_sale_order_tag_male_color_female_color_same);
-    setSaleOrderColorMale(defaultSetting.sale_order_tag_color_male);
-    setSaleOrderColorFemale(defaultSetting.sale_order_tag_color_female);
-    setSaleOrderLocation(defaultSetting.sale_order_tag_location);
+    setSaleOrderColorMale(defaultSetting.sale_order_tag_color_male || '');
+    setSaleOrderColorFemale(defaultSetting.sale_order_tag_color_female || '');
+    setSaleOrderLocation(defaultSetting.sale_order_tag_location || '');
 
     // Misc
     setUsePaintMarks(defaultSetting.use_paint_marks);
-    setPaintMarkColor(defaultSetting.paint_mark_color);
-    setPaintMarkLocation(defaultSetting.paint_mark_location);
-    setTattooColor(defaultSetting.tattoo_color);
-    setTattooLocation(defaultSetting.tattoo_location);
-    setFreezeBrandLocation(defaultSetting.freeze_brand_location);
-    setIdRemoveReason(defaultSetting.id_idremovereasonid);
+    setPaintMarkColor(defaultSetting.paint_mark_color || '');
+    setPaintMarkLocation(defaultSetting.paint_mark_location || '');
+    setTattooColor(defaultSetting.tattoo_color || '');
+    setTattooLocation(defaultSetting.tattoo_location || '');
+    setFreezeBrandLocation(defaultSetting.freeze_brand_location || '');
+    setIdRemoveReason(defaultSetting.id_idremovereasonid || '');
     
-    setTissueSampleTypeId(defaultSetting.id_tissuesampletypeid);
-    setTissueTestId(defaultSetting.id_tissuetestid);
-    setTissueSampleContainerTypeId(defaultSetting.id_tissuesamplecontainertypeid);
+    setTissueSampleTypeId(defaultSetting.id_tissuesampletypeid || '');
+    setTissueTestId(defaultSetting.id_tissuetestid || '');
+    setTissueSampleContainerTypeId(defaultSetting.id_tissuesamplecontainertypeid || '');
   
-    setSelectedSpeciesId(defaultSetting.id_speciesid);
-    setSelectedBreedId(defaultSetting.id_breedid);
-    setFlockPrefixId(defaultSetting.id_flockprefixid);
-    setSexId(defaultSetting.id_sexid);
-    setBirthType(defaultSetting.birth_type);
-    setRearType(defaultSetting.rear_type);
+    setSelectedSpeciesId(defaultSetting.id_speciesid || '');
+    setSelectedBreedId(defaultSetting.id_breedid || '');
+    setFlockPrefixId(defaultSetting.id_flockprefixid || '');
+    setSexId(defaultSetting.id_sexid || '');
+    setBirthType(defaultSetting.birth_type || '');
+    setRearType(defaultSetting.rear_type || '');
     setMinBirthWeight(defaultSetting.minimum_birth_weight);
     setMaxBirthWeight(defaultSetting.maximum_birth_weight);
-    setBirthWeightUnitsId(defaultSetting.birth_weight_id_unitsid);
-    setWeightUnitsId(defaultSetting.weight_id_unitsid);
-    setSalePriceUnitsId(defaultSetting.sale_price_id_unitsid);
-    setDeathReasonId(defaultSetting.id_deathreasonid);
-    setTransferReasonId(defaultSetting.id_transferreasonid);
-    setEvaluationUpdateAlert(defaultSetting.evaluation_update_alert);
+    setBirthWeightUnitsId(defaultSetting.birth_weight_id_unitsid || '');
+    setWeightUnitsId(defaultSetting.weight_id_unitsid || '');
+    setSalePriceUnitsId(defaultSetting.sale_price_id_unitsid || '');
+    setDeathReasonId(defaultSetting.id_deathreasonid || '');
+    setTransferReasonId(defaultSetting.id_transferreasonid || '');
+    setEvaluationUpdateAlert(defaultSetting.evaluation_update_alert || '');
   };
 
   return (
@@ -1119,7 +1750,7 @@ const CreateDefaults: React.FC = () => {
             <select
               id="existing-settings"
               name="existing-settings"
-              value={selectedDefault?.id.toString() ?? ""} // default to "" if null
+              value={selectedDefault?.id.toString() || ""} // default to "" if null
               onChange={(e) => {
                 const selectedId = e.target.value;
                 const found = existingDefaults.find((def) => def.id == selectedId) || null;
@@ -1145,7 +1776,7 @@ const CreateDefaults: React.FC = () => {
             id="settings_name" 
             name="settings_name"
             value={newDefaultName}
-            onChange={(e) => setNewDefaultName(e.target.value)}
+            onChange={(e) => setNewDefaultName(e.target.value || '')}
           />
 
           <div className="section-break"></div>
@@ -1184,7 +1815,7 @@ const CreateDefaults: React.FC = () => {
               name="owner_id_contactid"
               disabled={ownerSelection !== OwnerType.CONTACT}
               value={ownerContactId}
-              onChange={(e) => setOwnerContactId(e.target.value)}
+              onChange={(e) => setOwnerContactId(e.target.value || '')}
             >
               <option value="">Select a contact...</option>
               {contactOptions}
@@ -1196,7 +1827,7 @@ const CreateDefaults: React.FC = () => {
               name="owner_id_companyid"
               disabled={ownerSelection !== OwnerType.COMPANY}
               value={ownerCompanyId}
-              onChange={(e) => setOwnerCompanyId(e.target.value)}
+              onChange={(e) => setOwnerCompanyId(e.target.value || '')}
             >
               <option value="">Select a company...</option>
               {companyOptions}
@@ -1207,7 +1838,7 @@ const CreateDefaults: React.FC = () => {
               id="owner_id_premiseid"
               name="owner_id_premiseid"
               value={ownerPremiseId}
-              onChange={(e) => setOwnerPremiseId(e.target.value)}
+              onChange={(e) => setOwnerPremiseId(e.target.value || '')}
             >
               <option value="">Select a premise...</option>
               {premiseOptions}
@@ -1246,7 +1877,7 @@ const CreateDefaults: React.FC = () => {
               id="breeder_id_contactid"
               name="breeder_id_contactid"
               value={breederContactId}
-              onChange={(e) => setBreederContactId(e.target.value)}
+              onChange={(e) => setBreederContactId(e.target.value || '')}
               disabled={breederSelection !== OwnerType.CONTACT}
             >
               <option value="">Select a breeder contact...</option>
@@ -1258,7 +1889,7 @@ const CreateDefaults: React.FC = () => {
               id="breeder_id_companyid"
               name="breeder_id_companyid"
               value={breederCompanyId}
-              onChange={(e) => setBreederCompanyId(e.target.value)}
+              onChange={(e) => setBreederCompanyId(e.target.value || '')}
               disabled={breederSelection !== OwnerType.COMPANY}
             >
               <option value="">Select a breeder company...</option>
@@ -1270,7 +1901,7 @@ const CreateDefaults: React.FC = () => {
               id="breeder_id_premiseid"
               name="breeder_id_premiseid"
               value={breederPremiseId}
-              onChange={(e) => setBreederPremiseId(e.target.value)}
+              onChange={(e) => setBreederPremiseId(e.target.value || '')}
             >
               <option value="">Select a premise...</option>
               {premiseOptions}
@@ -1310,7 +1941,7 @@ const CreateDefaults: React.FC = () => {
               id="transfer_reason_id_contactid"
               name="transfer_reason_id_contactid"
               value={transferReasonContactId}
-              onChange={(e) => setTransferReasonContactId(e.target.value)}
+              onChange={(e) => setTransferReasonContactId(e.target.value || '')}
               disabled={transferReasonSelection !== OwnerType.CONTACT}
             >
               <option value="">Select a transfer reason contact...</option>
@@ -1322,7 +1953,7 @@ const CreateDefaults: React.FC = () => {
               id="transfer_reason_id_companyid"
               name="transfer_reason_id_companyid"
               value={transferReasonCompanyId}
-              onChange={(e) => setTransferReasonCompanyId(e.target.value)}
+              onChange={(e) => setTransferReasonCompanyId(e.target.value || '')}
               disabled={transferReasonSelection !== OwnerType.COMPANY}
             >
               <option value="">Select a Transfer Reason company...</option>
@@ -1337,7 +1968,7 @@ const CreateDefaults: React.FC = () => {
               id="vet_id_contactid"
               name="vet_id_contactid"
               value={vetContactId}
-              onChange={(e) => setVetContactId(e.target.value)}
+              onChange={(e) => setVetContactId(e.target.value || '')}
             >
               <option value="">Select a vet contact...</option>
               {contactOptions}
@@ -1348,7 +1979,7 @@ const CreateDefaults: React.FC = () => {
               id="vet_id_premiseid"
               name="vet_id_premiseid"
               value={vetPremiseId}
-              onChange={(e) => setVetPremiseId(e.target.value)}
+              onChange={(e) => setVetPremiseId(e.target.value || '')}
             >
               <option value="">Select a premise...</option>
               {premiseOptions}
@@ -1365,7 +1996,7 @@ const CreateDefaults: React.FC = () => {
               id="lab_id_companyid"
               name="lab_id_companyid"
               value={labCompanyId}
-              onChange={(e) => setLabCompanyId(e.target.value)}
+              onChange={(e) => setLabCompanyId(e.target.value || '')}
             >
               <option value="">Select a lab company...</option>
               {companyOptions}
@@ -1376,7 +2007,7 @@ const CreateDefaults: React.FC = () => {
               id="lab_id_premiseid"
               name="lab_id_premiseid"
               value={labPremiseId}
-              onChange={(e) => setLabPremiseId(e.target.value)}
+              onChange={(e) => setLabPremiseId(e.target.value || '')}
             >
               <option value="">Select a premise...</option>
               {premiseOptions}
@@ -1390,7 +2021,7 @@ const CreateDefaults: React.FC = () => {
               id="id_registry_id_companyid"
               name="id_registry_id_companyid"
               value={registryCompanyId}
-              onChange={(e) => setRegistryCompanyId(e.target.value)}
+              onChange={(e) => setRegistryCompanyId(e.target.value || '')}
             >
               <option value="">Select a Registry Company...</option>
               {registryCompanyOptions}
@@ -1401,7 +2032,7 @@ const CreateDefaults: React.FC = () => {
               id="registry_id_premiseid"
               name="registry_id_premiseid"
               value={registryPremiseId}
-              onChange={(e) => setRegistryPremiseId(e.target.value)}
+              onChange={(e) => setRegistryPremiseId(e.target.value || '')}
             >
               <option value="">Select a premise...</option>
               {premiseOptions}
@@ -1419,7 +2050,7 @@ const CreateDefaults: React.FC = () => {
               id="id_stateid"
               name="id_stateid"
               value={stateId}
-              onChange={(e) => setStateId(e.target.value)}
+              onChange={(e) => setStateId(e.target.value || '')}
             >
               <option value="">Select a state...</option>
               {stateOptions}
@@ -1430,7 +2061,7 @@ const CreateDefaults: React.FC = () => {
               id="id_countyid"
               name="id_countyid"
               value={countyId}
-              onChange={(e) => setCountyId(e.target.value)}
+              onChange={(e) => setCountyId(e.target.value || '')}
             >
               <option value="">Select a county...</option>
               {countyOptions}
@@ -1448,7 +2079,7 @@ const CreateDefaults: React.FC = () => {
               id="id_idtypeid_primary"
               name="id_idtypeid_primary"
               value={primaryIdTypeId}
-              onChange={(e) => setPrimaryIdTypeId(e.target.value)}
+              onChange={(e) => setPrimaryIdTypeId(e.target.value || '')}
             >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
@@ -1459,7 +2090,7 @@ const CreateDefaults: React.FC = () => {
               id="id_idtypeid_secondary"
               name="id_idtypeid_secondary"
               value={secondaryIdTypeId}
-              onChange={(e) => setSecondaryIdTypeId(e.target.value)}
+              onChange={(e) => setSecondaryIdTypeId(e.target.value || '')}
             >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
@@ -1470,7 +2101,7 @@ const CreateDefaults: React.FC = () => {
               id="id_idtypeid_tertiary"
               name="id_idtypeid_tertiary"
               value={tertiaryIdTypeId}
-              onChange={(e) => setTertiaryIdTypeId(e.target.value)}
+              onChange={(e) => setTertiaryIdTypeId(e.target.value || '')}
             >
               <option value="">Select a tag type...</option>
               {tagTypeOptions}
@@ -1501,7 +2132,7 @@ const CreateDefaults: React.FC = () => {
               id="eid_tag_color_male"
               name="eid_tag_color_male"
               value={eidTagColorMale}
-              onChange={(e) => setEidTagColorMale(e.target.value)}
+              onChange={(e) => setEidTagColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1512,7 +2143,7 @@ const CreateDefaults: React.FC = () => {
               id="eid_tag_color_female"
               name="eid_tag_color_female"
               value={eidTagColorFemale}
-              onChange={(e) => setEidTagColorFemale(e.target.value)}
+              onChange={(e) => setEidTagColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1523,7 +2154,7 @@ const CreateDefaults: React.FC = () => {
               id="eid_tag_location"
               name="eid_tag_location"
               value={eidTagLocation}
-              onChange={(e) => setEidTagLocation(e.target.value)}
+              onChange={(e) => setEidTagLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1552,7 +2183,7 @@ const CreateDefaults: React.FC = () => {
               id="farm_tag_color_male"
               name="farm_tag_color_male"
               value={farmTagColorMale}
-              onChange={(e) => setFarmTagColorMale(e.target.value)}
+              onChange={(e) => setFarmTagColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1563,7 +2194,7 @@ const CreateDefaults: React.FC = () => {
               id="farm_tag_color_female"
               name="farm_tag_color_female"
               value={farmTagColorFemale}
-              onChange={(e) => setFarmTagColorFemale(e.target.value)}
+              onChange={(e) => setFarmTagColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1577,7 +2208,7 @@ const CreateDefaults: React.FC = () => {
               id="farm_tag_based_on_eid_tag"
               name="farm_tag_based_on_eid_tag"
               value={farmTagBasedOnEidTag}
-              onChange={(e) => setFarmTagBasedOnEidTag(e.target.value)}
+              onChange={(e) => setFarmTagBasedOnEidTag(e.target.value || '')}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1591,7 +2222,7 @@ const CreateDefaults: React.FC = () => {
               min="0"
               step="1"
               value={farmTagNumberDigitsFromEid}
-              onChange={(e) => setFarmTagNumberDigitsFromEid(e.target.value)}
+              onChange={(e) => setFarmTagNumberDigitsFromEid(e.target.value || '')}
             />
 
             <label htmlFor="farm_tag_location">Farm Tag Location:</label>
@@ -1599,7 +2230,7 @@ const CreateDefaults: React.FC = () => {
               id="farm_tag_location"
               name="farm_tag_location"
               value={farmTagLocation}
-              onChange={(e) => setFarmTagLocation(e.target.value)}
+              onChange={(e) => setFarmTagLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1629,7 +2260,7 @@ const CreateDefaults: React.FC = () => {
               id="fed_tag_color_male"
               name="fed_tag_color_male"
               value={fedColorMale}
-              onChange={(e) => setFedColorMale(e.target.value)}
+              onChange={(e) => setFedColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1640,7 +2271,7 @@ const CreateDefaults: React.FC = () => {
               id="fed_tag_color_female"
               name="fed_tag_color_female"
               value={fedColorFemale}
-              onChange={(e) => setFedColorFemale(e.target.value)}
+              onChange={(e) => setFedColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1651,7 +2282,7 @@ const CreateDefaults: React.FC = () => {
               id="fed_tag_location"
               name="fed_tag_location"
               value={fedLocation}
-              onChange={(e) => setFedLocation(e.target.value)}
+              onChange={(e) => setFedLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1680,7 +2311,7 @@ const CreateDefaults: React.FC = () => {
               id="nues_tag_color_male"
               name="nues_tag_color_male"
               value={nuesColorMale}
-              onChange={(e) => setNuesColorMale(e.target.value)}
+              onChange={(e) => setNuesColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1691,7 +2322,7 @@ const CreateDefaults: React.FC = () => {
               id="nues_tag_color_female"
               name="nues_tag_color_female"
               value={nuesColorFemale}
-              onChange={(e) => setNuesColorFemale(e.target.value)}
+              onChange={(e) => setNuesColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1702,7 +2333,7 @@ const CreateDefaults: React.FC = () => {
               id="nues_tag_location"
               name="nues_tag_location"
               value={nuesLocation}
-              onChange={(e) => setNuesLocation(e.target.value)}
+              onChange={(e) => setNuesLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1731,7 +2362,7 @@ const CreateDefaults: React.FC = () => {
               id="trich_tag_color_male"
               name="trich_tag_color_male"
               value={trichColorMale}
-              onChange={(e) => setTrichColorMale(e.target.value)}
+              onChange={(e) => setTrichColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1742,7 +2373,7 @@ const CreateDefaults: React.FC = () => {
               id="trich_tag_color_female"
               name="trich_tag_color_female"
               value={trichColorFemale}
-              onChange={(e) => setTrichColorFemale(e.target.value)}
+              onChange={(e) => setTrichColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1753,7 +2384,7 @@ const CreateDefaults: React.FC = () => {
               id="trich_tag_location"
               name="trich_tag_location"
               value={trichLocation}
-              onChange={(e) => setTrichLocation(e.target.value)}
+              onChange={(e) => setTrichLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1764,7 +2395,7 @@ const CreateDefaults: React.FC = () => {
               id="trich_tag_auto_increment"
               name="trich_tag_auto_increment"
               value={trichAutoIncrement}
-              onChange={(e) => setTrichAutoIncrement(e.target.value)}
+              onChange={(e) => setTrichAutoIncrement(e.target.value || '')}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1776,7 +2407,7 @@ const CreateDefaults: React.FC = () => {
               id="trich_tag_starting_value"
               name="trich_tag_starting_value"
               value={trichStartingValue}
-              onChange={(e) => setTrichStartingValue(e.target.value)}
+              onChange={(e) => setTrichStartingValue(e.target.value || '')}
               min="0"
               step="1"
             />
@@ -1804,7 +2435,7 @@ const CreateDefaults: React.FC = () => {
               id="bangs_tag_color_male"
               name="bangs_tag_color_male"
               value={bangsColorMale}
-              onChange={(e) => setBangsColorMale(e.target.value)}
+              onChange={(e) => setBangsColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1815,7 +2446,7 @@ const CreateDefaults: React.FC = () => {
               id="bangs_tag_color_female"
               name="bangs_tag_color_female"
               value={bangsColorFemale}
-              onChange={(e) => setBangsColorFemale(e.target.value)}
+              onChange={(e) => setBangsColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1826,7 +2457,7 @@ const CreateDefaults: React.FC = () => {
               id="bangs_tag_location"
               name="bangs_tag_location"
               value={bangsLocation}
-              onChange={(e) => setBangsLocation(e.target.value)}
+              onChange={(e) => setBangsLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1844,7 +2475,7 @@ const CreateDefaults: React.FC = () => {
               id="id_sale_order_tag_male_color_female_color_same"
               name="id_sale_order_tag_male_color_female_color_same"
               value={saleOrderSameColor}
-              onChange={(e) => setSaleOrderSameColor(Number(e.target.value))}
+              onChange={(e) => setSaleOrderSameColor(Number(e.target.value || ''))}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1855,7 +2486,7 @@ const CreateDefaults: React.FC = () => {
               id="sale_order_tag_color_male"
               name="sale_order_tag_color_male"
               value={saleOrderColorMale}
-              onChange={(e) => setSaleOrderColorMale(e.target.value)}
+              onChange={(e) => setSaleOrderColorMale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1866,7 +2497,7 @@ const CreateDefaults: React.FC = () => {
               id="sale_order_tag_color_female"
               name="sale_order_tag_color_female"
               value={saleOrderColorFemale}
-              onChange={(e) => setSaleOrderColorFemale(e.target.value)}
+              onChange={(e) => setSaleOrderColorFemale(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1877,7 +2508,7 @@ const CreateDefaults: React.FC = () => {
               id="sale_order_tag_location"
               name="sale_order_tag_location"
               value={saleOrderLocation}
-              onChange={(e) => setSaleOrderLocation(e.target.value)}
+              onChange={(e) => setSaleOrderLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1895,7 +2526,7 @@ const CreateDefaults: React.FC = () => {
               id="use_paint_marks"
               name="use_paint_marks"
               value={usePaintMarks}
-              onChange={(e) => setUsePaintMarks(e.target.value)}
+              onChange={(e) => setUsePaintMarks(e.target.value || '')}
             >
               <option value="">Select...</option>
               {booleanSelectOptions}
@@ -1906,7 +2537,7 @@ const CreateDefaults: React.FC = () => {
               id="paint_mark_color"
               name="paint_mark_color"
               value={paintMarkColor}
-              onChange={(e) => setPaintMarkColor(e.target.value)}
+              onChange={(e) => setPaintMarkColor(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1917,7 +2548,7 @@ const CreateDefaults: React.FC = () => {
               id="paint_mark_location"
               name="paint_mark_location"
               value={paintMarkLocation}
-              onChange={(e) => setPaintMarkLocation(e.target.value)}
+              onChange={(e) => setPaintMarkLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1931,7 +2562,7 @@ const CreateDefaults: React.FC = () => {
               id="tattoo_color"
               name="tattoo_color"
               value={tattooColor}
-              onChange={(e) => setTattooColor(e.target.value)}
+              onChange={(e) => setTattooColor(e.target.value || '')}
             >
               <option value="">Select a color...</option>
               {colorOptions}
@@ -1942,7 +2573,7 @@ const CreateDefaults: React.FC = () => {
               id="tattoo_location"
               name="tattoo_location"
               value={tattooLocation}
-              onChange={(e) => setTattooLocation(e.target.value)}
+              onChange={(e) => setTattooLocation(e.target.value || '')}
             >
               <option value="">Select a Tag Location...</option>
               {locationOptions}
@@ -1954,7 +2585,7 @@ const CreateDefaults: React.FC = () => {
             id="freeze_brand_location"
             name="freeze_brand_location"
             value={freezeBrandLocation}
-            onChange={(e) => setFreezeBrandLocation(e.target.value)}
+            onChange={(e) => setFreezeBrandLocation(e.target.value || '')}
           >
             <option value="">Select a Tag Location...</option>
             {locationOptions}
@@ -1965,7 +2596,7 @@ const CreateDefaults: React.FC = () => {
             id="id_idremovereasonid"
             name="id_idremovereasonid"
             value={idRemoveReason}
-            onChange={(e) => setIdRemoveReason(e.target.value)}
+            onChange={(e) => setIdRemoveReason(e.target.value || '')}
           >
             <option value="">Select a Remove Reason...</option>
             {removeReasonOptions}
@@ -1983,7 +2614,7 @@ const CreateDefaults: React.FC = () => {
               id="id_tissuesampletypeid"
               name="id_tissuesampletypeid"
               value={tissueSampleTypeId}
-              onChange={(e) => setTissueSampleTypeId(e.target.value)}
+              onChange={(e) => setTissueSampleTypeId(e.target.value || '')}
             >
               <option value="">Select a Tissue Sample type...</option>
               {tissueSampleTypeOptions}
@@ -1994,7 +2625,7 @@ const CreateDefaults: React.FC = () => {
               id="id_tissuetestid"
               name="id_tissuetestid"
               value={tissueTestId}
-              onChange={(e) => setTissueTestId(e.target.value)}
+              onChange={(e) => setTissueTestId(e.target.value || '')}
             >
               <option value="">Select a Tissue Test...</option>
               {tissueTestOptions}
@@ -2005,7 +2636,7 @@ const CreateDefaults: React.FC = () => {
               id="id_tissuesamplecontainertypeid"
               name="id_tissuesamplecontainertypeid"
               value={tissueSampleContainerTypeId}
-              onChange={(e) => setTissueSampleContainerTypeId(e.target.value)}
+              onChange={(e) => setTissueSampleContainerTypeId(e.target.value || '')}
             >
               <option value="">Select a Tissue Sample Container Type...</option>
               {tissueSampleContainerTypeOptions}
@@ -2025,7 +2656,7 @@ const CreateDefaults: React.FC = () => {
               value={selectedSpeciesId}
               onChange={(e) => {
                 const id = e.target.value;
-                setSelectedSpeciesId(id);
+                setSelectedSpeciesId(id  || '');
                 updateBreeds(id);
               }}
             >
@@ -2038,7 +2669,7 @@ const CreateDefaults: React.FC = () => {
               id="id_breedid"
               name="id_breedid"
               value={selectedBreedId}
-              onChange={(e) => setSelectedBreedId(e.target.value)}
+              onChange={(e) => setSelectedBreedId(e.target.value || '')}
               disabled={!breeds.length}
             >
               <option value="">Select a breed...</option>
@@ -2051,7 +2682,7 @@ const CreateDefaults: React.FC = () => {
             id="id_flockprefixid"
             name="id_flockprefixid"
             value={flockPrefixId}
-            onChange={(e) => setFlockPrefixId(e.target.value)}
+            onChange={(e) => setFlockPrefixId(e.target.value || '')}
           >
             <option value="">Select a Flock Prefix...</option>
             {flockPrefixOptions}
@@ -2062,7 +2693,7 @@ const CreateDefaults: React.FC = () => {
             id="id_sexid"
             name="id_sexid"
             value={sexId}
-            onChange={(e) => setSexId(e.target.value)}
+            onChange={(e) => setSexId(e.target.value || '')}
           >
             <option value="">Select a Sex...</option>
             {sexOptions}
@@ -2073,7 +2704,7 @@ const CreateDefaults: React.FC = () => {
             id="birth_type"
             name="birth_type"
             value={birthType}
-            onChange={(e) => setBirthType(e.target.value)}
+            onChange={(e) => setBirthType(e.target.value || '')}
           >
             <option value="">Select a Birth Type...</option>
             {birthTypeOptions}
@@ -2084,7 +2715,7 @@ const CreateDefaults: React.FC = () => {
             id="rear_type"
             name="rear_type"
             value={rearType}
-            onChange={(e) => setRearType(e.target.value)}
+            onChange={(e) => setRearType(e.target.value || '')}
           >
             <option value="">Select a Rear Type...</option>
             {birthTypeOptions}
@@ -2118,7 +2749,7 @@ const CreateDefaults: React.FC = () => {
             id="birth_weight_id_unitsid"
             name="birth_weight_id_unitsid"
             value={birthWeightUnitsId}
-            onChange={(e) => setBirthWeightUnitsId(e.target.value)}
+            onChange={(e) => setBirthWeightUnitsId(e.target.value || '')}
           >
             <option value="">Select a Birth Weight Unit...</option>
             {weightUnitOptions}
@@ -2129,7 +2760,7 @@ const CreateDefaults: React.FC = () => {
             id="weight_id_unitsid"
             name="weight_id_unitsid"
             value={weightUnitsId}
-            onChange={(e) => setWeightUnitsId(e.target.value)}
+            onChange={(e) => setWeightUnitsId(e.target.value || '')}
           >
             <option value="">Select a Weight Unit...</option>
             {weightUnitOptions}
@@ -2140,7 +2771,7 @@ const CreateDefaults: React.FC = () => {
             id="sale_price_id_unitsid"
             name="sale_price_id_unitsid"
             value={salePriceUnitsId}
-            onChange={(e) => setSalePriceUnitsId(e.target.value)}
+            onChange={(e) => setSalePriceUnitsId(e.target.value || '')}
           >
             <option value="">Select a Currency...</option>
             {currencyUnitOptions}
@@ -2151,7 +2782,7 @@ const CreateDefaults: React.FC = () => {
             id="id_deathreasonid"
             name="id_deathreasonid"
             value={deathReasonId}
-            onChange={(e) => setDeathReasonId(e.target.value)}
+            onChange={(e) => setDeathReasonId(e.target.value || '')}
           >
             <option value="">Select a Death Reason...</option>
             {deathReasonOptions}
@@ -2162,7 +2793,7 @@ const CreateDefaults: React.FC = () => {
             id="id_transferreasonid"
             name="id_transferreasonid"
             value={transferReasonId}
-            onChange={(e) => setTransferReasonId(e.target.value)}
+            onChange={(e) => setTransferReasonId(e.target.value || '')}
           >
             <option value="">Select a Transfer Reason...</option>
             {transferReasonOptions}
@@ -2178,7 +2809,7 @@ const CreateDefaults: React.FC = () => {
             id="evaluation_update_alert"
             name="evaluation_update_alert"
             value={evaluationUpdateAlert}
-            onChange={(e) => setEvaluationUpdateAlert(e.target.value)}
+            onChange={(e) => setEvaluationUpdateAlert(e.target.value || '')}
           >
             <option value="">Select...</option>
             {booleanSelectOptions}
