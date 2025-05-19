@@ -1,9 +1,10 @@
-/// <reference path="src/types.d.ts" />
+/// <reference path="src/types/types.d.ts" />
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 
 import { Failure, Success } from './src/shared/results/resultTypes';
 
+import { mockAnimalIdentification } from './src/testData/mockAnimalIdentification';
 import { mockBirthTypes } from './src/testData/mockBirthTypes';
 import { mockBreeds } from './src/testData/mockBreeds';
 import { mockColors } from './src/testData/mockColors';
@@ -13,7 +14,7 @@ import { mockCountries } from './src/testData/mockCountries';
 import { mockDeathReasons } from './src/testData/mockDeathReasons';
 import { mockExistingDefaults } from "./src/testData/mockExistingDefaults"
 import { mockFlockPrefixes } from './src/testData/mockFlockPrefixes';
-import { mockLocations } from './src/testData/mockLocations';
+import { mockLocations } from './src/testData/mockTagLocations';
 import { mockOwners } from './src/testData/mockOwners';
 import { mockPremises } from './src/testData/mockPremises';
 import { mockRemoveReasons } from './src/testData/mockRemoveReasons';
@@ -35,12 +36,19 @@ global.TextDecoder = TextDecoder as any;
 
 beforeAll(() => {
   window.electronAPI = {
+    animalSearch: jest.fn().mockResolvedValue([]),
+    editExistingDefaultSettings: jest.fn().mockResolvedValue(true),
+    exportAnimalNotesCsv: jest.fn().mockResolvedValue(true),
+    exportDrugHistoryCsv: jest.fn().mockResolvedValue(true),
+    exportTissueTestResultsCsv: jest.fn().mockResolvedValue(true),
+    writeNewDefaultSettings: jest.fn().mockResolvedValue(true),
+
     selectDatabase: jest.fn().mockResolvedValue("fake/path/to/db.sqlite"),
     isDatabaseLoaded: jest.fn().mockResolvedValue(true),
+    getAnimalIdentification: jest.fn().mockResolvedValue(mockAnimalIdentification),
     getExistingDefaults: jest.fn().mockResolvedValue(mockExistingDefaults),
     getCompanyInfo: jest.fn().mockResolvedValue(mockCompanies),
     getPremiseInfo: jest.fn().mockResolvedValue(mockPremises),
-    animalSearch: jest.fn().mockResolvedValue([]),
     getBirthTypes: jest.fn().mockResolvedValue(mockBirthTypes),
     getBreeds: jest.fn().mockResolvedValue(mockBreeds),
     getColors: jest.fn().mockResolvedValue(mockColors),

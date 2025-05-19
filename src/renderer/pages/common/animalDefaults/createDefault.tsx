@@ -1585,8 +1585,6 @@ const CreateDefaults: React.FC = () => {
       return false;
     }
 
-
-
     return true;
   }
 

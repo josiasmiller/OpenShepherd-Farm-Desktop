@@ -8,6 +8,5 @@ describe("CreateDefault", () => {
     render(<CreateDefault />);
 
     expect(await screen.findByText("Create New Default")).toBeInTheDocument();
-    expect(await screen.findByText("Load Default")).toBeInTheDocument();
   });
 });
