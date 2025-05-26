@@ -23,11 +23,11 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
           let owner_id: string;
           let owner_type: OwnerType;
         
-          if (row.owner_id_contactid) {
+          if (row.owner_id_contactid != null) {
             owner_id = String(row.owner_id_contactid);
             owner_type = OwnerType.CONTACT;
-          } else if (row.owner_id_companyid) {
-            owner_id = String(row.owner_id_contactid);
+          } else if (row.owner_id_companyid != null) {
+            owner_id = String(row.owner_id_companyid);
             owner_type = OwnerType.COMPANY;
           } else {
             return null; // Return null if no valid owner, this is filtered later
@@ -36,10 +36,10 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
           let deathReasonContactId: string;
           let deathReasonContactType: OwnerType;
         
-          if (row.death_reason_id_contactid) {
+          if (row.death_reason_id_contactid != null) {
             deathReasonContactId = String(row.death_reason_id_contactid);
             deathReasonContactType = OwnerType.CONTACT;
-          } else if (row.death_reason_id_companyid) {
+          } else if (row.death_reason_id_companyid != null) {
             deathReasonContactId = String(row.death_reason_id_companyid);
             deathReasonContactType = OwnerType.COMPANY;
           } else {
@@ -51,11 +51,11 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
           let breederId: string;
           let breederType: OwnerType;
         
-          if (row.breeder_id_contactid) {
+          if (row.breeder_id_contactid != null) {
             breederId = String(row.breeder_id_contactid);
             breederType = OwnerType.CONTACT;
-          } else if (row.breeder_id_companyid) {
-            breederId = String(row.breeder_id_contactid);
+          } else if (row.breeder_id_companyid != null) {
+            breederId = String(row.breeder_id_companyid);
             breederType = OwnerType.COMPANY;
           } else {
             return null; // Return null if no valid owner, this is filtered later
@@ -64,10 +64,10 @@ export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResul
           let transferReasonId: string;
           let transferReasonType: OwnerType;
         
-          if (row.transfer_reason_id_contactid) {
+          if (row.transfer_reason_id_contactid != null) {
             transferReasonId = String(row.transfer_reason_id_contactid);
             transferReasonType = OwnerType.CONTACT;
-          } else if (row.transfer_reason_id_companyid) {
+          } else if (row.transfer_reason_id_companyid != null) {
             transferReasonId = String(row.transfer_reason_id_companyid);
             transferReasonType = OwnerType.COMPANY;
           } else {

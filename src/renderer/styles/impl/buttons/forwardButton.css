@@ -2,13 +2,21 @@
 .forward-button {
   padding: 12px 20px;
   font-size: 1.2em;
-  background-color: var(--md-sys-color-primary); /* Primary theme color */
-  color: var(--md-sys-color-on-primary);         /* Text color for contrast */
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   border: none;
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.1s ease;
+
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Equal sizing */
+  min-width: 180px;
 }
 
 /* Hover Effect */

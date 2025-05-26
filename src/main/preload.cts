@@ -3,13 +3,13 @@ const { contextBridge, ipcRenderer } = require('electron');
 import { 
   AnimalSearchRequest, 
   BreedRequest, 
-  getAnimalIdentification, 
   UnitRequest, 
-  WriteNewDefaultParameters 
+  NewDefaultSettingsParameters 
 } from "../database";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
+  editExistingDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("edit-existing-default", queryParams),
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
   exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
@@ -39,7 +39,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
   isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
-  writeNewDefaultSettings: (queryParams: WriteNewDefaultParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
+  writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 
 console.log("✅ Preload script loaded!"); // debug line

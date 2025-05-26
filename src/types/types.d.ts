@@ -27,7 +27,7 @@ import {
   Unit, 
   UnitRequest, 
   UnitType,
-  WriteNewDefaultParameters
+  NewDefaultSettingsParameters
 } from "../database";
 
 import { Result } from "../shared/results/resultTypes";
@@ -38,7 +38,8 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
-      getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>,
+      getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
+      editExistingDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
@@ -67,7 +68,7 @@ declare global {
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
       isDatabaseLoaded: () => Promise<boolean>;
       selectDatabase: () => Promise<string>;
-      writeNewDefaultSettings: (params: WriteNewDefaultParameters) => Promise<boolean>;
+      writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };
   }
 }

@@ -1,6 +1,7 @@
 import { OwnerType } from "../../read/owners/ownerType";
 
-export type WriteNewDefaultParameters = {
+export type NewDefaultSettingsParameters = {
+  id: string;
   default_settings_name: string;
 
   contactType: OwnerType;

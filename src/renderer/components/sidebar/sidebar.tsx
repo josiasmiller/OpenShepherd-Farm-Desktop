@@ -69,13 +69,7 @@ const Sidebar: React.FC = () => {
           onClick={() => handleNavClick("/create-default")}
           style={getLinkStyle(isDbLoaded)}
         >
-          Create Defaults
-        </li>
-        <li
-          onClick={() => handleNavClick("/edit-default")}
-          style={getLinkStyle(isDbLoaded)}
-        >
-          Edit Defaults
+          Animal Defaults
         </li>
       </ul>
 

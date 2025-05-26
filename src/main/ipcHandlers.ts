@@ -3,6 +3,7 @@ import { dialog, ipcMain } from "electron";
 
 import { 
   animalSearch,
+  editExistingDefaultSettings,
   getAnimalIdentification,
   getBirthTypes,
   getBreeds,
@@ -40,6 +41,10 @@ export const registerIpcHandlers = () => {
   
   ipcMain.handle("animal-search", async (_, queryParams) => {
     return animalSearch(queryParams);
+  });
+
+  ipcMain.handle("edit-existing-default", async (_, queryParams) => {
+    return editExistingDefaultSettings(queryParams);
   });
 
   ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
