@@ -4,6 +4,7 @@ const fsp = fs.promises;
 const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDMG } = require('@electron-forge/maker-dmg');
 const { MakerDeb } = require('@electron-forge/maker-deb');
+const { MakerSquirrel } = require('@electron-forge/maker-squirrel');
 
 const iconPath = path.resolve(__dirname, 'src/assets/icon.icns');
 
@@ -15,10 +16,18 @@ module.exports = {
     executableName: 'AnimalTrakker',
     appBundleId: 'com.animaltrakker.farmdesktop',
     appCategoryType: 'public.app-category.utilities', // mac specific categorization
-    productName: 'AnimalTrakker Farm Desktop',
+    productName: 'AnimalTrakker',
   },
   makers: [
     new MakerZIP({}),
+    new MakerSquirrel({
+      name: 'AnimalTrakker',
+      setupIcon: path.resolve(__dirname, 'src/assets/icon.ico'),
+      iconUrl: 'https://example.com/path/to/icon.ico',
+      authors: 'AnimalTrakker',
+      description: 'AnimalTrakker',
+      exe: 'AnimalTrakker.exe',
+    }, ['win32']),
     new MakerDMG({
       icon: iconPath,
     }, ['darwin']),
