@@ -58,29 +58,5 @@
     "sqlite3": "^5.1.7",
     "uuid": "^11.1.0"
   },
-  "config": {
-    "forge": {
-      "makers": [
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "win32"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "platforms": [
-            "linux"
-          ]
-        }
-      ],
-      "publishers": []
-    }
-  }
+  "config": {}
 }

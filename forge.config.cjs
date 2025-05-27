@@ -1,13 +1,34 @@
+const path = require('path');
+const fs = require('fs');
+const fsp = fs.promises;
 const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDMG } = require('@electron-forge/maker-dmg');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 
+const iconPath = path.resolve(__dirname, 'src/assets/icon.icns');
+
 /** @type {import('electron-forge').ForgeConfig} */
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    icon: iconPath.replace(/\.icns$/, ''), // must NOT include extension
+    afterCopy: [
+      async (buildPath) => {
+        const dest = path.join(buildPath, 'Contents', 'Resources', 'icon.icns');
+        await fsp.copyFile(iconPath, dest);
+        console.log('✅ Copied icon.icns to', dest);
+      }
+    ]
+  },
   makers: [
     new MakerZIP({}, ['win32']),
-    new MakerDMG({}, ['darwin']),
-    new MakerDeb({}, ['linux']),
+    new MakerDMG({
+      icon: iconPath, // This sets the icon in the DMG window
+    }, ['darwin']),
+    new MakerDeb({
+      options: {
+        icon: path.resolve(__dirname, 'src/assets/AnimalTrakker_icon_512x512.png')
+      }
+    }, ['linux']),
   ],
 };
+
