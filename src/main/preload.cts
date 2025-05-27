@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
   editExistingDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("edit-existing-default", queryParams),
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
+  exportEvaluationHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-evaluation-history-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
   exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
   getAnimalIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),

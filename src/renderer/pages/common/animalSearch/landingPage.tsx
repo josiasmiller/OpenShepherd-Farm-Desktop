@@ -12,12 +12,24 @@ const LandingPage = () => {
   };
 
   const saveEvaluationHistoryCsv = async () => {
-    Swal.fire({
-      title: "Not implemented (yet!)",
-      text: "We are working on this functionality-- you should be able to use it soon :)",
-      icon: "warning",
-      confirmButtonText: "OK",
-    });
+    const animalIds: string[] = getAnimalIds();  
+    const success = await window.electronAPI.exportEvaluationHistoryCsv(animalIds);
+
+    if (success) {
+      Swal.fire({
+        title: "Success",
+        text: "File saved successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
+    }
   };
   
 

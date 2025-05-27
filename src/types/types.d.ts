@@ -41,6 +41,7 @@ declare global {
       getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
       editExistingDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
+      exportEvaluationHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;

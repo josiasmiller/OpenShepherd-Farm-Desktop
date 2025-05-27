@@ -36,6 +36,7 @@ import { getDatabase } from "../database/dbConnections.js";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
+import { writeEvaluationHistoryCsv } from "../writers/csv/writeEvaluationHistory.js";
 
 export const registerIpcHandlers = () => {
   
@@ -49,6 +50,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
     return writeAnimalNotesCsv(animals);
+  });
+
+  ipcMain.handle("export-evaluation-history-csv", async (_, animals: string[]) => {
+    return writeEvaluationHistoryCsv(animals);
   });
 
   ipcMain.handle("export-drug-history-csv", async (_, animals: string[]) => {
