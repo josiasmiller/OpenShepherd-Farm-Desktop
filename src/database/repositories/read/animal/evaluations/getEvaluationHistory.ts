@@ -81,6 +81,7 @@ export const getEvaluationHistory = async (animalId : string): Promise<Result<Ev
           traitId: row.trait_id,
           traitReadable: row.trait_readable_name,
           traitScore: row.trait_score,
+          traitUnits: row.trait_units,
         }));
 
         resolve(new Success(results));

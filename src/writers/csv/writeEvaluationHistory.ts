@@ -34,11 +34,13 @@ export const generateEvaluationCsvFromAnimalIds = async (animalIds: string[]): P
 
   // Headers
   const header = [
+    "Animal ID",
     "Flock Prefix",
     "Animal Name",
     "Trait ID",
     "Trait Name",
     "Trait Score",
+    "Trait Units ID",
   ];
   csvRows.push(header.join(","));
 
@@ -78,11 +80,13 @@ export const generateEvaluationCsvFromAnimalIds = async (animalIds: string[]): P
 
       for (const entry of evalEvents) {
         const row = [
+          animalIdentification!.id,
           animalIdentification!.flockPrefix,
           animalIdentification!.name,
           entry.traitId,
           entry.traitReadable,
           entry.traitScore,
+          entry.traitUnits,
         ];
         csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
       }

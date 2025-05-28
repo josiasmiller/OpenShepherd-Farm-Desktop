@@ -3,4 +3,5 @@ export type EvaluationEvent = {
   traitId: string;
   traitReadable: string;
   traitScore: string;
+  traitUnits: string;
 }
