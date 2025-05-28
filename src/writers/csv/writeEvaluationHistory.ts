@@ -1,6 +1,7 @@
 import fs from "fs";
-// import { handleResult, Result } from "../../shared/results/resultTypes.js";
+import { handleResult, Result } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
+import { getEvaluationHistory, EvaluationEvent, AnimalIdentification, getAnimalIdentification} from "../../database/index.js";
 
 
 export const writeEvaluationHistoryCsv = async (animalIds: string[]): Promise<boolean> => {
@@ -35,15 +36,56 @@ export const generateEvaluationCsvFromAnimalIds = async (animalIds: string[]): P
   const header = [
     "Flock Prefix",
     "Animal Name",
-    "TODO",
+    "Trait ID",
+    "Trait Name",
+    "Trait Score",
   ];
   csvRows.push(header.join(","));
 
   for (const animalId of animalIds) {
     try {
-      // get evaluation history for single animal
+      const evalHistoryResult: Result<EvaluationEvent[], string> = await getEvaluationHistory(animalId);
+      
+      var evalEvents: EvaluationEvent[] = [];
 
+      handleResult(evalHistoryResult, {
+        success: (data : EvaluationEvent[]) => {
+            evalEvents = data;
+        },
+        error: (err) => {
+          console.error("Failed to fetch tissue test results:", err);
+        },
+      });
 
+      // get all pertinent animal Identifications
+      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(animalId);
+      var animalIdentification : AnimalIdentification | null = null;
+      var animalIdentificationSucceeded: boolean = false;
+
+      handleResult(animalIdentificationResult, {
+        success: (data : AnimalIdentification) => {
+          animalIdentification = data;
+          animalIdentificationSucceeded = true;
+        },
+        error: (err) => {
+          console.error("Failed to fetch Animal Notes:", err);
+        },
+      });
+
+      if (!animalIdentificationSucceeded) {
+        continue;
+      }
+
+      for (const entry of evalEvents) {
+        const row = [
+          animalIdentification!.flockPrefix,
+          animalIdentification!.name,
+          entry.traitId,
+          entry.traitReadable,
+          entry.traitScore,
+        ];
+        csvRows.push(row.map(value => `"${(value ?? "").toString().trim()}"`).join(","));
+      }
       
     } catch (error) {
       console.error(`Error fetching Evaluation History for animalId ${animalId}:`, error);
