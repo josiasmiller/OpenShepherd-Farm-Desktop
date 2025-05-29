@@ -27,8 +27,8 @@ app.whenReady().then(() => {
   const absolutePreloadPath = path.resolve(preloadPath);
 
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1440,
+    height: 900,
     icon: getPlatformIcon(),
     webPreferences: {
       preload: absolutePreloadPath,

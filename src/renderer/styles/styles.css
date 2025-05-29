@@ -19,6 +19,9 @@
 
 @import url("impl/home/home.css");
 
+@import url("impl/util/icon.css");
+@import url("impl/util/collapsible.css");
+
 @import url("fonts/fonts.css");
 
 /* Reset margin and padding */

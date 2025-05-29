@@ -37,29 +37,30 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
   }
 
   if (queryParams.registrationType) {
-    conditions.push("registration_type = ?");
+    conditions.push("a.registration_type = ?");
     values.push(queryParams.registrationType);
   }
 
   if (queryParams.birthStartDate) {
-    conditions.push("birth_date >= ?");
+    conditions.push("a.birth_date >= ?");
     values.push(queryParams.birthStartDate);
   }
 
   if (queryParams.birthEndDate) {
-    conditions.push("birth_date <= ?");
+    conditions.push("a.birth_date <= ?");
     values.push(queryParams.birthEndDate);
   }
 
   if (queryParams.deathStartDate) {
-    conditions.push("death_date >= ?");
+    conditions.push("a.death_date >= ?");
     values.push(queryParams.deathStartDate);
   }
 
   if (queryParams.deathEndDate) {
-    conditions.push("death_date <= ?");
+    conditions.push("a.death_date <= ?");
     values.push(queryParams.deathEndDate);
   }
+
 
   // Append conditions to the query
   if (conditions.length > 0) {
