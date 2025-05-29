@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
+import { isRegistryEdition } from "../../../../scripts/appEdition";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -85,6 +86,15 @@ const LandingPage = () => {
       });
     }
   };
+
+  const handleRegistryFeature = async () => {    
+    Swal.fire({
+      title: "This is a registry version!",
+      text: "it built correctly!",
+      icon: "success",
+      confirmButtonText: "Cool!",
+    });
+  };
   
 
   return (
@@ -108,6 +118,12 @@ const LandingPage = () => {
           <button className="forward-button" onClick={saveTissueTestResultHistoryCsv}>
             Tissue Test Result History
           </button>
+
+          {isRegistryEdition() && (
+            <button className="forward-button" onClick={handleRegistryFeature}>
+              Registry Feature
+            </button>
+          )}
         </div>
       </div>
 
