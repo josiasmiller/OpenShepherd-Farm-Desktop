@@ -22,8 +22,12 @@ export type AnimalSearchRequest = {
   status?: string | null;         
   registrationType?: string | null;
   registrationNumber?: string | null;
+
   birthStartDate?: string | null;   // Start date for birth range
   birthEndDate?: string | null;     // End date for birth range
   deathStartDate?: string | null;   // Start date for death range
   deathEndDate?: string | null;     // End date for death range
+
+  federalTag?: string | null;
+  farmTag?: string | null;
 }

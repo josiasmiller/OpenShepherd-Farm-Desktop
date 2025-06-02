@@ -1,0 +1,32 @@
+.wide-button {
+  width: 100%;
+  padding: 12px 48px;
+  font-size: 1.2em;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Remove fixed sizing */
+  min-width: unset;
+}
+
+/* Hover Effect */
+.wide-button:hover {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: scale(1.05);
+}
+
+/* Active Effect */
+.wide-button:active {
+  transform: scale(0.95);
+}

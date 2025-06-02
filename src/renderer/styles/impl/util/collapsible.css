@@ -1,0 +1,24 @@
+.collapsible-section {
+  margin-bottom: 1rem;
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.collapsible-header h2 {
+  margin: 0;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* margin-bottom: 10px; */
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+}
