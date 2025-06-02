@@ -20,8 +20,9 @@
 
 @import url("impl/home/home.css");
 
-@import url("impl/util/icon.css");
 @import url("impl/util/collapsible.css");
+@import url("impl/util/icon.css");
+@import url("impl/util/spinner.css");
 
 @import url("fonts/fonts.css");
 

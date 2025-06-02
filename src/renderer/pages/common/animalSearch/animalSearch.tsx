@@ -33,6 +33,10 @@ const AnimalSearch: React.FC = () => {
   const [showResults, setShowResults] = useState(true);
   const [showChosen, setShowChosen] = useState(true);
 
+  // state for if an active search is underway
+  const [isSearchingForAnimals, setIsSearchingForAnimals] = useState(false);
+
+
 
   const handleChooseAnimals = async () => {
     if (!chosenAnimals || chosenAnimals.length === 0) {
@@ -66,56 +70,66 @@ const AnimalSearch: React.FC = () => {
 
   const fetchAndDisplayAnimals = async () => {
 
-    const animalRequest: AnimalSearchRequest = {};
+    setIsSearchingForAnimals(true);
 
-    if (searchParams.name != null && searchParams.name != "") {
-      animalRequest.name = searchParams.name;
-    }
+    try{
+      const animalRequest: AnimalSearchRequest = {};
 
-    if (searchParams.status != null && searchParams.status != "") {
-      animalRequest.status = searchParams.status;
-    }
+      if (searchParams.name != null && searchParams.name != "") {
+        animalRequest.name = searchParams.name;
+      }
 
-    if (searchParams.registrationType != null && searchParams.registrationType != "") {
-      animalRequest.registrationType = searchParams.registrationType;
-    }
+      if (searchParams.status != null && searchParams.status != "") {
+        animalRequest.status = searchParams.status;
+      }
 
-    if (searchParams.registrationNumber != null && searchParams.registrationNumber != "") {
-      animalRequest.registrationNumber = searchParams.registrationNumber;
-    }
+      if (searchParams.registrationType != null && searchParams.registrationType != "") {
+        animalRequest.registrationType = searchParams.registrationType;
+      }
 
-    if (searchParams.birthStartDate != null && searchParams.birthStartDate != "") {
-      animalRequest.birthStartDate = searchParams.birthStartDate;
-    }
+      if (searchParams.registrationNumber != null && searchParams.registrationNumber != "") {
+        animalRequest.registrationNumber = searchParams.registrationNumber;
+      }
 
-    if (searchParams.birthEndDate != null && searchParams.birthEndDate != "") {
-      animalRequest.birthEndDate = searchParams.birthEndDate;
-    }
+      if (searchParams.birthStartDate != null && searchParams.birthStartDate != "") {
+        animalRequest.birthStartDate = searchParams.birthStartDate;
+      }
 
-    if (searchParams.deathStartDate != null && searchParams.deathStartDate != "") {
-      animalRequest.deathStartDate = searchParams.deathStartDate;
-    }
+      if (searchParams.birthEndDate != null && searchParams.birthEndDate != "") {
+        animalRequest.birthEndDate = searchParams.birthEndDate;
+      }
 
-    if (searchParams.deathEndDate != null && searchParams.deathEndDate != "") {
-      animalRequest.deathEndDate = searchParams.deathEndDate;
-    }
+      if (searchParams.deathStartDate != null && searchParams.deathStartDate != "") {
+        animalRequest.deathStartDate = searchParams.deathStartDate;
+      }
 
-    if (searchParams.federalTag != null && searchParams.federalTag != "") {
-      animalRequest.federalTag = searchParams.federalTag;
-    }
+      if (searchParams.deathEndDate != null && searchParams.deathEndDate != "") {
+        animalRequest.deathEndDate = searchParams.deathEndDate;
+      }
 
-    if (searchParams.farmTag != null && searchParams.farmTag != "") {
-      animalRequest.farmTag = searchParams.farmTag;
-    }
+      if (searchParams.federalTag != null && searchParams.federalTag != "") {
+        animalRequest.federalTag = searchParams.federalTag;
+      }
 
-    const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(animalRequest);
+      if (searchParams.farmTag != null && searchParams.farmTag != "") {
+        animalRequest.farmTag = searchParams.farmTag;
+      }
 
-    if (animals.length === 0) {
-      setMessage("No animals found.");
-      setResults([]);
-    } else {
-      setMessage("");
-      setResults(animals);
+      const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(animalRequest);
+
+      if (animals.length === 0) {
+        setMessage("No animals found.");
+        setResults([]);
+      } else {
+        setMessage("");
+        setResults(animals);
+      }
+
+    } catch (err) {
+      console.error("Animal search failed:", err);
+      await Swal.fire("Error", "An error occurred while searching for animals.", "error");
+    } finally {
+      setIsSearchingForAnimals(false);
     }
   };
 
@@ -236,7 +250,13 @@ const AnimalSearch: React.FC = () => {
                 placeholder="Enter Farm Tag"
               />
             </div>
-            <button onClick={fetchAndDisplayAnimals} className="forward-button">Search</button>
+           <button
+              onClick={fetchAndDisplayAnimals}
+              className="forward-button"
+              disabled={isSearchingForAnimals}
+            >
+              {isSearchingForAnimals ? "Searching..." : "Search"}
+            </button>
           </div>
         </div>
       </CollapsibleSection>
@@ -363,7 +383,25 @@ const AnimalSearch: React.FC = () => {
       </CollapsibleSection>
 
 
-      
+      {isSearchingForAnimals && (
+        <div style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          backgroundColor: "rgba(0,0,0,0.75)",
+          color: "#fff",
+          padding: "12px 18px",
+          borderRadius: "8px",
+          zIndex: 1000,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}>
+          <div className="spinner" />
+          <span>Searching for animals...</span>
+        </div>
+      )}
+
       
     </div>
   );
