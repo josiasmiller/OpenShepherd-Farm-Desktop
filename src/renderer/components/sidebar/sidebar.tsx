@@ -3,13 +3,18 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "../../styles/styles.css";
-// import transparentLogo from "../../../assets/AnimalTrakker_icon_512x512.png";
 import transparentLogo from "../../../assets/AnimalTrakker.png";
+
+import { handleResult } from "../../../shared/results/resultTypes";
+import { DefaultSettingsResults } from "../../../database";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const [dbFileName, setDbFileName] = useState("No database selected");
   const [isDbLoaded, setIsDbLoaded] = useState(false);
+  const [defaultList, setDefaultList] = useState<DefaultSettingsResults[]>([]);
+  const [selectedDefault, setSelectedDefault] = useState<string>("");
+
 
   // Check if database is already loaded (on mount and after file selection)
   const checkDbStatus = async () => {
@@ -26,6 +31,22 @@ const Sidebar: React.FC = () => {
       const filePath: string | null = await window.electronAPI.selectDatabase();
       if (filePath) {
         setDbFileName(filePath);
+
+        // Fetch defaults
+        const defaults = await window.electronAPI.getExistingDefaults();
+
+        handleResult(defaults, {
+          success: (data : DefaultSettingsResults[]) => {
+            setDefaultList(data);
+
+            const initialDefault: DefaultSettingsResults = data[0]; 
+            setSelectedDefault(initialDefault.name);
+          },
+          error: (err: any) => {
+            console.error("Failed to fetch existing defaults:", err);
+          },
+        });
+
         await checkDbStatus(); // recheck DB loaded state after selection
       }
     } catch (err) {
@@ -89,6 +110,24 @@ const Sidebar: React.FC = () => {
       <div className="database-selector">
         <button onClick={handleSelectDatabase}>Select Database</button>
         <p>{dbFileName}</p>
+
+        {isDbLoaded && (
+          <>
+            <hr className="db-divider" />
+            <label htmlFor="defaultSelector" className="text-sm mt-2">Choose Default:</label>
+            <select
+              id="defaultSelector"
+              className="defaultSelector"
+              value={selectedDefault}
+              onChange={(e) => setSelectedDefault(e.target.value)}
+            >
+              {defaultList.map((def) => (
+                <option key={def.name} value={def.name}>{def.name}</option>
+              ))}
+            </select>
+
+          </>
+        )}
       </div>
     </div>
   );

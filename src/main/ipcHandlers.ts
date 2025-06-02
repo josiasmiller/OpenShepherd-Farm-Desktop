@@ -124,10 +124,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("open-external-url", async (_, url) => {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('Invalid URL'); // security check, we only want valid URLs sent
-      return false;
     }
     await shell.openExternal(url);
-    return true;
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
