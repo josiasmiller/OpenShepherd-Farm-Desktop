@@ -8,8 +8,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     throw new TypeError("DB Instance is null");
   }
 
-  console.log("MITCH DEBUG ANIMAL SEARCH!!");
-
   // Base query
   let animalQuery = `
     SELECT 
@@ -126,8 +124,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
   // Add limit for safety
   animalQuery += " LIMIT 20";
 
-  console.log("MITCH DEBUG FINISHED SEARCH?");
-
   return new Promise((resolve, reject) => {
     db.all(animalQuery, values, (err, rows) => {
       if (err) {
@@ -148,10 +144,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
           damFlockPrefix: null,
           damName: row.dam_name,
         })) as AnimalSearchResult[];
-
-        console.log("GOT ANIMALS:");
-        console.log(animals.length);
-        console.log('=====================');
 
         resolve(animals);
       }

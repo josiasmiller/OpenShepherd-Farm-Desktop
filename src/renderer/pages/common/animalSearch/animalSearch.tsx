@@ -70,6 +70,11 @@ const AnimalSearch: React.FC = () => {
 
   const fetchAndDisplayAnimals = async () => {
 
+    // exit early if a search is already underway
+    if (isSearchingForAnimals) {
+      return;
+    }
+
     setIsSearchingForAnimals(true);
 
     try{
