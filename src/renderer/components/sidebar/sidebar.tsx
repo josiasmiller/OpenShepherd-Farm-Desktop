@@ -50,14 +50,26 @@ const Sidebar: React.FC = () => {
     opacity: enabled ? 1 : 0.5,
   });
 
+  const openAnimalTrakkerPage = async () => {
+    const url = "https://animaltrakker.com";
+    await window.electronAPI.openExternalURL(url);
+    return;
+  }
+
   return (
-    <div className="sidebar">
-      <img 
-        src={transparentLogo}
-        alt="App Icon" 
-        className="w-full h-auto max-h-32 object-contain p-4" 
-      />
-      <h2>Farm Desktop</h2>
+    <div className="sidebar bg-gray-100 p-4">
+      <div 
+        className="logoBox"
+        onClick={openAnimalTrakkerPage}
+      >
+        <img 
+          src={transparentLogo}
+          alt="App Icon"
+          className="logoImage"
+        />
+        <h2 className="logoTitle">Farm Desktop</h2>
+      </div>
+
       <ul>
         <li onClick={() => handleNavClick("/")}>Home</li>
         <li
@@ -80,6 +92,7 @@ const Sidebar: React.FC = () => {
       </div>
     </div>
   );
+
 };
 
 export default Sidebar;
