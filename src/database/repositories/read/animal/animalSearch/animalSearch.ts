@@ -8,23 +8,48 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     throw new TypeError("DB Instance is null");
   }
 
+  console.log("MITCH DEBUG ANIMAL SEARCH!!");
+
   // Base query
   let animalQuery = `
     SELECT 
-        a.id_animalid, 
-        a.animal_name, 
-        a.birth_date, 
-        a.death_date,
-        s.sex_name,
-        bt.birth_type,
-        sire.animal_name AS sire_name,
-        dam.animal_name AS dam_name
+      a.id_animalid, 
+      a.animal_name, 
+      a.birth_date, 
+      a.death_date,
+      s.sex_name,
+      bt.birth_type,
+      sire.animal_name AS sire_name,
+      dam.animal_name AS dam_name,
+
+      (
+        SELECT ai.id_number
+        FROM animal_id_info_table ai
+        WHERE 
+          ai.id_animalid = a.id_animalid
+          AND ai.official_id = '1'
+          AND (ai.id_date_off IS NULL OR ai.id_date_off = '')
+        ORDER BY ai.id_date_on DESC
+        LIMIT 1
+      ) AS latestOfficialID,
+
+      (
+        SELECT ai.id_number
+        FROM animal_id_info_table ai
+        WHERE 
+          ai.id_animalid = a.id_animalid
+          AND ai.id_idtypeid = '6af3845e-0abc-4afa-bcb4-4eea96f2ecc2'
+          AND (ai.id_date_off IS NULL OR ai.id_date_off = '')
+        ORDER BY ai.id_date_on DESC
+        LIMIT 1
+      ) AS latestFarmID
     FROM animal_table a
     JOIN sex_table s ON a.id_sexid = s.id_sexid
     JOIN birth_type_table bt ON a.id_birthtypeid = bt.id_birthtypeid
     LEFT JOIN animal_table sire ON a.sire_id = sire.id_animalid
     LEFT JOIN animal_table dam ON a.dam_id = dam.id_animalid
-    `;
+  `;
+
 
   const conditions: string[] = [];
   const values: any[] = [];
@@ -61,6 +86,37 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     values.push(queryParams.deathEndDate);
   }
 
+  // Filter by federal tag
+  if (queryParams.federalTag) {
+    const escapedTag = escapeLikeString(queryParams.federalTag);
+    conditions.push(`
+      EXISTS (
+        SELECT 1 FROM animal_id_info_table ai
+        WHERE 
+          ai.id_animalid = a.id_animalid
+          AND ai.official_id = '1'
+          AND (ai.id_date_off IS NULL OR ai.id_date_off = '')
+          AND ai.id_number = ?
+      )
+    `);
+    values.push(`${escapedTag}`);
+  }
+
+  // Filter by farm tag
+  if (queryParams.farmTag) {
+    const escapedTag = escapeLikeString(queryParams.farmTag);
+    conditions.push(`
+      EXISTS (
+        SELECT 1 FROM animal_id_info_table ai
+        WHERE 
+          ai.id_animalid = a.id_animalid
+          AND ai.id_idtypeid = '6af3845e-0abc-4afa-bcb4-4eea96f2ecc2'
+          AND (ai.id_date_off IS NULL OR ai.id_date_off = '')
+          AND ai.id_number = ?
+      )
+    `);
+    values.push(`${escapedTag}`);
+  }
 
   // Append conditions to the query
   if (conditions.length > 0) {
@@ -68,7 +124,9 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
   }
 
   // Add limit for safety
-  animalQuery += " LIMIT 100";
+  animalQuery += " LIMIT 20";
+
+  console.log("MITCH DEBUG FINISHED SEARCH?");
 
   return new Promise((resolve, reject) => {
     db.all(animalQuery, values, (err, rows) => {
@@ -83,13 +141,18 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
           deathDate: row.death_date || null,
           sex: row.sex_name,
           birthType: row.birth_type,
-          latestOfficialID: null,
-          latestFarmID: null,
+          latestOfficialID: row.latestOfficialID || null,
+          latestFarmID: row.latestFarmID || null,
           sireFlockPrefix: null,
           sireName: row.sire_name,
           damFlockPrefix: null,
           damName: row.dam_name,
         })) as AnimalSearchResult[];
+
+        console.log("GOT ANIMALS:");
+        console.log(animals.length);
+        console.log('=====================');
+
         resolve(animals);
       }
     });

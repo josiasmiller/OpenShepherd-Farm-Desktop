@@ -2,7 +2,7 @@ import React from "react";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimalSearchResult } from "../../../../database";
+import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
 
 
@@ -65,7 +65,50 @@ const AnimalSearch: React.FC = () => {
   };
 
   const fetchAndDisplayAnimals = async () => {
-    const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(searchParams);
+
+    const animalRequest: AnimalSearchRequest = {};
+
+    if (searchParams.name != null && searchParams.name != "") {
+      animalRequest.name = searchParams.name;
+    }
+
+    if (searchParams.status != null && searchParams.status != "") {
+      animalRequest.status = searchParams.status;
+    }
+
+    if (searchParams.registrationType != null && searchParams.registrationType != "") {
+      animalRequest.registrationType = searchParams.registrationType;
+    }
+
+    if (searchParams.registrationNumber != null && searchParams.registrationNumber != "") {
+      animalRequest.registrationNumber = searchParams.registrationNumber;
+    }
+
+    if (searchParams.birthStartDate != null && searchParams.birthStartDate != "") {
+      animalRequest.birthStartDate = searchParams.birthStartDate;
+    }
+
+    if (searchParams.birthEndDate != null && searchParams.birthEndDate != "") {
+      animalRequest.birthEndDate = searchParams.birthEndDate;
+    }
+
+    if (searchParams.deathStartDate != null && searchParams.deathStartDate != "") {
+      animalRequest.deathStartDate = searchParams.deathStartDate;
+    }
+
+    if (searchParams.deathEndDate != null && searchParams.deathEndDate != "") {
+      animalRequest.deathEndDate = searchParams.deathEndDate;
+    }
+
+    if (searchParams.federalTag != null && searchParams.federalTag != "") {
+      animalRequest.federalTag = searchParams.federalTag;
+    }
+
+    if (searchParams.farmTag != null && searchParams.farmTag != "") {
+      animalRequest.farmTag = searchParams.farmTag;
+    }
+
+    const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(animalRequest);
 
     if (animals.length === 0) {
       setMessage("No animals found.");
@@ -220,8 +263,8 @@ const AnimalSearch: React.FC = () => {
                     <th>Death Date</th>
                     <th>Sex</th> 
                     <th>Birth Type</th>
-                    {/* <th>Official ID</th> */}
-                    {/* <th>Farm ID</th> */}
+                    <th>Official ID</th>
+                    <th>Farm ID</th>
                     {/* <th>Sire Flock Prefix</th> */}
                     <th>Sire Name</th>
                     {/* <th>Dam Flock Prefix</th> */}
@@ -244,8 +287,8 @@ const AnimalSearch: React.FC = () => {
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 
                       <td>{animal.birthType}</td>
-                      {/* <td>{animal.latestOfficialID}</td> */}
-                      {/* <td>{animal.latestFarmID}</td> */}
+                      <td>{animal.latestOfficialID}</td>
+                      <td>{animal.latestFarmID}</td>
                       {/* <td>{animal.sireFlockPrefix}</td> */}
                       <td>{animal.sireName}</td>
                       {/* <td>{animal.damFlockPrefix}</td> */}
@@ -282,8 +325,8 @@ const AnimalSearch: React.FC = () => {
                     <th>Death Date</th>
                     <th>Sex</th> 
                     <th>Birth Type</th>
-                    {/* <th>Official ID</th> */}
-                    {/* <th>Farm ID</th> */}
+                    <th>Official ID</th>
+                    <th>Farm ID</th>
                     {/* <th>Sire Flock Prefix</th> */}
                     <th>Sire Name</th>
                     {/* <th>Dam Flock Prefix</th> */}
@@ -303,8 +346,8 @@ const AnimalSearch: React.FC = () => {
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 
                       <td>{animal.birthType}</td>
-                      {/* <td>{animal.latestOfficialID}</td> */}
-                      {/* <td>{animal.latestFarmID}</td> */}
+                      <td>{animal.latestOfficialID}</td>
+                      <td>{animal.latestFarmID}</td>
                       {/* <td>{animal.sireFlockPrefix}</td> */}
                       <td>{animal.sireName}</td>
                       {/* <td>{animal.damFlockPrefix}</td> */}
