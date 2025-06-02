@@ -3,6 +3,7 @@ import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
+import Swal from "sweetalert2";
 
 
 
@@ -33,8 +34,29 @@ const AnimalSearch: React.FC = () => {
   const [showChosen, setShowChosen] = useState(true);
 
 
-  const handleChooseAnimals = () => {
-    navigate("/landing", { state: { chosenAnimals } });
+  const handleChooseAnimals = async () => {
+    if (!chosenAnimals || chosenAnimals.length === 0) {
+      await Swal.fire({
+        title: "No animals selected",
+        text: "You must select at least one animal before proceeding.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: `Confirm Selection`,
+      text: `Would you like to select ${chosenAnimals.length} animal${chosenAnimals.length > 1 ? "s" : ""}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/landing", { state: { chosenAnimals } });
+    }
   };
 
   // Handle input changes
@@ -185,7 +207,6 @@ const AnimalSearch: React.FC = () => {
         onToggle={() => setShowResults(!showResults)}
       >
         <div className="results-section">
-          <h2>Results</h2>
           {message && <div className="results-message">{message}</div>}
 
           {results.length > 0 && (
@@ -247,8 +268,7 @@ const AnimalSearch: React.FC = () => {
       >
         <div className="chosen-section">
           <div className="chosen-header">
-            <h2>Selected Animals</h2>
-            <button className="forward-button" onClick={handleChooseAnimals}>Choose Animals</button>
+            <button className="wide-button" onClick={handleChooseAnimals}>Choose Animals</button>
           </div>
 
           {chosenAnimals.length > 0 && (
