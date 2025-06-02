@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "../../styles/styles.css";
-import transparentLogo from "../../../assets/AnimalTrakker_icon_512x512.png";
+// import transparentLogo from "../../../assets/AnimalTrakker_icon_512x512.png";
+import transparentLogo from "../../../assets/AnimalTrakker.png";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const Sidebar: React.FC = () => {
         alt="App Icon" 
         className="w-full h-auto max-h-32 object-contain p-4" 
       />
-      <h2>AnimalTrakker Farm Desktop</h2>
+      <h2>Farm Desktop</h2>
       <ul>
         <li onClick={() => handleNavClick("/")}>Home</li>
         <li
@@ -69,7 +70,7 @@ const Sidebar: React.FC = () => {
           onClick={() => handleNavClick("/create-default")}
           style={getLinkStyle(isDbLoaded)}
         >
-          Animal Defaults
+          Edit Defaults
         </li>
       </ul>
 
