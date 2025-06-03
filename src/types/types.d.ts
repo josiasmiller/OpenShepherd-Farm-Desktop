@@ -67,6 +67,7 @@ declare global {
       getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
       isDatabaseLoaded: () => Promise<boolean>;
+      openExternalURL: (url: string) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };

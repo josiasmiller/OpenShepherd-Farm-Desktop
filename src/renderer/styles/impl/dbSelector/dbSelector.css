@@ -34,3 +34,36 @@
   font-size: 14px;
   max-width: 100%;
 }
+
+.db-divider {
+  border: none;
+  border-top: 1px solid var(--md-sys-color-on-secondary);
+  margin: 12px 0;
+  opacity: 0.4;
+}
+
+.defaultSelector {
+  width: 100%;
+  padding: 6px 10px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--md-sys-color-primary-container);  /* match button */
+  color: var(--md-sys-color-on-primary-container);           /* match button text */
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 6px;
+  cursor: pointer;
+}
+
+.defaultSelector:focus {
+  outline: 2px solid var(--md-sys-color-primary-fixed-dim);
+}
+
+.defaultSelector:hover {
+  background-color: var(--md-sys-color-primary-fixed-dim); /* Hover variant */
+}
+
