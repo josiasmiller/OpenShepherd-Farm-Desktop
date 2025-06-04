@@ -37,6 +37,8 @@ import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
+import { writeTestPdf } from "../writers/pdf/writeTestPdf.js";
+
 export const registerIpcHandlers = () => {
   
   ipcMain.handle("animal-search", async (_, queryParams) => {
@@ -57,6 +59,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("export-tissue-test-results-csv", async (_, animals: string[]) => {
     return writeTissueTestResults(animals);
+  });
+
+  ipcMain.handle("export-pdf-test", async (_, animals: string[]) => {
+    return writeTestPdf(animals);
   });
 
   ipcMain.handle("select-database", selectNewDb);

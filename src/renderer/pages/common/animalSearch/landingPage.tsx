@@ -90,6 +90,27 @@ const LandingPage = () => {
       });
     }
   };
+
+  const saveTestPdf = async () => {    
+    const animalIds: string[] = getAnimalIds();
+    const success = await window.electronAPI.exportPdfTest(animalIds);
+  
+    if (success) {
+      Swal.fire({
+        title: "Success",
+        text: "PDF saved successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
+    }
+  };
   
 
   const printRegistryPapers = () => {
@@ -122,7 +143,7 @@ const LandingPage = () => {
           </button>
           <button className="forward-button" onClick={saveTissueTestResultHistoryCsv}>
             Tissue Test Result History
-          </button>          
+          </button>
         </div>
       </div>
 
@@ -135,6 +156,10 @@ const LandingPage = () => {
           <div className="landing-page-top">
             <button className="forward-button" onClick={printRegistryPapers}>
               Print Registry Papers
+            </button>
+
+            <button className="forward-button" onClick={saveTestPdf}>
+              Save Test PDF
             </button>
           </div>
         </CollapsibleSection>

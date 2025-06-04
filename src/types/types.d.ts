@@ -43,6 +43,7 @@ declare global {
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
+      exportPdfTest: (animalIds: string[]) => Promise<boolean>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;
