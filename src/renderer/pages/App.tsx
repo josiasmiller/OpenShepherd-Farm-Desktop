@@ -6,8 +6,6 @@ import CreateDefault from "./common/animalDefaults/createDefault"
 import Sidebar from "../components/sidebar/sidebar";
 import LandingPage from "./common/animalSearch/landingPage";
 
-import "../styles/styles.css";
-
 const App: React.FC = () => {
   return (
     <Router>

@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Breed, BreedRequest } from "../../../../models/read/animal/general/breed.js";
-import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Breed, BreedRequest } from "../../../../models/read/animal/general/breed";
+import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes";
 
 
 export const getBreeds = async (queryParams: BreedRequest): Promise<Result<Breed[], string>> => {

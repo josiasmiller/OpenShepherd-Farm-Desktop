@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { FlockPrefix } from "../../../../models/read/animal/flocks/flockPrefix.js";
-import { OwnerType } from "../../../../models/read/owners/ownerType.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { FlockPrefix } from "../../../../models/read/animal/flocks/flockPrefix";
+import { OwnerType } from "../../../../models/read/owners/ownerType";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 
 export const getFlockPrefixes = async (): Promise<Result<FlockPrefix[], string>> => {

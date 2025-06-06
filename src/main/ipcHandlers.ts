@@ -29,13 +29,13 @@ import {
   getUnits,
   getUnitTypes,
   writeNewDefaultSettings,
-} from "../database/index.js";
+} from "../database/index";
 
-import { selectNewDb } from "../scripts/dbSelect.js";
-import { getDatabase } from "../database/dbConnections.js";
-import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
-import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
-import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
+import { selectNewDb } from "../scripts/dbSelect";
+import { getDatabase } from "../database/dbConnections";
+import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes";
+import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents";
+import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults";
 
 export const registerIpcHandlers = () => {
   

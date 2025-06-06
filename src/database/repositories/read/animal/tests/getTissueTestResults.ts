@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { TissueTestResult } from "../../../../models/read/animal/tests/tissueTestResult.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { TissueTestResult } from "../../../../models/read/animal/tests/tissueTestResult";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 
 export const getTissueTestResults = async (animalId : string): Promise<Result<TissueTestResult[], string>> => {

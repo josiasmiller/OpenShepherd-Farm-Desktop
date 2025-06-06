@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Owner } from "../../../models/read/owners/owner";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch owners from the database
 export const getOwners = async (): Promise<Result<Owner[], string>> => {

@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { TagLocation } from "../../../models/read/tags/location.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { TagLocation } from "../../../models/read/tags/location";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch locations from the database
 export const getTagLocations = async (): Promise<Result<TagLocation[], string>> => {

@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Species } from "../../../../models/read/animal/general/species.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Species } from "../../../../models/read/animal/general/species";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 
 export const getSpecies = async (): Promise<Result<Species[], string>> => {

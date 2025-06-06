@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { TissueTest } from "../../../models/read/tissues/tissueTest.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { TissueTest } from "../../../models/read/tissues/tissueTest";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to get TissueTests with Result type handling for success and failure
 export const getTissueTests = async (): Promise<Result<TissueTest[], string>> => {

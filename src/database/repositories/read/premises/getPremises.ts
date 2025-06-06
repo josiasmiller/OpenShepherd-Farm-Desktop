@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Premise } from "../../../models/read/premises/premise.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Premise } from "../../../models/read/premises/premise";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch premises from the database
 export const getPremises = async (): Promise<Result<Premise[], string>> => {

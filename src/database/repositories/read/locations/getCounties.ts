@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { County } from "../../../models/read/locations/county.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { County } from "../../../models/read/locations/county";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 export const getCounties = async (): Promise<Result<County[], string>> => {
   const db = await getDatabase();

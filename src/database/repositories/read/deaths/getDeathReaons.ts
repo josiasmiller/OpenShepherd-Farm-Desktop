@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { DeathReason } from "../../../models/read/deaths/deathReason.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { DeathReason } from "../../../models/read/deaths/deathReason";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 
 export const getDeathReasons = async (): Promise<Result<DeathReason[], string>> => {

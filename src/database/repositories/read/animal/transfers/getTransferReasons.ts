@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { TransferReason } from "../../../../models/read/animal/transfers/transferReaon.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { TransferReason } from "../../../../models/read/animal/transfers/transferReaon";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 
 export const getTransferReasons = async (): Promise<Result<TransferReason[], string>> => {

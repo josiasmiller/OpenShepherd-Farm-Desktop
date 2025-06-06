@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { TagType } from "../../../models/read/tags/tagType.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { TagType } from "../../../models/read/tags/tagType";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch tag types from the database
 export const getTagTypes = async (): Promise<Result<TagType[], string>> => {

@@ -2,11 +2,11 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "nodenext",
     "outDir": "dist",
-    "rootDir": "./src",               // ✅ This line tells TypeScript that "src" is the base
+    "rootDir": "./src",
     "strict": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },

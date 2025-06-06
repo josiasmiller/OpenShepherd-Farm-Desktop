@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { RemoveReason } from "../../../models/read/tags/removeReason.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { RemoveReason } from "../../../models/read/tags/removeReason";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch remove reasons from the database
 export const getRemoveReasons = async (): Promise<Result<RemoveReason[], string>> => {

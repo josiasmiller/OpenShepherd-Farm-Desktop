@@ -1,7 +1,7 @@
 /* Regular Roboto Mono */
 @font-face {
   font-family: 'Roboto Mono';
-  src: url('/fonts/RobotoMono-Regular.ttf') format('truetype');
+  src: url('../../../../public/fonts/RobotoMono-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -9,7 +9,7 @@
 /* Bold Roboto Mono for buttons */
 @font-face {
   font-family: 'Roboto Mono Bold';
-  src: url('/fonts/RobotoMono-Bold.ttf') format('truetype');
+  src: url('../../../../public/fonts/RobotoMono-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }

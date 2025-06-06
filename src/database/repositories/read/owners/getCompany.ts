@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Company } from "../../../models/read/owners/company";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Function to fetch companies from the database
 export const getCompanies = async (onlyGetRegistryCompanies: boolean): Promise<Result<Company[], string>> => {

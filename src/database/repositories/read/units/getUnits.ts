@@ -1,7 +1,7 @@
 import { Database } from "sqlite3";
-import { getDatabase } from "../../../dbConnections.js";
-import { UnitRequest, Unit } from "../../../models/read/units/unit.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { UnitRequest, Unit } from "../../../models/read/units/unit";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 
 export const getUnits = async (queryParams: UnitRequest): Promise<Result<Unit[], string>> => {

@@ -1,7 +1,9 @@
 import { app, BrowserWindow } from 'electron';
-import { registerIpcHandlers } from "./ipcHandlers.js";
+import { registerIpcHandlers } from "./ipcHandlers";
 import path from "path";
 import { fileURLToPath } from 'url';
+
+import { isRegistryVersion, APP_VERSION_TYPE } from '../config/version';
 
 let mainWindow: BrowserWindow | null;
 
@@ -22,8 +24,13 @@ const getCurrentDirectory = () => {
 
 app.whenReady().then(() => {
 
+  console.log("Build Farm Desktop: " + APP_VERSION_TYPE);
+  console.log("MITCH DEBUG!");
+  console.log(isRegistryVersion());
+  console.log("======================");
+
   const currentDirectory = getCurrentDirectory();
-  const preloadPath = path.join(currentDirectory, 'preload.cjs');
+  const preloadPath = path.join(currentDirectory, 'preload.js');
   const absolutePreloadPath = path.resolve(preloadPath);
 
   mainWindow = new BrowserWindow({

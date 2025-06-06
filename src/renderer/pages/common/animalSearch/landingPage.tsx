@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
-import { isRegistryEdition } from "../../../../scripts/appEdition";
+import { isRegistryVersion, APP_VERSION_TYPE } from "../../../../config/version";
 
 const LandingPage = () => {
   const location = useLocation();
@@ -13,6 +13,9 @@ const LandingPage = () => {
   };
 
   const saveEvaluationHistoryCsv = async () => {
+    console.log("MITCH DEBUG REG VERSIon!!");
+    console.log(isRegistryVersion());
+    console.log(APP_VERSION_TYPE);
     Swal.fire({
       title: "Not implemented (yet!)",
       text: "We are working on this functionality-- you should be able to use it soon :)",
@@ -119,7 +122,7 @@ const LandingPage = () => {
             Tissue Test Result History
           </button>
 
-          {isRegistryEdition() && (
+          {isRegistryVersion() && (
             <button className="forward-button" onClick={handleRegistryFeature}>
               Registry Feature
             </button>

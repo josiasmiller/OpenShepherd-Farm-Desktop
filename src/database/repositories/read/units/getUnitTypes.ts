@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { UnitType } from "../../../models/read/units/unitType.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { UnitType } from "../../../models/read/units/unitType";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 
 export const getUnitTypes = async (): Promise<Result<UnitType[], string>> => {
