@@ -87,6 +87,24 @@ const LandingPage = () => {
   };
   
 
+  const testWew = () => {
+    const isRegistry = process.env.APP_VERSION_TYPE === 'registry';
+
+    console.log("MITCH DEBUG!");
+
+    if (isRegistry) {
+      // Enable registry-specific features
+        console.log("REGISTRY!!!!!");
+    } else {
+      // Standard behavior
+        console.log("NOT REGISTRY!");
+    }
+
+    console.log("REG --> " + process.env.APP_VERSION_TYPE);
+    console.log("======================");
+  }
+
+
   return (
     <div className="landing-page-container">
       {/* Top Half */}
@@ -107,6 +125,9 @@ const LandingPage = () => {
           </button>
           <button className="forward-button" onClick={saveTissueTestResultHistoryCsv}>
             Tissue Test Result History
+          </button>
+          <button className="forward-button" onClick={testWew}>
+            TEST IF REGISTRY
           </button>
         </div>
       </div>
