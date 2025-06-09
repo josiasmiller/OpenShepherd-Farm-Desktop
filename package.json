@@ -14,8 +14,8 @@
     "test": "jest",
     "package": "electron-forge package",
     "make": "npm run build && electron-forge make",
-    "make:standard": "cross-env APP_VERSION_TYPE=standard && npm run make",
-    "make:registry": "cross-env APP_VERSION_TYPE=registry && npm run make"
+    "make:standard": "cross-env APP_VERSION_TYPE=standard npm run build && electron-forge make",
+    "make:registry": "cross-env APP_VERSION_TYPE=registry npm run build && electron-forge make"
   },
   "keywords": [],
   "license": "ISC",
