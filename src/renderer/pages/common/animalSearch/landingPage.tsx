@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
+import { isRegistryVersion } from "../../../../scripts/appVersion";
+import CollapsibleSection from "../../../components/collapsible/collapsible";
 
 const LandingPage = () => {
+
+  const [showRegistryFeatures, setShowRegistryFeatures] = useState(true);
+
   const location = useLocation();
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
 
@@ -87,6 +92,16 @@ const LandingPage = () => {
   };
   
 
+  const printRegistryPapers = () => {
+    Swal.fire({
+      title: "This is a stub",
+      text: "This is here to indicate that registry and standard verisons of the app can be made",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  }
+
+
   return (
     <div className="landing-page-container">
       {/* Top Half */}
@@ -107,9 +122,23 @@ const LandingPage = () => {
           </button>
           <button className="forward-button" onClick={saveTissueTestResultHistoryCsv}>
             Tissue Test Result History
-          </button>
+          </button>          
         </div>
       </div>
+
+      {isRegistryVersion() &&
+        <CollapsibleSection
+          title="Registry Features"
+          isOpen={showRegistryFeatures}
+          onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
+        >
+          <div className="landing-page-top">
+            <button className="forward-button" onClick={printRegistryPapers}>
+              Print Registry Papers
+            </button>
+          </div>
+        </CollapsibleSection>
+      }
 
       {/* Bottom Half */}
       <div className="landing-page-bottom">

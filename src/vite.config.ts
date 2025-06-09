@@ -17,4 +17,7 @@ export default defineConfig({
     host: 'localhost',
     port: 5173,
   },
+  define: {
+    'process.env.APP_VERSION_TYPE': JSON.stringify(process.env.APP_VERSION_TYPE || 'standard'),
+  },
 });

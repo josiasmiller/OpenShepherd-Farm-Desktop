@@ -15,7 +15,6 @@ const getPlatformIcon = () => {
   }
 };
 
-
 const getCurrentDirectory = () => {
   return path.dirname(fileURLToPath(import.meta.url));
 };
