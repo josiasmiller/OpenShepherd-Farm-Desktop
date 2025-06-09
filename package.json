@@ -10,12 +10,12 @@
     "build:standard": "cross-env APP_VERSION_TYPE=standard npm run build",
     "build:registry": "cross-env APP_VERSION_TYPE=registry npm run build",
     "start": "electron-forge start",
-    "start:registry": "cross-env APP_VERSION_TYPE=registry electron-forge start",
-    "build_start": "npm run build && cross-env NODE_ENV=development electron .",
     "vite": "vite --config src/vite.config.ts",
     "test": "jest",
     "package": "electron-forge package",
-    "make": "npm run build && electron-forge make"
+    "make": "npm run build && electron-forge make",
+    "make:standard": "cross-env APP_VERSION_TYPE=standard && npm run make",
+    "make:registry": "cross-env APP_VERSION_TYPE=registry && npm run make"
   },
   "keywords": [],
   "license": "ISC",

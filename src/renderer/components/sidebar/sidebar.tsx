@@ -7,6 +7,7 @@ import transparentLogo from "../../../assets/AnimalTrakker.png";
 
 import { handleResult } from "../../../shared/results/resultTypes";
 import { DefaultSettingsResults } from "../../../database";
+import { isRegistryVersion } from "../../../scripts/appVersion";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -88,7 +89,10 @@ const Sidebar: React.FC = () => {
           alt="App Icon"
           className="logoImage"
         />
-        <h2 className="logoTitle">Farm Desktop</h2>
+        <h2 className="logoTitle">
+          {isRegistryVersion() ? 'Registry Desktop' : 'Farm Desktop'}
+        </h2>
+
       </div>
 
       <ul>

@@ -3,8 +3,6 @@ import { registerIpcHandlers } from "./ipcHandlers.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 
-// import { isRegistryVersion, APP_VERSION_TYPE } from '../config/version.js';
-
 let mainWindow: BrowserWindow | null;
 
 const getPlatformIcon = () => {
@@ -17,27 +15,11 @@ const getPlatformIcon = () => {
   }
 };
 
-
 const getCurrentDirectory = () => {
   return path.dirname(fileURLToPath(import.meta.url));
 };
 
 app.whenReady().then(() => {
-
-  const isRegistry = process.env.APP_VERSION_TYPE === 'registry';
-
-  console.log("MITCH DEBUG!");
-
-  if (isRegistry) {
-    // Enable registry-specific features
-      console.log("REGISTRY!!!!!");
-  } else {
-    // Standard behavior
-      console.log("NOT REGISTRY!");
-  }
-
-  console.log("REG --> " + process.env.APP_VERSION_TYPE);
-  console.log("======================");
 
   const currentDirectory = getCurrentDirectory();
   const preloadPath = path.join(currentDirectory, 'preload.cjs');

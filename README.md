@@ -48,21 +48,13 @@ npm run vite
 
 2. **Start Electron App** (in a second terminal):
 
-```sh
-npm run build_start
-```
-
----
-
-## Building the Project
-
-### Internal Build (Development/Debug)
-
 To build the TypeScript code and copy assets (for debugging or intermediate purposes):
 
 ```sh
-npm run build
+npm run build:{app_version}
 ```
+
+In this case, `{app_version}` can be `standard` for the `Farm Desktop` or `registry` for the `Registry Desktop`. It is case sensitive.
 
 ### Production Build & Packaging
 
