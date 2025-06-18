@@ -44,7 +44,7 @@ declare global {
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
-      exportBlackRegistration: (animalIds: string[]) => Promise<boolean>;
+      exportBlackRegistration: (animalIds: string[]) => Promise<{ success: boolean; resultingDirectory: string }>;
       getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
@@ -70,6 +70,7 @@ declare global {
       getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
       isDatabaseLoaded: () => Promise<boolean>;
+      openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;

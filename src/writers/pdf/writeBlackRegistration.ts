@@ -12,7 +12,9 @@ const __dirname = path.dirname(__filename);
 const templatePath = path.join(__dirname, "..", "..", "renderer", "assets", "ABWMSA_registration_template_V3_black.pdf");
 const existingPdfBytes = fs.readFileSync(templatePath);
 
-export const writeBlackRegistration = async (animalIds: string[]): Promise<boolean> => {
+export const writeBlackRegistration = async (
+  animalIds: string[]
+): Promise<{ success: boolean; resultingDirectory: string }> => {
 
   // Show the folder selection dialog
   const { filePaths, canceled } = await dialog.showOpenDialog({
@@ -23,7 +25,7 @@ export const writeBlackRegistration = async (animalIds: string[]): Promise<boole
   // Handle user cancellation
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled folder selection.");
-    return false;
+    return { success: false, resultingDirectory: "" };
   }
 
   const directoryPath = filePaths[0];
@@ -43,12 +45,12 @@ export const writeBlackRegistration = async (animalIds: string[]): Promise<boole
         success = false;
       },
     });
-
-    return success;
+    
+    return { success: true, resultingDirectory: directoryPath };
 
   } catch (e) {
     console.error("Error setting form fields:", e);
-    return false;
+    return { success: false, resultingDirectory: directoryPath };
   }
 };
 
@@ -137,8 +139,10 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
 
     const pdfBytes = await pdfDoc.save();
 
-    const flockName = regResult.animalIdentification.flockPrefix;
-    const animalName = regResult.animalIdentification.name;
+    // replace spaces with underscores
+    const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_');
+    const animalName = regResult.animalIdentification.name.replace(/ /g, '_');
+    
     const registrationNum = regResult.animalIdentification.registrationNumber;
 
     const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;

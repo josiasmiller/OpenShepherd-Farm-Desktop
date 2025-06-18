@@ -47,14 +47,18 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Pedigree
       const pedigreeUnwrap = await unwrapOrFail(pedigreeResult, "pedigree", animalId);
-      if (pedigreeUnwrap.tag === "error") return pedigreeUnwrap;
-      const pedigree = pedigreeUnwrap.data;
+      if (pedigreeUnwrap.tag === "error") {
+        return pedigreeUnwrap;
+      }
+      const pedigree : PedigreeNode = pedigreeUnwrap.data!;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalIdentification
       const idUnwrap = await unwrapOrFail(animalIdentificationResult, "animalIdentification", animalId);
-      if (idUnwrap.tag === "error") return idUnwrap;
-      const animalIdentification = idUnwrap.data;
+      if (idUnwrap.tag === "error") {
+        return idUnwrap;
+      }
+      const animalIdentification : AnimalIdentification = idUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Next

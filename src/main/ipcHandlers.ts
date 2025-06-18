@@ -1,5 +1,5 @@
 
-import { dialog, ipcMain, shell } from "electron";
+import { ipcMain, shell } from "electron";
 
 import { 
   animalSearch,
@@ -65,11 +65,6 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("export-black-registration", async (_, animals: string[]) => {
     return writeBlackRegistration(animals);
   });
-  // ipcMain.handle("export-black-registration", async (_, ...args: [string[], string]) => {
-  //   const [animals, directoryPath] = args;
-  //   return writeBlackRegistration(animals, directoryPath);
-  // });
-
 
   ipcMain.handle("select-database", selectNewDb);
 
@@ -135,6 +130,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("is-database-loaded", () => {
     return getDatabase() !== null;
+  });
+
+  ipcMain.handle('open-directory', async (_event, path) => {
+    return shell.openPath(path);
   });
 
   ipcMain.handle("open-external-url", async (_, url) => {

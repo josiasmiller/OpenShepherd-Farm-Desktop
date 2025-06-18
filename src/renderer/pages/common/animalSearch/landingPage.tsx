@@ -129,15 +129,24 @@ const LandingPage = () => {
 
     const animalIds: string[] = getAnimalIds();
 
-    const success = await window.electronAPI.exportBlackRegistration(animalIds);
-  
-    if (success) {
+    const response = await window.electronAPI.exportBlackRegistration(animalIds);
+    
+    if (response.success) {
+
       Swal.fire({
         title: "Success",
         text: "PDF saved successfully",
         icon: "success",
-        confirmButtonText: "OK",
+        showCancelButton: true,
+        confirmButtonText: "Open Folder",
+        cancelButtonText: "OK",
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.electronAPI.openDirectory(response.resultingDirectory);
+        }
       });
+
     } else {
       Swal.fire({
         title: "Error",
