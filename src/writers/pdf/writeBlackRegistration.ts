@@ -55,11 +55,12 @@ export const writeBlackRegistration = async (animalIds: string[]): Promise<boole
 
 const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: string) => {
 
-  var idx : number = 1;
-
   for (const regResult of data) {
     // Load the existing PDF and access the form
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+    // create fields that need to be created
+    var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 
     const form = pdfDoc.getForm();
 
@@ -70,7 +71,7 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
     form.getTextField("Codon171").setText(regResult.Codon171);
     form.getTextField("WgtBirth").setText(regResult.WgtBirth);
     form.getTextField("DESC").setText(regResult.DESC);
-    form.getTextField("Name").setText(regResult.Name);
+    form.getTextField("Name").setText(fullAnimalName);
     form.getTextField("Sex").setText(regResult.Sex);
     form.getTextField("BirthType").setText(regResult.BirthType);
     form.getTextField("OfficialEarTag").setText(regResult.OfficialEarTag);
@@ -134,11 +135,13 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
     form.getTextField("BreederInfo").setText(regResult.BreederInfo);
     form.getTextField("OwnerInfo").setText(regResult.OwnerInfo);
 
-
     const pdfBytes = await pdfDoc.save();
 
-    const filename = `registration_${idx}.pdf`;
-    idx++;
+    const flockName = regResult.animalIdentification.flockPrefix;
+    const animalName = regResult.animalIdentification.name;
+    const registrationNum = regResult.animalIdentification.registrationNumber;
+
+    const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
     const filePath = path.join(directoryPath, filename); 
     fs.writeFileSync(filePath, pdfBytes);
   }

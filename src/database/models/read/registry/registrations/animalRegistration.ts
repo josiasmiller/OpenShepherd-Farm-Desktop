@@ -1,3 +1,4 @@
+import { AnimalIdentification } from "../../animal/identification/animalIdentification";
 import { PedigreeNode } from "../../animal/pedigree/pedigree";
 
 export type AnimalRegistrationResult = {
@@ -8,7 +9,7 @@ export type AnimalRegistrationResult = {
   Codon171: string;
   WgtBirth: string;
   DESC: string;
-  Name: string;
+  animalIdentification: AnimalIdentification;
   Sex: string;
   BirthType: string;
   OfficialEarTag: string;
@@ -24,8 +25,6 @@ export type AnimalRegistrationResult = {
   OTelNo: string;
   OwnerScrapieID: string;
   PrintDate: string;
-  ssSpecial: string;
-  sdsdSpecial: string;
   BreederFlockID: string;
   OwnerFlockID: string;
   BreederInfo: string;

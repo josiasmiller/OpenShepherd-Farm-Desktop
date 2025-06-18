@@ -1,11 +1,27 @@
 import { Failure, handleResult, Result, Success } from "../../../../../shared/results/resultTypes.js";
 import { getDatabase } from "../../../../dbConnections.js";
+import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
+import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
 
 // STUB FUNCTION -- WILL NOT BE IN FINAL MERGE
 const stubber = async (animalId: string): Promise<string> => "fixme";
+
+const unwrapOrFail = async <T>(
+  result: Result<T, string>,
+  label: string,
+  animalId: string
+): Promise<Result<T, string>> => {
+  if (result.tag === "success") {
+    return new Success(result.data);
+  } else {
+    console.error(`${label} error for animal ID ${animalId}:`, result.error);
+    return new Failure(`Failed to get ${label} for animal ID ${animalId}`);
+  }
+};
+
 
 export const getAnimalRegistrationInfo = async (
   animalIds: string[]
@@ -22,21 +38,26 @@ export const getAnimalRegistrationInfo = async (
 
       const [
         pedigreeResult,
+        animalIdentificationResult,
       ] = await Promise.all([
         getPedigree(animalId, 4),
+        getAnimalIdentification(animalId),
       ]);
 
-      const pedigree: PedigreeNode | null = await handleResult(pedigreeResult, {
-        success: async (data) => data,
-        error: async (err) => {
-          console.error("Pedigree error:", err);
-          return null;
-        },
-      });
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Pedigree
+      const pedigreeUnwrap = await unwrapOrFail(pedigreeResult, "pedigree", animalId);
+      if (pedigreeUnwrap.tag === "error") return pedigreeUnwrap;
+      const pedigree = pedigreeUnwrap.data;
 
-      if (pedigree === null) {
-        return new Failure(`Failed to get pedigree for animal ID: ${animalId}`);
-      }
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // AnimalIdentification
+      const idUnwrap = await unwrapOrFail(animalIdentificationResult, "animalIdentification", animalId);
+      if (idUnwrap.tag === "error") return idUnwrap;
+      const animalIdentification = idUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Next
 
       const registration: AnimalRegistrationResult = {
         RegNo: animalId,
@@ -46,7 +67,7 @@ export const getAnimalRegistrationInfo = async (
         Codon171: await stubber(animalId),
         WgtBirth: await stubber(animalId),
         DESC: await stubber(animalId),
-        Name: await stubber(animalId),
+        animalIdentification: animalIdentification,
         Sex: await stubber(animalId),
         BirthType: await stubber(animalId),
         OfficialEarTag: await stubber(animalId),
@@ -62,8 +83,6 @@ export const getAnimalRegistrationInfo = async (
         OTelNo: "fixme",
         OwnerScrapieID: "fixme",
         PrintDate: "fixme",
-        ssSpecial: "fixme",
-        sdsdSpecial: "fixme",
         BreederFlockID: "fixme",
         OwnerFlockID: "fixme",
         BreederInfo: "fixme",
