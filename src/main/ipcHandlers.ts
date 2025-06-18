@@ -15,6 +15,7 @@ import {
   getExistingDefaults, 
   getFlockPrefixes,
   getOwners,
+  getPedigree,
   getPremises,
   getRemoveReasons,
   getSexes,
@@ -37,7 +38,7 @@ import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
-import { writeTestPdf } from "../writers/pdf/writeTestPdf.js";
+import { writeBlackRegistration } from "../writers/pdf/writeBlackRegistration.js";
 
 export const registerIpcHandlers = () => {
   
@@ -61,9 +62,14 @@ export const registerIpcHandlers = () => {
     return writeTissueTestResults(animals);
   });
 
-  ipcMain.handle("export-pdf-test", async (_, animals: string[]) => {
-    return writeTestPdf(animals);
+  ipcMain.handle("export-black-registration", async (_, animals: string[]) => {
+    return writeBlackRegistration(animals);
   });
+  // ipcMain.handle("export-black-registration", async (_, ...args: [string[], string]) => {
+  //   const [animals, directoryPath] = args;
+  //   return writeBlackRegistration(animals, directoryPath);
+  // });
+
 
   ipcMain.handle("select-database", selectNewDb);
 
@@ -96,6 +102,10 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-locations", getTagLocations);
 
   ipcMain.handle("get-owner-info", getOwners);
+
+  ipcMain.handle("get-pedigree", async (_, animalId) => {
+    return getPedigree(animalId, 4); // TODO --> what depth to use?
+  });
 
   ipcMain.handle("get-premise-info", getPremises);
 
