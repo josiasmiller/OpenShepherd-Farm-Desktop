@@ -20,8 +20,6 @@ export const getAnimalIdentification = async (animalId : string): Promise<Result
     WHERE a.id_animalid = ?;
   `;
 
-
-
   return new Promise((resolve, reject) => {
     db.all(identificationQuery, [animalId], (err, rows) => {
       if (err) {

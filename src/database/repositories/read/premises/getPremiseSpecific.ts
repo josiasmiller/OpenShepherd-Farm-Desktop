@@ -1,17 +1,23 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Premise } from "../../../models/read/premises/premise.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { State } from "../../../models/read/locations/state.js";
 
-// Define the expected structure of a row from the database
+// Updated row type to include full state fields
 type PremiseRow = {
   premise_id: string;
   address_one: string;
   city: string;
   postcode: string;
   country_name: string;
+  state_id: string | null;
+  state_name: string | null;
+  state_abbrev: string | null;
+  state_display_order: number | null;
+  state_country_id: string | null;
 };
 
-// Function to fetch a single premise from the database using premiseId
+// Fetch a single premise including state info
 export const getPremiseSpecific = async (premiseId: string): Promise<Result<Premise, string>> => {
   const db = await getDatabase();
   if (db == null) {
@@ -24,13 +30,16 @@ export const getPremiseSpecific = async (premiseId: string): Promise<Result<Prem
         p.premise_address1 AS address_one,
         p.premise_city AS city,
         p.premise_postcode AS postcode,
-        c.country_name AS country_name
-    FROM 
-        premise_table p
-    JOIN 
-        country_table c ON p.premise_id_countryid = c.id_countryid
-    WHERE
-        p.id_premiseid = ?
+        c.country_name AS country_name,
+        s.id_stateid AS state_id,
+        s.state_name AS state_name,
+        s.state_abbrev AS state_abbrev,
+        s.state_display_order AS state_display_order,
+        s.id_countryid AS state_country_id
+    FROM premise_table p
+    JOIN country_table c ON p.premise_id_countryid = c.id_countryid
+    LEFT JOIN state_table s ON p.premise_id_stateid = s.id_stateid
+    WHERE p.id_premiseid = ?
     LIMIT 1`;
 
   return new Promise((resolve) => {
@@ -46,6 +55,13 @@ export const getPremiseSpecific = async (premiseId: string): Promise<Result<Prem
           city: row.city,
           postcode: row.postcode,
           country: row.country_name,
+          state: {
+            id: row.state_id ?? "",
+            name: row.state_name ?? "",
+            abbreviation: row.state_abbrev ?? "",
+            display_order: row.state_display_order ?? 0,
+            country_id: row.state_country_id ?? "",
+          } as State,
         };
 
         resolve(new Success(result));

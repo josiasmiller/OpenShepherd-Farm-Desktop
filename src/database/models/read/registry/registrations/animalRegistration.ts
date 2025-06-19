@@ -1,6 +1,7 @@
 import { Sex } from "../../animal/general/sex";
 import { AnimalIdentification } from "../../animal/identification/animalIdentification";
 import { PedigreeNode } from "../../animal/pedigree/pedigree";
+import { Owner } from "../../owners/owner";
 
 export type AnimalRegistrationResult = {
   RegNo: string;
@@ -22,12 +23,14 @@ export type AnimalRegistrationResult = {
   BTelNo: string;
   OTelNo: string;
   PrintDate: string;
-  BreederInfo: string;
-  BreederFlockID: string;
-  BreederMailingAddress: string;
-  BreederScrapieID: string;
-  OwnerInfo: string;
-  OwnerFlockID: string;
-  OwnerMailingAddress: string;
-  OwnerScrapieID: string;
+  breeder: Owner;
+  // owner: Owner; // TODO --------------> UNCOMMENT WHEN READY
+  // BreederInfo: string;
+  // BreederFlockID: string;
+  // BreederMailingAddress: string;
+  // BreederScrapieID: string;
+  // OwnerInfo: string;
+  // OwnerFlockID: string;
+  // OwnerMailingAddress: string;
+  // OwnerScrapieID: string;
 }

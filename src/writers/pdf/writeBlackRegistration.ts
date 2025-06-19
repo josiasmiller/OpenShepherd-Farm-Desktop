@@ -3,8 +3,9 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { PDFDocument } from "pdf-lib";
 import { AnimalRegistrationResult, getAnimalRegistrationInfo } from "../../database/index.js";
-import { handleResult } from "../../shared/results/resultTypes.js";
+import { Failure, handleResult, Result, Success } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
+// import { OwnerType } from "../../database/client-types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,14 +38,20 @@ export const writeBlackRegistration = async (
 
     await handleResult(registrationResults, {
       success: async (data) => {
-        await _handleSuccess(data, directoryPath);
-        success = true;
+        const result = await _handleRegistrationWrite(data, directoryPath);
+        if (result instanceof Success) {
+          success = true;
+        } else if (result instanceof Failure) {
+          console.error("PDF generation failed:", result.error);
+          success = false;
+        }
       },
       error: (err) => {
         console.error("Failed to fetch existing defaults:", err);
         success = false;
       },
     });
+
     
     return { success: true, resultingDirectory: directoryPath };
 
@@ -55,7 +62,10 @@ export const writeBlackRegistration = async (
 };
 
 
-const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: string) => {
+const _handleRegistrationWrite = async (
+  data: AnimalRegistrationResult[],
+  directoryPath: string
+): Promise<Result<void, string>> => {
 
   for (const regResult of data) {
     // Load the existing PDF and access the form
@@ -63,6 +73,23 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
 
     // create fields that need to be created
     var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
+
+    const breederPremAddress = regResult.breeder.premise.address;
+    const breederPremCity = regResult.breeder.premise.city;
+    const breederPremState = regResult.breeder.premise.state.name;
+    const breederPremPost = regResult.breeder.premise.postcode;
+
+    var breederName : string;
+
+    if (regResult.breeder.type == "contact") {
+      breederName = `${regResult.breeder.contact.firstName} ${regResult.breeder.contact.lastName}`;
+    } else if (regResult.breeder.type == "company") {
+      breederName = regResult.breeder.company.name;
+    } else {
+      return new Failure(`Invalid OwnerType on breeder`);
+    }
+
+    var breederMailingAddress: string = `${breederName}, ${breederPremAddress}, ${breederPremCity}, ${breederPremState}, ${breederPremPost}`;
 
     const form = pdfDoc.getForm();
 
@@ -125,28 +152,36 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
     form.getTextField("ddddSpecial").setText(regResult.pedigree.damPedigree?.damPedigree?.damPedigree?.damPedigree?.registryName);
 
 
-    form.getTextField("BreederMailingAddress").setText(regResult.BreederMailingAddress);
+    console.log("MITCH DEBUG!!!");
+    console.log(breederMailingAddress);
+
+    form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
     form.getTextField("BTelNo").setText(regResult.BTelNo);
-    form.getTextField("BreederScrapieID").setText(regResult.BreederScrapieID);
-    form.getTextField("OwnerMailingAddress").setText(regResult.OwnerMailingAddress);
+    // form.getTextField("BreederScrapieID").setText(regResult.BreederScrapieID);
+    // form.getTextField("OwnerMailingAddress").setText(regResult.OwnerMailingAddress);
     form.getTextField("OTelNo").setText(regResult.OTelNo);
-    form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
+    // form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
     form.getTextField("PrintDate").setText(regResult.PrintDate);
-    form.getTextField("BreederFlockID").setText(regResult.BreederFlockID);
-    form.getTextField("OwnerFlockID").setText(regResult.OwnerFlockID);
-    form.getTextField("BreederInfo").setText(regResult.BreederInfo);
-    form.getTextField("OwnerInfo").setText(regResult.OwnerInfo);
+    // form.getTextField("BreederFlockID").setText(regResult.BreederFlockID);
+    // form.getTextField("OwnerFlockID").setText(regResult.OwnerFlockID);
+    // form.getTextField("BreederInfo").setText(regResult.BreederInfo);
+    // form.getTextField("OwnerInfo").setText(regResult.OwnerInfo);
 
     const pdfBytes = await pdfDoc.save();
 
-    // replace spaces with underscores
-    const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_');
-    const animalName = regResult.animalIdentification.name.replace(/ /g, '_');
-    
+    const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_'); // replace spaces with underscores
+    const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
     const registrationNum = regResult.animalIdentification.registrationNumber;
 
     const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
     const filePath = path.join(directoryPath, filename); 
-    fs.writeFileSync(filePath, pdfBytes);
+    // Write file, wrap in try/catch to catch fs errors
+    try {
+      fs.writeFileSync(filePath, pdfBytes);
+    } catch (e: any){
+      return new Failure(`Failed to write PDF file: ${e.message}`);
+    }    
   }
+  
+  return new Success(undefined);
 } 

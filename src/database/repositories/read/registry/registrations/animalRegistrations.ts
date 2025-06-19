@@ -3,10 +3,12 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
 import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
+import { Owner } from "../../../../models/read/owners/owner.js";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
 import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
+import { getBreeder } from "../../owners/getOwner.js";
 
 // STUB FUNCTION -- WILL NOT BE IN FINAL MERGE
 const stubber = async (animalId: string): Promise<string> => "fixme";
@@ -41,10 +43,12 @@ export const getAnimalRegistrationInfo = async (
       const [
         pedigreeResult,
         animalIdentificationResult,
+        breederResult,
         animalSexResult,
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
+        getBreeder(animalId),
         getSexFromAnimalId(animalId),
       ]);
 
@@ -63,6 +67,14 @@ export const getAnimalRegistrationInfo = async (
         return idUnwrap;
       }
       const animalIdentification : AnimalIdentification = idUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // breeder
+      const breederUnwrap = await unwrapOrFail(breederResult, "animalIdentification", animalId);
+      if (breederUnwrap.tag === "error") {
+        return breederUnwrap;
+      }
+      const breeder : Owner = breederUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalSex
@@ -91,17 +103,18 @@ export const getAnimalRegistrationInfo = async (
         Wgt2nd: "fixme",
         Inbreeding: "fixme",
         pedigree: pedigree!,
-        BreederMailingAddress: "fixme",
+        breeder: breeder,
+        // BreederMailingAddress: "fixme",
         BTelNo: "fixme",
-        BreederScrapieID: "fixme",
-        OwnerMailingAddress: "fixme",
+        // BreederScrapieID: "fixme",
+        // OwnerMailingAddress: "fixme",
         OTelNo: "fixme",
-        OwnerScrapieID: "fixme",
+        // OwnerScrapieID: "fixme",
         PrintDate: "fixme",
-        BreederFlockID: "fixme",
-        OwnerFlockID: "fixme",
-        BreederInfo: "fixme",
-        OwnerInfo: "fixme",
+        // BreederFlockID: "fixme",
+        // OwnerFlockID: "fixme",
+        // BreederInfo: "fixme",
+        // OwnerInfo: "fixme",
       };
 
       results.push(registration);
