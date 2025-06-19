@@ -1,3 +1,4 @@
+import { Sex } from "../../animal/general/sex";
 import { AnimalIdentification } from "../../animal/identification/animalIdentification";
 import { PedigreeNode } from "../../animal/pedigree/pedigree";
 
@@ -10,7 +11,7 @@ export type AnimalRegistrationResult = {
   WgtBirth: string;
   DESC: string;
   animalIdentification: AnimalIdentification;
-  Sex: string;
+  sex: Sex;
   BirthType: string;
   OfficialEarTag: string;
   FMICRON: string;
@@ -18,15 +19,15 @@ export type AnimalRegistrationResult = {
   Wgt2nd: string;
   Inbreeding: string;
   pedigree: PedigreeNode;
-  BreederMailingAddress: string;
   BTelNo: string;
-  BreederScrapieID: string;
-  OwnerMailingAddress: string;
   OTelNo: string;
-  OwnerScrapieID: string;
   PrintDate: string;
-  BreederFlockID: string;
-  OwnerFlockID: string;
   BreederInfo: string;
+  BreederFlockID: string;
+  BreederMailingAddress: string;
+  BreederScrapieID: string;
   OwnerInfo: string;
+  OwnerFlockID: string;
+  OwnerMailingAddress: string;
+  OwnerScrapieID: string;
 }

@@ -3,12 +3,12 @@ import {
   Breed,
   BreedRequest,
   Color, 
-  Company, 
+  Company,
+  Contact, 
   County, 
   DeathReason, 
   DefaultSettingsResults, 
-  FlockPrefix, 
-  Owner, 
+  FlockPrefix,  
   Premise, 
   RemoveReason, 
   Sex, 
@@ -40,7 +40,7 @@ const CreateDefaults: React.FC = () => {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // define the arrays that are used when retrieving data from the DB
-  const [contacts, setOwnerContacts] = useState<Owner[]>([]);
+  const [contacts, setOwnerContacts] = useState<Contact[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [registryCompanies, setRegistryCompanies] = useState<Company[]>([]);
   const [premises, setPremises] = useState<Premise[]>([]);
@@ -202,7 +202,7 @@ const CreateDefaults: React.FC = () => {
 
       const [
         existingDefaultsResult,
-        ownerResult,
+        contactResult,
         standardCompanyResult,
         registryCompanyResult,
         premiseResult,
@@ -225,7 +225,7 @@ const CreateDefaults: React.FC = () => {
         currencyUnitsResult,
       ] = await Promise.all([
         window.electronAPI.getExistingDefaults(),
-        window.electronAPI.getOwnerInfo(),
+        window.electronAPI.getContactInfo(),
         window.electronAPI.getCompanyInfo(false),
         window.electronAPI.getCompanyInfo(true),
         window.electronAPI.getPremiseInfo(),
@@ -257,8 +257,8 @@ const CreateDefaults: React.FC = () => {
         },
       });
 
-      handleResult(ownerResult, {
-        success: (data : Owner[]) => {
+      handleResult(contactResult, {
+        success: (data : Contact[]) => {
           setOwnerContacts(data);
         },
         error: (err) => {

@@ -14,7 +14,7 @@ export type { DeathReason } from "./models/read/deaths/deathReason.js";
 export type { DrugEvent } from "./models/read/animal/drugs/drugEvent.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
-export type { Owner } from "./models/read/owners/owner.js";
+export type { Contact } from "./models/read/owners/contact.js";
 export type { PedigreeNode } from "./models/read/animal/pedigree/pedigree.js"
 export type { Premise } from "./models/read/premises/premise.js";
 export type { RemoveReason } from "./models/read/tags/removeReason.js";
@@ -46,7 +46,7 @@ export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
 export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents.js";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
-export { getOwners } from "./repositories/read/owners/getOwner.js";
+export { getContacts } from "./repositories/read/owners/getContact.js";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree.js"
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";

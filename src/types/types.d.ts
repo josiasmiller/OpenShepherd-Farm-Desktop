@@ -7,13 +7,13 @@ import {
   BreedRequest, 
   Color, 
   Company,
+  Contact, 
   Country,
   County, 
   DeathReason,
   DefaultSettingsResults, 
   DrugEvent, 
   FlockPrefix, 
-  Owner, 
   Premise, 
   RemoveReason,
   Sex, 
@@ -45,8 +45,8 @@ declare global {
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
       exportBlackRegistration: (animalIds: string[]) => Promise<{ success: boolean; resultingDirectory: string }>;
-      getOwnerInfo: () => Promise<Result<Owner[], string>>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
+      getContactInfo: () => Promise<Result<Contact[], string>>;
       getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;
       getBirthTypes: () => Promise<Result<BirthType[], string>>;

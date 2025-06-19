@@ -1,37 +1,85 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { Owner } from "../../../models/read/owners/owner.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { OwnerType } from "../../../models/read/owners/ownerType.js";
+import { OwnerResult } from "../../../models/read/owners/owner.js";
+import { Company } from "../../../models/read/owners/company.js";
+import { Contact } from "../../../models/read/owners/contact.js";
 
-// Function to fetch owners from the database
-export const getOwners = async (): Promise<Result<Owner[], string>> => {
+import { REGISTRY_CHOCOLATE_WMSA, REGISTRY_COMPANY_ID, REGISTRY_WHITE_WMSA } from "../../../dbConstants.js";
+
+type BreederQueryRow = {
+  contact_id: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  company_id: string | null;
+  company_name: string | null;
+  registry_id: string | null;
+};
+
+
+export const getBreeder = async (
+  animalId: string
+): Promise<Result<OwnerResult, string>> => {
   const db = await getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
+  if (!db) {
+    return new Failure("DB instance is null");
   }
 
-  let ownerQuery = `
+  const breederQuery = `
     SELECT 
-        id_contactid AS contact_id, 
-        contact_first_name AS first_name, 
-        contact_last_name AS last_name
-    FROM 
-        contact_table`;
+      id_breeder_id_contactid AS contact_id,
+      id_breeder_id_companyid AS company_id,
+      contact_first_name AS first_name,
+      contact_last_name AS last_name,
+      company_name,
+      registry_id_companyid AS registry_id
+    FROM animal_registration_table
+    LEFT JOIN contact_table ON contact_table.id_contactid = animal_registration_table.id_breeder_id_contactid
+    LEFT JOIN company_table ON company_table.id_companyid = animal_registration_table.id_breeder_id_companyid
+    WHERE id_animalid = ?
+      AND id_registry_id_companyid IN (?, ?, ?)
+    ORDER BY registration_date ASC
+    LIMIT 1
+  `;
 
   return new Promise((resolve) => {
-    db.all(ownerQuery, [], (err, rows) => {
-      if (err) {
-        // On query error, return Failure with the error message
-        resolve(new Failure(`Database query failed: ${err.message}`));
-      } else {
-        // On success, map the rows into a list of Owner objects and return Success
-        const results: Owner[] = rows.map((row: any) => ({
-          id: row.contact_id,
-          firstName: row.first_name,
-          lastName: row.last_name,
-        }));
 
-        resolve(new Success(results));
+    db.get(
+      breederQuery,
+      [
+        animalId,
+        REGISTRY_COMPANY_ID,
+        REGISTRY_CHOCOLATE_WMSA,
+        REGISTRY_WHITE_WMSA,
+      ],
+      (err, row: BreederQueryRow | undefined) => {
+        if (err) {
+          resolve(new Failure(`Database query failed: ${err.message}`));
+        } else if (!row) {
+          resolve(new Failure("No breeder found for given animal ID"));
+        } else if (row.contact_id) {
+
+          const contact: Contact = {
+            id: row.contact_id,
+            firstName: row.first_name ?? "",
+            lastName: row.last_name ?? "",
+          };
+          resolve(new Success({ type: OwnerType.CONTACT, contact }));
+
+        } else if (row.company_id) {
+
+          const company: Company = {
+            id: row.company_id,
+            name: row.company_name ?? "",
+            registry_id: row.registry_id ?? undefined,
+          };
+          resolve(new Success({ type: OwnerType.COMPANY, company }));
+          
+        } else {
+          resolve(new Failure("Breeder has neither contact nor company info"));
+        }
       }
-    });
+    );
+
   });
 };

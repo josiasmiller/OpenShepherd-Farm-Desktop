@@ -9,12 +9,12 @@ import {
   getBreeds,
   getColors,
   getCompanies, 
+  getContacts,
   getCounties, 
   getCountries,
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
-  getOwners,
   getPedigree,
   getPremises,
   getRemoveReasons,
@@ -84,6 +84,8 @@ export const registerIpcHandlers = () => {
     return getCompanies(onlyGetRegistryCompanies);
   });
 
+  ipcMain.handle("get-contact-info", getContacts);
+
   ipcMain.handle("get-counties", getCounties);
 
   ipcMain.handle("get-countries", getCountries);
@@ -95,8 +97,6 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-flock-prefixes", getFlockPrefixes);
 
   ipcMain.handle("get-locations", getTagLocations);
-
-  ipcMain.handle("get-owner-info", getOwners);
 
   ipcMain.handle("get-pedigree", async (_, animalId) => {
     return getPedigree(animalId, 4); // TODO --> what depth to use?

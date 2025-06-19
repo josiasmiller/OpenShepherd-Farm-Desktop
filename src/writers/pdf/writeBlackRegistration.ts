@@ -74,7 +74,7 @@ const _handleSuccess = async (data : AnimalRegistrationResult[], directoryPath: 
     form.getTextField("WgtBirth").setText(regResult.WgtBirth);
     form.getTextField("DESC").setText(regResult.DESC);
     form.getTextField("Name").setText(fullAnimalName);
-    form.getTextField("Sex").setText(regResult.Sex);
+    form.getTextField("Sex").setText(regResult.sex.name);
     form.getTextField("BirthType").setText(regResult.BirthType);
     form.getTextField("OfficialEarTag").setText(regResult.OfficialEarTag);
     form.getTextField("FMICRON").setText(regResult.FMICRON);

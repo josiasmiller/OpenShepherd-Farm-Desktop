@@ -1,8 +1,10 @@
 import { Failure, handleResult, Result, Success } from "../../../../../shared/results/resultTypes.js";
 import { getDatabase } from "../../../../dbConnections.js";
+import { Sex } from "../../../../models/read/animal/general/sex.js";
 import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
+import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
 
@@ -39,9 +41,11 @@ export const getAnimalRegistrationInfo = async (
       const [
         pedigreeResult,
         animalIdentificationResult,
+        animalSexResult,
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
+        getSexFromAnimalId(animalId),
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +65,14 @@ export const getAnimalRegistrationInfo = async (
       const animalIdentification : AnimalIdentification = idUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Next
+      // AnimalSex
+      const sexUnwrap = await unwrapOrFail(animalSexResult, "animalSex", animalId);
+      if (sexUnwrap.tag === "error") {
+        return sexUnwrap;
+      }
+      const animalSex : Sex = sexUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
         RegNo: animalId,
@@ -72,7 +83,7 @@ export const getAnimalRegistrationInfo = async (
         WgtBirth: await stubber(animalId),
         DESC: await stubber(animalId),
         animalIdentification: animalIdentification,
-        Sex: await stubber(animalId),
+        sex: animalSex,
         BirthType: await stubber(animalId),
         OfficialEarTag: await stubber(animalId),
         FMICRON: "fixme",
