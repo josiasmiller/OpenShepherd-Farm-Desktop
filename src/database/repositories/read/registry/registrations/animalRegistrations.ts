@@ -87,7 +87,6 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
-        RegNo: animalId,
         BirthYear: await stubber(animalId),
         UKRegNo: await stubber(animalId),
         FarmID: await stubber(animalId),
@@ -104,13 +103,11 @@ export const getAnimalRegistrationInfo = async (
         Inbreeding: "fixme",
         pedigree: pedigree!,
         breeder: breeder,
-        // BreederMailingAddress: "fixme",
         BTelNo: "fixme",
         // BreederScrapieID: "fixme",
         // OwnerMailingAddress: "fixme",
         OTelNo: "fixme",
         // OwnerScrapieID: "fixme",
-        PrintDate: "fixme",
         // BreederFlockID: "fixme",
         // OwnerFlockID: "fixme",
         // BreederInfo: "fixme",

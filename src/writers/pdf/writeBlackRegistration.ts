@@ -67,6 +67,9 @@ const _handleRegistrationWrite = async (
   directoryPath: string
 ): Promise<Result<void, string>> => {
 
+  const now = new Date();
+  const printDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
+
   for (const regResult of data) {
     // Load the existing PDF and access the form
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
@@ -93,7 +96,7 @@ const _handleRegistrationWrite = async (
 
     const form = pdfDoc.getForm();
 
-    form.getTextField("RegNo").setText(regResult.RegNo);
+    form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
     form.getTextField("BirthYear").setText(regResult.BirthYear);
     form.getTextField("UKRegNo").setText(regResult.UKRegNo);
     form.getTextField("FarmID").setText(regResult.FarmID);
@@ -151,17 +154,13 @@ const _handleRegistrationWrite = async (
     form.getTextField("dddsSpecial").setText(regResult.pedigree.damPedigree?.damPedigree?.damPedigree?.sirePedigree?.registryName);
     form.getTextField("ddddSpecial").setText(regResult.pedigree.damPedigree?.damPedigree?.damPedigree?.damPedigree?.registryName);
 
-
-    console.log("MITCH DEBUG!!!");
-    console.log(breederMailingAddress);
-
     form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
     form.getTextField("BTelNo").setText(regResult.BTelNo);
     // form.getTextField("BreederScrapieID").setText(regResult.BreederScrapieID);
     // form.getTextField("OwnerMailingAddress").setText(regResult.OwnerMailingAddress);
     form.getTextField("OTelNo").setText(regResult.OTelNo);
     // form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
-    form.getTextField("PrintDate").setText(regResult.PrintDate);
+    form.getTextField("PrintDate").setText(printDate);
     // form.getTextField("BreederFlockID").setText(regResult.BreederFlockID);
     // form.getTextField("OwnerFlockID").setText(regResult.OwnerFlockID);
     // form.getTextField("BreederInfo").setText(regResult.BreederInfo);

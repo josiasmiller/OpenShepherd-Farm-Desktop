@@ -72,6 +72,7 @@ export const getBreeder = async (
               type: OwnerType.CONTACT,
               contact: contact,
               premise: premise,
+              scrapieId: "FIXME",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
           });
@@ -90,6 +91,7 @@ export const getBreeder = async (
               type: OwnerType.COMPANY,
               company: company,
               premise: premise,
+              scrapieId: "FIXME",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),
           });

@@ -1,6 +1,7 @@
 import { getDatabase } from "../../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
+import { REGISTRATION_REGISTERED } from "../../../../dbConstants.js";
 
 type PedigreeRow = {
   animalId: string;
@@ -28,30 +29,35 @@ export const getPedigree = async (
     return new Failure("DB Instance is null");
   }
 
-  // Flock Prefix, Animal name, Registration Number, sex name (Ram or Ewe), birth date in the format dd Month YYYY (29 Apr 2000) or (01 Jan 1983)  then name of the birth type (Single, Twin, Triplet) 
-
   const query = `
     SELECT 
       a.id_animalid AS animalId,
       a.sire_id AS sireId,
       a.dam_id AS damId,
       fr.flock_prefix AS flockPrefix,
-      COALESCE(ar.animal_name, a.animal_name) AS animalName,
+      a.animal_name AS animalName,
       ar.registration_number AS registrationNumber,
       s.sex_name AS sexName,
       a.birth_date AS birthDate,
       bt.birth_type AS birthType
     FROM animal_table a
-    LEFT JOIN animal_registration_table ar ON ar.id_animalid = a.id_animalid
-    LEFT JOIN flock_prefix_table fr ON fr.id_registry_id_companyid = ar.id_registry_id_companyid
-    LEFT JOIN sex_table s ON s.id_sexid = a.id_sexid
-    LEFT JOIN birth_type_table bt ON bt.id_birthtypeid = a.id_birthtypeid
+    LEFT JOIN animal_registration_table ar 
+      ON ar.id_animalid = a.id_animalid 
+      AND ar.id_animalregistrationtypeid = ?
+    LEFT JOIN animal_flock_prefix_table afp 
+      ON afp.id_animalid = a.id_animalid
+    LEFT JOIN flock_prefix_table fr 
+      ON fr.id_flockprefixid = afp.id_flockprefixid
+    LEFT JOIN sex_table s 
+      ON s.id_sexid = a.id_sexid
+    LEFT JOIN birth_type_table bt 
+      ON bt.id_birthtypeid = a.id_birthtypeid
     WHERE a.id_animalid = ?
     LIMIT 1
   `;
 
   return new Promise((resolve) => {
-    db.get(query, [animalId], async (err, row: PedigreeRow | undefined) => {
+    db.get(query, [REGISTRATION_REGISTERED, animalId], async (err, row: PedigreeRow | undefined) => {
       if (err) {
         resolve(new Failure(`Database error: ${err.message}`));
         return;
@@ -84,7 +90,11 @@ export const getPedigree = async (
       let birthDateFormatted: string | null = null;
 
       if (row.birthDate) {
-        const date = new Date(row.birthDate);
+        // const date = new Date(row.birthDate);
+
+        const [year, month, day] = row.birthDate.split("-").map(Number);
+        const date = new Date(year, month - 1, day); // months are 0-indexed
+
         if (!isNaN(date.getTime())) {
           birthDateFormatted = date.toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -94,17 +104,22 @@ export const getPedigree = async (
         }
       }
 
-      // construct registryName
-      const registryParts = [
-        row.flockPrefix,
-        row.animalName,
+      // Join flockPrefix and animalName with a space instead of comma
+      const namePart = [row.flockPrefix, row.animalName]
+        .filter((part) => part && part.trim() !== "")
+        .join(" "); // space instead of comma
+
+      // Other fields joined with commas
+      const otherParts = [
         row.registrationNumber,
         row.sexName,
         birthDateFormatted,
         row.birthType,
-      ];
+      ].filter((part) => part && part.trim() !== "")
+        .join(", ");
 
-      const registryName = registryParts
+      // Final registryName
+      const registryName = [namePart, otherParts]
         .filter((part) => part && part.trim() !== "")
         .join(", ");
 

@@ -4,7 +4,6 @@ import { PedigreeNode } from "../../animal/pedigree/pedigree";
 import { Owner } from "../../owners/owner";
 
 export type AnimalRegistrationResult = {
-  RegNo: string;
   BirthYear: string;
   UKRegNo: string;
   FarmID: string;
@@ -22,13 +21,8 @@ export type AnimalRegistrationResult = {
   pedigree: PedigreeNode;
   BTelNo: string;
   OTelNo: string;
-  PrintDate: string;
   breeder: Owner;
   // owner: Owner; // TODO --------------> UNCOMMENT WHEN READY
-  // BreederInfo: string;
-  // BreederFlockID: string;
-  // BreederMailingAddress: string;
-  // BreederScrapieID: string;
   // OwnerInfo: string;
   // OwnerFlockID: string;
   // OwnerMailingAddress: string;
