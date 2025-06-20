@@ -8,7 +8,8 @@ import { AnimalRegistrationResult } from "../../../../models/read/registry/regis
 import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
-import { getBreeder } from "../../owners/getOwner.js";
+import { getBreeder } from "../../owners/getBreeder.js";
+import { getOwner } from "../../owners/getOwner.js";
 
 // STUB FUNCTION -- WILL NOT BE IN FINAL MERGE
 const stubber = async (animalId: string): Promise<string> => "fixme";
@@ -44,11 +45,13 @@ export const getAnimalRegistrationInfo = async (
         pedigreeResult,
         animalIdentificationResult,
         breederResult,
+        ownerResult,
         animalSexResult,
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
         getBreeder(animalId),
+        getOwner(animalId),
         getSexFromAnimalId(animalId),
       ]);
 
@@ -70,11 +73,19 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // breeder
-      const breederUnwrap = await unwrapOrFail(breederResult, "animalIdentification", animalId);
+      const breederUnwrap = await unwrapOrFail(breederResult, "breeder", animalId);
       if (breederUnwrap.tag === "error") {
         return breederUnwrap;
       }
       const breeder : Owner = breederUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Owner
+      const ownerUnwrap = await unwrapOrFail(ownerResult, "owner", animalId);
+      if (ownerUnwrap.tag === "error") {
+        return ownerUnwrap;
+      }
+      const owner : Owner = ownerUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalSex
@@ -103,6 +114,7 @@ export const getAnimalRegistrationInfo = async (
         Inbreeding: "fixme",
         pedigree: pedigree!,
         breeder: breeder,
+        owner: owner,
         BTelNo: "fixme",
         // BreederScrapieID: "fixme",
         // OwnerMailingAddress: "fixme",

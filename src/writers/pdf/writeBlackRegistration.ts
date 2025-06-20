@@ -5,6 +5,7 @@ import { PDFDocument } from "pdf-lib";
 import { AnimalRegistrationResult, getAnimalRegistrationInfo } from "../../database/index.js";
 import { Failure, handleResult, Result, Success } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
+import { Owner } from "../../database/models/read/owners/owner.js";
 // import { OwnerType } from "../../database/client-types.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -77,22 +78,27 @@ const _handleRegistrationWrite = async (
     // create fields that need to be created
     var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 
-    const breederPremAddress = regResult.breeder.premise.address;
-    const breederPremCity = regResult.breeder.premise.city;
-    const breederPremState = regResult.breeder.premise.state.name;
-    const breederPremPost = regResult.breeder.premise.postcode;
+    ///////////////////////////////////////////////////////////////////
+    // create breeder mailing address
 
-    var breederName : string;
+    // const breederPremAddress = regResult.breeder.premise.address;
+    // const breederPremCity = regResult.breeder.premise.city;
+    // const breederPremState = regResult.breeder.premise.state.name;
+    // const breederPremPost = regResult.breeder.premise.postcode;
 
-    if (regResult.breeder.type == "contact") {
-      breederName = `${regResult.breeder.contact.firstName} ${regResult.breeder.contact.lastName}`;
-    } else if (regResult.breeder.type == "company") {
-      breederName = regResult.breeder.company.name;
-    } else {
-      return new Failure(`Invalid OwnerType on breeder`);
-    }
+    // var breederName : string;
 
-    var breederMailingAddress: string = `${breederName}, ${breederPremAddress}, ${breederPremCity}, ${breederPremState}, ${breederPremPost}`;
+    // if (regResult.breeder.type == "contact") {
+    //   breederName = `${regResult.breeder.contact.firstName} ${regResult.breeder.contact.lastName}`;
+    // } else if (regResult.breeder.type == "company") {
+    //   breederName = regResult.breeder.company.name;
+    // } else {
+    //   return new Failure(`Invalid OwnerType on breeder`);
+    // }
+
+    // var breederMailingAddress: string = `${breederName}, ${breederPremAddress}, ${breederPremCity}, ${breederPremState}, ${breederPremPost}`;
+    var breederMailingAddress: string = _getOwnerMailingAddress(regResult.breeder);
+    var ownerMailingAddress: string = _getOwnerMailingAddress(regResult.owner);
 
     const form = pdfDoc.getForm();
 
@@ -157,7 +163,7 @@ const _handleRegistrationWrite = async (
     form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
     form.getTextField("BTelNo").setText(regResult.BTelNo);
     // form.getTextField("BreederScrapieID").setText(regResult.BreederScrapieID);
-    // form.getTextField("OwnerMailingAddress").setText(regResult.OwnerMailingAddress);
+    form.getTextField("OwnerMailingAddress").setText(ownerMailingAddress);
     form.getTextField("OTelNo").setText(regResult.OTelNo);
     // form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
     form.getTextField("PrintDate").setText(printDate);
@@ -184,3 +190,22 @@ const _handleRegistrationWrite = async (
   
   return new Success(undefined);
 } 
+
+const _getOwnerMailingAddress = (o : Owner): string => {
+  const premAddress = o.premise.address;
+  const premCity = o.premise.city;
+  const premState = o.premise.state.name;
+  const premPost = o.premise.postcode;
+
+  var name : string;
+
+  if (o.type == "contact") {
+    name = `${o.contact.firstName} ${o.contact.lastName}`;
+  } else if (o.type == "company") {
+    name = o.company.name;
+  } else {
+    throw new Error("Invalid Owner Type");
+  }
+
+  return `${name}, ${premAddress}, ${premCity}, ${premState}, ${premPost}`;
+}

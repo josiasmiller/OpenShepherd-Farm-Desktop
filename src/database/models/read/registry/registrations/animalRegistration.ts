@@ -22,9 +22,5 @@ export type AnimalRegistrationResult = {
   BTelNo: string;
   OTelNo: string;
   breeder: Owner;
-  // owner: Owner; // TODO --------------> UNCOMMENT WHEN READY
-  // OwnerInfo: string;
-  // OwnerFlockID: string;
-  // OwnerMailingAddress: string;
-  // OwnerScrapieID: string;
+  owner: Owner;
 }
