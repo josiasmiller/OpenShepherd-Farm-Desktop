@@ -88,44 +88,25 @@ export const getPedigree = async (
         return;
       }
 
-      let birthDateFormatted: string | null = null;
+
+      var bday : Date | null;
 
       if (row.birthDate) {
-        const date = getDbDate(row.birthDate);
-
-        if (!isNaN(date.getTime())) {
-          birthDateFormatted = date.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          }); // e.g., "19 Apr 2007"
-        }
-      }
-
-      // Join flockPrefix and animalName with a space instead of comma
-      const namePart = [row.flockPrefix, row.animalName]
-        .filter((part) => part && part.trim() !== "")
-        .join(" "); // space instead of comma
-
-      // Other fields joined with commas
-      const otherParts = [
-        row.registrationNumber,
-        row.sexName,
-        birthDateFormatted,
-        row.birthType,
-      ].filter((part) => part && part.trim() !== "")
-        .join(", ");
-
-      // Final registryName
-      const registryName = [namePart, otherParts]
-        .filter((part) => part && part.trim() !== "")
-        .join(", ");
+        bday = getDbDate(row.birthDate);
+      } else {
+        bday = new Date("1972-01-01");
+      }        
 
       const pedigreeNode: PedigreeNode = {
         animalId: row.animalId,
         sirePedigree: sireResult.data,
         damPedigree: damResult.data,
-        registryName:registryName,
+        flockPrefix: row.flockPrefix,
+        animalName: row.animalName,
+        registrationNumber: row.registrationNumber,
+        sexName: row.sexName,
+        birthDate: bday,
+        birthType: row.birthType,
       };
 
       resolve(new Success(pedigreeNode));

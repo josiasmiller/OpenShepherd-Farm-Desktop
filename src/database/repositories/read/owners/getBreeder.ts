@@ -17,6 +17,8 @@ type BreederQueryRow = {
   company_name: string | null;
   registry_id: string | null;
   membership_number: string | null;
+  contact_phone: string | null;
+  company_phone: string | null;
 };
 
 export const getBreeder = async (
@@ -35,7 +37,25 @@ export const getBreeder = async (
       c.contact_last_name AS last_name,
       co.company AS company_name,
       r.id_registry_id_companyid AS registry_id,
-      o.membership_number
+      o.membership_number,
+
+      -- Subqueries to get first phone number
+      (
+        SELECT cp.contact_phone
+        FROM contact_phone_table cp
+        WHERE cp.id_contactid = r.id_breeder_id_contactid
+        ORDER BY cp.created ASC
+        LIMIT 1
+      ) AS contact_phone,
+
+      (
+        SELECT cp.company_phone
+        FROM company_phone_table cp
+        WHERE cp.id_companyid = r.id_breeder_id_companyid
+        ORDER BY cp.created ASC
+        LIMIT 1
+      ) AS company_phone
+
     FROM animal_registration_table r
     LEFT JOIN contact_table c ON c.id_contactid = r.id_breeder_id_contactid
     LEFT JOIN company_table co ON co.id_companyid = r.id_breeder_id_companyid
@@ -50,7 +70,6 @@ export const getBreeder = async (
     ORDER BY r.registration_date ASC
     LIMIT 1
   `;
-
 
   return new Promise((resolve) => {
     db.get(
@@ -82,7 +101,7 @@ export const getBreeder = async (
               contact: contact,
               premise: premise,
               scrapieId: "FIXME",
-              phoneNumber: "1234",
+              phoneNumber: row.contact_phone ?? "",
               flockId: row.membership_number ?? "",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
@@ -103,7 +122,7 @@ export const getBreeder = async (
               company: company,
               premise: premise,
               scrapieId: "FIXME",
-              phoneNumber: "1234",
+              phoneNumber: row.company_phone ?? "",
               flockId: row.membership_number ?? "",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),

@@ -5,12 +5,13 @@ export function escapeLikeString(str: string): string {
 }
 
 // INPUT MUST BE IN `YYYY-MM-DD` FORMAT!
-export function getDbDate(input: string): Date {
+export function getDbDate(input: string): Date | null {
   
   // Validate format: YYYY-MM-DD
   const datePattern = /^\d{4}-\d{2}-\d{2}$/;
   if (!datePattern.test(input)) {
-    throw new Error(`Invalid date format: ${input}. Expected format: YYYY-MM-DD.`);
+    console.error(`Invalid date format: ${input}. Expected format: YYYY-MM-DD.`);
+    return null;
   }
 
   const [yearStr, monthStr, dayStr] = input.split("-");
@@ -28,7 +29,8 @@ export function getDbDate(input: string): Date {
     date.getUTCMonth() !== month - 1 ||
     date.getUTCDate() !== day
   ) {
-    throw new Error(`Invalid date components: ${input}`);
+    console.error(`Invalid date components: ${input}`);
+    return null;
   }
 
   return date;

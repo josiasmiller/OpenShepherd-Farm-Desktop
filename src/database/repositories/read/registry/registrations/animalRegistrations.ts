@@ -98,7 +98,6 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
-        BirthYear: await stubber(animalId),
         UKRegNo: await stubber(animalId),
         FarmID: await stubber(animalId),
         Codon171: await stubber(animalId),
@@ -106,7 +105,6 @@ export const getAnimalRegistrationInfo = async (
         DESC: await stubber(animalId),
         animalIdentification: animalIdentification,
         sex: animalSex,
-        BirthType: await stubber(animalId),
         OfficialEarTag: await stubber(animalId),
         FMICRON: "fixme",
         CODON136: "fixme",
@@ -115,15 +113,6 @@ export const getAnimalRegistrationInfo = async (
         pedigree: pedigree!,
         breeder: breeder,
         owner: owner,
-        BTelNo: "fixme",
-        // BreederScrapieID: "fixme",
-        // OwnerMailingAddress: "fixme",
-        OTelNo: "fixme",
-        // OwnerScrapieID: "fixme",
-        // BreederFlockID: "fixme",
-        // OwnerFlockID: "fixme",
-        // BreederInfo: "fixme",
-        // OwnerInfo: "fixme",
       };
 
       results.push(registration);
