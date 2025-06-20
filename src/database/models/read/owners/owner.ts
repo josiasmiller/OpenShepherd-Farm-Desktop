@@ -6,7 +6,7 @@ import { OwnerType } from "./ownerType";
 
 interface OwnerBase {
   premise: Premise;
-  scrapieId: ScrapieFlockInfo;
+  scrapieId: ScrapieFlockInfo | null;
   phoneNumber: string;
   flockId: string;
 }

@@ -96,19 +96,25 @@ const _handleRegistrationWrite = async (
 
     form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
     form.getTextField("BirthYear").setText(bday);
-    form.getTextField("UKRegNo").setText(regResult.UKRegNo);
-    form.getTextField("FarmID").setText(regResult.FarmID);
-    form.getTextField("Codon171").setText(regResult.Codon171);
+    form.getTextField("FarmID").setText(regResult.unofficialTag.idNumber);
     form.getTextField("WgtBirth").setText(birthWeight);
-    form.getTextField("DESC").setText(regResult.DESC);
+
     form.getTextField("Name").setText(fullAnimalName);
     form.getTextField("Sex").setText(regResult.sex.name);
     form.getTextField("BirthType").setText(birthType);
-    form.getTextField("OfficialEarTag").setText(regResult.OfficialEarTag);
-    form.getTextField("FMICRON").setText(regResult.FMICRON);
-    form.getTextField("CODON136").setText(regResult.CODON136);
-    form.getTextField("Wgt2nd").setText(regResult.Wgt2nd);
-    form.getTextField("Inbreeding").setText(regResult.Inbreeding);
+    
+    if (regResult.officialTag){
+      form.getTextField("OfficialEarTag").setText(regResult.officialTag.idNumber);
+    }
+
+    // more fields that may be populated later. leaving for now so I don't have to search and find the fields on the PDF again
+    // form.getTextField("Codon171").setText(regResult.Codon171);
+    // form.getTextField("UKRegNo").setText(regResult.UKRegNo);
+    // form.getTextField("DESC").setText(regResult.DESC);
+    // form.getTextField("FMICRON").setText(regResult.FMICRON);
+    // form.getTextField("CODON136").setText(regResult.CODON136);
+    // form.getTextField("Wgt2nd").setText(regResult.Wgt2nd);
+    // form.getTextField("Inbreeding").setText(regResult.Inbreeding);
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // pedigree fields
@@ -201,7 +207,11 @@ const _handleRegistrationWrite = async (
     // paradoxically, the `BreederInfo` field is actually the field where the mailing address should be ...
     form.getTextField("BreederInfo").setText(breederMailingAddress);
     // form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
-    form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId.scrapieName);
+
+    if (regResult.breeder.scrapieId) {
+      form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId.scrapieName);
+    }
+
     form.getTextField("BreederFlockID").setText(regResult.breeder.flockId);
     form.getTextField("BTelNo").setText(regResult.breeder.phoneNumber);
 
@@ -209,7 +219,11 @@ const _handleRegistrationWrite = async (
     // paradoxically, the `OwnerInfo` field is actually the field where the mailing address should be ...
     form.getTextField("OwnerInfo").setText(ownerMailingAddress);
     // form.getTextField("OwnerMailingAddress").setText(ownerMailingAddress)
-    form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId.scrapieName);
+
+    if (regResult.owner.scrapieId) {
+      form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId.scrapieName);
+    }
+
     form.getTextField("OwnerFlockID").setText(regResult.owner.flockId);
     form.getTextField("OTelNo").setText(regResult.owner.phoneNumber);
 

@@ -10,7 +10,7 @@ type RawScrapieRow = {
 export const getScrapieFlockInfo = async (
   ownerId: string,
   isCompany: boolean
-): Promise<Result<ScrapieFlockInfo, string>> => {
+): Promise<Result<ScrapieFlockInfo | null, string>> => {
   const db = await getDatabase();
   if (db == null) {
     return new Failure("DB instance is null");
@@ -40,7 +40,7 @@ export const getScrapieFlockInfo = async (
       }
 
       if (!row) {
-        resolve(new Failure("No active scrapie flock number found for the given owner"));
+        resolve(new Success(null));
         return;
       }
 

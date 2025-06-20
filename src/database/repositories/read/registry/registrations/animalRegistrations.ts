@@ -4,12 +4,15 @@ import { BirthInfo } from "../../../../models/read/animal/births/birthInfo.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
 import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
+import { idTag } from "../../../../models/read/animal/tags/idTag.js";
 import { Owner } from "../../../../models/read/owners/owner.js";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
 import { getBirthInfo } from "../../animal/births/getBirthInfo.js";
 import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
+import { getMostRecentUnofficialTag } from "../../animal/tags/getRecentFarmTag.js";
+import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag.js";
 import { getBreeder } from "../../owners/getBreeder.js";
 import { getOwner } from "../../owners/getOwner.js";
 
@@ -35,6 +38,8 @@ export const getAnimalRegistrationInfo = async (
         animalIdentificationResult,
         breederResult,
         ownerResult,
+        officialTagResult,
+        unofficialTagResult,
         animalBirthInfoResult,
         animalSexResult,
       ] = await Promise.all([
@@ -42,6 +47,8 @@ export const getAnimalRegistrationInfo = async (
         getAnimalIdentification(animalId),
         getBreeder(animalId),
         getOwner(animalId),
+        getMostRecentOfficialTag(animalId),
+        getMostRecentUnofficialTag(animalId),
         getBirthInfo(animalId),
         getSexFromAnimalId(animalId),
       ]);
@@ -79,6 +86,22 @@ export const getAnimalRegistrationInfo = async (
       const owner : Owner = ownerUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Official Tag
+      const officialTagUnwrap = await unwrapOrFailWithAnimal(officialTagResult, "officialTag", animalId);
+      if (officialTagUnwrap.tag === "error") {
+        return officialTagUnwrap;
+      }
+      const officialTag : idTag | null = officialTagUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Unofficial Tag
+      const unofficialTagUnwrap = await unwrapOrFailWithAnimal(unofficialTagResult, "unofficialTag", animalId);
+      if (unofficialTagUnwrap.tag === "error") {
+        return unofficialTagUnwrap;
+      }
+      const unofficialTag : idTag = unofficialTagUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       // BirthInfo
       const birthInfoUnwrap = await unwrapOrFailWithAnimal(animalBirthInfoResult, "birthInfo", animalId);
       if (birthInfoUnwrap.tag === "error") {
@@ -97,11 +120,10 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
-        UKRegNo: await stubber(animalId),
-        FarmID: await stubber(animalId),
         Codon171: await stubber(animalId),
-        DESC: await stubber(animalId),
         animalIdentification: animalIdentification,
+        officialTag: officialTag,
+        unofficialTag: unofficialTag,
         sex: animalSex,
         OfficialEarTag: await stubber(animalId),
         FMICRON: "fixme",
