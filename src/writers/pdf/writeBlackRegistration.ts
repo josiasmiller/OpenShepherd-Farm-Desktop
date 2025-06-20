@@ -89,7 +89,8 @@ const _handleRegistrationWrite = async (
       year: "numeric",
     }) ?? ""; // format the string to match "12 Mar 1997" format
 
-    var birthType : string = regResult.pedigree.birthType ?? ""; // first node of the pedigree is the actual animal being searched
+    var birthType : string = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
+    var birthWeight : string = regResult.birthInfo.birthWeight.toString() ?? "";
 
     const form = pdfDoc.getForm();
 
@@ -98,7 +99,7 @@ const _handleRegistrationWrite = async (
     form.getTextField("UKRegNo").setText(regResult.UKRegNo);
     form.getTextField("FarmID").setText(regResult.FarmID);
     form.getTextField("Codon171").setText(regResult.Codon171);
-    form.getTextField("WgtBirth").setText(regResult.WgtBirth);
+    form.getTextField("WgtBirth").setText(birthWeight);
     form.getTextField("DESC").setText(regResult.DESC);
     form.getTextField("Name").setText(fullAnimalName);
     form.getTextField("Sex").setText(regResult.sex.name);
@@ -255,7 +256,7 @@ const _getOwnerMailingAddress = (o : Owner): string => {
 const _buildRegistryName = (pn : PedigreeNode | null): string => {
 
   if (!pn) {
-    return "--- INVALID DATA ---";
+    return "---INVALID DATA---";
   }
 
   let birthDateFormatted: string | null = null;

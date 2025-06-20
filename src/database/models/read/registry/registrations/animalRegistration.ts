@@ -1,3 +1,4 @@
+import { BirthInfo } from "../../animal/births/birthInfo";
 import { Sex } from "../../animal/general/sex";
 import { AnimalIdentification } from "../../animal/identification/animalIdentification";
 import { PedigreeNode } from "../../animal/pedigree/pedigree";
@@ -7,7 +8,6 @@ export type AnimalRegistrationResult = {
   UKRegNo: string;
   FarmID: string;
   Codon171: string;
-  WgtBirth: string;
   DESC: string;
   animalIdentification: AnimalIdentification;
   sex: Sex;
@@ -19,4 +19,5 @@ export type AnimalRegistrationResult = {
   pedigree: PedigreeNode;
   breeder: Owner;
   owner: Owner;
+  birthInfo: BirthInfo;
 }
