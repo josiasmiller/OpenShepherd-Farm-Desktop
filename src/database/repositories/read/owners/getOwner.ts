@@ -17,6 +17,7 @@ type OwnerQueryRow = {
   contact_last_name: string | null;
   company_name: string | null;
   registry_id: string | null;
+  membership_number: string | null;
 };
 
 export const getOwner = async (
@@ -34,13 +35,20 @@ export const getOwner = async (
       c.contact_first_name,
       c.contact_last_name,
       co.company AS company_name,
-      r.id_registry_id_companyid AS registry_id
+      r.id_registry_id_companyid AS registry_id,
+      o.membership_number
     FROM animal_ownership_history_table a
     LEFT JOIN contact_table c ON c.id_contactid = a.to_id_contactid
     LEFT JOIN company_table co ON co.id_companyid = a.to_id_companyid
     LEFT JOIN animal_registration_table r ON r.id_animalid = a.id_animalid
+    LEFT JOIN owner_registration_table o
+      ON (
+        (o.id_contactid IS NOT NULL AND o.id_contactid = a.to_id_contactid)
+        OR
+        (o.id_companyid IS NOT NULL AND o.id_companyid = a.to_id_companyid)
+      )
     WHERE a.id_animalid = ? 
-      AND id_registry_id_companyid IN (?, ?, ?)
+      AND r.id_registry_id_companyid IN (?, ?, ?)
     ORDER BY a.transfer_date DESC
     LIMIT 1
   `;
@@ -69,9 +77,11 @@ export const getOwner = async (
         return handleResult(premiseResult, {
           success: (premise) => resolve(new Success({
             type: OwnerType.CONTACT,
-            contact,
-            premise,
+            contact: contact,
+            premise: premise,
             scrapieId: "FIXME",
+            phoneNumber: "1234",
+            flockId: row.membership_number ?? "",
           })),
           error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
         });
@@ -88,9 +98,11 @@ export const getOwner = async (
         return handleResult(premiseResult, {
           success: (premise) => resolve(new Success({
             type: OwnerType.COMPANY,
-            company,
-            premise,
+            company: company,
+            premise: premise,
             scrapieId: "FIXME",
+            phoneNumber: "1234",
+            flockId: row.membership_number ?? "",
           })),
           error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),
         });

@@ -3,18 +3,21 @@ import { Company } from "./company";
 import { Contact } from "./contact";
 import { OwnerType } from "./ownerType";
 
-type OwnerContact = {
+interface OwnerBase {
+  premise: Premise;
+  scrapieId: string;
+  phoneNumber: string;
+  flockId: string;
+}
+
+export interface OwnerContact extends OwnerBase {
   type: OwnerType.CONTACT;
   contact: Contact;
-  premise: Premise;
-  scrapieId: string;
-};
+}
 
-type OwnerCompany = {
+export interface OwnerCompany extends OwnerBase {
   type: OwnerType.COMPANY;
   company: Company;
-  premise: Premise;
-  scrapieId: string;
-};
+}
 
 export type Owner = OwnerContact | OwnerCompany;

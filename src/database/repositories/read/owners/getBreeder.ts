@@ -16,6 +16,7 @@ type BreederQueryRow = {
   company_id: string | null;
   company_name: string | null;
   registry_id: string | null;
+  membership_number: string | null;
 };
 
 export const getBreeder = async (
@@ -28,20 +29,28 @@ export const getBreeder = async (
 
   const breederQuery = `
     SELECT 
-      id_breeder_id_contactid AS contact_id,
-      id_breeder_id_companyid AS company_id,
-      contact_first_name AS first_name,
-      contact_last_name AS last_name,
-      company as company_name,
-      id_registry_id_companyid AS registry_id
-    FROM animal_registration_table
-    LEFT JOIN contact_table ON contact_table.id_contactid = animal_registration_table.id_breeder_id_contactid
-    LEFT JOIN company_table ON company_table.id_companyid = animal_registration_table.id_breeder_id_companyid
-    WHERE id_animalid = ?
-      AND id_registry_id_companyid IN (?, ?, ?)
-    ORDER BY registration_date ASC
+      r.id_breeder_id_contactid AS contact_id,
+      r.id_breeder_id_companyid AS company_id,
+      c.contact_first_name AS first_name,
+      c.contact_last_name AS last_name,
+      co.company AS company_name,
+      r.id_registry_id_companyid AS registry_id,
+      o.membership_number
+    FROM animal_registration_table r
+    LEFT JOIN contact_table c ON c.id_contactid = r.id_breeder_id_contactid
+    LEFT JOIN company_table co ON co.id_companyid = r.id_breeder_id_companyid
+    LEFT JOIN owner_registration_table o
+      ON (
+        (o.id_contactid IS NOT NULL AND o.id_contactid = r.id_breeder_id_contactid)
+        OR
+        (o.id_companyid IS NOT NULL AND o.id_companyid = r.id_breeder_id_companyid)
+      )
+    WHERE r.id_animalid = ?
+      AND r.id_registry_id_companyid IN (?, ?, ?)
+    ORDER BY r.registration_date ASC
     LIMIT 1
   `;
+
 
   return new Promise((resolve) => {
     db.get(
@@ -73,6 +82,8 @@ export const getBreeder = async (
               contact: contact,
               premise: premise,
               scrapieId: "FIXME",
+              phoneNumber: "1234",
+              flockId: row.membership_number ?? "",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
           });
@@ -92,6 +103,8 @@ export const getBreeder = async (
               company: company,
               premise: premise,
               scrapieId: "FIXME",
+              phoneNumber: "1234",
+              flockId: row.membership_number ?? "",
             })),
             error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),
           });

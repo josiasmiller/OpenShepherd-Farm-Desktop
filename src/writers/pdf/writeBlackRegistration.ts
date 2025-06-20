@@ -78,32 +78,20 @@ const _handleRegistrationWrite = async (
     // create fields that need to be created
     var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 
-    ///////////////////////////////////////////////////////////////////
-    // create breeder mailing address
-
-    // const breederPremAddress = regResult.breeder.premise.address;
-    // const breederPremCity = regResult.breeder.premise.city;
-    // const breederPremState = regResult.breeder.premise.state.name;
-    // const breederPremPost = regResult.breeder.premise.postcode;
-
-    // var breederName : string;
-
-    // if (regResult.breeder.type == "contact") {
-    //   breederName = `${regResult.breeder.contact.firstName} ${regResult.breeder.contact.lastName}`;
-    // } else if (regResult.breeder.type == "company") {
-    //   breederName = regResult.breeder.company.name;
-    // } else {
-    //   return new Failure(`Invalid OwnerType on breeder`);
-    // }
-
-    // var breederMailingAddress: string = `${breederName}, ${breederPremAddress}, ${breederPremCity}, ${breederPremState}, ${breederPremPost}`;
     var breederMailingAddress: string = _getOwnerMailingAddress(regResult.breeder);
     var ownerMailingAddress: string = _getOwnerMailingAddress(regResult.owner);
 
     const form = pdfDoc.getForm();
 
+    console.log("MITCH DEBUG!!!");
+    for (const field of form.getFields()) {
+      const name = field.getName();
+      const type = field.constructor.name; // e.g., PDFTextField, PDFCheckBox, etc.
+      console.log(`Field: ${name}, Type: ${type}`);
+    }
+
     form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
-    form.getTextField("BirthYear").setText(regResult.BirthYear);
+    form.getTextField("BirthYear").setText(regResult.animalIdentification.birthDate.getUTCFullYear().toString());
     form.getTextField("UKRegNo").setText(regResult.UKRegNo);
     form.getTextField("FarmID").setText(regResult.FarmID);
     form.getTextField("Codon171").setText(regResult.Codon171);
@@ -161,16 +149,24 @@ const _handleRegistrationWrite = async (
     form.getTextField("ddddSpecial").setText(regResult.pedigree.damPedigree?.damPedigree?.damPedigree?.damPedigree?.registryName);
 
     form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
+    form.getTextField("BreederScrapieID").setText("WEWLAD_BreederScrapieID");
+    form.getTextField("BreederInfo").setText("WEWLAD_BreederInfo");
+    form.getTextField("BreederFlockID").setText(regResult.breeder.flockId);
     form.getTextField("BTelNo").setText(regResult.BTelNo);
+    
     // form.getTextField("BreederScrapieID").setText(regResult.BreederScrapieID);
     form.getTextField("OwnerMailingAddress").setText(ownerMailingAddress);
     form.getTextField("OTelNo").setText(regResult.OTelNo);
-    // form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
-    form.getTextField("PrintDate").setText(printDate);
-    // form.getTextField("BreederFlockID").setText(regResult.BreederFlockID);
-    // form.getTextField("OwnerFlockID").setText(regResult.OwnerFlockID);
+
+
+    form.getTextField("OwnerFlockID").setText(regResult.owner.flockId);
     // form.getTextField("BreederInfo").setText(regResult.BreederInfo);
     // form.getTextField("OwnerInfo").setText(regResult.OwnerInfo);
+    // form.getTextField("OwnerScrapieID").setText(regResult.OwnerScrapieID);
+
+
+    form.getTextField("PrintDate").setText(printDate);
+
 
     const pdfBytes = await pdfDoc.save();
 

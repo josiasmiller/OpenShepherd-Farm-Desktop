@@ -2,6 +2,7 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
 import { REGISTRATION_REGISTERED } from "../../../../dbConstants.js";
+import { getDbDate } from "../../../../dbUtils.js";
 
 type PedigreeRow = {
   animalId: string;
@@ -90,10 +91,7 @@ export const getPedigree = async (
       let birthDateFormatted: string | null = null;
 
       if (row.birthDate) {
-        // const date = new Date(row.birthDate);
-
-        const [year, month, day] = row.birthDate.split("-").map(Number);
-        const date = new Date(year, month - 1, day); // months are 0-indexed
+        const date = getDbDate(row.birthDate);
 
         if (!isNaN(date.getTime())) {
           birthDateFormatted = date.toLocaleDateString("en-GB", {
