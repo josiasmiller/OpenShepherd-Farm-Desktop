@@ -1,13 +1,18 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure, handleResult } from "../../../../shared/results/resultTypes.js";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes.js";
 import { Owner } from "../../../models/read/owners/owner.js";
 import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { getContactPremise } from "../premises/getContactPremise.js";
 import { getCompanyPremise } from "../premises/getCompanyPremise.js";
 import { Contact } from "../../../models/read/owners/contact.js";
 import { Company } from "../../../models/read/owners/company.js";
+import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
 
-import { REGISTRY_CHOCOLATE_WMSA, REGISTRY_COMPANY_ID, REGISTRY_WHITE_WMSA } from "../../../dbConstants.js";
+import {
+  REGISTRY_CHOCOLATE_WMSA,
+  REGISTRY_COMPANY_ID,
+  REGISTRY_WHITE_WMSA,
+} from "../../../dbConstants.js";
 
 type OwnerQueryRow = {
   to_id_contactid: string | null;
@@ -39,7 +44,6 @@ export const getOwner = async (
       r.id_registry_id_companyid AS registry_id,
       o.membership_number,
 
-      -- Subqueries to get first phone number
       (
         SELECT cp.contact_phone
         FROM contact_phone_table cp
@@ -72,64 +76,77 @@ export const getOwner = async (
     LIMIT 1
   `;
 
-
   return new Promise((resolve) => {
-    db.get(ownerQuery, [animalId, REGISTRY_COMPANY_ID, REGISTRY_CHOCOLATE_WMSA, REGISTRY_WHITE_WMSA], async (err, row: OwnerQueryRow | undefined) => {
-      if (err) {
-        resolve(new Failure(`Database query failed: ${err.message}`));
-        return;
+    db.get(
+      ownerQuery,
+      [animalId, REGISTRY_COMPANY_ID, REGISTRY_CHOCOLATE_WMSA, REGISTRY_WHITE_WMSA],
+      async (err, row: OwnerQueryRow | undefined) => {
+        if (err) {
+          resolve(new Failure(`Database query failed: ${err.message}`));
+          return;
+        }
+
+        if (!row) {
+          resolve(new Failure("No ownership record found for given animal ID"));
+          return;
+        }
+
+        if (row.to_id_contactid) {
+          const contact: Contact = {
+            id: row.to_id_contactid,
+            firstName: row.contact_first_name ?? "",
+            lastName: row.contact_last_name ?? "",
+          };
+
+          const premiseResult = await getContactPremise(contact.id);
+          const premise = await unwrapOrFailWithAnimal(premiseResult, "owner premise", animalId);
+          if (premise.tag === "error") return resolve(premise);
+
+          const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+          const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "owner scrapie flock number", animalId);
+          if (scrapieId.tag === "error") return resolve(scrapieId);
+
+          return resolve(
+            new Success({
+              type: OwnerType.CONTACT,
+              contact,
+              premise: premise.data,
+              scrapieId: scrapieId.data,
+              phoneNumber: row.contact_phone ?? "",
+              flockId: row.membership_number ?? "",
+            })
+          );
+
+        } else if (row.to_id_companyid) {
+          const company: Company = {
+            id: row.to_id_companyid,
+            name: row.company_name ?? "",
+            registry_id: row.registry_id ?? undefined,
+          };
+
+          const premiseResult = await getCompanyPremise(company.id);
+          const premise = await unwrapOrFailWithAnimal(premiseResult, "owner premise", animalId);
+          if (premise.tag === "error") return resolve(premise);
+
+          const scrapieResult = await getScrapieFlockInfo(company.id, true);
+          const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "owner scrapie flock number", animalId);
+          if (scrapieId.tag === "error") return resolve(scrapieId);
+
+          return resolve(
+            new Success({
+              type: OwnerType.COMPANY,
+              company,
+              premise: premise.data,
+              scrapieId: scrapieId.data,
+              phoneNumber: row.company_phone ?? "",
+              flockId: row.membership_number ?? "",
+            })
+          );
+
+        } else {
+          resolve(new Failure("Ownership record has neither contact nor company ID"));
+        }
       }
-
-      if (!row) {
-        resolve(new Failure("No ownership record found for given animal ID"));
-        return;
-      }
-
-      if (row.to_id_contactid) {
-        const contact: Contact = {
-          id: row.to_id_contactid,
-          firstName: row.contact_first_name ?? "",
-          lastName: row.contact_last_name ?? "",
-        };
-
-        const premiseResult = await getContactPremise(contact.id);
-
-        return handleResult(premiseResult, {
-          success: (premise) => resolve(new Success({
-            type: OwnerType.CONTACT,
-            contact: contact,
-            premise: premise,
-            scrapieId: "FIXME",
-            phoneNumber: row.contact_phone ?? "",
-            flockId: row.membership_number ?? "",
-          })),
-          error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
-        });
-
-      } else if (row.to_id_companyid) {
-        const company: Company = {
-          id: row.to_id_companyid,
-          name: row.company_name ?? "",
-          registry_id: row.registry_id ?? undefined,
-        };
-
-        const premiseResult = await getCompanyPremise(company.id);
-
-        return handleResult(premiseResult, {
-          success: (premise) => resolve(new Success({
-            type: OwnerType.COMPANY,
-            company: company,
-            premise: premise,
-            scrapieId: "FIXME",
-            phoneNumber: row.company_phone ?? "",
-            flockId: row.membership_number ?? "",
-          })),
-          error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),
-        });
-
-      } else {
-        resolve(new Failure("Ownership record has neither contact nor company ID"));
-      }
-    });
+    );
   });
 };

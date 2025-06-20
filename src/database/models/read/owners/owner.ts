@@ -1,11 +1,12 @@
 import { Premise } from "../premises/premise";
+import { ScrapieFlockInfo } from "../scrapie/scrapieFlockInfo";
 import { Company } from "./company";
 import { Contact } from "./contact";
 import { OwnerType } from "./ownerType";
 
 interface OwnerBase {
   premise: Premise;
-  scrapieId: string;
+  scrapieId: ScrapieFlockInfo;
   phoneNumber: string;
   flockId: string;
 }

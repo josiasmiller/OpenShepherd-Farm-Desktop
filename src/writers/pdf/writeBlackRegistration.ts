@@ -198,18 +198,18 @@ const _handleRegistrationWrite = async (
     form.getTextField("ddddSpecial").setText(_buildRegistryName(dddd));
 
 
-    // paradoxically, the `BreederInfo` field is actual the field where the mailing address should be ...
+    // paradoxically, the `BreederInfo` field is actually the field where the mailing address should be ...
     form.getTextField("BreederInfo").setText(breederMailingAddress);
     // form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
-    form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId);
+    form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId.scrapieName);
     form.getTextField("BreederFlockID").setText(regResult.breeder.flockId);
     form.getTextField("BTelNo").setText(regResult.breeder.phoneNumber);
 
 
-    // paradoxically, the `OwnerInfo` field is actual the field where the mailing address should be ...
+    // paradoxically, the `OwnerInfo` field is actually the field where the mailing address should be ...
     form.getTextField("OwnerInfo").setText(ownerMailingAddress);
     // form.getTextField("OwnerMailingAddress").setText(ownerMailingAddress)
-    form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId);
+    form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId.scrapieName);
     form.getTextField("OwnerFlockID").setText(regResult.owner.flockId);
     form.getTextField("OTelNo").setText(regResult.owner.phoneNumber);
 

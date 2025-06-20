@@ -1,13 +1,19 @@
 import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure, handleResult } from "../../../../shared/results/resultTypes.js";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes.js";
 import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { Owner } from "../../../models/read/owners/owner.js";
 import { Company } from "../../../models/read/owners/company.js";
 import { Contact } from "../../../models/read/owners/contact.js";
 
-import { REGISTRY_CHOCOLATE_WMSA, REGISTRY_COMPANY_ID, REGISTRY_WHITE_WMSA } from "../../../dbConstants.js";
+import {
+  REGISTRY_CHOCOLATE_WMSA,
+  REGISTRY_COMPANY_ID,
+  REGISTRY_WHITE_WMSA,
+} from "../../../dbConstants.js";
+
 import { getContactPremise } from "../premises/getContactPremise.js";
 import { getCompanyPremise } from "../premises/getCompanyPremise.js";
+import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
 
 type BreederQueryRow = {
   contact_id: string | null;
@@ -39,7 +45,6 @@ export const getBreeder = async (
       r.id_registry_id_companyid AS registry_id,
       o.membership_number,
 
-      -- Subqueries to get first phone number
       (
         SELECT cp.contact_phone
         FROM contact_phone_table cp
@@ -94,18 +99,23 @@ export const getBreeder = async (
           };
 
           const premiseResult = await getContactPremise(contact.id);
+          const premise = await unwrapOrFailWithAnimal(premiseResult, "breeder premise", animalId);
+          if (premise.tag === "error") return resolve(premise);
 
-          return handleResult(premiseResult, {
-            success: (premise) => resolve(new Success({
+          const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+          const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "breeder scrapie flock number", animalId);
+          if (scrapieId.tag === "error") return resolve(scrapieId);
+
+          return resolve(
+            new Success({
               type: OwnerType.CONTACT,
-              contact: contact,
-              premise: premise,
-              scrapieId: "FIXME",
+              contact,
+              premise: premise.data,
+              scrapieId: scrapieId.data,
               phoneNumber: row.contact_phone ?? "",
               flockId: row.membership_number ?? "",
-            })),
-            error: (errMsg) => resolve(new Failure(`Failed to get premise for contact: ${errMsg}`)),
-          });
+            })
+          );
 
         } else if (row.company_id) {
           const company: Company = {
@@ -115,18 +125,23 @@ export const getBreeder = async (
           };
 
           const premiseResult = await getCompanyPremise(company.id);
+          const premise = await unwrapOrFailWithAnimal(premiseResult, "company premise", animalId);
+          if (premise.tag === "error") return resolve(premise);
 
-          return handleResult(premiseResult, {
-            success: (premise) => resolve(new Success({
+          const scrapieResult = await getScrapieFlockInfo(company.id, true);
+          const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "company scrapie flock number", animalId);
+          if (scrapieId.tag === "error") return resolve(scrapieId);
+
+          return resolve(
+            new Success({
               type: OwnerType.COMPANY,
-              company: company,
-              premise: premise,
-              scrapieId: "FIXME",
+              company,
+              premise: premise.data,
+              scrapieId: scrapieId.data,
               phoneNumber: row.company_phone ?? "",
               flockId: row.membership_number ?? "",
-            })),
-            error: (errMsg) => resolve(new Failure(`Failed to get premise for company: ${errMsg}`)),
-          });
+            })
+          );
 
         } else {
           resolve(new Failure("Breeder has neither contact nor company info"));

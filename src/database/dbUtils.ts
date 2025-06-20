@@ -1,3 +1,4 @@
+import { Failure, Result, Success } from "../shared/results/resultTypes";
 
 /* escapes characters for DB strings */
 export function escapeLikeString(str: string): string {

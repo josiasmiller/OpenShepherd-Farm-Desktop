@@ -32,3 +32,16 @@ export async function handleResult<T, E, R>(
         return await handlers.error(result.error);
     }
 }
+
+export const unwrapOrFailWithAnimal = async <T>(
+  result: Result<T, string>,
+  label: string,
+  animalId: string
+): Promise<Result<T, string>> => {
+  if (result.tag === "success") {
+    return new Success(result.data);
+  } else {
+    console.error(`${label} error for animal ID ${animalId}:`, result.error);
+    return new Failure(`Failed to get ${label} for animal ID ${animalId}`);
+  }
+};

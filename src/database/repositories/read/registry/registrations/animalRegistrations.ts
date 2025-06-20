@@ -1,4 +1,4 @@
-import { Failure, handleResult, Result, Success } from "../../../../../shared/results/resultTypes.js";
+import { Failure, Result, Success, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes.js";
 import { getDatabase } from "../../../../dbConnections.js";
 import { BirthInfo } from "../../../../models/read/animal/births/birthInfo.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
@@ -15,19 +15,6 @@ import { getOwner } from "../../owners/getOwner.js";
 
 // STUB FUNCTION -- WILL NOT BE IN FINAL MERGE
 const stubber = async (animalId: string): Promise<string> => "fixme";
-
-const unwrapOrFail = async <T>(
-  result: Result<T, string>,
-  label: string,
-  animalId: string
-): Promise<Result<T, string>> => {
-  if (result.tag === "success") {
-    return new Success(result.data);
-  } else {
-    console.error(`${label} error for animal ID ${animalId}:`, result.error);
-    return new Failure(`Failed to get ${label} for animal ID ${animalId}`);
-  }
-};
 
 
 export const getAnimalRegistrationInfo = async (
@@ -61,7 +48,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Pedigree
-      const pedigreeUnwrap = await unwrapOrFail(pedigreeResult, "pedigree", animalId);
+      const pedigreeUnwrap = await unwrapOrFailWithAnimal(pedigreeResult, "pedigree", animalId);
       if (pedigreeUnwrap.tag === "error") {
         return pedigreeUnwrap;
       }
@@ -69,7 +56,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalIdentification
-      const idUnwrap = await unwrapOrFail(animalIdentificationResult, "animalIdentification", animalId);
+      const idUnwrap = await unwrapOrFailWithAnimal(animalIdentificationResult, "animalIdentification", animalId);
       if (idUnwrap.tag === "error") {
         return idUnwrap;
       }
@@ -77,7 +64,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Breeder
-      const breederUnwrap = await unwrapOrFail(breederResult, "breeder", animalId);
+      const breederUnwrap = await unwrapOrFailWithAnimal(breederResult, "breeder", animalId);
       if (breederUnwrap.tag === "error") {
         return breederUnwrap;
       }
@@ -85,7 +72,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Owner
-      const ownerUnwrap = await unwrapOrFail(ownerResult, "owner", animalId);
+      const ownerUnwrap = await unwrapOrFailWithAnimal(ownerResult, "owner", animalId);
       if (ownerUnwrap.tag === "error") {
         return ownerUnwrap;
       }
@@ -93,7 +80,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // BirthInfo
-      const birthInfoUnwrap = await unwrapOrFail(animalBirthInfoResult, "birthInfo", animalId);
+      const birthInfoUnwrap = await unwrapOrFailWithAnimal(animalBirthInfoResult, "birthInfo", animalId);
       if (birthInfoUnwrap.tag === "error") {
         return birthInfoUnwrap;
       }
@@ -101,7 +88,7 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalSex
-      const sexUnwrap = await unwrapOrFail(animalSexResult, "animalSex", animalId);
+      const sexUnwrap = await unwrapOrFailWithAnimal(animalSexResult, "animalSex", animalId);
       if (sexUnwrap.tag === "error") {
         return sexUnwrap;
       }
