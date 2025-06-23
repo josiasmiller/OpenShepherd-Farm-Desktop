@@ -6,7 +6,7 @@ import { AnimalRegistrationResult, getAnimalRegistrationInfo, PedigreeNode } fro
 import { Failure, handleResult, Result, Success } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
 import { Owner } from "../../database/models/read/owners/owner.js";
-// import { OwnerType } from "../../database/client-types.js";
+import { idTag } from "../../database/models/read/animal/tags/idTag.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,7 +104,13 @@ const _handleRegistrationWrite = async (
     form.getTextField("BirthType").setText(birthType);
     
     if (regResult.officialTag){
-      form.getTextField("OfficialEarTag").setText(regResult.officialTag.idNumber);
+      var offical_text: string = _getTagText(regResult.officialTag);
+      form.getTextField("OfficialEarTag").setText(offical_text);
+    }
+
+    if (regResult.unofficialTag){
+      var farm_text: string = _getTagText(regResult.unofficialTag);
+      form.getTextField("FarmID").setText(farm_text);
     }
 
     // more fields that may be populated later. leaving for now so I don't have to search and find the fields on the PDF again
@@ -314,3 +320,24 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
 
   return registryName;
 }
+
+const _getTagText = (tag: idTag): string => {
+  var abbrev_color : string = "";
+  if (tag.maleColor.abbrev) {
+    abbrev_color = tag.maleColor.abbrev;
+  }
+
+  var abbrev_loc : string = "";
+  if (tag.location.abbrev) {
+    abbrev_loc = tag.location.abbrev;
+  }
+
+  var text: string = "";
+  if (abbrev_color && abbrev_loc) {
+    text =  `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
+  } else {
+    text = tag.idNumber;
+  }
+
+  return text;
+} 

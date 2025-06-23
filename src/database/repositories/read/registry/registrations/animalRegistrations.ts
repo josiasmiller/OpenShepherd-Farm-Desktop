@@ -125,7 +125,6 @@ export const getAnimalRegistrationInfo = async (
         officialTag: officialTag,
         unofficialTag: unofficialTag,
         sex: animalSex,
-        OfficialEarTag: await stubber(animalId),
         FMICRON: "fixme",
         CODON136: "fixme",
         Wgt2nd: "fixme",

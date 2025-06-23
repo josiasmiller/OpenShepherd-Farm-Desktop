@@ -1,3 +1,5 @@
+import { idColor } from "./idColor";
+import { idLocation } from "./idLocation";
 import { idType } from "./idType";
 
 export type idTag = {
@@ -7,4 +9,7 @@ export type idTag = {
   idNumber: string;
   idType: idType;
   dateOn: Date;
+  maleColor: idColor;
+  femaleColor: idColor;
+  location: idLocation;
 };

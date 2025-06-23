@@ -11,7 +11,6 @@ export type AnimalRegistrationResult = {
   officialTag: idTag | null;
   unofficialTag: idTag;
   sex: Sex;
-  OfficialEarTag: string;
   FMICRON: string;
   CODON136: string;
   Wgt2nd: string;
