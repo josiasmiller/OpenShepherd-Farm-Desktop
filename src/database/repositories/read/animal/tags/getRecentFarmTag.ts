@@ -27,7 +27,7 @@ type TagQueryRow = {
 
 export const getMostRecentUnofficialTag = async (
   animalId: string
-): Promise<Result<idTag, string>> => {
+): Promise<Result<idTag | null, string>> => {
   const db = await getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
@@ -74,7 +74,8 @@ export const getMostRecentUnofficialTag = async (
       }
 
       if (!row) {
-        resolve(new Failure("No unofficial ID tag found for the given animal"));
+        // No unofficial ID tag found for the given animal
+        resolve(new Success(null));
         return;
       }
 

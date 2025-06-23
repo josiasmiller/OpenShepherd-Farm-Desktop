@@ -96,7 +96,6 @@ const _handleRegistrationWrite = async (
 
     form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
     form.getTextField("BirthYear").setText(bday);
-    form.getTextField("FarmID").setText(regResult.unofficialTag.idNumber);
     form.getTextField("WgtBirth").setText(birthWeight);
 
     form.getTextField("Name").setText(fullAnimalName);

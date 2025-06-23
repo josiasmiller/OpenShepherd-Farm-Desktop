@@ -103,7 +103,7 @@ export const getAnimalRegistrationInfo = async (
       if (unofficialTagUnwrap.tag === "error") {
         return unofficialTagUnwrap;
       }
-      const unofficialTag : idTag = unofficialTagUnwrap.data;
+      const unofficialTag : idTag | null = unofficialTagUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // BirthInfo

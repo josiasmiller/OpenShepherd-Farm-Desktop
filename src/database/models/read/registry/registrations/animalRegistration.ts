@@ -11,7 +11,7 @@ export type AnimalRegistrationResult = {
   Codon136: CodonResponse | null;
   animalIdentification: AnimalIdentification;
   officialTag: idTag | null;
-  unofficialTag: idTag;
+  unofficialTag: idTag | null;
   sex: Sex;
   FMICRON: string;
   Wgt2nd: string;
