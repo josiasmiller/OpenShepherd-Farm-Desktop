@@ -2,6 +2,7 @@ import { Failure, Result, Success, unwrapOrFailWithAnimal } from "../../../../..
 import { getDatabase } from "../../../../dbConnections.js";
 import { BirthInfo } from "../../../../models/read/animal/births/birthInfo.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
+import { CodonResponse } from "../../../../models/read/animal/geneticCharacteristic/codonResponse.js";
 import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
 import { idTag } from "../../../../models/read/animal/tags/idTag.js";
@@ -9,15 +10,14 @@ import { Owner } from "../../../../models/read/owners/owner.js";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
 import { getBirthInfo } from "../../animal/births/getBirthInfo.js";
 import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
+import { getCodon136ForAnimal } from "../../animal/geneticCharacteristic/getCodon136.js";
+import { getCodon171ForAnimal } from "../../animal/geneticCharacteristic/getCodon171.js";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
 import { getMostRecentUnofficialTag } from "../../animal/tags/getRecentFarmTag.js";
 import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag.js";
 import { getBreeder } from "../../owners/getBreeder.js";
 import { getOwner } from "../../owners/getOwner.js";
-
-// STUB FUNCTION -- WILL NOT BE IN FINAL MERGE
-const stubber = async (animalId: string): Promise<string> => "fixme";
 
 
 export const getAnimalRegistrationInfo = async (
@@ -42,6 +42,8 @@ export const getAnimalRegistrationInfo = async (
         unofficialTagResult,
         animalBirthInfoResult,
         animalSexResult,
+        codon136Result,
+        codon171Result,
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
@@ -51,6 +53,8 @@ export const getAnimalRegistrationInfo = async (
         getMostRecentUnofficialTag(animalId),
         getBirthInfo(animalId),
         getSexFromAnimalId(animalId),
+        getCodon136ForAnimal(animalId),
+        getCodon171ForAnimal(animalId),
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,21 +122,37 @@ export const getAnimalRegistrationInfo = async (
       const animalSex : Sex = sexUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Codon 136
+      const codon136Unwrap = await unwrapOrFailWithAnimal(codon136Result, "codon136", animalId);
+      if (codon136Unwrap.tag === "error") {
+        return codon136Unwrap;
+      }
+      const codon136 : CodonResponse | null = codon136Unwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Codon 171
+      const codon171Unwrap = await unwrapOrFailWithAnimal(codon171Result, "codon171", animalId);
+      if (codon171Unwrap.tag === "error") {
+        return codon171Unwrap;
+      }
+      const codon171 : CodonResponse | null = codon171Unwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
-        Codon171: await stubber(animalId),
         animalIdentification: animalIdentification,
         officialTag: officialTag,
         unofficialTag: unofficialTag,
         sex: animalSex,
         FMICRON: "fixme",
-        CODON136: "fixme",
         Wgt2nd: "fixme",
         Inbreeding: "fixme",
         pedigree: pedigree!,
         breeder: breeder,
         owner: owner,
         birthInfo: birthInfo,
+        Codon136: codon136,
+        Codon171: codon171,
       };
 
       results.push(registration);

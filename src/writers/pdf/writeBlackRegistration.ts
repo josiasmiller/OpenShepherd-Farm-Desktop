@@ -113,12 +113,20 @@ const _handleRegistrationWrite = async (
       form.getTextField("FarmID").setText(farm_text);
     }
 
+    if (regResult.Codon171) {
+      form.getTextField("Codon171").setText(regResult.Codon171.alleles);
+    }
+
+    if (regResult.Codon136) {
+      form.getTextField("CODON136").setText(regResult.Codon136.alleles);
+    }
+    
+    // form.getTextField("CODON136").setText(regResult.CODON136);
+
     // more fields that may be populated later. leaving for now so I don't have to search and find the fields on the PDF again
-    // form.getTextField("Codon171").setText(regResult.Codon171);
     // form.getTextField("UKRegNo").setText(regResult.UKRegNo);
     // form.getTextField("DESC").setText(regResult.DESC);
     // form.getTextField("FMICRON").setText(regResult.FMICRON);
-    // form.getTextField("CODON136").setText(regResult.CODON136);
     // form.getTextField("Wgt2nd").setText(regResult.Wgt2nd);
     // form.getTextField("Inbreeding").setText(regResult.Inbreeding);
 
