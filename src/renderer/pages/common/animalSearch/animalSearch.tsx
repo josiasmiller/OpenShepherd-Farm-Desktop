@@ -171,12 +171,6 @@ const AnimalSearch: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="searchStatus">Animal Status</label>
-              <select id="searchStatus" value={searchParams.status} onChange={handleChange}>
-                <option value="">Select Status</option>
-              </select>
-            </div>
-            <div>
               <label htmlFor="searchRegistrationType">Registration Type</label>
               <select id="searchRegistrationType" value={searchParams.registrationType} onChange={handleChange}>
                 <option value="">Select Type</option>
@@ -255,14 +249,18 @@ const AnimalSearch: React.FC = () => {
                 placeholder="Enter Farm Tag"
               />
             </div>
-           <button
+          </div>
+
+          <div className="search-button-container">
+            <button
               onClick={fetchAndDisplayAnimals}
-              className="forward-button"
+              className="forward-button wide-button"
               disabled={isSearchingForAnimals}
             >
               {isSearchingForAnimals ? "Searching..." : "Search"}
             </button>
           </div>
+
         </div>
       </CollapsibleSection>
 
