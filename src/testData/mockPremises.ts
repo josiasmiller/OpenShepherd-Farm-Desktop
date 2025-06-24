@@ -8,6 +8,13 @@ export const mockPremises = new Success<Premise[]>([
     city: "Denver",
     postcode: "80014",
     country: "USA",
+    state: {
+      id: '1',
+      name: 'USA',
+      abbreviation: 'US',
+      display_order: 1,
+      country_id: '1'
+    }
   },
   { 
     id: "2", 
@@ -15,5 +22,12 @@ export const mockPremises = new Success<Premise[]>([
     city: "Premiseville",
     postcode: "12345",
     country: "USA",
+    state: {
+      id: '2',
+      name: 'United Kingdom',
+      abbreviation: 'UK',
+      display_order: 2,
+      country_id: '2'
+    },
   },
 ]);

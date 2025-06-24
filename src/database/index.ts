@@ -3,6 +3,7 @@
 export type { AnimalIdentification } from "./models/read/animal/identification/animalIdentification.js";
 export type { AnimalNote } from "./models/read/animal/notes/animalNote.js";
 export type { AnimalSearchResult, AnimalSearchRequest } from "./models/read/animal/animalSeach/animalSearch.js";
+export type { AnimalRegistrationResult } from "./models/read/registry/registrations/animalRegistration.js";
 export type { BirthType } from "./models/read/animal/births/birthType.js";
 export type { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
 export type { Company } from "./models/read/owners/company.js";
@@ -13,7 +14,8 @@ export type { DeathReason } from "./models/read/deaths/deathReason.js";
 export type { DrugEvent } from "./models/read/animal/drugs/drugEvent.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
-export type { Owner } from "./models/read/owners/owner.js";
+export type { Contact } from "./models/read/owners/contact.js";
+export type { PedigreeNode } from "./models/read/animal/pedigree/pedigree.js"
 export type { Premise } from "./models/read/premises/premise.js";
 export type { RemoveReason } from "./models/read/tags/removeReason.js";
 export type { Sex } from "./models/read/animal/general/sex.js";
@@ -33,6 +35,7 @@ export type { UnitType } from "./models/read/units/unitType.js";
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification.js";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
+export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
 export { getBirthTypes } from "./repositories/read/animal/births/getBirthTypes.js";
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
@@ -43,7 +46,8 @@ export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
 export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents.js";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
-export { getOwners } from "./repositories/read/owners/getOwner.js";
+export { getContacts } from "./repositories/read/owners/getContact.js";
+export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree.js"
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";
 export { getSexes } from "./repositories/read/animal/general/getSexes.js";

@@ -3,21 +3,22 @@ import { Premise } from "../../../models/read/premises/premise.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 import { State } from "../../../models/read/locations/state.js";
 
-// Define the row type for the query to help with typings
+// Updated row type to include full state fields
 type PremiseRow = {
   premise_id: string;
   address_one: string;
   city: string;
   postcode: string;
   country_name: string;
-  state_id: string;
-  state_name: string;
-  state_abbrev: string;
-  state_display_order: number;
-  state_country_id: string;
+  state_id: string | null;
+  state_name: string | null;
+  state_abbrev: string | null;
+  state_display_order: number | null;
+  state_country_id: string | null;
 };
 
-export const getPremises = async (): Promise<Result<Premise[], string>> => {
+// Fetch a single premise including state info
+export const getPremiseSpecific = async (premiseId: string): Promise<Result<Premise, string>> => {
   const db = await getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
@@ -38,29 +39,32 @@ export const getPremises = async (): Promise<Result<Premise[], string>> => {
     FROM premise_table p
     JOIN country_table c ON p.premise_id_countryid = c.id_countryid
     LEFT JOIN state_table s ON p.premise_id_stateid = s.id_stateid
-  `;
+    WHERE p.id_premiseid = ?
+    LIMIT 1`;
 
   return new Promise((resolve) => {
-    db.all(premiseQuery, [], (err, rows: PremiseRow[]) => {
+    db.get(premiseQuery, [premiseId], (err, row: PremiseRow | undefined) => {
       if (err) {
         resolve(new Failure(`Database query failed: ${err.message}`));
+      } else if (!row) {
+        resolve(new Failure(`No premise found with ID: ${premiseId}`));
       } else {
-        const results: Premise[] = rows.map(row => ({
+        const result: Premise = {
           id: row.premise_id,
           address: row.address_one,
           city: row.city,
           postcode: row.postcode,
           country: row.country_name,
           state: {
-            id: row.state_id,
-            name: row.state_name,
-            abbreviation: row.state_abbrev,
-            display_order: row.state_display_order,
-            country_id: row.state_country_id,
+            id: row.state_id ?? "",
+            name: row.state_name ?? "",
+            abbreviation: row.state_abbrev ?? "",
+            display_order: row.state_display_order ?? 0,
+            country_id: row.state_country_id ?? "",
           } as State,
-        }));
+        };
 
-        resolve(new Success(results));
+        resolve(new Success(result));
       }
     });
   });

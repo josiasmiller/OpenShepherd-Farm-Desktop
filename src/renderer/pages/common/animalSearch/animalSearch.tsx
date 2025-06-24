@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
+import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 
 
 
@@ -35,7 +36,6 @@ const AnimalSearch: React.FC = () => {
 
   // state for if an active search is underway
   const [isSearchingForAnimals, setIsSearchingForAnimals] = useState(false);
-
 
 
   const handleChooseAnimals = async () => {
@@ -388,24 +388,10 @@ const AnimalSearch: React.FC = () => {
       </CollapsibleSection>
 
 
-      {isSearchingForAnimals && (
-        <div style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          backgroundColor: "rgba(0,0,0,0.75)",
-          color: "#fff",
-          padding: "12px 18px",
-          borderRadius: "8px",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px"
-        }}>
-          <div className="spinner" />
-          <span>Searching for animals...</span>
-        </div>
-      )}
+      <LoadingIndicator
+        isLoading={isSearchingForAnimals}
+        message="Searching for animals..."
+      />
 
       
     </div>

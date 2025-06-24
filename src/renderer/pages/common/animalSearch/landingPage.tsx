@@ -4,10 +4,13 @@ import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
 import { isRegistryVersion } from "../../../../scripts/appVersion";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
+import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 
 const LandingPage = () => {
 
   const [showRegistryFeatures, setShowRegistryFeatures] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStr, setLoadingStr] = useState<string>("");
 
   const location = useLocation();
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
@@ -26,7 +29,12 @@ const LandingPage = () => {
   };
   
 
-  const saveDrugHistoryCsv = async () => {  
+  const saveDrugHistoryCsv = async () => {
+    if (isLoading) {
+      return; // bail out if loading something already
+    }
+    setLoadingStr("Saving Drug History...");
+    setIsLoading(true);
     const animalIds: string[] = getAnimalIds();  
     const success = await window.electronAPI.exportDrugHistoryCsv(animalIds);
 
@@ -45,10 +53,19 @@ const LandingPage = () => {
         confirmButtonText: "Continue",
       });
     }
+
+    setIsLoading(false);
   };
     
   
   const saveNoteHistoryCsv = async () => {
+    if (isLoading) {
+      return; // bail out if loading something already
+    }
+
+    setLoadingStr("Saving Note History...");
+    setIsLoading(true);
+
     const animalIds: string[] = getAnimalIds();
     const success = await window.electronAPI.exportAnimalNotesCsv(animalIds);
   
@@ -67,10 +84,19 @@ const LandingPage = () => {
         confirmButtonText: "Continue",
       });
     }
+
+    setIsLoading(false);
   };
   
   
-  const saveTissueTestResultHistoryCsv = async () => {    
+  const saveTissueTestResultHistoryCsv = async () => {
+    if (isLoading) {
+      return; // bail out if loading something already
+    }  
+
+    setLoadingStr("Saving Tissue Test Results...");
+    setIsLoading(true);
+
     const animalIds: string[] = getAnimalIds();
     const success = await window.electronAPI.exportTissueTestResultsCsv(animalIds);
   
@@ -89,18 +115,49 @@ const LandingPage = () => {
         confirmButtonText: "Continue",
       });
     }
+
+    setIsLoading(false);
   };
-  
 
-  const printRegistryPapers = () => {
-    Swal.fire({
-      title: "This is a stub",
-      text: "This is here to indicate that registry and standard verisons of the app can be made",
-      icon: "success",
-      confirmButtonText: "OK",
-    });
-  }
+  const printRegistryPapers = async () => {
+    if (isLoading) {
+      return; // bail out if loading something already
+    }
 
+    setLoadingStr("Saving Registry Papers...");
+    setIsLoading(true);
+
+    const animalIds: string[] = getAnimalIds();
+
+    const response = await window.electronAPI.exportBlackRegistration(animalIds);
+    
+    if (response.success) {
+
+      Swal.fire({
+        title: "Success",
+        text: "PDF saved successfully",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "Open Folder",
+        cancelButtonText: "OK",
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.electronAPI.openDirectory(response.resultingDirectory);
+        }
+      });
+
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: "There was an error saving the file",
+        icon: "error",
+        confirmButtonText: "Continue",
+      });
+    }
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="landing-page-container">
@@ -122,7 +179,7 @@ const LandingPage = () => {
           </button>
           <button className="forward-button" onClick={saveTissueTestResultHistoryCsv}>
             Tissue Test Result History
-          </button>          
+          </button>
         </div>
       </div>
 
@@ -132,9 +189,9 @@ const LandingPage = () => {
           isOpen={showRegistryFeatures}
           onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
         >
-          <div className="landing-page-top">
+          <div className="action-buttons">
             <button className="forward-button" onClick={printRegistryPapers}>
-              Print Registry Papers
+              Print Black Animal Registry Papers
             </button>
           </div>
         </CollapsibleSection>
@@ -173,6 +230,9 @@ const LandingPage = () => {
           </div>
         )}
       </div>
+
+
+      <LoadingIndicator isLoading={isLoading} message={loadingStr} />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "../../styles/styles.css";
-import transparentLogo from "../../../assets/AnimalTrakker.png";
+import transparentLogo from "../../assets/AnimalTrakker.png";
 
 import { handleResult } from "../../../shared/results/resultTypes";
 import { DefaultSettingsResults } from "../../../database";

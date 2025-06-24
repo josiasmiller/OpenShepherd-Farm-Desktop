@@ -1,5 +1,5 @@
 
-import { dialog, ipcMain, shell } from "electron";
+import { ipcMain, shell } from "electron";
 
 import { 
   animalSearch,
@@ -9,12 +9,13 @@ import {
   getBreeds,
   getColors,
   getCompanies, 
+  getContacts,
   getCounties, 
   getCountries,
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
-  getOwners,
+  getPedigree,
   getPremises,
   getRemoveReasons,
   getSexes,
@@ -36,6 +37,8 @@ import { getDatabase } from "../database/dbConnections.js";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
+
+import { writeBlackRegistration } from "../writers/pdf/writeBlackRegistration.js";
 
 export const registerIpcHandlers = () => {
   
@@ -59,6 +62,10 @@ export const registerIpcHandlers = () => {
     return writeTissueTestResults(animals);
   });
 
+  ipcMain.handle("export-black-registration", async (_, animals: string[]) => {
+    return writeBlackRegistration(animals);
+  });
+
   ipcMain.handle("select-database", selectNewDb);
 
   ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
@@ -77,6 +84,8 @@ export const registerIpcHandlers = () => {
     return getCompanies(onlyGetRegistryCompanies);
   });
 
+  ipcMain.handle("get-contact-info", getContacts);
+
   ipcMain.handle("get-counties", getCounties);
 
   ipcMain.handle("get-countries", getCountries);
@@ -89,7 +98,9 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-locations", getTagLocations);
 
-  ipcMain.handle("get-owner-info", getOwners);
+  ipcMain.handle("get-pedigree", async (_, animalId) => {
+    return getPedigree(animalId, 4); // TODO --> what depth to use?
+  });
 
   ipcMain.handle("get-premise-info", getPremises);
 
@@ -119,6 +130,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("is-database-loaded", () => {
     return getDatabase() !== null;
+  });
+
+  ipcMain.handle('open-directory', async (_event, path) => {
+    return shell.openPath(path);
   });
 
   ipcMain.handle("open-external-url", async (_, url) => {

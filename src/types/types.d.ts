@@ -7,13 +7,13 @@ import {
   BreedRequest, 
   Color, 
   Company,
+  Contact, 
   Country,
   County, 
   DeathReason,
   DefaultSettingsResults, 
   DrugEvent, 
   FlockPrefix, 
-  Owner, 
   Premise, 
   RemoveReason,
   Sex, 
@@ -27,7 +27,8 @@ import {
   Unit, 
   UnitRequest, 
   UnitType,
-  NewDefaultSettingsParameters
+  NewDefaultSettingsParameters,
+  PedigreeNode
 } from "../database";
 
 import { Result } from "../shared/results/resultTypes";
@@ -43,8 +44,10 @@ declare global {
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
-      getOwnerInfo: () => Promise<Result<Owner[], string>>;
+      exportBlackRegistration: (animalIds: string[]) => Promise<{ success: boolean; resultingDirectory: string }>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
+      getContactInfo: () => Promise<Result<Contact[], string>>;
+      getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
       getPremiseInfo: () => Promise<Result<Premise[], string>>;
       getBirthTypes: () => Promise<Result<BirthType[], string>>;
       getBreeds: (params: BreedRequest) => Promise<Result<Breed[], string>>;
@@ -67,6 +70,7 @@ declare global {
       getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
       isDatabaseLoaded: () => Promise<boolean>;
+      openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
