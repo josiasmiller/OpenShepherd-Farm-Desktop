@@ -19,6 +19,9 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
       bt.birth_type,
       sire.animal_name AS sire_name,
       dam.animal_name AS dam_name,
+      fp_animal.flock_prefix AS animal_flock_prefix,
+      fp_sire.flock_prefix AS sire_flock_prefix,
+      fp_dam.flock_prefix AS dam_flock_prefix,
 
       (
         SELECT ai.id_number
@@ -44,9 +47,19 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     FROM animal_table a
     JOIN sex_table s ON a.id_sexid = s.id_sexid
     JOIN birth_type_table bt ON a.id_birthtypeid = bt.id_birthtypeid
+
     LEFT JOIN animal_table sire ON a.sire_id = sire.id_animalid
+    LEFT JOIN animal_flock_prefix_table afp_sire ON afp_sire.id_animalid = sire.id_animalid
+    LEFT JOIN flock_prefix_table fp_sire ON fp_sire.id_flockprefixid = afp_sire.id_flockprefixid
+
     LEFT JOIN animal_table dam ON a.dam_id = dam.id_animalid
+    LEFT JOIN animal_flock_prefix_table afp_dam ON afp_dam.id_animalid = dam.id_animalid
+    LEFT JOIN flock_prefix_table fp_dam ON fp_dam.id_flockprefixid = afp_dam.id_flockprefixid
+
+    LEFT JOIN animal_flock_prefix_table afp_animal ON afp_animal.id_animalid = a.id_animalid
+    LEFT JOIN flock_prefix_table fp_animal ON fp_animal.id_flockprefixid = afp_animal.id_flockprefixid
   `;
+
 
 
   const conditions: string[] = [];
@@ -132,6 +145,7 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
         // Map rows to Animal objects
         const animals = rows.map((row: any) => ({
           animal_id: row.id_animalid,
+          flockPrefix: row.animal_flock_prefix,
           name: row.animal_name,
           birthDate: row.birth_date,
           deathDate: row.death_date || null,
@@ -139,11 +153,12 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
           birthType: row.birth_type,
           latestOfficialID: row.latestOfficialID || null,
           latestFarmID: row.latestFarmID || null,
-          sireFlockPrefix: null,
+          sireFlockPrefix: row.sire_flock_prefix || null,
           sireName: row.sire_name,
-          damFlockPrefix: null,
+          damFlockPrefix: row.dam_flock_prefix || null,
           damName: row.dam_name,
         })) as AnimalSearchResult[];
+
 
         resolve(animals);
       }

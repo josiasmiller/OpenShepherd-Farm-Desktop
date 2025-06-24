@@ -281,6 +281,7 @@ const AnimalSearch: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Select</th>
+                    <th>Flock Prefix</th>
                     <th>Name</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
@@ -288,9 +289,9 @@ const AnimalSearch: React.FC = () => {
                     <th>Birth Type</th>
                     <th>Official ID</th>
                     <th>Farm ID</th>
-                    {/* <th>Sire Flock Prefix</th> */}
+                    <th>Sire Flock Prefix</th>
                     <th>Sire Name</th>
-                    {/* <th>Dam Flock Prefix</th> */}
+                    <th>Dam Flock Prefix</th>
                     <th>Dam Name</th>
                   </tr>
                 </thead>
@@ -305,6 +306,7 @@ const AnimalSearch: React.FC = () => {
                           Select
                         </button>
                       </td>
+                      <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
@@ -312,9 +314,9 @@ const AnimalSearch: React.FC = () => {
                       <td>{animal.birthType}</td>
                       <td>{animal.latestOfficialID}</td>
                       <td>{animal.latestFarmID}</td>
-                      {/* <td>{animal.sireFlockPrefix}</td> */}
+                      <td>{animal.sireFlockPrefix}</td>
                       <td>{animal.sireName}</td>
-                      {/* <td>{animal.damFlockPrefix}</td> */}
+                      <td>{animal.damFlockPrefix}</td>
                       <td>{animal.damName}</td>
                     </tr>
                   ))}
@@ -343,6 +345,7 @@ const AnimalSearch: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Remove</th>
+                    <th>Flock Prefix</th>
                     <th>Name</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
@@ -350,9 +353,9 @@ const AnimalSearch: React.FC = () => {
                     <th>Birth Type</th>
                     <th>Official ID</th>
                     <th>Farm ID</th>
-                    {/* <th>Sire Flock Prefix</th> */}
+                    <th>Sire Flock Prefix</th>
                     <th>Sire Name</th>
-                    {/* <th>Dam Flock Prefix</th> */}
+                    <th>Dam Flock Prefix</th>
                     <th>Dam Name</th>
                   </tr>
                 </thead>
@@ -364,6 +367,7 @@ const AnimalSearch: React.FC = () => {
                           Remove
                         </button>
                       </td>
+                      <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
@@ -371,9 +375,9 @@ const AnimalSearch: React.FC = () => {
                       <td>{animal.birthType}</td>
                       <td>{animal.latestOfficialID}</td>
                       <td>{animal.latestFarmID}</td>
-                      {/* <td>{animal.sireFlockPrefix}</td> */}
+                      <td>{animal.sireFlockPrefix}</td>
                       <td>{animal.sireName}</td>
-                      {/* <td>{animal.damFlockPrefix}</td> */}
+                      <td>{animal.damFlockPrefix}</td>
                       <td>{animal.damName}</td>
                     </tr>
                   ))}
