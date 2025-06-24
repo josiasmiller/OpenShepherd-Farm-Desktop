@@ -189,9 +189,9 @@ const LandingPage = () => {
           isOpen={showRegistryFeatures}
           onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
         >
-          <div className="action-buttons">
+          <div className="action-buttons registry-section">
             <button className="forward-button" onClick={printRegistryPapers}>
-              Print Black Animal Registry Papers
+              Print Black Welsh Registration
             </button>
           </div>
         </CollapsibleSection>

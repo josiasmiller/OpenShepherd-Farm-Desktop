@@ -28,4 +28,8 @@
   max-height: 100%;
   overflow-y: auto;
 }
+
+.registry-section {
+  padding: 16px;
+}
   
