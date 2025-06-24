@@ -29,4 +29,6 @@ export type AnimalSearchRequest = {
 
   federalTag?: string | null;
   farmTag?: string | null;
+
+  isAlreadyPrinted?: boolean | null;
 }

@@ -60,8 +60,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     LEFT JOIN flock_prefix_table fp_animal ON fp_animal.id_flockprefixid = afp_animal.id_flockprefixid
   `;
 
-
-
   const conditions: string[] = [];
   const values: any[] = [];
 
@@ -129,6 +127,27 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     values.push(`${escapedTag}`);
   }
 
+  if (queryParams.isAlreadyPrinted === true) {
+    conditions.push(`
+      EXISTS (
+        SELECT 1
+        FROM registry_certificate_print_table rcp
+        WHERE rcp.id_animalid = a.id_animalid
+        AND rcp.printed = 1
+      )
+    `);
+  } else if (queryParams.isAlreadyPrinted === false) {
+    conditions.push(`
+      NOT EXISTS (
+        SELECT 1
+        FROM registry_certificate_print_table rcp
+        WHERE rcp.id_animalid = a.id_animalid
+        AND rcp.printed = 1
+      )
+    `);
+  }
+
+
   // Append conditions to the query
   if (conditions.length > 0) {
     animalQuery += " WHERE " + conditions.join(" AND ");
@@ -158,7 +177,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
           damFlockPrefix: row.dam_flock_prefix || null,
           damName: row.dam_name,
         })) as AnimalSearchResult[];
-
 
         resolve(animals);
       }
