@@ -11,11 +11,15 @@ import { idTag } from "../../database/models/read/animal/tags/idTag.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const templatePath = path.join(__dirname, "..", "..", "renderer", "assets", "ABWMSA_registration_template_V3_black.pdf");
-const existingPdfBytes = fs.readFileSync(templatePath);
+const templatePathBlack = path.join(__dirname, "..", "..", "renderer", "assets", "ABWMSA_registration_template_V3_black.pdf");
+const pdfBytesBlack = fs.readFileSync(templatePathBlack);
 
-export const writeBlackRegistration = async (
-  animalIds: string[]
+const templatePathWhite = path.join(__dirname, "..", "..", "renderer", "assets", "AWWMSA_registration_template_V3_white.pdf");
+const pdfBytesWhite = fs.readFileSync(templatePathWhite);
+
+export const writeRegistration = async (
+  animalIds: string[],
+  registrationType: "black" | "white" | "chocolate",
 ): Promise<{ success: boolean; resultingDirectory: string }> => {
 
   // Show the folder selection dialog
@@ -39,7 +43,7 @@ export const writeBlackRegistration = async (
 
     await handleResult(registrationResults, {
       success: async (data) => {
-        const result = await _handleRegistrationWrite(data, directoryPath);
+        const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
         if (result instanceof Success) {
           success = true;
         } else if (result instanceof Failure) {
@@ -65,7 +69,8 @@ export const writeBlackRegistration = async (
 
 const _handleRegistrationWrite = async (
   data: AnimalRegistrationResult[],
-  directoryPath: string
+  directoryPath: string,
+  registrationType: "black" | "white" | "chocolate",
 ): Promise<Result<void, string>> => {
 
   const now = new Date();
@@ -73,8 +78,21 @@ const _handleRegistrationWrite = async (
 
   for (const regResult of data) {
     // Load the existing PDF and access the form
-    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    let pdfDoc: PDFDocument | undefined;
 
+    if (registrationType === "black") {
+      pdfDoc = await PDFDocument.load(pdfBytesBlack);
+    } else if (registrationType === "white") {
+      pdfDoc = await PDFDocument.load(pdfBytesWhite);
+    } else if (registrationType === "chocolate") {
+      return new Failure("chocolate registry not yet implemented");
+    }
+
+    if (!pdfDoc) {
+      return new Failure("Invalid PDF Document in _handleRegistrationWrite");
+    }
+
+    
     // create fields that need to be created
     var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 

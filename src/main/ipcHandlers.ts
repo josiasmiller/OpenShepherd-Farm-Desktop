@@ -38,7 +38,7 @@ import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
 import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
-import { writeBlackRegistration } from "../writers/pdf/writeBlackRegistration.js";
+import { writeRegistration } from "../writers/pdf/writeRegistration.js";
 
 export const registerIpcHandlers = () => {
   
@@ -62,8 +62,8 @@ export const registerIpcHandlers = () => {
     return writeTissueTestResults(animals);
   });
 
-  ipcMain.handle("export-black-registration", async (_, animals: string[]) => {
-    return writeBlackRegistration(animals);
+  ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate") => {
+    return writeRegistration(animals, registrationType);
   });
 
   ipcMain.handle("select-database", selectNewDb);
