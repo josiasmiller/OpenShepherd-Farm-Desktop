@@ -138,15 +138,14 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     `);
   } else if (queryParams.isAlreadyPrinted === false) {
     conditions.push(`
-      NOT EXISTS (
+      EXISTS (
         SELECT 1
         FROM registry_certificate_print_table rcp
         WHERE rcp.id_animalid = a.id_animalid
-        AND rcp.printed = 1
+        AND rcp.printed = 0
       )
     `);
   }
-
 
   // Append conditions to the query
   if (conditions.length > 0) {
