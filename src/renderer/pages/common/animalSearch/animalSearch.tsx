@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
+import { isRegistryVersion } from "../../../../scripts/appVersion";
 
 
 
@@ -23,6 +24,7 @@ const AnimalSearch: React.FC = () => {
     deathEndDate: "",
     federalTag: "",
     farmTag: "",
+    isAlreadyPrinted: null,
   });
 
   // State for results
@@ -31,6 +33,7 @@ const AnimalSearch: React.FC = () => {
   const [message, setMessage] = useState("Search for animals to display results.");
 
   const [showSearch, setShowSearch] = useState(true);
+  const [showRegistrySearch, setShowRegistrySearch] = useState(true);
   const [showResults, setShowResults] = useState(true);
   const [showChosen, setShowChosen] = useState(true);
 
@@ -65,8 +68,27 @@ const AnimalSearch: React.FC = () => {
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setSearchParams({ ...searchParams, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+
+    let parsedValue: any = value;
+
+    if (id === "isAlreadyPrinted") {
+      // Convert string to boolean or null
+      if (value === "") {
+        parsedValue = null;
+      } else if (value === "true") {
+        parsedValue = true;
+      } else if (value === "false") {
+        parsedValue = false;
+      }
+    }
+
+    setSearchParams((prev) => ({
+      ...prev,
+      [id]: parsedValue,
+    }));
   };
+
 
   const fetchAndDisplayAnimals = async () => {
 
@@ -118,6 +140,10 @@ const AnimalSearch: React.FC = () => {
 
       if (searchParams.farmTag != null && searchParams.farmTag != "") {
         animalRequest.farmTag = searchParams.farmTag;
+      }
+
+      if (searchParams.isAlreadyPrinted != null) {
+        animalRequest.isAlreadyPrinted = searchParams.isAlreadyPrinted;
       }
 
       const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(animalRequest);
@@ -251,6 +277,23 @@ const AnimalSearch: React.FC = () => {
             </div>
           </div>
 
+          {isRegistryVersion() &&
+            <div className="search-filters">
+              <div>
+                <label htmlFor="isAlreadyPrinted">Registrations Printed</label>
+                <select
+                  id="isAlreadyPrinted"
+                  value={searchParams.isAlreadyPrinted ?? ''}
+                  onChange={handleChange}
+                >
+                  <option value="">Any</option>
+                  <option value="true">Printed</option>
+                  <option value="false">Not Printed</option>
+                </select>
+              </div>
+            </div>
+          }
+
           <div className="search-button-container">
             <button
               onClick={fetchAndDisplayAnimals}
@@ -262,8 +305,8 @@ const AnimalSearch: React.FC = () => {
           </div>
 
         </div>
-      </CollapsibleSection>
 
+      </CollapsibleSection>
 
 
       {/* RESULTS SECTION */}
@@ -281,16 +324,18 @@ const AnimalSearch: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Select</th>
+                    <th>Flock Prefix</th>
                     <th>Name</th>
+                    <th>Registration Number</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
                     <th>Sex</th> 
                     <th>Birth Type</th>
                     <th>Official ID</th>
                     <th>Farm ID</th>
-                    {/* <th>Sire Flock Prefix</th> */}
+                    <th>Sire Flock Prefix</th>
                     <th>Sire Name</th>
-                    {/* <th>Dam Flock Prefix</th> */}
+                    <th>Dam Flock Prefix</th>
                     <th>Dam Name</th>
                   </tr>
                 </thead>
@@ -305,16 +350,18 @@ const AnimalSearch: React.FC = () => {
                           Select
                         </button>
                       </td>
+                      <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
+                      <td>{animal.registration}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 
                       <td>{animal.birthType}</td>
                       <td>{animal.latestOfficialID}</td>
                       <td>{animal.latestFarmID}</td>
-                      {/* <td>{animal.sireFlockPrefix}</td> */}
+                      <td>{animal.sireFlockPrefix}</td>
                       <td>{animal.sireName}</td>
-                      {/* <td>{animal.damFlockPrefix}</td> */}
+                      <td>{animal.damFlockPrefix}</td>
                       <td>{animal.damName}</td>
                     </tr>
                   ))}
@@ -343,16 +390,18 @@ const AnimalSearch: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Remove</th>
+                    <th>Flock Prefix</th>
                     <th>Name</th>
+                    <th>Registration Number</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
                     <th>Sex</th> 
                     <th>Birth Type</th>
                     <th>Official ID</th>
                     <th>Farm ID</th>
-                    {/* <th>Sire Flock Prefix</th> */}
+                    <th>Sire Flock Prefix</th>
                     <th>Sire Name</th>
-                    {/* <th>Dam Flock Prefix</th> */}
+                    <th>Dam Flock Prefix</th>
                     <th>Dam Name</th>
                   </tr>
                 </thead>
@@ -364,16 +413,18 @@ const AnimalSearch: React.FC = () => {
                           Remove
                         </button>
                       </td>
+                      <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
+                      <td>{animal.registration}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 
                       <td>{animal.birthType}</td>
                       <td>{animal.latestOfficialID}</td>
                       <td>{animal.latestFarmID}</td>
-                      {/* <td>{animal.sireFlockPrefix}</td> */}
+                      <td>{animal.sireFlockPrefix}</td>
                       <td>{animal.sireName}</td>
-                      {/* <td>{animal.damFlockPrefix}</td> */}
+                      <td>{animal.damFlockPrefix}</td>
                       <td>{animal.damName}</td>
                     </tr>
                   ))}

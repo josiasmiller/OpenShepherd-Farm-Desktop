@@ -119,7 +119,7 @@ const LandingPage = () => {
     setIsLoading(false);
   };
 
-  const printRegistryPapers = async () => {
+  const printRegistryPapers = async (registrationType: "black" | "white" | "chocolate") => {
     if (isLoading) {
       return; // bail out if loading something already
     }
@@ -129,8 +129,8 @@ const LandingPage = () => {
 
     const animalIds: string[] = getAnimalIds();
 
-    const response = await window.electronAPI.exportBlackRegistration(animalIds);
-    
+    const response = await window.electronAPI.exportRegistration(animalIds, registrationType);
+
     if (response.success) {
 
       Swal.fire({
@@ -158,6 +158,15 @@ const LandingPage = () => {
 
     setIsLoading(false);
   };
+
+  const handleNotImplemented = async () => {
+    Swal.fire({
+      title: "Not Implemented",
+      text: "This is not implemented yet",
+      icon: "info",
+      confirmButtonText: "Shucks...",
+    });
+  }
 
   return (
     <div className="landing-page-container">
@@ -190,8 +199,17 @@ const LandingPage = () => {
           onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
         >
           <div className="action-buttons registry-section">
-            <button className="forward-button" onClick={printRegistryPapers}>
+            <button className="forward-button" onClick={() => {printRegistryPapers("black")}}>
               Print Black Welsh Registration
+            </button>
+
+            <button className="forward-button" onClick={() => {printRegistryPapers("white")}}>
+              Print White Welsh Registration
+            </button>
+
+            {/* <button className="forward-button" onClick={() => {printRegistryPapers("chocolate")}}> */}
+            <button className="forward-button" onClick={handleNotImplemented}>
+              Print Chocolate Welsh Registration
             </button>
           </div>
         </CollapsibleSection>

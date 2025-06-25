@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
   exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
-  exportBlackRegistration: (animals: string[], directoryPath: string) => ipcRenderer.invoke("export-black-registration", animals, directoryPath),
+  exportRegistration: (animals: string[], registrationType: "black" | "white" | "chocolate") => ipcRenderer.invoke("export-registration", animals, registrationType),
   getAnimalIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedRequest) => ipcRenderer.invoke("get-breeds", queryParams),

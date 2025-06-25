@@ -2,19 +2,19 @@
   
 export type AnimalSearchResult = {
   animal_id: string;
-  flock_prefix: string | null,
+  flockPrefix: string,
   name: string;
-  birthDate: string | null;
+  registration: string | null;
+  birthDate: string;
   deathDate: string | null;
-  sex: string | null; 
-  birthType: string | null;
+  sex: string; 
+  birthType: string;
   latestOfficialID: string | null;
   latestFarmID: string | null;
   sireFlockPrefix: string | null;
   sireName: string | null;
   damFlockPrefix: string | null;
   damName: string | null;
-  // currentOwnerContact: string | null;
 }
 
 export type AnimalSearchRequest = {
@@ -30,4 +30,6 @@ export type AnimalSearchRequest = {
 
   federalTag?: string | null;
   farmTag?: string | null;
+
+  isAlreadyPrinted?: boolean | null;
 }
