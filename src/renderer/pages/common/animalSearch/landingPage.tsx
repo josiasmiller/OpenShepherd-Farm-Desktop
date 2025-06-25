@@ -119,7 +119,7 @@ const LandingPage = () => {
     setIsLoading(false);
   };
 
-  const printRegistryPapers = async () => {
+  const printRegistryPapers = async (color: "black" | "white" | "chocolate") => {
     if (isLoading) {
       return; // bail out if loading something already
     }
@@ -129,7 +129,34 @@ const LandingPage = () => {
 
     const animalIds: string[] = getAnimalIds();
 
-    const response = await window.electronAPI.exportBlackRegistration(animalIds);
+    var response: {
+      success: boolean;
+      resultingDirectory: string;
+    }
+
+    if (color === "black") {
+      response = await window.electronAPI.exportBlackRegistration(animalIds);
+    } else if (color == "white") {
+      Swal.fire({
+        title: "Not Implemented yet",
+        text: "This will be added soon.",
+        icon: "info",
+        confirmButtonText: "Continue",
+      });
+      return;
+    } else if (color == "chocolate") {
+      Swal.fire({
+        title: "Not Implemented yet",
+        text: "This will be added soon.",
+        icon: "info",
+        confirmButtonText: "Continue",
+      });
+      return;
+    } else {
+      throw new Error("Invalid registry color: " + color);
+    }
+
+    
     
     if (response.success) {
 
@@ -190,8 +217,16 @@ const LandingPage = () => {
           onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
         >
           <div className="action-buttons registry-section">
-            <button className="forward-button" onClick={printRegistryPapers}>
+            <button className="forward-button" onClick={() => {printRegistryPapers("black")}}>
               Print Black Welsh Registration
+            </button>
+
+            <button className="forward-button" onClick={() => {printRegistryPapers("white")}}>
+              Print White Welsh Registration
+            </button>
+
+            <button className="forward-button" onClick={() => {printRegistryPapers("chocolate")}}>
+              Print Chocolate Welsh Registration
             </button>
           </div>
         </CollapsibleSection>
