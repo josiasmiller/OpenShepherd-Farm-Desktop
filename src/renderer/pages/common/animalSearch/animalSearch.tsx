@@ -326,6 +326,7 @@ const AnimalSearch: React.FC = () => {
                     <th>Select</th>
                     <th>Flock Prefix</th>
                     <th>Name</th>
+                    <th>Registration Number</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
                     <th>Sex</th> 
@@ -351,6 +352,7 @@ const AnimalSearch: React.FC = () => {
                       </td>
                       <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
+                      <td>{animal.registration}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 
@@ -390,6 +392,7 @@ const AnimalSearch: React.FC = () => {
                     <th>Remove</th>
                     <th>Flock Prefix</th>
                     <th>Name</th>
+                    <th>Registration Number</th>
                     <th>Birth Date</th>
                     <th>Death Date</th>
                     <th>Sex</th> 
@@ -412,6 +415,7 @@ const AnimalSearch: React.FC = () => {
                       </td>
                       <td>{animal.flockPrefix}</td>
                       <td>{animal.name}</td>
+                      <td>{animal.registration}</td>
                       <td>{animal.birthDate}</td>
                       <td>{animal.deathDate}</td>
                       <td>{animal.sex}</td> 

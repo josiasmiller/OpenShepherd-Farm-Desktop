@@ -10,6 +10,19 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
 
   // Base query
   let animalQuery = `
+    WITH latest_registration AS (
+      SELECT 
+        ar.id_animalid,
+        ar.registration_number,
+        ar.registration_date,
+        ROW_NUMBER() OVER (
+          PARTITION BY ar.id_animalid 
+          ORDER BY DATE(ar.registration_date) DESC
+        ) AS rn
+      FROM animal_registration_table ar
+      WHERE ar.registration_date IS NOT NULL
+    )
+
     SELECT 
       a.id_animalid, 
       a.animal_name, 
@@ -22,6 +35,9 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
       fp_animal.flock_prefix AS animal_flock_prefix,
       fp_sire.flock_prefix AS sire_flock_prefix,
       fp_dam.flock_prefix AS dam_flock_prefix,
+
+      lr.registration_number AS registration_number,
+      lr.registration_date AS registration_date,
 
       (
         SELECT ai.id_number
@@ -44,6 +60,7 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
         ORDER BY ai.id_date_on DESC
         LIMIT 1
       ) AS latestFarmID
+
     FROM animal_table a
     JOIN sex_table s ON a.id_sexid = s.id_sexid
     JOIN birth_type_table bt ON a.id_birthtypeid = bt.id_birthtypeid
@@ -58,6 +75,8 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
 
     LEFT JOIN animal_flock_prefix_table afp_animal ON afp_animal.id_animalid = a.id_animalid
     LEFT JOIN flock_prefix_table fp_animal ON fp_animal.id_flockprefixid = afp_animal.id_flockprefixid
+
+    LEFT JOIN latest_registration lr ON lr.id_animalid = a.id_animalid AND lr.rn = 1
   `;
 
   const conditions: string[] = [];
@@ -165,6 +184,7 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
           animal_id: row.id_animalid,
           flockPrefix: row.animal_flock_prefix,
           name: row.animal_name,
+          registration: row.registration_number,
           birthDate: row.birth_date,
           deathDate: row.death_date || null,
           sex: row.sex_name,
