@@ -159,6 +159,15 @@ const LandingPage = () => {
     setIsLoading(false);
   };
 
+  const handleNotImplemented = async () => {
+    Swal.fire({
+      title: "Not Implemented",
+      text: "This is not implemented yet",
+      icon: "info",
+      confirmButtonText: "Shucks...",
+    });
+  }
+
   return (
     <div className="landing-page-container">
       {/* Top Half */}
@@ -198,7 +207,8 @@ const LandingPage = () => {
               Print White Welsh Registration
             </button>
 
-            <button className="forward-button" onClick={() => {printRegistryPapers("chocolate")}}>
+            {/* <button className="forward-button" onClick={() => {printRegistryPapers("chocolate")}}> */}
+            <button className="forward-button" onClick={handleNotImplemented}>
               Print Chocolate Welsh Registration
             </button>
           </div>

@@ -23,7 +23,7 @@ export const estimateFiftyDayWeight = async (
     WHERE id_animalid = ?
       AND age_in_days BETWEEN 40 AND 120
       AND trait_score11 IS NOT NULL
-      AND trait_name11 = '${EVALUATION_WEIGHT}'  -- ensure trait 11 actually is weight and now some random evaluation  
+      AND trait_name11 = '${EVALUATION_WEIGHT}'  -- ensure trait 11 actually is weight and not some random evaluation  
     ORDER BY eval_date DESC
     LIMIT 1
   `;
@@ -35,7 +35,7 @@ export const estimateFiftyDayWeight = async (
       } else if (!row || !row.weight || !row.ageInDays || row.ageInDays <= 0) {
         resolve(new Failure("No valid evaluation data found for this animal"));
       } else {
-        const adg = row.weight / row.ageInDays;
+        const adg = row.weight / row.ageInDays; // ADG --> Average Daily Gain
         const weight50 = parseFloat((adg * 50).toFixed(2));
         resolve(new Success(weight50));
       }
