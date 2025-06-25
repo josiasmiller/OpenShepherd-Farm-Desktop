@@ -58,7 +58,7 @@ export const writeRegistration = async (
     });
 
     
-    return { success: true, resultingDirectory: directoryPath };
+    return { success: success, resultingDirectory: directoryPath };
 
   } catch (e) {
     console.error("Error setting form fields:", e);
@@ -92,7 +92,6 @@ const _handleRegistrationWrite = async (
       return new Failure("Invalid PDF Document in _handleRegistrationWrite");
     }
 
-    
     // create fields that need to be created
     var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 
@@ -115,6 +114,7 @@ const _handleRegistrationWrite = async (
     form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
     form.getTextField("BirthYear").setText(bday);
     form.getTextField("WgtBirth").setText(birthWeight);
+    form.getTextField("Wgt2nd").setText(regResult.secondWeight.toString());
 
     form.getTextField("Name").setText(fullAnimalName);
     form.getTextField("Sex").setText(regResult.sex.name);
@@ -138,8 +138,6 @@ const _handleRegistrationWrite = async (
       form.getTextField("CODON136").setText(regResult.Codon136.alleles);
     }
     
-    // form.getTextField("CODON136").setText(regResult.CODON136);
-
     // more fields that may be populated later. leaving for now so I don't have to search and find the fields on the PDF again
     // form.getTextField("UKRegNo").setText(regResult.UKRegNo);
     // form.getTextField("DESC").setText(regResult.DESC);
@@ -268,6 +266,7 @@ const _handleRegistrationWrite = async (
 
     const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
     const filePath = path.join(directoryPath, filename); 
+
     // Write file, wrap in try/catch to catch fs errors
     try {
       fs.writeFileSync(filePath, pdfBytes);
@@ -359,7 +358,7 @@ const _getTagText = (tag: idTag): string => {
 
   var text: string = "";
   if (abbrev_color && abbrev_loc) {
-    text =  `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
+    text = `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
   } else {
     text = tag.idNumber;
   }

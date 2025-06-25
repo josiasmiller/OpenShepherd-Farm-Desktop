@@ -14,7 +14,7 @@ export type AnimalRegistrationResult = {
   unofficialTag: idTag | null;
   sex: Sex;
   FMICRON: string;
-  Wgt2nd: string;
+  secondWeight: number;
   Inbreeding: string;
   pedigree: PedigreeNode;
   breeder: Owner;

@@ -16,6 +16,7 @@ import { getAnimalIdentification } from "../../animal/identification/getAnimalId
 import { getPedigree } from "../../animal/pedigree/getPedigree.js";
 import { getMostRecentUnofficialTag } from "../../animal/tags/getRecentFarmTag.js";
 import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag.js";
+import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeight.js";
 import { getBreeder } from "../../owners/getBreeder.js";
 import { getOwner } from "../../owners/getOwner.js";
 
@@ -44,6 +45,7 @@ export const getAnimalRegistrationInfo = async (
         animalSexResult,
         codon136Result,
         codon171Result,
+        fiftyDayWeightResult
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
@@ -55,6 +57,7 @@ export const getAnimalRegistrationInfo = async (
         getSexFromAnimalId(animalId),
         getCodon136ForAnimal(animalId),
         getCodon171ForAnimal(animalId),
+        estimateFiftyDayWeight(animalId),
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,6 +141,14 @@ export const getAnimalRegistrationInfo = async (
       const codon171 : CodonResponse | null = codon171Unwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
+      // 50 Day Weight
+      const fiftyDayWeightUnwrap = await unwrapOrFailWithAnimal(fiftyDayWeightResult, "fiftyDayWeight", animalId);
+      if (fiftyDayWeightUnwrap.tag === "error") {
+        return fiftyDayWeightUnwrap;
+      }
+      const fiftyDayWeight : number | null = fiftyDayWeightUnwrap.data;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
 
       const registration: AnimalRegistrationResult = {
         animalIdentification: animalIdentification,
@@ -145,7 +156,7 @@ export const getAnimalRegistrationInfo = async (
         unofficialTag: unofficialTag,
         sex: animalSex,
         FMICRON: "fixme",
-        Wgt2nd: "fixme",
+        secondWeight: fiftyDayWeight,
         Inbreeding: "fixme",
         pedigree: pedigree!,
         breeder: breeder,
