@@ -4,9 +4,27 @@ import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { BirthParseRow } from './util/birthParseRow.js';
 import { birthParseMap } from './util/birthParseMap.js';
+import { dialog } from 'electron';
 
-export const birthParser = async (filepath: string): Promise<BirthParseRow[]> => {
-  const fileContent = await fs.readFile(filepath, 'utf-8');
+export const birthParser = async (): Promise<BirthParseRow[]> => {
+  // Show the file selection dialog (CSV only)
+  const { filePaths, canceled } = await dialog.showOpenDialog({
+    title: "Select CSV File",
+    properties: ["openFile"],
+    filters: [
+      { name: "CSV Files", extensions: ["csv"] }
+    ],
+  });
+
+  // Handle user cancellation
+  if (canceled || filePaths.length === 0) {
+    console.log("User cancelled CSV file selection.");
+    return [];
+  }
+
+  const selectedFile = filePaths[0];
+
+  const fileContent = await fs.readFile(selectedFile, 'utf-8');
 
   return new Promise((resolve, reject) => {
     Papa.parse(fileContent, {

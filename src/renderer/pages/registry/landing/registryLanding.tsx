@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import React from "react";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { useState } from "react";
@@ -9,53 +11,60 @@ import { BirthProcessorResponse } from "../../../../registry/processors/births/b
 
 
 const RegistryLanding: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [showProccesors, setShowProccesors] = useState(true);
 
-  const handleBirthNotifications = async () => {
-    // dont double process
-    if (isLoading) {
-      return;
-    }
+  // const handleBirthNotifications = async () => {
+  //   // dont double process
+  //   if (isLoading) {
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    var resp : BirthProcessorResponse = await window.electronAPI.registryProcessBirths();
+  //   setIsLoading(true);
+  //   var resp : BirthProcessorResponse = await window.electronAPI.registryProcessBirths();
 
-    // handle case where user doesn't select anything from the file dialog
-    if (resp.didUserCancel) {
-      setIsLoading(false);
-    }
+  //   // handle case where user doesn't select anything from the file dialog
+  //   if (resp.didUserCancel) {
+  //     setIsLoading(false);
+  //   }
 
-    if (resp.success) {
+  //   if (resp.success) {
 
-      Swal.fire({
-        title: "Success",
-        text: "PDF saved successfully",
-        icon: "success",
-        showCancelButton: true,
-        confirmButtonText: "Open Folder",
-        cancelButtonText: "OK",
-        reverseButtons: true,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.electronAPI.openDirectory(resp.resultingDirectory);
-        }
-      });
+  //     Swal.fire({
+  //       title: "Success",
+  //       text: "PDF saved successfully",
+  //       icon: "success",
+  //       showCancelButton: true,
+  //       confirmButtonText: "Open Folder",
+  //       cancelButtonText: "OK",
+  //       reverseButtons: true,
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         window.electronAPI.openDirectory(resp.resultingDirectory);
+  //       }
+  //     });
 
-    } else {
-      Swal.fire({
-        title: "Error",
-        text: "There was an error saving the file",
-        icon: "error",
-        confirmButtonText: "Continue",
-      });
-    }
+  //   } else {
+  //     Swal.fire({
+  //       title: "Error",
+  //       text: "There was an error saving the file",
+  //       icon: "error",
+  //       confirmButtonText: "Continue",
+  //     });
+  //   }
 
-    setIsLoading(false);
+  //   setIsLoading(false);
+  // };
+
+  const handleBirthNotifications = () => {
+    if (isLoading) return;
+
+    navigate('/registry/preprocess/births');
   };
+
 
 
   return (

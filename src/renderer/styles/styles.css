@@ -20,6 +20,10 @@
 
 @import url("impl/home/home.css");
 
+@import url("impl/shared/headers/headers.css");
+@import url("impl/shared/inputs/inputs.css");
+@import url("impl/shared/layouts/padders.css");
+
 @import url("impl/util/collapsible.css");
 @import url("impl/util/icon.css");
 @import url("impl/util/spinner.css");

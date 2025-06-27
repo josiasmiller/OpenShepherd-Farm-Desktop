@@ -1,0 +1,33 @@
+/* ========================================================
+   General Purpose Padding Utilities
+   Apply to divs to control spacing
+======================================================== */
+
+/* Horizontal Padding Only */
+.padded-horizontal-sm {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.padded-horizontal-md {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.padded-horizontal-lg {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Vertical + Horizontal Padding */
+.padded-sm {
+  padding: 0.5rem;
+}
+
+.padded-md {
+  padding: 1rem;
+}
+
+.padded-lg {
+  padding: 2rem;
+}

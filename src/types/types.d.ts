@@ -29,6 +29,7 @@ import {
   NewDefaultSettingsParameters,
   PedigreeNode
 } from "../database";
+import { BirthParseRow } from "../registry/parsers/births/util/birthParseRow";
 import { BirthProcessorResponse } from "../registry/processors/births/birthProcessor";
 
 import { Result } from "../shared/results/resultTypes";
@@ -72,7 +73,8 @@ declare global {
       isDatabaseLoaded: () => Promise<boolean>;
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
-      registryProcessBirths: () => Promise<BirthProcessorResponse>,
+      registryParseBirths: () => Promise<BirthParseRow[]>;
+      registryProcessBirths: () => Promise<BirthProcessorResponse>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };
