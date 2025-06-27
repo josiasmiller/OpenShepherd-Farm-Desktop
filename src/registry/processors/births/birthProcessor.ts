@@ -1,5 +1,7 @@
 import { dialog } from "electron";
 import path from "path";
+import { BirthParseRow } from "../../parsers/births/util/birthParseRow.js";
+import { birthParser } from "../../parsers/births/birthParser.js";
 
 
 export type BirthProcessorResponse = { 
@@ -28,7 +30,10 @@ export const birthProcessor = async (): Promise<BirthProcessorResponse> => {
 
   const selectedFile = filePaths[0];
   const directoryPath = path.dirname(selectedFile);
-  
+
+  var parsedData : BirthParseRow[] = await birthParser(selectedFile);
+
+  // `parsedData` will next be passed to the validator
 
   return new Promise((resolve, reject) => {
     
