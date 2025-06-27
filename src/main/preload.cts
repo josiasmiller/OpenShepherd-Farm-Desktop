@@ -42,6 +42,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
   openDirectory: (path: string) => ipcRenderer.invoke('open-directory', path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
+  registryProcessBirths: () => ipcRenderer.invoke("registry-process-births"),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
   writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });

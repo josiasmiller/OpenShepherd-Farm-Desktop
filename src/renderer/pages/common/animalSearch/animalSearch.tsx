@@ -33,7 +33,6 @@ const AnimalSearch: React.FC = () => {
   const [message, setMessage] = useState("Search for animals to display results.");
 
   const [showSearch, setShowSearch] = useState(true);
-  const [showRegistrySearch, setShowRegistrySearch] = useState(true);
   const [showResults, setShowResults] = useState(true);
   const [showChosen, setShowChosen] = useState(true);
 
@@ -73,7 +72,6 @@ const AnimalSearch: React.FC = () => {
     let parsedValue: any = value;
 
     if (id === "isAlreadyPrinted") {
-      // Convert string to boolean or null
       if (value === "") {
         parsedValue = null;
       } else if (value === "true") {

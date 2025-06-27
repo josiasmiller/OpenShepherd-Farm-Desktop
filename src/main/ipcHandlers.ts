@@ -39,6 +39,7 @@ import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 import { writeRegistration } from "../writers/pdf/writeRegistration.js";
+import { birthProcessor } from "../registry/processors/births/birthProcessor.js";
 
 export const registerIpcHandlers = () => {
   
@@ -142,6 +143,8 @@ export const registerIpcHandlers = () => {
     }
     await shell.openExternal(url);
   });
+
+  ipcMain.handle("registry-process-births", birthProcessor);
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
     return writeNewDefaultSettings(queryParams);

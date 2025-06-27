@@ -103,11 +103,19 @@ const Sidebar: React.FC = () => {
         >
           Animal Search
         </li>
+
         <li
           onClick={() => handleNavClick("/create-default")}
           style={getLinkStyle(isDbLoaded)}
         >
           Edit Defaults
+        </li>
+
+        <li
+          onClick={() => handleNavClick("/registry")}
+          style={getLinkStyle(isDbLoaded)}
+        >
+          Registry Features
         </li>
       </ul>
 
