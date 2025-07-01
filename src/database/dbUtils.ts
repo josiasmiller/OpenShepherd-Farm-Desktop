@@ -1,14 +1,10 @@
-import { Failure, Result, Success } from "../shared/results/resultTypes";
+import { getDatabase } from './dbConnections.js';
 
-/* escapes characters for DB strings */
 export function escapeLikeString(str: string): string {
   return str.replace(/[%_]/g, '\\$&');
 }
 
-// INPUT MUST BE IN `YYYY-MM-DD` FORMAT!
 export function getDbDate(input: string): Date | null {
-  
-  // Validate format: YYYY-MM-DD
   const datePattern = /^\d{4}-\d{2}-\d{2}$/;
   if (!datePattern.test(input)) {
     console.error(`Invalid date format: ${input}. Expected format: YYYY-MM-DD.`);
@@ -20,10 +16,7 @@ export function getDbDate(input: string): Date | null {
   const month = Number(monthStr);
   const day = Number(dayStr);
 
-  // Create date in UTC to avoid timezone issues
   const date = new Date(Date.UTC(year, month - 1, day));
-
-  // Check for invalid date
   if (
     isNaN(date.getTime()) ||
     date.getUTCFullYear() !== year ||
@@ -35,4 +28,31 @@ export function getDbDate(input: string): Date | null {
   }
 
   return date;
+}
+
+// =======================
+// | TRANSACTION HELPERS |
+// =======================
+
+function runAsync(sql: string): Promise<void> {
+  const db = getDatabase();
+  if (!db) throw new Error("Database not initialized");
+  return new Promise((resolve, reject) => {
+    db.run(sql, (err: Error | null) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+export async function beginTransaction(): Promise<void> {
+  await runAsync('BEGIN TRANSACTION');
+}
+
+export async function commitTransaction(): Promise<void> {
+  await runAsync('COMMIT');
+}
+
+export async function rollbackTransaction(): Promise<void> {
+  await runAsync('ROLLBACK');
 }

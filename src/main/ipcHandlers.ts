@@ -39,9 +39,11 @@ import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 import { writeRegistration } from "../writers/pdf/writeRegistration.js";
-import { birthProcessor } from "../registry/processors/births/birthProcessor.js";
-import { birthParser } from "../registry/parsers/births/birthParser.js";
-import { BirthParseRow } from "../registry/parsers/births/util/birthParseRow.js";
+import { birthParser } from "../registry/processing/births/parser/birthParser.js";
+import { BirthParseRow } from "../registry/processing/births/parser/util/birthParseRow.js";
+
+import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
+import { RegistryProcessRequest } from "../registry/processing/core/types.js";
 
 export const registerIpcHandlers = () => {
   
@@ -148,9 +150,13 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle('registry-parse-births', birthParser);
 
-  ipcMain.handle('registry-process-births', async (_event, rows: BirthParseRow[]) => {
-    return birthProcessor(rows);
-  });
+  ipcMain.handle(
+    "registry-process",
+    async (_event, args: RegistryProcessRequest) => {
+      const { processType, rows } = args;
+      return handleRegistryProcess(processType, rows);
+    }
+  );
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
     return writeNewDefaultSettings(queryParams);

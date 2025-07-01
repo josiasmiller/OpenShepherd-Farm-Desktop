@@ -1,5 +1,3 @@
-// src/registry/parsers/births/birthParser.ts
-
 import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { BirthParseRow } from './util/birthParseRow.js';

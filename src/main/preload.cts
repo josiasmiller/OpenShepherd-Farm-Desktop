@@ -6,7 +6,7 @@ import {
   UnitRequest, 
   NewDefaultSettingsParameters 
 } from "../database";
-import { BirthParseRow } from '../registry/parsers/births/util/birthParseRow';
+import { BirthParseRow } from '../registry/processing/births/parser/util/birthParseRow';
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),

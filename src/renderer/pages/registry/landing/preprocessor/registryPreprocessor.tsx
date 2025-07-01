@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
-import { BirthParseRow } from '../../../../../registry/parsers/births/util/birthParseRow';
+import { BirthParseRow } from '../../../../../registry/processing/births/parser/util/birthParseRow';
+import { registryProcessorFactory } from '../../../../../registry/processing/core/registryProcessorFactory';
+import Swal from 'sweetalert2';
 
 export const PreprocessorPage: React.FC = () => {
-  const { processType } = useParams(); // e.g., 'births'
+  const { processType } = useParams(); // e.g., 'births', 'deaths;, or any other registry processes
   const navigate = useNavigate();
 
   const [rows, setRows] = useState<RegistryRow[]>([]);
@@ -22,8 +24,6 @@ export const PreprocessorPage: React.FC = () => {
       if (processType === 'births') {
         const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
 
-        console.log("MITCH DEBUG!!!!");
-        console.log(parsedBirths);
         const birthColumns: RegistryFieldDef[] = [
           { key: 'isStillborn', label: 'Stillborn?', editable: true },
           { key: 'prefix', label: 'Flock Prefix', editable: true },
@@ -72,11 +72,44 @@ export const PreprocessorPage: React.FC = () => {
     setRows(newData);
   };
 
-  const handleSubmit = () => {
-    console.log('Edited rows:', rows);
-    navigate('/registry');
-  };
+  const handleSubmit = async () => {
+    if (!processType) return;
 
+    const processor = registryProcessorFactory(processType);
+
+    const validationResults = await processor.validate(rows);
+    const hasErrors = validationResults.some(r => !r.isValid);
+
+    if (hasErrors) {
+      console.error('Validation errors:', validationResults);
+      Swal.fire({
+        title: "Unable to Process",
+        text: "The file did not pass the validation step.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    const result = await processor.process(rows);
+    if (!result.success) {
+      Swal.fire({
+        title: "Unable to Process",
+        text: "The file passes validation, but failed upon attempting to write to the database",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    } else {
+      navigate('/registry');
+      Swal.fire({
+        title: "Success",
+        text: `CSV processed successfully.\n${result.insertedRowCount} rows inserted.`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+  
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 
   return (
