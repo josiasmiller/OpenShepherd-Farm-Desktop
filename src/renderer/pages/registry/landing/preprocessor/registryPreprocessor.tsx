@@ -22,14 +22,30 @@ export const PreprocessorPage: React.FC = () => {
       if (processType === 'births') {
         const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
 
+        console.log("MITCH DEBUG!!!!");
+        console.log(parsedBirths);
         const birthColumns: RegistryFieldDef[] = [
+          { key: 'isStillborn', label: 'Stillborn?', editable: true },
+          { key: 'prefix', label: 'Flock Prefix', editable: true },
           { key: 'animalName', label: 'Animal Name', editable: true },
           { key: 'birthdate', label: 'Birth Date', editable: true },
-          { key: 'isStillborn', label: 'Stillborn?', editable: true },
           { key: 'sex', label: 'Sex', editable: false },
+          { key: 'breederName', label: 'Breeder Name', editable: true },
+          { key: 'conceptionType', label: 'Conception Type', editable: true },
+          { key: 'coatColor', label: 'Coat Color', editable: true },
+          { key: 'farmColor', label: 'Farm Tag Color', editable: true },
+          { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
+          { key: 'farmNum', label: 'Farm Tag Number', editable: true },
+          { key: 'farmType', label: 'Farm Tag Type', editable: true },
+          { key: 'fedColor', label: 'Federal Tag Color', editable: true },
+          { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
+          { key: 'fedNum', label: 'Federal Tag Number', editable: true },
+          { key: 'fedType', label: 'Federal Tag Type', editable: true },
           { key: 'weight', label: 'Weight', editable: true },
+          { key: 'weightUnits', label: 'Weight Units', editable: true },
           { key: 'birthNotes', label: 'Notes', editable: true },
         ];
+
 
         const rows: RegistryRow[] = parsedBirths.map(b => ({ ...b }));
 
