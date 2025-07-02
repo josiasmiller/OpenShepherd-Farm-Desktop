@@ -71,3 +71,11 @@ export type { NewDefaultSettingsParameters } from "./models/write/defaults/newDe
 // export write repositories
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// registry DB calls
+
+export { getAnimalDeathDate } from "./registry/getAnimalDeathDate.js";
+export { getGestationPeriod } from "./registry/getGestationPeriod.js";

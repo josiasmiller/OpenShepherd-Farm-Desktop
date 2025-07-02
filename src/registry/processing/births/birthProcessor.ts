@@ -1,4 +1,5 @@
 import { RegistryRow, ProcessingResult } from '../core/types';
+import { BirthValidator } from './validation/birthValidator.js'; // Adjust the path if needed
 
 import {
   beginTransaction,
@@ -9,11 +10,25 @@ import {
 export class BirthProcessor {
   async process(rows: RegistryRow[]): Promise<ProcessingResult> {
     try {
-      // await beginTransaction(); //we dont want to start transactions *quite* yet until the validatio npart is complete
+      const validator = new BirthValidator();
+      const validationResults = await validator.validate(rows);
+
+      const failed = validationResults.filter(result => !result.isValid);
+      if (failed.length > 0) {
+        return {
+          success: false,
+          error: "Validation failed for some rows.",
+          validationErrors: failed, // <-- Optional: include for reporting in UI/logs
+        } as ProcessingResult;
+      }
+
+      // Transactions would begin here once validation is fully integrated
+      // await beginTransaction();
 
       for (const row of rows) {
-        console.log("working on row:")
+        console.log("Processing row:");
         console.log(row);
+        // TODO: insert logic goes here
       }
 
       // await commitTransaction();
@@ -21,7 +36,10 @@ export class BirthProcessor {
 
     } catch (error) {
       // await rollbackTransaction();
-      return { success: false, error: (error as Error).message } as ProcessingResult;
+      return {
+        success: false,
+        error: (error as Error).message,
+      } as ProcessingResult;
     }
   }
 }

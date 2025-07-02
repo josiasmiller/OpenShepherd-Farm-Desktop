@@ -4,7 +4,7 @@ import { Result, Success, Failure } from "../../../../shared/results/resultTypes
 
 
 export const getDeathReasons = async (): Promise<Result<DeathReason[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

@@ -25,3 +25,10 @@ export interface RegistryProcessor {
   validate(rows: RegistryRow[]): Promise<ValidationResult[]>;
   process(rows: RegistryRow[]): Promise<ProcessingResult>;
 }
+
+export type ValidationResponse = {
+  checkName: string;
+  errors: string[];
+  warnings?: string[];
+  passed?: boolean;
+};
