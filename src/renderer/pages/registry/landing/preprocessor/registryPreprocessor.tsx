@@ -112,7 +112,7 @@ export const PreprocessorPage: React.FC = () => {
       rows: rows,
     }
 
-    const result = await await window.electronAPI.registryProcess(args);
+    const result = await window.electronAPI.registryProcess(args);
 
     if (!result.success) {
       Swal.fire({

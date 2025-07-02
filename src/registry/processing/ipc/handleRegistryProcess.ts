@@ -3,15 +3,17 @@ import {
   RegistryProcessType,
   RegistryRow,
   ProcessingResult,
+  RegistryProcessor,
+  ValidationResult,
 } from "../core/types.js";
 
 export async function handleRegistryProcess(
   processType: RegistryProcessType,
   rows: RegistryRow[]
 ): Promise<ProcessingResult> {
-  const processor = registryProcessorFactory(processType);
+  const processor : RegistryProcessor = registryProcessorFactory(processType);
 
-  const validationResults = await processor.validateRegistryRows(rows);
+  const validationResults : ValidationResult[] = await processor.validateRegistryRows(rows);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {

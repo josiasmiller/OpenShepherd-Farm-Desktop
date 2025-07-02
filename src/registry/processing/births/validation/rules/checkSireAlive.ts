@@ -3,6 +3,7 @@ import { getAnimalDeathDate, getGestationPeriod } from '../../../../../database/
 import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
 
 export async function checkSireAlive(row: RegistryRow): Promise<ValidationResponse> {
+  const millisecondsInDay : number = 86400000;
   const errors: string[] = [];
   const { sireId, birthdate, species } = row;
 
@@ -22,7 +23,7 @@ export async function checkSireAlive(row: RegistryRow): Promise<ValidationRespon
 
   const { earlyDays } = gestationResult.data;
   const birthDate = new Date(birthdate);
-  const earliestBreedingDate = new Date(birthDate.getTime() - earlyDays * 86400000);
+  const earliestBreedingDate = new Date(birthDate.getTime() - earlyDays * millisecondsInDay);
 
   const deathDateResult = await unwrapOrFailWithAnimal(
     await getAnimalDeathDate(sireId),
