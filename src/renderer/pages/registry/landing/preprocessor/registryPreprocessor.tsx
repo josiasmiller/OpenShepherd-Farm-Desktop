@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
 import { BirthParseRow } from '../../../../../registry/processing/births/parser/util/birthParseRow';
-import { registryProcessorFactory } from '../../../../../registry/processing/core/registryProcessorFactory';
 import Swal from 'sweetalert2';
+import { RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 
 export const PreprocessorPage: React.FC = () => {
   const { processType } = useParams(); // e.g., 'births', 'deaths;, or any other registry processes
@@ -75,23 +75,15 @@ export const PreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (!processType) return;
 
-    const processor = registryProcessorFactory(processType);
+    const pt : RegistryProcessType = processType as RegistryProcessType;
 
-    const validationResults = await processor.validate(rows);
-    const hasErrors = validationResults.some(r => !r.isValid);
-
-    if (hasErrors) {
-      console.error('Validation errors:', validationResults);
-      Swal.fire({
-        title: "Unable to Process",
-        text: "The file did not pass the validation step.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-      return;
+    const args : RegistryProcessRequest = {
+      processType: pt,
+      rows: rows,
     }
 
-    const result = await processor.process(rows);
+    const result = await await window.electronAPI.registryProcess(args);
+
     if (!result.success) {
       Swal.fire({
         title: "Unable to Process",

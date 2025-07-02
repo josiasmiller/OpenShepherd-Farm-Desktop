@@ -6,7 +6,8 @@ import {
   UnitRequest, 
   NewDefaultSettingsParameters 
 } from "../database";
-import { BirthParseRow } from '../registry/processing/births/parser/util/birthParseRow';
+
+import { RegistryProcessRequest } from '../registry/processing/core/types';
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
@@ -44,7 +45,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openDirectory: (path: string) => ipcRenderer.invoke('open-directory', path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
   registryParseBirths: () => ipcRenderer.invoke("registry-parse-births"),
-  registryProcessBirths: (rows: BirthParseRow[]) => ipcRenderer.invoke("registry-process-births", rows),
+  registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
   writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });

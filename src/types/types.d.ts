@@ -30,7 +30,7 @@ import {
   PedigreeNode
 } from "../database";
 import { BirthParseRow } from "../registry/processing/births/parser/util/birthParseRow";
-// import { BirthProcessorResponse } from "../registry/processing/births/birthProcessor";
+import { ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
 
 import { Result } from "../shared/results/resultTypes";
 
@@ -74,7 +74,7 @@ declare global {
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
       registryParseBirths: () => Promise<BirthParseRow[]>;
-      // registryProcessBirths: () => Promise<BirthProcessorResponse>;
+      registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };

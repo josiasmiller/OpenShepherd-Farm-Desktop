@@ -11,7 +11,7 @@ export async function handleRegistryProcess(
 ): Promise<ProcessingResult> {
   const processor = registryProcessorFactory(processType);
 
-  const validationResults = await processor.validate(rows);
+  const validationResults = await processor.validateRegistryRows(rows);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {
@@ -22,5 +22,5 @@ export async function handleRegistryProcess(
     };
   }
 
-  return processor.process(rows);
+  return processor.processRegistryRows(rows);
 }
