@@ -6,6 +6,7 @@ export type { AnimalSearchResult, AnimalSearchRequest } from "./models/read/anim
 export type { AnimalRegistrationResult } from "./models/read/registry/registrations/animalRegistration.js";
 export type { BirthType } from "./models/read/animal/births/birthType.js";
 export type { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
+export type { BreedingAgesResult } from "./models/read/animal/breeding/breedingAges.js";
 export type { Company } from "./models/read/owners/company.js";
 export type { Color } from "./models/read/tags/color.js";
 export type { Country } from "./models/read/locations/country.js";
@@ -33,11 +34,13 @@ export type { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
+export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnimalBirthDate.js";
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification.js";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
 export { getBirthTypes } from "./repositories/read/animal/births/getBirthTypes.js";
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
+export { getBreedingAges } from "./repositories/read/animal/breeding/getBreedingAges.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
 export { getCompanies } from "./repositories/read/owners/getCompany.js";
 export { getCountries } from "./repositories/read/locations/getCountries.js";
