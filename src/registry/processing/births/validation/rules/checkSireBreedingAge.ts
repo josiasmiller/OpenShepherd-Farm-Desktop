@@ -7,9 +7,13 @@ export async function checkSireBreedingAge(row: RegistryRow): Promise<Validation
   const errors: string[] = [];
   const { sireId, birthdate, species } = row;
 
+  console.log("wewlad1");
+
   if (!sireId || !birthdate || !species) {
     return { checkName: "checkSireBreedingAge", errors, passed: errors.length === 0 };
   }
+
+  console.log("wewlad2");
 
   // Get gestation period
   const gestationResult = await unwrapOrFailWithAnimal(
@@ -37,6 +41,8 @@ export async function checkSireBreedingAge(row: RegistryRow): Promise<Validation
     return { checkName: "checkSireBreedingAge", errors, passed: errors.length === 0 };
   }
 
+  console.log("wewlad3");
+
   const sireBirth : Date = sireBdayResult.data;
   const sireAgeAtBreeding = Math.floor((breedingDate.getTime() - sireBirth.getTime()) / millisecondsInDay);
 
@@ -52,6 +58,12 @@ export async function checkSireBreedingAge(row: RegistryRow): Promise<Validation
   }
 
   const { maleDays } = breedingAgesResult.data;
+
+  console.log("MITCH DEBUG checking sireAge vs male days:");
+  console.log(sireAgeAtBreeding);
+  console.log(maleDays);
+  console.log("--------------------------------------");
+
   if (sireAgeAtBreeding < maleDays) {
     errors.push(`Sire ${sireId} was too young to breed on ${breedingDate.toISOString().split('T')[0]} (age: ${sireAgeAtBreeding} days, required: ${maleDays}).`);
   }

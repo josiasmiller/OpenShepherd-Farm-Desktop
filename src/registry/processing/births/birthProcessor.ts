@@ -11,8 +11,8 @@ export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingR
     // await beginTransaction();
 
     for (const row of rows) {
-      console.log("Processing row:");
-      console.log(row);
+      // console.log("Processing row:");
+      // console.log(row);
       // TODO: insert logic goes here
     }
 

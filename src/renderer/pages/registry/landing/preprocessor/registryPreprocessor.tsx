@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 
 export const PreprocessorPage: React.FC = () => {
-  const { processType } = useParams(); // e.g., 'births', 'deaths;, or any other registry processes
+  const { processType, species } = useParams(); // e.g., 'births', 'deaths;, or any other registry processes
   const navigate = useNavigate();
 
   const [rows, setRows] = useState<RegistryRow[]>([]);
@@ -117,7 +117,7 @@ export const PreprocessorPage: React.FC = () => {
     if (!result.success) {
       Swal.fire({
         title: "Unable to Process",
-        text: "The file passes validation, but failed upon attempting to write to the database",
+        text: "Failed upon trying to process.",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -143,7 +143,6 @@ export const PreprocessorPage: React.FC = () => {
           {loading ? 'Loading...' : 'Select CSV File'}
         </button>
       </div>
-
 
       {hasSelectedFile && (
         <>

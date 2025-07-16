@@ -20,7 +20,6 @@ export async function validateBirthRows(rows: RegistryRow[]): Promise<Validation
 
     const damAgeCheck = await checkDamBreedingAge(row);
     errors.push(...damAgeCheck.errors);
-    
 
     results.push({
       rowIndex: index,
