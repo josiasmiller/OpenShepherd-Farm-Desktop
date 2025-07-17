@@ -109,11 +109,6 @@ export const PreprocessorPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-
-    console.log("MITCH DEBUG species");
-    console.log(species);
-    console.log("==========================================");
-
     if (!processType) return;
 
     const pt : RegistryProcessType = processType as RegistryProcessType;

@@ -6,6 +6,7 @@ import { useState } from "react";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import { handleResult } from "../../../../shared/results/resultTypes";
 import { Species } from "../../../../database";
+import Swal from "sweetalert2";
 
 
 const RegistryLanding: React.FC = () => {
@@ -26,7 +27,18 @@ const RegistryLanding: React.FC = () => {
   ), [species]);
 
   const handleBirthNotifications = () => {
-    if (isLoading || !selectedSpecies) return;
+
+    if (!selectedSpecies) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Species Required',
+        text: 'Please select a species before continuing.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (isLoading) return;
 
     navigate('/registry/preprocess/births', { state: { species: selectedSpecies } });
   };
@@ -84,7 +96,6 @@ const RegistryLanding: React.FC = () => {
           <button
             className="forward-button"
             onClick={handleBirthNotifications}
-            disabled={!selectedSpecies || isLoading}
           >
             Handle Birth Notifications
           </button>
