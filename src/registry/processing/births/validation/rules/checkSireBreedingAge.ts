@@ -1,23 +1,19 @@
 import { RegistryRow, ValidationResponse } from '../../../core/types';
-import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../database/index.js';
+import { getGestationPeriod, getAnimalBirthDate, getBreedingAges, Species } from '../../../../../database/index.js';
 import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
 
-export async function checkSireBreedingAge(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkSireBreedingAge(row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
-  const { sireId, birthdate, species } = row;
-
-  console.log("wewlad1");
+  const { sireId, birthdate } = row;
 
   if (!sireId || !birthdate || !species) {
     return { checkName: "checkSireBreedingAge", errors, passed: errors.length === 0 };
   }
 
-  console.log("wewlad2");
-
   // Get gestation period
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species),
+    await getGestationPeriod(species.id),
     "gestation period",
     sireId
   );
@@ -41,14 +37,12 @@ export async function checkSireBreedingAge(row: RegistryRow): Promise<Validation
     return { checkName: "checkSireBreedingAge", errors, passed: errors.length === 0 };
   }
 
-  console.log("wewlad3");
-
   const sireBirth : Date = sireBdayResult.data;
   const sireAgeAtBreeding = Math.floor((breedingDate.getTime() - sireBirth.getTime()) / millisecondsInDay);
 
   // Get species-specific breeding ages
   const breedingAgesResult = await unwrapOrFailWithAnimal(
-    await getBreedingAges(species),
+    await getBreedingAges(species.id),
     "breeding ages",
     sireId
   );
@@ -58,11 +52,6 @@ export async function checkSireBreedingAge(row: RegistryRow): Promise<Validation
   }
 
   const { maleDays } = breedingAgesResult.data;
-
-  console.log("MITCH DEBUG checking sireAge vs male days:");
-  console.log(sireAgeAtBreeding);
-  console.log(maleDays);
-  console.log("--------------------------------------");
 
   if (sireAgeAtBreeding < maleDays) {
     errors.push(`Sire ${sireId} was too young to breed on ${breedingDate.toISOString().split('T')[0]} (age: ${sireAgeAtBreeding} days, required: ${maleDays}).`);

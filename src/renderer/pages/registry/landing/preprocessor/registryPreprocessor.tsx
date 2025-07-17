@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
 import { BirthParseRow } from '../../../../../registry/processing/births/parser/util/birthParseRow';
 import Swal from 'sweetalert2';
 import { RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
+import { Species } from '../../../../../database';
+
 
 export const PreprocessorPage: React.FC = () => {
-  const { processType, species } = useParams(); // e.g., 'births', 'deaths;, or any other registry processes
+  const location = useLocation();
+  const { processType } = useParams();
   const navigate = useNavigate();
+
+  const navigationState = location.state as { species?: Species };
+  const species : Species = navigationState?.species!;
 
   const [rows, setRows] = useState<RegistryRow[]>([]);
   const [columns, setColumns] = useState<RegistryFieldDef[]>([]);
@@ -103,6 +109,11 @@ export const PreprocessorPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+
+    console.log("MITCH DEBUG species");
+    console.log(species);
+    console.log("==========================================");
+
     if (!processType) return;
 
     const pt : RegistryProcessType = processType as RegistryProcessType;
@@ -110,6 +121,7 @@ export const PreprocessorPage: React.FC = () => {
     const args : RegistryProcessRequest = {
       processType: pt,
       rows: rows,
+      species: species,
     }
 
     const result = await window.electronAPI.registryProcess(args);

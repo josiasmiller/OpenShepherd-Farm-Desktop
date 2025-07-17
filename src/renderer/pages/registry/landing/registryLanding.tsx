@@ -26,10 +26,11 @@ const RegistryLanding: React.FC = () => {
   ), [species]);
 
   const handleBirthNotifications = () => {
-    if (isLoading) return;
+    if (isLoading || !selectedSpecies) return;
 
-    navigate('/registry/preprocess/births');
+    navigate('/registry/preprocess/births', { state: { species: selectedSpecies } });
   };
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -59,7 +60,15 @@ const RegistryLanding: React.FC = () => {
       <div className="padded-horizontal-lg search-filters">
         <label htmlFor="selectSpecies">Species</label>
         {/* <select id="selectSpecies" value={searchParams.registrationType} onChange={handleChange}> */}
-        <select id="selectSpecies" value={selectedSpecies?.id} onChange={() => {setSelectedSpecies(selectedSpecies)}}>
+        <select
+          id="selectSpecies"
+          value={selectedSpecies?.id ?? ''}
+          onChange={(e) => {
+            const selectedId = e.target.value;
+            const found = species.find((s) => s.id === selectedId) || null;
+            setSelectedSpecies(found);
+          }}
+        >
           <option value="">Select Species</option>
           {speciesOptions}
         </select>
@@ -72,7 +81,11 @@ const RegistryLanding: React.FC = () => {
         onToggle={() => setShowProccesors(!showProccesors)}
       >
         <div className="action-buttons registry-section">
-          <button className="forward-button" onClick={handleBirthNotifications}>
+          <button
+            className="forward-button"
+            onClick={handleBirthNotifications}
+            disabled={!selectedSpecies || isLoading}
+          >
             Handle Birth Notifications
           </button>
         </div>

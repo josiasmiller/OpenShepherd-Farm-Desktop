@@ -153,8 +153,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(
     "registry-process",
     async (_event, args: RegistryProcessRequest) => {
-      const { processType, rows } = args;
-      return handleRegistryProcess(processType, rows);
+      const { processType, rows, species } = args;
+      return handleRegistryProcess(processType, rows, species);
     }
   );
 

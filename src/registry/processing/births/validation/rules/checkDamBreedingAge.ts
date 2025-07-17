@@ -52,10 +52,6 @@ export async function checkDamBreedingAge(row: RegistryRow): Promise<ValidationR
   }
 
   const { femaleDays } = breedingAgesResult.data;
-  console.log("MITCH DEBUG checking sireAge vs male days:");
-  console.log(damAgeAtBreeding);
-  console.log(femaleDays);
-  console.log("--------------------------------------");
   if (damAgeAtBreeding < femaleDays) {
     errors.push(`Dam ${damId} was too young to breed on ${breedingDate.toISOString().split('T')[0]} (age: ${damAgeAtBreeding} days, required: ${femaleDays}).`);
   }

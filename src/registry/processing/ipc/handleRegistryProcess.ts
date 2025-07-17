@@ -1,3 +1,4 @@
+import { Species } from "../../../database/index.js";
 import { registryProcessorFactory } from "../core/registryProcessorFactory.js";
 import {
   RegistryProcessType,
@@ -9,11 +10,12 @@ import {
 
 export async function handleRegistryProcess(
   processType: RegistryProcessType,
-  rows: RegistryRow[]
+  rows: RegistryRow[],
+  species: Species,
 ): Promise<ProcessingResult> {
   const processor : RegistryProcessor = registryProcessorFactory(processType);
 
-  const validationResults : ValidationResult[] = await processor.validateRegistryRows(rows);
+  const validationResults : ValidationResult[] = await processor.validateRegistryRows(rows, species);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {

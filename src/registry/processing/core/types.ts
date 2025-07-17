@@ -1,3 +1,5 @@
+import { Species } from "../../../database";
+
 export type RegistryProcessType = 'births' | 'deaths';
 
 export interface RegistryRow {
@@ -13,6 +15,7 @@ export interface ValidationResult {
 export interface RegistryProcessRequest {
   processType: RegistryProcessType;
   rows: RegistryRow[];
+  species: Species;
 }
 
 export interface ProcessingResult {
@@ -22,7 +25,7 @@ export interface ProcessingResult {
 }
 
 export interface RegistryProcessor {
-  validateRegistryRows(rows: RegistryRow[]): Promise<ValidationResult[]>;
+  validateRegistryRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]>;
   processRegistryRows(rows: RegistryRow[]): Promise<ProcessingResult>;
 }
 

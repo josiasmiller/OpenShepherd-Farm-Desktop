@@ -2,9 +2,10 @@ import { RegistryRow, ValidationResult } from '../../core/types';
 import { checkSireAlive } from './rules/checkSireAlive.js';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge.js';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge.js';
+import { Species } from '../../../../database';
 
 
-export async function validateBirthRows(rows: RegistryRow[]): Promise<ValidationResult[]> {
+export async function validateBirthRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   for (let index = 0; index < rows.length; index++) {
@@ -15,7 +16,7 @@ export async function validateBirthRows(rows: RegistryRow[]): Promise<Validation
     const sireCheck = await checkSireAlive(row);
     errors.push(...sireCheck.errors);
 
-    const sireAgeCheck = await checkSireBreedingAge(row);
+    const sireAgeCheck = await checkSireBreedingAge(row, species);
     errors.push(...sireAgeCheck.errors);
 
     const damAgeCheck = await checkDamBreedingAge(row);
