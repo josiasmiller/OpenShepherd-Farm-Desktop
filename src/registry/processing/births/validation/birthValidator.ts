@@ -19,7 +19,7 @@ export async function validateBirthRows(rows: RegistryRow[], species: Species): 
     const sireAgeCheck = await checkSireBreedingAge(row, species);
     errors.push(...sireAgeCheck.errors);
 
-    const damAgeCheck = await checkDamBreedingAge(row);
+    const damAgeCheck = await checkDamBreedingAge(row, species);
     errors.push(...damAgeCheck.errors);
 
     results.push({

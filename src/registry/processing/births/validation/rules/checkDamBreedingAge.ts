@@ -1,11 +1,11 @@
 import { RegistryRow, ValidationResponse } from '../../../core/types';
-import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../database/index.js';
+import { getGestationPeriod, getAnimalBirthDate, getBreedingAges, Species } from '../../../../../database/index.js';
 import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
 
-export async function checkDamBreedingAge(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkDamBreedingAge(row: RegistryRow, species: Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
-  const { damId, birthdate, species } = row;
+  const { damId, birthdate } = row;
 
   if (!damId || !birthdate || !species) {
     return { checkName: "checkDamBreedingAge", errors, passed: errors.length === 0 };
@@ -13,7 +13,7 @@ export async function checkDamBreedingAge(row: RegistryRow): Promise<ValidationR
 
   // Get gestation period
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species),
+    await getGestationPeriod(species.id),
     "gestation period",
     damId
   );
@@ -42,7 +42,7 @@ export async function checkDamBreedingAge(row: RegistryRow): Promise<ValidationR
 
   // Get species-specific breeding ages
   const breedingAgesResult = await unwrapOrFailWithAnimal(
-    await getBreedingAges(species),
+    await getBreedingAges(species.id),
     "breeding ages",
     damId
   );
