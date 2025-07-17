@@ -8,6 +8,9 @@ export async function checkSireBreedingAge(row: RegistryRow, species : Species):
   const { sireId, birthdate } = row;
 
   if (!sireId || !birthdate || !species) {
+    if (!sireId) errors.push("Missing sire ID.");
+    if (!birthdate) errors.push("Missing birthdate.");
+    if (!species) errors.push("Missing species.");
     return { checkName: "checkSireBreedingAge", errors, passed: errors.length === 0 };
   }
 

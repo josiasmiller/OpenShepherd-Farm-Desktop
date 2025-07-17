@@ -23,7 +23,7 @@ export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingR
     // await rollbackTransaction();
     return {
       success: false,
-      error: (error as Error).message,
+      errors: [(error as Error).message],
     };
   }
 }

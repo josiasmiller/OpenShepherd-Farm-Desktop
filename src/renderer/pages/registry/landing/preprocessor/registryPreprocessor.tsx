@@ -4,7 +4,7 @@ import { EditableTable } from '../../../../components/editableTable/editableTabl
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
 import { BirthParseRow } from '../../../../../registry/processing/births/parser/util/birthParseRow';
 import Swal from 'sweetalert2';
-import { RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
+import { ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
 
 
@@ -111,33 +111,43 @@ export const PreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (!processType) return;
 
-    const pt : RegistryProcessType = processType as RegistryProcessType;
+    const pt: RegistryProcessType = processType as RegistryProcessType;
 
-    const args : RegistryProcessRequest = {
+    const args: RegistryProcessRequest = {
       processType: pt,
       rows: rows,
       species: species,
-    }
+    };
 
-    const result = await window.electronAPI.registryProcess(args);
+    const result: ProcessingResult = await window.electronAPI.registryProcess(args);
 
     if (!result.success) {
+      let errorHtml = "<ul><li>Unknown error occurred.</li></ul>";
+
+      if (Array.isArray(result.errors) && result.errors.length > 0) {
+        // Format the array of error messages into a bullet list
+        errorHtml = `<ul>${result.errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
+      }
+
       Swal.fire({
         title: "Unable to Process",
-        text: "Failed upon trying to process.",
+        html: errorHtml, // Use html to render HTML content
         icon: "error",
         confirmButtonText: "OK",
+        width: "40em", // Optional: wider modal for better list display
       });
     } else {
       navigate('/registry');
       Swal.fire({
         title: "Success",
-        text: `CSV processed successfully.\n${result.insertedRowCount} rows inserted.`,
+        text: `CSV processed successfully.\n${result.insertedRowCount ?? 0} rows inserted.`,
         icon: "success",
         confirmButtonText: "OK",
       });
     }
   };
+
+
   
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 

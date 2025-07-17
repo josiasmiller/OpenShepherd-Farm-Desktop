@@ -8,6 +8,7 @@ export type { BirthType } from "./models/read/animal/births/birthType.js";
 export type { BreedRequest, Breed } from "./models/read/animal/general/breed.js";
 export type { BreedingAgesResult } from "./models/read/animal/breeding/breedingAges.js";
 export type { Company } from "./models/read/owners/company.js";
+export type { Contact } from "./models/read/owners/contact.js";
 export type { Color } from "./models/read/tags/color.js";
 export type { Country } from "./models/read/locations/country.js";
 export type { County } from "./models/read/locations/county.js";
@@ -15,7 +16,7 @@ export type { DeathReason } from "./models/read/deaths/deathReason.js";
 export type { DrugEvent } from "./models/read/animal/drugs/drugEvent.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
-export type { Contact } from "./models/read/owners/contact.js";
+export type { OffspringInfo } from "./models/read/animal/births/offspringInfo.js";
 export type { PedigreeNode } from "./models/read/animal/pedigree/pedigree.js"
 export type { Premise } from "./models/read/premises/premise.js";
 export type { RemoveReason } from "./models/read/tags/removeReason.js";
@@ -50,6 +51,7 @@ export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents.j
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
 export { getContacts } from "./repositories/read/owners/getContact.js";
+export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam.js";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree.js"
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";

@@ -8,6 +8,10 @@ export async function checkDamBreedingAge(row: RegistryRow, species: Species): P
   const { damId, birthdate } = row;
 
   if (!damId || !birthdate || !species) {
+    if (!damId) errors.push("Missing dam ID.");
+    if (!birthdate) errors.push("Missing birthdate.");
+    if (!species) errors.push("Missing species.");
+    
     return { checkName: "checkDamBreedingAge", errors, passed: errors.length === 0 };
   }
 

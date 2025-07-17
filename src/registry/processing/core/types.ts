@@ -20,7 +20,7 @@ export interface RegistryProcessRequest {
 
 export interface ProcessingResult {
   success: boolean;
-  error?: string;
+  errors?: string[];
   insertedRowCount?: number;
 }
 

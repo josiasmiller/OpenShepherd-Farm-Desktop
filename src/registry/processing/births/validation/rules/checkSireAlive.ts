@@ -1,18 +1,21 @@
 import { RegistryRow, ValidationResponse } from '../../../core/types';
-import { getAnimalDeathDate, getGestationPeriod } from '../../../../../database/index.js';
+import { getAnimalDeathDate, getGestationPeriod, Species } from '../../../../../database/index.js';
 import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
 
-export async function checkSireAlive(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkSireAlive(row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay : number = 86400000;
   const errors: string[] = [];
-  const { sireId, birthdate, species } = row;
+  const { sireId, birthdate } = row;
 
   if (!sireId || !birthdate || !species) {
+    if (!sireId) errors.push("Missing sire ID.");
+    if (!birthdate) errors.push("Missing birthdate.");
+    if (!species) errors.push("Missing species.");
     return { checkName: "checkSireAlive", errors, passed: errors.length === 0 };
   }
 
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species),
+    await getGestationPeriod(species.id),
     "gestation period",
     sireId
   );

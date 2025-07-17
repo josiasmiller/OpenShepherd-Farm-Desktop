@@ -19,10 +19,14 @@ export async function handleRegistryProcess(
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {
-    console.error("Validation failed:", validationResults);
+    const allErrors: string[] = validationResults
+      .filter((r) => !r.isValid)
+      .flatMap((r) => r.errors);
+
+    console.error("Validation failed:", allErrors);
     return {
       success: false,
-      error: "Validation failed",
+      errors: allErrors,
     };
   }
 
