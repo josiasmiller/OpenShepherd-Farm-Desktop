@@ -39,7 +39,7 @@ export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnima
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification.js";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
-export { getBirthTypes } from "./repositories/read/animal/births/getBirthTypes.js";
+export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes.js";
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
 export { getBreedingAges } from "./repositories/read/animal/breeding/getBreedingAges.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
@@ -57,6 +57,7 @@ export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";
 export { getSexes } from "./repositories/read/animal/general/getSexes.js";
 export { getSpecies } from "./repositories/read/animal/general/getSpecies.js";
+export { getSpecificBirthType } from "./repositories/read/animal/births/birthTypes/getSpecificBirthType.js";
 export { getStates } from "./repositories/read/locations/getStates.js"
 export { getTagLocations } from "./repositories/read/tags/getLocations.js";
 export { getTagTypes } from "./repositories/read/tags/getTagTypes.js";

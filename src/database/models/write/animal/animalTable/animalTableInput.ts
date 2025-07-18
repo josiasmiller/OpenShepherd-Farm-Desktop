@@ -1,3 +1,5 @@
+import { BirthType } from "../../../read/animal/births/birthType";
+
 export type InsertAnimalTableInput = {
   name: string;
   sexId: string;
@@ -7,12 +9,12 @@ export type InsertAnimalTableInput = {
   birthWeight: number;
   birthWeightUnitsId: string;
   birthOrder?: number;
-  rearType: string | null;
+  rearType: BirthType | null;
   weanedDate: string | null;
   deathDate: string | null;
   deathReasonId: string | null;
-  sireId?: string;
-  damId?: string;
+  sireId: string;
+  damId: string;
   fosterDamId?: string;
   surrogateDamId?: string;
   handReared: boolean;

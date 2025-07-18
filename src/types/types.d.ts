@@ -60,6 +60,7 @@ declare global {
       getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
       getLocations: () => Promise<Result<TagLocation[], string>>;
       getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
+      getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
       getSexes: () => Promise<Result<Sex[], string>>;
       getSpecies: () => Promise<Result<Species[], string>>;
       getStates: () => Promise<Result<State[], string>>;
@@ -75,6 +76,7 @@ declare global {
       openExternalURL: (url: string) => Promise<void>;
       registryParseBirths: () => Promise<BirthParseRow[]>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
+      setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };

@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { BirthType } from "../../../../models/read/animal/births/birthType.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../../dbConnections.js";
+import { BirthType } from "../../../../../models/read/animal/births/birthType.js";
+import { Result, Success, Failure } from "../../../../../../shared/results/resultTypes.js";
 
 export const getBirthTypes = async (): Promise<Result<BirthType[], string>> => {
   const db = await getDatabase();

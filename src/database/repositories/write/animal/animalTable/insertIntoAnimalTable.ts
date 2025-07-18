@@ -50,7 +50,7 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
       input.birthWeight,
       input.birthWeightUnitsId,
       input.birthOrder ?? 1,
-      input.rearType ?? null,
+      input.rearType?.id ?? null,
       null, // weaned_date
       input.deathDate ?? null,
       input.deathReasonId ?? null,

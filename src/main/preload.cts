@@ -4,7 +4,8 @@ import {
   AnimalSearchRequest, 
   BreedRequest, 
   UnitRequest, 
-  NewDefaultSettingsParameters 
+  NewDefaultSettingsParameters, 
+  DefaultSettingsResults
 } from "../database";
 
 import { RegistryProcessRequest } from '../registry/processing/core/types';
@@ -31,6 +32,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getPedigree: (animalId: string) => ipcRenderer.invoke("get-peidgree", animalId),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
   getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
+  getSelectedDefault: (): Promise<DefaultSettingsResults | null> => ipcRenderer.invoke('get-selected-default'),
   getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),
@@ -47,6 +49,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   registryParseBirths: () => ipcRenderer.invoke("registry-parse-births"),
   registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
+  setSelectedDefault: (value: DefaultSettingsResults) => ipcRenderer.send('set-selected-default', value),
   writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 
