@@ -6,12 +6,12 @@ const { MakerDMG } = require('@electron-forge/maker-dmg');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 const { MakerSquirrel } = require('@electron-forge/maker-squirrel');
 
-const iconPath = path.resolve(__dirname, 'src/assets/icon.icns');
+const iconPath = path.resolve(__dirname, 'src/renderer/assets/icon.icns');
 
 /** @type {import('electron-forge').ForgeConfig} */
 module.exports = {
   packagerConfig: {
-    icon: path.resolve(__dirname, 'src/assets/icon'),
+    icon: path.resolve(__dirname, 'src/renderer/assets/icon'),
     name: 'AnimalTrakker Farm Desktop',
     executableName: 'AnimalTrakker',
     appBundleId: 'com.animaltrakker.farmdesktop',
@@ -22,8 +22,7 @@ module.exports = {
     new MakerZIP({}),
     new MakerSquirrel({
       name: 'AnimalTrakker',
-      setupIcon: path.resolve(__dirname, 'src/assets/icon.ico'),
-      iconUrl: 'https://example.com/path/to/icon.ico',
+      setupIcon: path.resolve(__dirname, 'src/renderer/assets/icon.ico'),
       authors: 'AnimalTrakker',
       description: 'AnimalTrakker',
       exe: 'AnimalTrakker.exe',
@@ -33,7 +32,7 @@ module.exports = {
     }, ['darwin']),
     new MakerDeb({
       options: {
-        icon: path.resolve(__dirname, 'src/assets/AnimalTrakker_icon_512x512.png')
+        icon: path.resolve(__dirname, 'src/renderer/assets/AnimalTrakker_icon_512x512.png')
       }
     }, ['linux']),
   ],
