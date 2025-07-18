@@ -49,7 +49,7 @@ export const PreprocessorPage: React.FC = () => {
           // Conception & birth type
           { key: 'conceptionType', label: 'Conception Type', editable: true },
           { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: false },
-          { key: 'birthTypeKey', label: 'Birth Type', editable: false },
+          { key: 'birthTypeKey', label: 'Birth Type', editable: true },
 
           // Appearance
           { key: 'coatColor', label: 'Coat Color', editable: true },

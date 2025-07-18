@@ -5,7 +5,7 @@ export type InsertAnimalTableInput = {
   sexId: string;
   birthdate: string;
   birthTime?: string;
-  birthTypeId?: string;
+  birthTypeId: string;
   birthWeight: number;
   birthWeightUnitsId: string;
   birthOrder?: number;

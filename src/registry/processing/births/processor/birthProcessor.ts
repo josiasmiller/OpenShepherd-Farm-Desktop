@@ -63,7 +63,7 @@ export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingR
         // will be adding more insert statements here
 
       } catch (innerError) {
-        throw new Error(`Failed processing row with animalId "${row.animalId}": ${(innerError as Error).message}`);
+        throw new Error(`Failed processing row with animal name "${row.animalName}": ${(innerError as Error).message}`);
       }
     }
 
