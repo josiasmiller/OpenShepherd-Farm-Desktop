@@ -22,7 +22,7 @@ const getCurrentDirectory = () => {
 app.whenReady().then(() => {
 
   const currentDirectory = getCurrentDirectory();
-  const preloadPath = path.join(currentDirectory, 'preload.cjs');
+  const preloadPath = path.join(currentDirectory, 'preload.js');
   const absolutePreloadPath = path.resolve(preloadPath);
 
   mainWindow = new BrowserWindow({
@@ -40,11 +40,10 @@ app.whenReady().then(() => {
 
   if (isDev) {
     console.log("Running Dev");
-    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
     mainWindow.webContents.openDevTools();
   } else {
-    const indexHtml = path.join(getCurrentDirectory(), '..', 'renderer', 'index.html'); // for now, getCurrentDirectory routes to the `main.js`
-    mainWindow.loadFile(indexHtml);
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
   registerIpcHandlers();

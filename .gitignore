@@ -1,6 +1,8 @@
 *.sqlite
 *.db
 
+.vite/
+
 dist/*
 node_modules/*
 
