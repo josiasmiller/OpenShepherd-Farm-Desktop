@@ -51,6 +51,7 @@ export { getCounties } from "./repositories/read/locations/getCounties.js";
 export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
 export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents.js";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
+export { getFlockPrefixIdByMembershipNumber } from "./repositories/read/owners/geFlockPrefixIdFromMemebershipNumber.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
 export { getContacts } from "./repositories/read/owners/getContact.js";
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam.js";
@@ -80,6 +81,7 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
+export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow.js";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable.js";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation.js";
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 

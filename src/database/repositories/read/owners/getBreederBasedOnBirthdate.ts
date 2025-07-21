@@ -77,10 +77,10 @@ export async function getBreederFromOwnershipHistory(
       )
     WHERE a.id_animalid = ?
       AND a.transfer_date <= ?
-      AND (a.end_date IS NULL OR a.end_date >= ?)
     ORDER BY a.transfer_date DESC
     LIMIT 1
   `;
+
 
   let row: BreederQueryRow | undefined;
 
@@ -88,7 +88,7 @@ export async function getBreederFromOwnershipHistory(
     row = await new Promise<BreederQueryRow | undefined>((resolve, reject) => {
       db.get(
         breederQuery,
-        [damId, matingEnd.toISOString(), matingStart.toISOString()],
+        [damId, matingEnd.toISOString()],
         (err, row: any) => {
           if (err) {
             reject(err);

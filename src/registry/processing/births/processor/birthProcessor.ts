@@ -14,8 +14,10 @@ import {
   BirthType,
   DefaultSettingsResults,
   getBreederFromOwnershipHistory,
+  getFlockPrefixIdByMembershipNumber,
   getSpecificBirthType,
   InsertAnimalTableInput,
+  insertAnimalFlockTableRow,
   insertIntoAnimalTable,
   insertWeightRecord,
   InsertWeightRecordInput,
@@ -41,7 +43,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
     var foundDefaultRear : boolean = false;
     var rearType : BirthType;
 
-    handleResult(rearTypeResult, {
+    await handleResult(rearTypeResult, {
       success: (data: BirthType) => {
         rearType = data;
         foundDefaultRear = true;
@@ -63,26 +65,26 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
     for (const row of rows) {
       try {
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert animal into animalTable
-        // var animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
-        // animalTableInput.rearType = rearType!;
-        // var newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
+        var animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
+        animalTableInput.rearType = rearType!;
+        var newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // insert weight row into animal_evaluations_table
-        // var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
-        // await insertWeightRecord(weightInput);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert weight row into animal_evaluations_table
+        var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
+        await insertWeightRecord(weightInput);
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // insert into breed table
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert into breed table
         var damId : string = row.damId;
-        // var sireId : string = row.sireId;
-        // await writeAnimalBreedPercentages(
-        //   newAnimalId,
-        //   damId,
-        //   sireId,
-        // );
+        var sireId : string = row.sireId;
+        await writeAnimalBreedPercentages(
+          newAnimalId,
+          damId,
+          sireId,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get breeder
@@ -97,22 +99,45 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         var breeder : Owner
 
-        handleResult(ownerResult, {
+        await handleResult(ownerResult, {
           success: (data: Owner) => {
             breeder = data;
           },
           error: (err: string) => {
             console.error("Failed to fetch Breeder:", err);
-            throw new Error(err);  // convert string to Error
+            throw new Error(err);
           },
         });
 
         // we are certain breeder is not null/undefined at this point
         breeder = breeder!;
 
-        console.log("MITCH DEBUG!!");
-        console.log(breeder);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Registry Company ID
 
+        var fpResult = await getFlockPrefixIdByMembershipNumber(breeder.flockId); // note flockId == membershipNumber
+        var flockPrefixId : string
+
+        await handleResult(fpResult, {
+          success: (data: string) => {
+            flockPrefixId = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch flockPrefixId:", err);
+            throw new Error(err);
+          },
+        });
+
+        // certain at this point that flock prefix has been set due to the above handleResult
+        flockPrefixId = flockPrefixId!;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // add to flock table
+
+        await insertAnimalFlockTableRow(
+          newAnimalId,
+          flockPrefixId,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // will be adding more insert statements here
