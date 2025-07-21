@@ -26,7 +26,7 @@ export interface ProcessingResult {
 
 export interface RegistryProcessor {
   validateRegistryRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]>;
-  processRegistryRows(rows: RegistryRow[]): Promise<ProcessingResult>;
+  processRegistryRows(rows: RegistryRow[], species: Species): Promise<ProcessingResult>;
 }
 
 export type ValidationResponse = {

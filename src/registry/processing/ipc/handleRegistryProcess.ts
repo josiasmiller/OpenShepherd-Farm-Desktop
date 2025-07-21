@@ -30,5 +30,5 @@ export async function handleRegistryProcess(
     };
   }
 
-  return processor.processRegistryRows(rows);
+  return processor.processRegistryRows(rows, species);
 }

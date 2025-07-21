@@ -17,6 +17,7 @@ export type { DrugEvent } from "./models/read/animal/drugs/drugEvent.js";
 export type { DefaultSettingsResults } from "./models/read/defaults/getExistingDefaults.js";
 export type { FlockPrefix } from "./models/read/animal/flocks/flockPrefix.js"
 export type { OffspringInfo } from "./models/read/animal/births/offspringInfo.js";
+export type { Owner } from "./models/read/owners/owner.js"
 export type { PedigreeNode } from "./models/read/animal/pedigree/pedigree.js"
 export type { Premise } from "./models/read/premises/premise.js";
 export type { RemoveReason } from "./models/read/tags/removeReason.js";
@@ -40,6 +41,7 @@ export { getAnimalIdentification } from "./repositories/read/animal/identificati
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
 export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes.js";
+export { getBreederFromOwnershipHistory } from "./repositories/read/owners/getBreederBasedOnBirthdate.js"
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
 export { getBreedingAges } from "./repositories/read/animal/breeding/getBreedingAges.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
