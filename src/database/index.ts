@@ -74,10 +74,12 @@ export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";
 // export write models
 export type { NewDefaultSettingsParameters } from "./models/write/defaults/newDefaultSettings.js";
 export type { InsertAnimalTableInput } from "./models/write/animal/animalTable/animalTableInput.js";
+export type { InsertWeightRecordInput } from "./models/write/animal/weightEvaluation/animalEvaluationWeightInput.js";
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable.js";
+export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation.js";
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 
 
 

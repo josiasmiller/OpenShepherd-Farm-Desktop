@@ -131,16 +131,16 @@ export const PreprocessorPage: React.FC = () => {
 
       Swal.fire({
         title: "Unable to Process",
-        html: errorHtml, // Use html to render HTML content
+        html: errorHtml, // Using html to render HTML content instead of raw text
         icon: "error",
         confirmButtonText: "OK",
-        width: "40em", // Optional: wider modal for better list display
+        width: "40em", // wider modal for better list display
       });
     } else {
       navigate('/registry');
       Swal.fire({
         title: "Success",
-        text: `CSV processed successfully.\n${result.insertedRowCount ?? 0} rows inserted.`,
+        text: `CSV processed successfully.\n${result.insertedRowCount ?? 0} rows processed.`,
         icon: "success",
         confirmButtonText: "OK",
       });

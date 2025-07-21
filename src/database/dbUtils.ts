@@ -30,6 +30,12 @@ export function getDbDate(input: string): Date | null {
   return date;
 }
 
+export function getSQLiteDateStringNow(): string {
+  const now = new Date();
+  return now.toISOString().replace('T', ' ').substring(0, 19);
+}
+
+
 // =======================
 // | TRANSACTION HELPERS |
 // =======================

@@ -1,21 +1,30 @@
 import { RegistryRow, ProcessingResult } from '../../core/types';
+import { getSelectedDefault } from '../../../../main/store/selectedDefaultStore.js';
+import { handleResult, Result } from '../../../../shared/results/resultTypes.js';
+
+// DB actions
 import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
 } from '../../../../database/dbUtils.js';
 
+// DB types
 import { 
   BirthType,
   DefaultSettingsResults,
   getSpecificBirthType,
   InsertAnimalTableInput,
-  insertIntoAnimalTable
+  insertIntoAnimalTable,
+  insertWeightRecord,
+  InsertWeightRecordInput
 } from '../../../../database/index.js';
 
+// mappings
 import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput.js';
-import { getSelectedDefault } from '../../../../main/store/selectedDefaultStore.js';
-import { handleResult, Result } from '../../../../shared/results/resultTypes.js';
+import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput.js';
+
+
 
 
 export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingResult> {
@@ -57,7 +66,12 @@ export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingR
         // insert animal into animalTable
         var animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
         animalTableInput.rearType = rearType!;
-        await insertIntoAnimalTable(animalTableInput);
+        var newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert weight row into animal_evaluations_table
+        var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
+        await insertWeightRecord(weightInput);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // will be adding more insert statements here
