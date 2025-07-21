@@ -17,7 +17,8 @@ import {
   InsertAnimalTableInput,
   insertIntoAnimalTable,
   insertWeightRecord,
-  InsertWeightRecordInput
+  InsertWeightRecordInput,
+  writeAnimalBreedPercentages
 } from '../../../../database/index.js';
 
 // mappings
@@ -72,6 +73,16 @@ export async function processBirthRows(rows: RegistryRow[]): Promise<ProcessingR
         // insert weight row into animal_evaluations_table
         var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
         await insertWeightRecord(weightInput);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert into breed table
+        var damId : string = row.damId;
+        var sireId : string = row.sireId;
+        await writeAnimalBreedPercentages(
+          newAnimalId,
+          damId,
+          sireId,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // will be adding more insert statements here

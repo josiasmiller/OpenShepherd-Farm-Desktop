@@ -81,6 +81,7 @@ export { editExistingDefaultSettings } from "./repositories/write/defaults/editE
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable.js";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation.js";
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 
+export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/writeBreedPercentages.js";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
