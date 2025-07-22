@@ -26,7 +26,8 @@ import {
   writeAnimalBreedPercentages,
   insertGeneticCoatRow,
   getOwnerAtBirth,
-  insertAnimalGoesToLocation
+  insertAnimalGoesToLocation,
+  insertBirthOwnershipRecord
 } from '../../../../database/index.js';
 
 // mappings
@@ -179,9 +180,18 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert row into animal location history table
 
-        await insertAnimalGoesToLocation(
+        // await insertAnimalGoesToLocation(
+        //   newAnimalId,
+        //   owner.premise.id,
+        //   birthDateString,
+        // );
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert record into animal_ownership_history_table for the animal's birth
+
+        await insertBirthOwnershipRecord(
           newAnimalId,
-          owner.premise.id,
+          owner,
           birthDateString,
         );
 
