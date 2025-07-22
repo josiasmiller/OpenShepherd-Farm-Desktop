@@ -1,13 +1,13 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { Contact } from "../../../models/read/owners/contact.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { getContactPremise } from "../premises/getContactPremise.js";
-import { getCompanyPremise } from "../premises/getCompanyPremise.js";
-import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
-import { getGestationPeriod } from "../../../registry/getGestationPeriod.js";
-import { OwnerType } from "../../../client-types.js";
+import { getDatabase } from "../../../../dbConnections.js";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes.js";
+import { Owner } from "../../../../models/read/owners/owner.js";
+import { Contact } from "../../../../models/read/owners/contact.js";
+import { Company } from "../../../../models/read/owners/company.js";
+import { getContactPremise } from "../../premises/getContactPremise.js";
+import { getCompanyPremise } from "../../premises/getCompanyPremise.js";
+import { getScrapieFlockInfo } from "../../scrapie/getScrapieFlockInfo.js";
+import { getGestationPeriod } from "../../../../registry/getGestationPeriod.js";
+import { OwnerType } from "../../../../client-types.js";
 
 type BreederQueryRow = {
   contact_id: string | null;

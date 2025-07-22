@@ -24,7 +24,8 @@ import {
   Owner,
   Species,
   writeAnimalBreedPercentages,
-  insertGeneticCoatRow
+  insertGeneticCoatRow,
+  getOwnerAtBirth
 } from '../../../../database/index.js';
 
 // mappings
@@ -92,7 +93,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         const birthDateString: string = row.birthdate;
         const birthDate: Date = new Date(birthDateString);
 
-        var ownerResult = await getBreederFromOwnershipHistory(
+        var breederResult = await getBreederFromOwnershipHistory(
           damId,
           species.id,
           birthDate,
@@ -100,7 +101,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         var breeder : Owner
 
-        await handleResult(ownerResult, {
+        await handleResult(breederResult, {
           success: (data: Owner) => {
             breeder = data;
           },
@@ -144,13 +145,35 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // add into animal_genetic_characteristic_table for coat color
 
         var coatColorId : string = row.coatColorKey;
-        var childBday : string = row.birthdate;
 
         await insertGeneticCoatRow(
           newAnimalId,
           coatColorId,
-          childBday,
+          birthDateString,
         );
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // get owner at birth of child
+
+        var ownerResult = await getOwnerAtBirth(
+          damId,
+          birthDate,
+        );
+
+        var owner : Owner
+
+        await handleResult(ownerResult, {
+          success: (data: Owner) => {
+            owner = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch owner: ", err);
+            throw new Error(err);
+          },
+        });
+
+        // passed check, convert owner to not be possibly undefined
+        owner = owner!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // will be adding more insert statements here

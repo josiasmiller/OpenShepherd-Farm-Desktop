@@ -41,11 +41,12 @@ export { getAnimalIdentification } from "./repositories/read/animal/identificati
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
 export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes.js";
-export { getBreederFromOwnershipHistory } from "./repositories/read/owners/getBreederBasedOnBirthdate.js"
+export { getBreederFromOwnershipHistory } from "./repositories/read/owners/fromDam/getBreederBasedOnBirthdate.js"
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
 export { getBreedingAges } from "./repositories/read/animal/breeding/getBreedingAges.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
 export { getCompanies } from "./repositories/read/owners/getCompany.js";
+export { getContacts } from "./repositories/read/owners/getContact.js";
 export { getCountries } from "./repositories/read/locations/getCountries.js";
 export { getCounties } from "./repositories/read/locations/getCounties.js";
 export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons.js";
@@ -53,8 +54,8 @@ export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents.j
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults.js";
 export { getFlockPrefixIdByMembershipNumber } from "./repositories/read/owners/geFlockPrefixIdFromMemebershipNumber.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
-export { getContacts } from "./repositories/read/owners/getContact.js";
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam.js";
+export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate.js";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree.js"
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";
