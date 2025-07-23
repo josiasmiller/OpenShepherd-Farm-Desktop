@@ -33,7 +33,6 @@ export const estimateFiftyDayWeight = async (
       if (err) {
         resolve(new Failure(`Database error: ${err.message}`));
       } else if (!row || !row.weight || !row.ageInDays || row.ageInDays <= 0) {
-        // resolve(new Failure("No valid evaluation data found for this animal"));
         resolve(new Success(0.0)); // for now, we will return `0` when no 50 day weight is found instead of failing out
       } else {
         const adg = row.weight / row.ageInDays; // ADG --> Average Daily Gain
