@@ -32,12 +32,15 @@ import {
   getRegistryCompanyIdForMembershipNumber,
   getDefaultFlockBookId,
   insertAnimalRegistrationRow,
-  incrementLastRegistrationNumber
+  incrementLastRegistrationNumber,
+  insertAnimalIdInfoRow
 } from '../../../../database/index.js';
 
 // mappings
 import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput.js';
 import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput.js';
+import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagInput.js';
+import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput.js';
 
 export async function processBirthRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
   try {
@@ -292,6 +295,15 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // increment the last Birth Notify Value
 
         await incrementLastRegistrationNumber();
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // add IDs to the DB
+
+        var fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId)
+        await insertAnimalIdInfoRow(fedTagInput);
+
+        var farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId)
+        await insertAnimalIdInfoRow(farmTagInput);
 
       } catch (innerError) {
         throw new Error(`Failed processing row with animal name "${row.animalName}": ${(innerError as Error).message}`);

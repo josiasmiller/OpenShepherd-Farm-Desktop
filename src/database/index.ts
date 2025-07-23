@@ -80,6 +80,7 @@ export { getUnitTypes } from "./repositories/read/units/getUnitTypes.js";
 
 // export write models
 export type { NewDefaultSettingsParameters } from "./models/write/defaults/newDefaultSettings.js";
+export type { AnimalIdInfoInput } from "./models/write/animal/id/animalIdInfoInput.js";
 export type { InsertAnimalTableInput } from "./models/write/animal/animalTable/animalTableInput.js";
 export type { InsertWeightRecordInput } from "./models/write/animal/weightEvaluation/animalEvaluationWeightInput.js";
 
@@ -88,6 +89,7 @@ export { editExistingDefaultSettings } from "./repositories/write/defaults/editE
 export { incrementLastRegistrationNumber } from "./repositories/write/registrations/incrementLastBirthNotifyValue.js";
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow.js";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory.js";
+export { insertAnimalIdInfoRow } from "./repositories/write/animal/id/insertAnimalIdRow.js";
 export { insertAnimalRegistrationRow } from "./repositories/write/registrations/insertAnimalRegistrationRow.js";
 export { insertBirthOwnershipRecord } from "./repositories/write/animal/ownership/insertBirthOwnershipRecord.js";
 export { insertGeneticCoatRow } from "./repositories/write/animal/characteristics/insertGeneticCoatRow.js";
