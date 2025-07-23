@@ -31,7 +31,8 @@ import {
   getLastBirthNotifyValue,
   getRegistryCompanyIdForMembershipNumber,
   getDefaultFlockBookId,
-  insertAnimalRegistrationRow
+  insertAnimalRegistrationRow,
+  incrementLastRegistrationNumber
 } from '../../../../database/index.js';
 
 // mappings
@@ -79,23 +80,23 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         animalTableInput.rearType = rearType!;
         var newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // insert weight row into animal_evaluations_table
-        // var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
-        // await insertWeightRecord(weightInput);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert weight row into animal_evaluations_table
+        var weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
+        await insertWeightRecord(weightInput);
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // insert into breed table
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert into breed table
         var damId : string = row.damId;
-        // var sireId : string = row.sireId;
-        // await writeAnimalBreedPercentages(
-        //   newAnimalId,
-        //   damId,
-        //   sireId,
-        // );
+        var sireId : string = row.sireId;
+        await writeAnimalBreedPercentages(
+          newAnimalId,
+          damId,
+          sireId,
+        );
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // get breeder
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // get breeder
         const birthDateString: string = row.birthdate;
         const birthDate: Date = new Date(birthDateString);
 
@@ -120,43 +121,43 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // we are certain breeder is not null/undefined at this point
         breeder = breeder!;
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // Flock Prefix Id
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Flock Prefix Id
 
-        // var fpResult = await getFlockPrefixIdByMembershipNumber(breeder.flockId); // note flockId == membershipNumber
-        // var flockPrefixId : string
+        var fpResult = await getFlockPrefixIdByMembershipNumber(breeder.flockId); // note flockId == membershipNumber
+        var flockPrefixId : string
 
-        // await handleResult(fpResult, {
-        //   success: (data: string) => {
-        //     flockPrefixId = data;
-        //   },
-        //   error: (err: string) => {
-        //     console.error("Failed to fetch flockPrefixId:", err);
-        //     throw new Error(err);
-        //   },
-        // });
+        await handleResult(fpResult, {
+          success: (data: string) => {
+            flockPrefixId = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch flockPrefixId:", err);
+            throw new Error(err);
+          },
+        });
 
-        // // certain at this point that flock prefix has been set due to the above handleResult
-        // flockPrefixId = flockPrefixId!;
+        // certain at this point that flock prefix has been set due to the above handleResult
+        flockPrefixId = flockPrefixId!;
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // add to flock table
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // add to flock table
 
-        // await insertAnimalFlockTableRow(
-        //   newAnimalId,
-        //   flockPrefixId,
-        // );
+        await insertAnimalFlockTableRow(
+          newAnimalId,
+          flockPrefixId,
+        );
 
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // // add into animal_genetic_characteristic_table for coat color
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // add into animal_genetic_characteristic_table for coat color
 
-        // var coatColorId : string = row.coatColorKey;
+        var coatColorId : string = row.coatColorKey;
 
-        // await insertGeneticCoatRow(
-        //   newAnimalId,
-        //   coatColorId,
-        //   birthDateString,
-        // );
+        await insertGeneticCoatRow(
+          newAnimalId,
+          coatColorId,
+          birthDateString,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get owner at birth of child
@@ -184,20 +185,20 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert row into animal location history table
 
-        // await insertAnimalGoesToLocation(
-        //   newAnimalId,
-        //   owner.premise.id,
-        //   birthDateString,
-        // );
+        await insertAnimalGoesToLocation(
+          newAnimalId,
+          owner.premise.id,
+          birthDateString,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert record into animal_ownership_history_table for the animal's birth
 
-        // await insertBirthOwnershipRecord(
-        //   newAnimalId,
-        //   owner,
-        //   birthDateString,
-        // );
+        await insertBirthOwnershipRecord(
+          newAnimalId,
+          owner,
+          birthDateString,
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the most recent Birth Notify Number
@@ -289,6 +290,8 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
     
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // increment the last Birth Notify Value
+
+        await incrementLastRegistrationNumber();
 
       } catch (innerError) {
         throw new Error(`Failed processing row with animal name "${row.animalName}": ${(innerError as Error).message}`);

@@ -85,6 +85,7 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
+export { incrementLastRegistrationNumber } from "./repositories/write/registrations/incrementLastBirthNotifyValue.js";
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow.js";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory.js";
 export { insertAnimalRegistrationRow } from "./repositories/write/registrations/insertAnimalRegistrationRow.js";

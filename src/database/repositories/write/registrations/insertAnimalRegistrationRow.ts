@@ -21,10 +21,6 @@ export async function insertAnimalRegistrationRow(
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
-  console.log("Inserting animal registration with the following data:");
-  console.log({ breeder, animalId, animalName, registrationNumber, registrationDate, registrationCompanyId, flockBookId });
-
-
   const id = uuidv4();
   const created = getSQLiteDateStringNow();
   const modified = created;
