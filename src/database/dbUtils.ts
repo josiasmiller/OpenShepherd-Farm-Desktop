@@ -1,4 +1,4 @@
-import { getDatabase } from './dbConnections.js';
+import { getDatabase } from './dbConnections';
 
 export function escapeLikeString(str: string): string {
   return str.replace(/[%_]/g, '\\$&');

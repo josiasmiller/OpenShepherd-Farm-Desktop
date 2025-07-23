@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { getPremiseSpecific } from "./getPremiseSpecific.js"; // Adjust import if path differs
-import { Premise } from "../../../models/read/premises/premise.js";
-import { Result, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { getPremiseSpecific } from "./getPremiseSpecific"; // Adjust import if path differs
+import { Premise } from "../../../models/read/premises/premise";
+import { Result, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets the premise for a given contact

@@ -1,6 +1,6 @@
-import { Failure, Result, Success } from "../../../../../shared/results/resultTypes.js";
-import { getDatabase } from "../../../../dbConnections.js";
-import { CodonResponse } from "../../../../models/read/animal/geneticCharacteristic/codonResponse.js";
+import { Failure, Result, Success } from "../../../../../shared/results/resultTypes";
+import { getDatabase } from "../../../../dbConnections";
+import { CodonResponse } from "../../../../models/read/animal/geneticCharacteristic/codonResponse";
 
 type RawCodonRow = {
   codon171alleles: string;

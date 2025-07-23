@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Country } from "../../../models/read/locations/country.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Country } from "../../../models/read/locations/country";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets all countries from the DB

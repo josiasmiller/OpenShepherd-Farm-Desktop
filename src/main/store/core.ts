@@ -1,5 +1,5 @@
 import Store from 'electron-store';
-import type { DefaultSettingsResults, Species } from '../../database/index.js';
+import type { DefaultSettingsResults, Species } from '../../database';
 
 export type AppStoreSchema = {
   selectedDefault: DefaultSettingsResults | null;

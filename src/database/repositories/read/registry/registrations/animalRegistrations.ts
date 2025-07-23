@@ -1,24 +1,24 @@
-import { Failure, Result, Success, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes.js";
-import { getDatabase } from "../../../../dbConnections.js";
-import { BirthInfo } from "../../../../models/read/animal/births/birthInfo.js";
-import { Sex } from "../../../../models/read/animal/general/sex.js";
-import { CodonResponse } from "../../../../models/read/animal/geneticCharacteristic/codonResponse.js";
-import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
-import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
-import { idTag } from "../../../../models/read/animal/tags/idTag.js";
-import { Owner } from "../../../../models/read/owners/owner.js";
-import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration.js";
-import { getBirthInfo } from "../../animal/births/getBirthInfo.js";
-import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId.js";
-import { getCodon136ForAnimal } from "../../animal/geneticCharacteristic/getCodon136.js";
-import { getCodon171ForAnimal } from "../../animal/geneticCharacteristic/getCodon171.js";
-import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification.js";
-import { getPedigree } from "../../animal/pedigree/getPedigree.js";
-import { getMostRecentUnofficialTag } from "../../animal/tags/getRecentFarmTag.js";
-import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag.js";
-import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeight.js";
-import { getBreeder } from "../../owners/getBreeder.js";
-import { getOwner } from "../../owners/getOwner.js";
+import { Failure, Result, Success, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes";
+import { getDatabase } from "../../../../dbConnections";
+import { BirthInfo } from "../../../../models/read/animal/births/birthInfo";
+import { Sex } from "../../../../models/read/animal/general/sex";
+import { CodonResponse } from "../../../../models/read/animal/geneticCharacteristic/codonResponse";
+import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification";
+import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree";
+import { idTag } from "../../../../models/read/animal/tags/idTag";
+import { Owner } from "../../../../models/read/owners/owner";
+import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration";
+import { getBirthInfo } from "../../animal/births/getBirthInfo";
+import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId";
+import { getCodon136ForAnimal } from "../../animal/geneticCharacteristic/getCodon136";
+import { getCodon171ForAnimal } from "../../animal/geneticCharacteristic/getCodon171";
+import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification";
+import { getPedigree } from "../../animal/pedigree/getPedigree";
+import { getMostRecentUnofficialTag } from "../../animal/tags/getRecentFarmTag";
+import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag";
+import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeight";
+import { getBreeder } from "../../owners/getBreeder";
+import { getOwner } from "../../owners/getOwner";
 
 
 /**

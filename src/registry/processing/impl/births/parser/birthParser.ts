@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { BirthParseRow } from './util/birthParseRow.js';
-import { birthParseMap } from './util/birthParseMap.js';
+import { BirthParseRow } from './util/birthParseRow';
+import { birthParseMap } from './util/birthParseMap';
 import { dialog } from 'electron';
-import { ParseResult } from '../../../core/types.js';
+import { ParseResult } from '../../../core/types';
 
 export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({

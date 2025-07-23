@@ -1,6 +1,6 @@
 import { RegistryRow, ValidationResponse } from '../../../../core/types';
-import { animalHasActiveOfficialTag } from '../../../../../../database/index.js';
-import { handleResult } from '../../../../../../shared/results/resultTypes.js';
+import { animalHasActiveOfficialTag } from '../../../../../../database/index';
+import { handleResult } from '../../../../../../shared/results/resultTypes';
 
 /**
  * 

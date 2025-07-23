@@ -4,8 +4,8 @@ import {
   getOffspringOfDam,
   OffspringInfo,
   Species,
-} from '../../../../../../database/index.js';
-import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes.js';
+} from '../../../../../../database/index';
+import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes';
 
 /**
  * Validates that the dam has not had another offspring born too recently,

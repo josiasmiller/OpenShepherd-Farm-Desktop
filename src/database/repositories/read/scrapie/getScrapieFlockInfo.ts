@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
-import { ScrapieFlockInfo } from "../../../models/read/scrapie/scrapieFlockInfo.js";
+import { getDatabase } from "../../../dbConnections";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
+import { ScrapieFlockInfo } from "../../../models/read/scrapie/scrapieFlockInfo";
 
 type RawScrapieRow = {
   id_scrapieflocknumberid: string;

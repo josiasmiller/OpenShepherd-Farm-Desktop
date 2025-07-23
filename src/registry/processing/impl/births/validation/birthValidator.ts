@@ -1,8 +1,8 @@
 import { RegistryRow, ValidationResult } from '../../../core/types';
-import { checkSireAlive } from './rules/checkSireAlive.js';
-import { checkSireBreedingAge } from './rules/checkSireBreedingAge.js';
-import { checkDamBreedingAge } from './rules/checkDamBreedingAge.js';
-import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring.js';
+import { checkSireAlive } from './rules/checkSireAlive';
+import { checkSireBreedingAge } from './rules/checkSireBreedingAge';
+import { checkDamBreedingAge } from './rules/checkDamBreedingAge';
+import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring';
 import { Species } from '../../../../../database';
 
 

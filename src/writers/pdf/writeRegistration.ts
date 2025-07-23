@@ -1,20 +1,23 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from 'url';
-import { PDFDocument } from "pdf-lib";
-import { AnimalRegistrationResult, getAnimalRegistrationInfo, markRegistryCertificateAsPrinted, PedigreeNode } from "../../database/index.js";
-import { Failure, handleResult, Result, Success } from "../../shared/results/resultTypes.js";
-import { dialog } from "electron";
-import { Owner } from "../../database/models/read/owners/owner.js";
-import { idTag } from "../../database/models/read/animal/tags/idTag.js";
+import {PDFDocument} from "pdf-lib";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import {
+    AnimalRegistrationResult,
+    getAnimalRegistrationInfo,
+    markRegistryCertificateAsPrinted,
+    Owner,
+    PedigreeNode
+} from "../../database";
 
-const templatePathBlack = path.join(__dirname, "..", "..", "renderer", "assets", "ABWMSA_registration_template_V3_black.pdf");
+import {Failure, handleResult, Result, Success} from "../../shared/results/resultTypes";
+import {dialog} from "electron";
+import {idTag} from "../../database/models/read/animal/tags/idTag";
+
+const templatePathBlack = path.join(__dirname, 'assets', 'documents', 'ABWMSA_registration_template_V3_black.pdf')
 const pdfBytesBlack = fs.readFileSync(templatePathBlack);
 
-const templatePathWhite = path.join(__dirname, "..", "..", "renderer", "assets", "AWWMSA_registration_template_V3_white.pdf");
+const templatePathWhite = path.join(__dirname, 'assets', 'documents', 'AWWMSA_registration_template_V3_white.pdf')
 const pdfBytesWhite = fs.readFileSync(templatePathWhite);
 
 export type RegistrationWriteResponse = {
@@ -29,8 +32,8 @@ export const writeRegistration = async (
   registrationType: "black" | "white" | "chocolate",
 ): Promise<RegistrationWriteResponse> => {
 
-  var errors : string[] = [];
-  var warnings : string[] = [];
+  const errors : string[] = [];
+  const warnings : string[] = [];
 
   // Show the folder selection dialog
   const { filePaths, canceled } = await dialog.showOpenDialog({
@@ -61,8 +64,7 @@ export const writeRegistration = async (
         const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
         if (result instanceof Success) {
           // extract warnings if there are any
-          var newWarnings : string[] = result.data;
-          warnings.push(...newWarnings);
+          warnings.push(...(result.data));
           success = true;
         } else if (result instanceof Failure) {
           console.error("PDF generation failed:", result.error);
@@ -126,33 +128,33 @@ const _handleRegistrationWrite = async (
     }
 
     // create fields that need to be created
-    var fullAnimalName : string = "";
-    var bday : string = "";
+
+    let fullAnimalName : string = "";
+    let bday : string = "";
     if (regResult.animalIdentification != null) {
       fullAnimalName = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
-
-      var bday : string = regResult.animalIdentification.birthDate?.toLocaleDateString("en-GB", {
+      bday = regResult.animalIdentification.birthDate?.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
       }) ?? ""; // format the string to match "12 Mar 1997" format
     }
 
-    var breederMailingAddress: string = "";
+    let breederMailingAddress: string = "";
     if (regResult.breeder != null) {
       breederMailingAddress = _getOwnerMailingAddress(regResult.breeder); 
     }
     
-    var ownerMailingAddress: string = "";
+    let ownerMailingAddress: string = "";
     if (regResult.owner != null) {
       ownerMailingAddress = _getOwnerMailingAddress(regResult.owner);
     }
 
-    var birthType : string = "";
-    var birthWeight : string = "";
+    let birthType : string = "";
+    let birthWeight : string = "";
     if (regResult.birthInfo != null) {
-      var birthType = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
-      var birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
+      birthType = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
+      birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
     }
 
     const form = pdfDoc.getForm();
@@ -184,12 +186,12 @@ const _handleRegistrationWrite = async (
     form.getTextField("BirthType").setText(birthType);
     
     if (regResult.officialTag){
-      var offical_text: string = _getTagText(regResult.officialTag);
+      const offical_text: string = _getTagText(regResult.officialTag);
       form.getTextField("OfficialEarTag").setText(offical_text);
     }
 
     if (regResult.unofficialTag){
-      var farm_text: string = _getTagText(regResult.unofficialTag);
+      const farm_text: string = _getTagText(regResult.unofficialTag);
       form.getTextField("FarmID").setText(farm_text);
     }
 
@@ -335,7 +337,7 @@ const _handleRegistrationWrite = async (
     // Attempt to write file
     try {
       fs.writeFileSync(filePath, pdfBytes);
-    } catch (e: any){
+    } catch (e){
       return new Failure(`Failed to write PDF file: ${e.message}`);
     }
 
@@ -378,7 +380,7 @@ const _getOwnerMailingAddress = (o : Owner): string => {
   const premState = o.premise.state.name;
   const premPost = o.premise.postcode;
 
-  var name : string;
+  let name : string;
 
   if (o.type == "contact") {
     name = `${o.contact.firstName} ${o.contact.lastName}`;
@@ -432,25 +434,23 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
     .join(", ");
 
   // Final registryName
-  const registryName = [namePart, otherParts]
-    .filter((part) => part && part.trim() !== "")
-    .join(", ");
-
-  return registryName;
+  return [namePart, otherParts]
+      .filter((part) => part && part.trim() !== "")
+      .join(", ");
 }
 
 const _getTagText = (tag: idTag): string => {
-  var abbrev_color : string = "";
+  let abbrev_color = "";
   if (tag.maleColor.abbrev) {
     abbrev_color = tag.maleColor.abbrev;
   }
 
-  var abbrev_loc : string = "";
+  let abbrev_loc  = "";
   if (tag.location.abbrev) {
     abbrev_loc = tag.location.abbrev;
   }
 
-  var text: string = "";
+  let text: string;
   if (abbrev_color && abbrev_loc) {
     text = `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
   } else {

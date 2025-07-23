@@ -1,0 +1,134 @@
+import type { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { MakerSquirrel } from '@electron-forge/maker-squirrel';
+import { MakerZIP } from '@electron-forge/maker-zip';
+import { MakerDeb } from '@electron-forge/maker-deb';
+import { MakerDMG } from "@electron-forge/maker-dmg";
+import { FusesPlugin } from '@electron-forge/plugin-fuses';
+import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import { appVariantFromEnv } from "./src/app/appEnv";
+import { fromBuildIdentifier } from "@electron-forge/core/dist/util/forge-config";
+import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
+import { WebpackPlugin } from "@electron-forge/plugin-webpack";
+import path from "path";
+
+import { mainConfig } from './webpack.main.config';
+import { rendererConfig } from './webpack.renderer.config';
+
+function capitalize(str: string): string {
+    if (str.length === 0) {
+        return ""
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const isDevelopment = process.env.NODE_ENV?.trim() === "development";
+const rendererHtmlPath = isDevelopment ? './src/renderer/index.dev.html' : './src/renderer/index.html'
+
+const buildIdentifier = appVariantFromEnv()
+
+const iconPath = path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'icon.icns');
+const buildPackageName = `animaltrakker-${buildIdentifier}-desktop`
+
+const buildDisplayName = fromBuildIdentifier({
+    farm: 'AnimalTrakker Farm',
+    registry: 'AnimalTrakker Registry'
+}).map[buildIdentifier]
+
+const buildDescription = fromBuildIdentifier({
+    farm: 'AnimalTrakker Farm Desktop Application',
+    registry: 'AnimalTrakker Registry Desktop Application'
+}).map[buildIdentifier]
+
+const config: ForgeConfig = {
+    buildIdentifier: buildIdentifier,
+    rebuildConfig: {},
+    packagerConfig: {
+        asar: true,
+        junk: true,
+        icon: path.resolve(__dirname, 'src/renderer/assets/icon'),
+        name: fromBuildIdentifier({
+            farm: 'AnimalTrakker Farm Desktop',
+            registry: 'AnimalTrakker Registry Desktop'
+        }).map[buildIdentifier],
+        executableName: buildPackageName,
+        appBundleId: fromBuildIdentifier({
+            farm: 'com.animaltrakker.farmdesktop',
+            registry: 'com.animaltrakker.registrydesktop'
+        }).map[buildIdentifier],
+        appVersion: fromBuildIdentifier({
+            farm: '0.0.1',
+            registry: '0.0.1'
+        }).map[buildIdentifier],
+        appCategoryType: 'public.app-category.utilities', // mac specific categorization
+        prune: true, //enable node module tree shaking, specifically devDependencies
+    },
+    hooks: {
+        readPackageJson: async (
+            forgeConfig: ResolvedForgeConfig,
+            packageJson: Record<string,any>
+        ) => {
+            //The package.json name is required to be set,
+            //but package.json is not normally dynamic,
+            //so we write it based on the app variant here.
+            packageJson.name = buildPackageName
+            packageJson.productName = buildDisplayName
+            packageJson.description = buildDescription
+            packageJson.author = 'AnimalTrakker'
+            return packageJson
+        },
+    },
+    makers: [
+        new MakerZIP({}),
+        new MakerSquirrel({
+            name: buildPackageName,
+            setupIcon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'icon.ico'),
+            authors: 'AnimalTrakker',
+            description: buildDescription,
+        }, ['win32']),
+        new MakerDMG({
+            icon: iconPath,
+        }, ['darwin']),
+        new MakerDeb({
+            options: {
+                icon: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'AnimalTrakker_icon_512x512.png'),
+                genericName: buildDisplayName,
+                description: buildDescription,
+                productDescription: buildDescription,
+                maintainer: "AnimalTrakker",
+
+            }
+        }, ['linux']),
+    ],
+    plugins: [
+        new AutoUnpackNativesPlugin({}),
+        new WebpackPlugin({
+            mainConfig,
+            renderer: {
+                config: rendererConfig,
+                entryPoints: [
+                    {
+                        html: rendererHtmlPath,
+                        js: './src/renderer/index.tsx',
+                        name: 'main_window',
+                        preload: {
+                            js: './src/main/preload.ts',
+                        },
+                    },
+                ],
+            },
+        }),
+        // Fuses are used to enable/disable various Electron functionality
+        // at package time, before code signing the application
+        new FusesPlugin({
+            version: FuseVersion.V1,
+            [FuseV1Options.RunAsNode]: false,
+            [FuseV1Options.EnableCookieEncryption]: true,
+            [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+            [FuseV1Options.EnableNodeCliInspectArguments]: false,
+            [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+            [FuseV1Options.OnlyLoadAppFromAsar]: true,
+        }),
+    ],
+};
+
+export default config;

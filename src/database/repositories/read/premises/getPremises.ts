@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Premise } from "../../../models/read/premises/premise.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
-import { State } from "../../../models/read/locations/state.js";
+import { getDatabase } from "../../../dbConnections";
+import { Premise } from "../../../models/read/premises/premise";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
+import { State } from "../../../models/read/locations/state";
 
 // Define the row type for the query to help with typings
 type PremiseRow = {

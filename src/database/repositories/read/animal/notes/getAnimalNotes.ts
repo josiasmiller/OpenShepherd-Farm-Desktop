@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { AnimalNote } from "../../../../models/read/animal/notes/animalNote.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { AnimalNote } from "../../../../models/read/animal/notes/animalNote";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 /**
  * gets all animal notes for a given animal

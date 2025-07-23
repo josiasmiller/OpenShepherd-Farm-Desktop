@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { NewDefaultSettingsParameters } from "../../../models/write/defaults/newDefaultSettings.js";
-import { animalDefaultColumns, getAnimalDefaultValues } from "./defaultParser.js";
+import { getDatabase } from "../../../dbConnections";
+import { NewDefaultSettingsParameters } from "../../../models/write/defaults/newDefaultSettings";
+import { animalDefaultColumns, getAnimalDefaultValues } from "./defaultParser";
 
 export const editExistingDefaultSettings = async (
   queryParams: NewDefaultSettingsParameters

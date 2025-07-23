@@ -1,12 +1,12 @@
-import { Species } from "../../../database/index.js";
-import { registryProcessorFactory } from "../core/registryProcessorFactory.js";
+import { Species } from "../../../database/index";
+import { registryProcessorFactory } from "../core/registryProcessorFactory";
 import {
   RegistryProcessType,
   RegistryRow,
   ProcessingResult,
   RegistryProcessor,
   ValidationResult,
-} from "../core/types.js";
+} from "../core/types";
 
 export async function handleRegistryProcess(
   processType: RegistryProcessType,

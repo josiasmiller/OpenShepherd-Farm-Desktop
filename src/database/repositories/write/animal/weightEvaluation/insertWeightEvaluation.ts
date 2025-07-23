@@ -1,7 +1,7 @@
-import { getDatabase } from '../../../../dbConnections.js';
+import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
-import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput.js';
-import { getSQLiteDateStringNow } from '../../../../dbUtils.js';
+import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput';
+import { getSQLiteDateStringNow } from '../../../../dbUtils';
 
 /**
  * inserts a row into the `animal_evaluation_table`

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "../../styles/styles.css";
-import transparentLogo from "../../assets/AnimalTrakker.png";
+import transparentLogo from "../../assets/images/AnimalTrakker.png";
 
 import { handleResult } from "../../../shared/results/resultTypes";
 import { DefaultSettingsResults } from "../../../database";
-import { isRegistryVersion } from "../../../scripts/appVersion";
+import {isRegistryDesktop} from "../../../app/appBuild";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -138,7 +138,7 @@ const Sidebar: React.FC = () => {
           className="logoImage"
         />
         <h2 className="logoTitle">
-          {isRegistryVersion() ? 'Registry Desktop' : 'Farm Desktop'}
+          {isRegistryDesktop() ? 'Registry Desktop' : 'Farm Desktop'}
         </h2>
 
       </div>

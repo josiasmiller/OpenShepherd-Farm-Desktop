@@ -1,5 +1,5 @@
 import { dialog } from "electron";
-import { openDb } from "../database/dbConnections.js";
+import { openDb } from "../database/dbConnections";
 
 
 export const selectNewDb = async () => {

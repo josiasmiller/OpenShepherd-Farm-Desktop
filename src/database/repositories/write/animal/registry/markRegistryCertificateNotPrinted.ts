@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes.js";
-import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes";
+import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { 
   REGISTRATION_CHOCOLATE_WELSH,
   REGISTRATION_REGISTERED,
@@ -9,9 +9,9 @@ import {
   REGISTRY_CHOCOLATE_WMSA, 
   REGISTRY_COMPANY_ID, 
   REGISTRY_WHITE_WMSA,
-} from "../../../../dbConstants.js";
-import { getCoatColorForAnimal } from "../../../read/animal/coatColor/getCoatColor.js";
-import { CoatColor } from "../../../../models/read/animal/coatColor/coatColor.js";
+} from "../../../../dbConstants";
+import { getCoatColorForAnimal } from "../../../read/animal/coatColor/getCoatColor";
+import { CoatColor } from "../../../../models/read/animal/coatColor/coatColor";
 
 /**
  * Inserts a row into the registry_certificate_print_table for an animal

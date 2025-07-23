@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "ESNext",
-    "module": "ESNext",
-    "outDir": "dist",
-    "rootDir": "./src",               // ✅ This line tells TypeScript that "src" is the base
-    "strict": true,
-    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "target": "ES6",
+    "allowJs": true,
+    "module": "NodeNext",
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "paths": {
+      "*": ["node_modules/*"]
+    }
   },
-  "include": ["src", "vite.config.ts", "src/types/jest.d.ts", "src/types/types.d.ts"],
-  "exclude": ["dist"]
+  "include": ["src/**/*"]
 }

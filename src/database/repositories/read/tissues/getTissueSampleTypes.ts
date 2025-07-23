@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { TissueSampleType } from "../../../models/read/tissues/tissueSampleType.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { TissueSampleType } from "../../../models/read/tissues/tissueSampleType";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets all tissue sample types from the DB 

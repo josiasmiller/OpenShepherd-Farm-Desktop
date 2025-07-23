@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
-import { isRegistryVersion } from "../../../../scripts/appVersion";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
+import {isRegistryDesktop} from "../../../../app/appBuild";
 
 const LandingPage = () => {
 
@@ -209,7 +209,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {isRegistryVersion() &&
+      {isRegistryDesktop() &&
         <CollapsibleSection
           title="Registry Features"
           isOpen={showRegistryFeatures}

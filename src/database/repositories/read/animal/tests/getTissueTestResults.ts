@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { TissueTestResult } from "../../../../models/read/animal/tests/tissueTestResult.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { TissueTestResult } from "../../../../models/read/animal/tests/tissueTestResult";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 /**
  * gets all tissue test result information for a given animal
@@ -14,7 +14,7 @@ export const getTissueTestResults = async (animalId : string): Promise<Result<Ti
     return new Failure("DB Instance is null");
   }
 
-  let tissueTestResultsQuery = `
+  const tissueTestResultsQuery = `
     SELECT 
       animal_table.id_animalid
       , animal_tissue_sample_taken_table.tissue_sample_date

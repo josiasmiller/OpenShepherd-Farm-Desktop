@@ -1,15 +1,15 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
-import { Contact } from "../../../models/read/owners/contact.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { getContactPremise } from "../premises/getContactPremise.js";
-import { getCompanyPremise } from "../premises/getCompanyPremise.js";
-import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
-import { OwnerType } from "../../../client-types.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { handleResult } from "../../../../shared/results/resultTypes.js";
-import { ScrapieFlockInfo } from "../../../models/read/scrapie/scrapieFlockInfo.js";
-import { Premise } from "../../../models/read/premises/premise.js";
+import { getDatabase } from "../../../dbConnections";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
+import { Contact } from "../../../models/read/owners/contact";
+import { Company } from "../../../models/read/owners/company";
+import { getContactPremise } from "../premises/getContactPremise";
+import { getCompanyPremise } from "../premises/getCompanyPremise";
+import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
+import { OwnerType } from "../../../client-types";
+import { Owner } from "../../../models/read/owners/owner";
+import { handleResult } from "../../../../shared/results/resultTypes";
+import { ScrapieFlockInfo } from "../../../models/read/scrapie/scrapieFlockInfo";
+import { Premise } from "../../../models/read/premises/premise";
 
 export async function getBreederById(
   breederId: string,

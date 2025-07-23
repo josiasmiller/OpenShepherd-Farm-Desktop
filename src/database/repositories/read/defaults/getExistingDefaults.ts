@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { OwnerType } from "../../../models/read/owners/ownerType.js";
-import { DefaultSettingsResults } from "../../../models/read/defaults/getExistingDefaults.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { OwnerType } from "../../../models/read/owners/ownerType";
+import { DefaultSettingsResults } from "../../../models/read/defaults/getExistingDefaults";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets all default settings in the DB

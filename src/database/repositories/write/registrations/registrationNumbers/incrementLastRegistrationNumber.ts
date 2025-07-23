@@ -1,12 +1,11 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_REGISTERED, REGISTRATION_WHITE_WELSH } from "../../../../dbConstants.js";
+import {getDatabase} from "../../../../dbConnections";
+import {Failure, Result, Success} from "../../../../../shared/results/resultTypes";
+import {REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_REGISTERED, REGISTRATION_WHITE_WELSH} from "../../../../dbConstants";
 
 
 function incrementRegisteredValue(originalRegNum: string): string {
   const length = originalRegNum.length;
-  const incremented = (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
-  return incremented;
+  return (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
 }
 
 function incrementChocolateRegistryValue(originalRegNum: string): string {
@@ -51,14 +50,14 @@ export async function incrementLastRegistrationNumber(registrationTypeId : strin
       return new Failure("Registration type not found or missing last_registration_number");
     }
 
-    var newNumber : string;
+    let newNumber : string;
 
     if (registrationTypeId == REGISTRATION_REGISTERED) {
-      var newNumber = incrementRegisteredValue(row.last_registration_number);
+      newNumber = incrementRegisteredValue(row.last_registration_number);
     } else if (registrationTypeId == REGISTRATION_CHOCOLATE_WELSH) {
-      var newNumber = incrementChocolateRegistryValue(row.last_registration_number);
+      newNumber = incrementChocolateRegistryValue(row.last_registration_number);
     } else if (registrationTypeId == REGISTRATION_WHITE_WELSH) {
-      var newNumber = incrementWhiteRegistryValue(row.last_registration_number);
+      newNumber = incrementWhiteRegistryValue(row.last_registration_number);
     } else {
       return new Failure(`Failed to increment registration number: unhandled registration type with UUID=\'${registrationTypeId}\'`);
     }

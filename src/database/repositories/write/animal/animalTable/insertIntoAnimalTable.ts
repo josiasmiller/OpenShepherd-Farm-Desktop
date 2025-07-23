@@ -1,6 +1,6 @@
-import { getDatabase } from '../../../../dbConnections.js';
+import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
-import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput.js';
+import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput';
 
 /**
  * uploads an animal into the `animal_table`

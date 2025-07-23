@@ -5,9 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
-import { isRegistryVersion } from "../../../../scripts/appVersion";
-
-
+import {isRegistryDesktop} from "../../../../app/appBuild";
 
 const AnimalSearch: React.FC = () => {
   const navigate = useNavigate();
@@ -352,7 +350,7 @@ const AnimalSearch: React.FC = () => {
             </div>
           </div>
 
-          {isRegistryVersion() &&
+          {isRegistryDesktop() &&
             <div className="search-filters">
               <div>
                 <label htmlFor="isAlreadyPrinted">Registrations Printed</label>

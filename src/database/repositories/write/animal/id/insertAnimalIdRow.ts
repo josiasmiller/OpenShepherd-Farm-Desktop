@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
-import { AnimalIdInfoInput } from "../../../../models/write/animal/id/animalIdInfoInput.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { getSQLiteDateStringNow } from "../../../../dbUtils";
+import { AnimalIdInfoInput } from "../../../../models/write/animal/id/animalIdInfoInput";
 
 /**
  * Inserts a row into the animal_id_info_table.

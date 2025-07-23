@@ -1,10 +1,10 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { v4 as uuidv4 } from "uuid";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { Owner } from "../../../../models/read/owners/owner.js";
-import { OwnerType } from "../../../../client-types.js";
-import { NATURAL_ADDITION } from "../../../../dbConstants.js";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { Owner } from "../../../../models/read/owners/owner";
+import { OwnerType } from "../../../../client-types";
+import { NATURAL_ADDITION } from "../../../../dbConstants";
 
 /**
  * Inserts a birth ownership record for an animal.

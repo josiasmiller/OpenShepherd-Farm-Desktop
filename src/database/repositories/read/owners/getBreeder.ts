@@ -1,19 +1,19 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes.js";
-import { OwnerType } from "../../../models/read/owners/ownerType.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { Contact } from "../../../models/read/owners/contact.js";
+import { getDatabase } from "../../../dbConnections";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes";
+import { OwnerType } from "../../../models/read/owners/ownerType";
+import { Owner } from "../../../models/read/owners/owner";
+import { Company } from "../../../models/read/owners/company";
+import { Contact } from "../../../models/read/owners/contact";
 
 import {
   REGISTRY_CHOCOLATE_WMSA,
   REGISTRY_COMPANY_ID,
   REGISTRY_WHITE_WMSA,
-} from "../../../dbConstants.js";
+} from "../../../dbConstants";
 
-import { getContactPremise } from "../premises/getContactPremise.js";
-import { getCompanyPremise } from "../premises/getCompanyPremise.js";
-import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
+import { getContactPremise } from "../premises/getContactPremise";
+import { getCompanyPremise } from "../premises/getCompanyPremise";
+import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
 
 type BreederQueryRow = {
   contact_id: string | null;

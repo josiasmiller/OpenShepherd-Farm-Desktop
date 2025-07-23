@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { RegistrationParseRow } from './util/registrationParseRow.js';
-import { registrationParseMap } from './util/registrationParseMap.js';
+import { RegistrationParseRow } from './util/registrationParseRow';
+import { registrationParseMap } from './util/registrationParseMap';
 import { dialog } from 'electron';
-import { ParseResult } from '../../../core/types.js';
+import { ParseResult } from '../../../core/types';
 
 /**
  * parses registration data from a given CSV
