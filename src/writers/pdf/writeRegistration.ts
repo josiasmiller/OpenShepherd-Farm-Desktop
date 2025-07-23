@@ -20,7 +20,9 @@ const pdfBytesWhite = fs.readFileSync(templatePathWhite);
 export const writeRegistration = async (
   animalIds: string[],
   registrationType: "black" | "white" | "chocolate",
-): Promise<{ success: boolean; resultingDirectory: string }> => {
+): Promise<{ success: boolean; resultingDirectory: string; errors : string[]; }> => {
+
+  var errors : string[] = [];
 
   // Show the folder selection dialog
   const { filePaths, canceled } = await dialog.showOpenDialog({
@@ -31,7 +33,7 @@ export const writeRegistration = async (
   // Handle user cancellation
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled folder selection.");
-    return { success: false, resultingDirectory: "" };
+    return { success: false, resultingDirectory: "", errors : errors };
   }
 
   const directoryPath = filePaths[0];
@@ -42,27 +44,29 @@ export const writeRegistration = async (
     let success = false;
 
     await handleResult(registrationResults, {
-      success: async (data) => {
+      success: async (data : AnimalRegistrationResult[]) => {
         const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
         if (result instanceof Success) {
           success = true;
         } else if (result instanceof Failure) {
           console.error("PDF generation failed:", result.error);
           success = false;
+          errors.push(result.error);
         }
       },
-      error: (err) => {
-        console.error("Failed to fetch existing defaults:", err);
+      error: (err : string) => {
+        console.error("Failed to fetch animal registration data:", err);
         success = false;
+        errors.push(err);
       },
     });
 
     
-    return { success: success, resultingDirectory: directoryPath };
+    return { success: success, resultingDirectory: directoryPath, errors : errors };
 
   } catch (e) {
     console.error("Error setting form fields:", e);
-    return { success: false, resultingDirectory: directoryPath };
+    return { success: false, resultingDirectory: directoryPath, errors : errors };
   }
 };
 
@@ -114,7 +118,10 @@ const _handleRegistrationWrite = async (
     form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
     form.getTextField("BirthYear").setText(bday);
     form.getTextField("WgtBirth").setText(birthWeight);
-    form.getTextField("Wgt2nd").setText(regResult.secondWeight.toString());
+
+    if (regResult.secondWeight != 0) {
+      form.getTextField("Wgt2nd").setText(regResult.secondWeight.toString());
+    }
 
     form.getTextField("Name").setText(fullAnimalName);
     form.getTextField("Sex").setText(regResult.sex.name);
