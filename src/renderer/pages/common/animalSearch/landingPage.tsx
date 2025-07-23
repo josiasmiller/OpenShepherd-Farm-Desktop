@@ -148,9 +148,14 @@ const LandingPage = () => {
       });
 
     } else {
+      const errorListHtml = response.errors.map(error => `<li>${error}</li>`).join("");
+
       Swal.fire({
         title: "Error",
-        text: "There was an error saving the file",
+        html: `
+          <p>There was an error saving the file:</p>
+          <ul>${errorListHtml}</ul>
+        `,
         icon: "error",
         confirmButtonText: "Continue",
       });
