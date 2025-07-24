@@ -182,9 +182,18 @@ const AnimalSearch: React.FC = () => {
 
   // Remove an animal from chosen list
   const removeFromChosenAnimals = (animalId: string) => {
+    const removedAnimal = chosenAnimals.find((animal) => animal.animal_id === animalId);
     setChosenAnimals(chosenAnimals.filter((animal) => animal.animal_id !== animalId));
-  };
 
+    if (removedAnimal) {
+      setSelectionMessage(`${removedAnimal.name || 'Animal'} removed from selection`);
+
+      setTimeout(() => {
+        setSelectionMessage(null);
+      }, 3000);
+    }
+  };
+  
   return (
     <div className="animal-search-container">
 
