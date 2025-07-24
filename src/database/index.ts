@@ -63,6 +63,7 @@ export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber.js";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons.js";
 export { getSexes } from "./repositories/read/animal/general/getSexes.js";
+export { getSexFromAnimalId } from "./repositories/read/animal/general/getSexFromAnimalId.js";
 export { getSpecies } from "./repositories/read/animal/general/getSpecies.js";
 export { getSpecificBirthType } from "./repositories/read/animal/births/birthTypes/getSpecificBirthType.js";
 export { getStates } from "./repositories/read/locations/getStates.js"
@@ -105,3 +106,9 @@ export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/w
 
 export { getAnimalDeathDate } from "./registry/getAnimalDeathDate.js";
 export { getGestationPeriod } from "./registry/getGestationPeriod.js";
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// DB constant
+
+export { DIED_STILLBORN } from "./dbConstants.js";

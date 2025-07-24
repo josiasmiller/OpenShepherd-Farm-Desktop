@@ -12,3 +12,6 @@ export const REGISTRATION_BIRTH_NOTIFY = "7b5175d0-13bd-49b3-96d3-2dd9809e125a";
 
 // transfer_reason_table
 export const NATURAL_ADDITION = "58d08bf7-5d1f-4dda-80a7-009bbfe7084f";
+
+// death_reason_table
+export const DIED_STILLBORN = "9de9f67c-afc4-4d16-83d3-20c4337f4344";

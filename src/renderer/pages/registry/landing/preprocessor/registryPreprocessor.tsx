@@ -48,7 +48,7 @@ export const PreprocessorPage: React.FC = () => {
 
           // Conception & birth type
           { key: 'conceptionType', label: 'Conception Type', editable: true },
-          { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: false },
+          { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: true },
           { key: 'birthTypeKey', label: 'Birth Type', editable: true },
 
           // Appearance
@@ -58,26 +58,26 @@ export const PreprocessorPage: React.FC = () => {
 
           // Farm tag
           { key: 'farmColor', label: 'Farm Tag Color', editable: true },
-          { key: 'farmColorKey', label: 'Farm Color Key', editable: false },
+          { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
           { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
-          { key: 'farmLocKey', label: 'Farm Location Key', editable: false },
+          { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
           { key: 'farmNum', label: 'Farm Tag Number', editable: true },
           { key: 'farmType', label: 'Farm Tag Type', editable: true },
-          { key: 'farmTypeKey', label: 'Farm Type Key', editable: false },
+          { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
 
           // Federal tag
           { key: 'fedColor', label: 'Federal Tag Color', editable: true },
-          { key: 'fedColorKey', label: 'Federal Color Key', editable: false },
+          { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
           { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
-          { key: 'fedLocKey', label: 'Federal Location Key', editable: false },
+          { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
           { key: 'fedNum', label: 'Federal Tag Number', editable: true },
           { key: 'fedType', label: 'Federal Tag Type', editable: true },
-          { key: 'fedTypeKey', label: 'Federal Type Key', editable: false },
+          { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
 
           // Weight
           { key: 'weight', label: 'Weight', editable: true },
           { key: 'weightUnits', label: 'Weight Units', editable: true },
-          { key: 'weightUnitsKey', label: 'Weight Units Key', editable: false },
+          { key: 'weightUnitsKey', label: 'Weight Units Key', editable: true },
 
           // Misc
           { key: 'birthNotes', label: 'Notes', editable: true },
@@ -147,8 +147,6 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
-
-  
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 
   return (

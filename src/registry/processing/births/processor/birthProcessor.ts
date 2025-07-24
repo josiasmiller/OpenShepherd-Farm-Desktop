@@ -26,6 +26,7 @@ import {
   writeAnimalBreedPercentages,
   insertGeneticCoatRow,
   getOwnerAtBirth,
+  getSexFromAnimalId,
   insertAnimalGoesToLocation,
   insertBirthOwnershipRecord,
   getLastBirthNotifyValue,
@@ -33,7 +34,11 @@ import {
   getDefaultFlockBookId,
   insertAnimalRegistrationRow,
   incrementLastRegistrationNumber,
-  insertAnimalIdInfoRow
+  insertAnimalIdInfoRow,
+  getAnimalIdentification,
+  AnimalIdentification,
+  Sex,
+  DIED_STILLBORN
 } from '../../../../database/index.js';
 
 // mappings
@@ -73,9 +78,34 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       };
     }
 
+    var stillbornIteration : number = 0
+
 
     for (const row of rows) {
       try {
+
+        const birthDateString: string = row.birthdate;
+        const birthDate: Date = new Date(birthDateString);
+
+        if (row.isStillborn) {
+          stillbornIteration++;
+
+          // generate stillborn name
+          var stillbornName : string = await craftStillbornName(row, stillbornIteration);
+
+          var mappedStillbornanimalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
+
+          // overwrite the name 
+          mappedStillbornanimalTableInput.name = stillbornName;
+          mappedStillbornanimalTableInput.deathReasonId = DIED_STILLBORN;
+          mappedStillbornanimalTableInput.deathDate = birthDateString; // death date us the same as brith date for stillborns
+
+          var newAnimalId : string = await insertIntoAnimalTable(mappedStillbornanimalTableInput);
+          
+          // after handling stillborn, continue to handle next animal
+          continue;
+        }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert animal into animalTable
@@ -90,8 +120,8 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert into breed table
-        var damId : string = row.damId;
-        var sireId : string = row.sireId;
+        const damId : string = row.damId;
+        const sireId : string = row.sireId;
         await writeAnimalBreedPercentages(
           newAnimalId,
           damId,
@@ -100,9 +130,6 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get breeder
-        const birthDateString: string = row.birthdate;
-        const birthDate: Date = new Date(birthDateString);
-
         var breederResult = await getBreederFromOwnershipHistory(
           damId,
           species.id,
@@ -338,3 +365,51 @@ function incrementBNValue(bn: string): string {
 
   return `${prefix}${incrementedNumber}`;
 }
+
+async function craftStillbornName(row: RegistryRow, iteration: number): Promise<string> {
+  const birthDateString: string = row.birthdate;
+  const birthDate: Date = new Date(birthDateString);
+  var birthYear : string = birthDate.getFullYear().toString();
+
+  const damId : string = row.damId;
+
+  var damIdResult = await getAnimalIdentification(damId);
+  var damIdentification : AnimalIdentification;
+
+  await handleResult(damIdResult, {
+    success: (data: AnimalIdentification) => {
+      damIdentification = data;
+    },
+    error: (err: string) => {
+      console.error("Failed to fetch AnimalIdentification:", err);
+      throw new Error(err);
+    },
+  });
+
+  damIdentification = damIdentification!
+
+  var stillbornSexResult = await getSexFromAnimalId(damId);
+  var stillbornSex : Sex;
+
+  await handleResult(stillbornSexResult, {
+    success: (data: Sex) => {
+      stillbornSex = data;
+    },
+    error: (err: string) => {
+      console.error("Failed to fetch stillbornSex:", err);
+      throw new Error(err);
+    },
+  });
+
+  stillbornSex = stillbornSex!
+
+  const sexInitial : string = stillbornSex.name.charAt(0).toUpperCase();
+
+  // formula --> `YYYY-Dam_name-Stillborn-sex_abbrev-number`
+  var ret = `${birthYear}-${damIdentification.name}-Stillborn-${sexInitial}`;
+  if (iteration != 0) {
+    ret += `-${iteration}`;
+  }
+  return ret;
+}
+  
