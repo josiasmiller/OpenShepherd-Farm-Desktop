@@ -89,6 +89,12 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     values.push(`%${escapedName}%`);
   }
 
+  if (queryParams.registrationNumber) {
+    const escapedRegNum = escapeLikeString(queryParams.registrationNumber);
+    conditions.push("lr.registration_number LIKE ?");
+    values.push(`%${escapedRegNum}%`);
+  }
+
   if (queryParams.registrationType) {
     conditions.push("a.registration_type = ?");
     values.push(queryParams.registrationType);
