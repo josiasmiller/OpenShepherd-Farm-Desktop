@@ -38,7 +38,8 @@ import {
   getAnimalIdentification,
   AnimalIdentification,
   Sex,
-  DIED_STILLBORN
+  DIED_STILLBORN,
+  getActiveScrapieFlockNumberId
 } from '../../../../database/index.js';
 
 // mappings
@@ -46,6 +47,7 @@ import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnima
 import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput.js';
 import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagInput.js';
 import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput.js';
+import { OwnerType } from '../../../../database/client-types';
 
 export async function processBirthRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
   try {
@@ -78,7 +80,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       };
     }
 
-    var stillbornIteration : number = 0
+    var stillbornIteration : number = 0;
 
 
     for (const row of rows) {
@@ -87,30 +89,25 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         const birthDateString: string = row.birthdate;
         const birthDate: Date = new Date(birthDateString);
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // insert animal into animalTable
+        var animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
+
         if (row.isStillborn) {
           stillbornIteration++;
 
           // generate stillborn name
           var stillbornName : string = await craftStillbornName(row, stillbornIteration);
 
-          var mappedStillbornanimalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
-
           // overwrite the name 
-          mappedStillbornanimalTableInput.name = stillbornName;
-          mappedStillbornanimalTableInput.deathReasonId = DIED_STILLBORN;
-          mappedStillbornanimalTableInput.deathDate = birthDateString; // death date us the same as brith date for stillborns
-
-          var newAnimalId : string = await insertIntoAnimalTable(mappedStillbornanimalTableInput);
-          
-          // after handling stillborn, continue to handle next animal
-          continue;
+          animalTableInput.name = stillbornName;
+          animalTableInput.deathReasonId = DIED_STILLBORN;
+          animalTableInput.deathDate = birthDateString; // death date us the same as brith date for stillborns
+        } else {
+          animalTableInput.rearType = rearType!; // not stillborn-- so add rear type
         }
 
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // insert animal into animalTable
-        var animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
-        animalTableInput.rearType = rearType!;
+       
         var newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +133,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           birthDate,
         );
 
-        var breeder : Owner
+        var breeder : Owner;
 
         await handleResult(breederResult, {
           success: (data: Owner) => {
@@ -155,7 +152,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // Flock Prefix Id
 
         var fpResult = await getFlockPrefixIdByMembershipNumber(breeder.flockId); // note flockId == membershipNumber
-        var flockPrefixId : string
+        var flockPrefixId : string;
 
         await handleResult(fpResult, {
           success: (data: string) => {
@@ -197,7 +194,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           birthDate,
         );
 
-        var owner : Owner
+        var owner : Owner;
 
         await handleResult(ownerResult, {
           success: (data: Owner) => {
@@ -234,7 +231,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // get the most recent Birth Notify Number
 
         var bnValResult = await getLastBirthNotifyValue();
-        var mostRecentBn : string 
+        var mostRecentBn : string ;
 
         await handleResult(bnValResult, {
           success: (data: string | null) => {
@@ -259,7 +256,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(owner.flockId);
 
-        var regCompanyId : string
+        var regCompanyId : string;
 
         await handleResult(regCompanyIdResult, {
           success: (data: string) => {
@@ -297,7 +294,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add animal to animal_registration_table
 
-        var animalRegistrationResult = await insertAnimalRegistrationRow(
+        await insertAnimalRegistrationRow(
           breeder,
           newAnimalId,
           animalTableInput.name,
@@ -306,17 +303,6 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           regCompanyId,
           flockBookId,
         );
-
-        await handleResult(animalRegistrationResult, {
-          success: (_: null) => {
-            // nothing to do
-          },
-          error: (err: string) => {
-            console.error("Failed to insert into animal registration table: ", err);
-            throw new Error(err);
-          },
-        });
-
     
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // increment the last Birth Notify Value
@@ -326,11 +312,41 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add IDs to the DB
 
-        var fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId)
-        await insertAnimalIdInfoRow(fedTagInput);
+        var ownerId : string;
+        
+        if (owner.type == OwnerType.CONTACT) {
+          ownerId = owner.contact.id;
+        } else if (owner.type == OwnerType.COMPANY) {
+          ownerId = owner.company.id;
+        }
 
-        var farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId)
-        await insertAnimalIdInfoRow(farmTagInput);
+        ownerId = ownerId!;
+
+        var scrapieResult = await getActiveScrapieFlockNumberId(ownerId);
+
+        var scrapieId : string;
+
+        await handleResult(scrapieResult, {
+          success: (data: string) => {
+            scrapieId = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch scrapie id: ", err);
+            throw new Error(err);
+          },
+        });
+
+        // passed check, convert scrapieId to not be possibly undefined
+        scrapieId = scrapieId!;
+
+        // stillborn animals do not get tags stored in the DB
+        if (!row.isStillborn) {
+          var fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
+          await insertAnimalIdInfoRow(fedTagInput);
+
+          var farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
+          await insertAnimalIdInfoRow(farmTagInput);
+        }
 
       } catch (innerError) {
         throw new Error(`Failed processing row with animal name "${row.animalName}": ${(innerError as Error).message}`);

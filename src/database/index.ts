@@ -36,6 +36,7 @@ export type { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
+export { getActiveScrapieFlockNumberId } from "./repositories/read/owners/getActiveScrapieFlockNumberId.js";
 export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnimalBirthDate.js";
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification.js";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
