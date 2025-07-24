@@ -36,6 +36,8 @@ const AnimalSearch: React.FC = () => {
   const [showRegistrySearch, setShowRegistrySearch] = useState(true);
   const [showResults, setShowResults] = useState(true);
   const [showChosen, setShowChosen] = useState(true);
+  const [selectionMessage, setSelectionMessage] = useState<string | null>(null);
+
 
   // state for if an active search is underway
   const [isSearchingForAnimals, setIsSearchingForAnimals] = useState(false);
@@ -168,8 +170,15 @@ const AnimalSearch: React.FC = () => {
   const addToChosenAnimals = (animal: AnimalSearchResult) => {
     if (!chosenAnimals.some((a) => a.animal_id === animal.animal_id)) {
       setChosenAnimals([...chosenAnimals, animal]);
+      setSelectionMessage(`${animal.name || 'Animal'} selected`);
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setSelectionMessage(null);
+      }, 3000);
     }
   };
+
 
   // Remove an animal from chosen list
   const removeFromChosenAnimals = (animalId: string) => {
@@ -441,6 +450,27 @@ const AnimalSearch: React.FC = () => {
         isLoading={isSearchingForAnimals}
         message="Searching for animals..."
       />
+
+      {selectionMessage && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            backgroundColor: "rgba(0,0,0,0.75)",
+            color: "#fff",
+            padding: "12px 18px",
+            borderRadius: "8px",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          {selectionMessage}
+        </div>
+      )}
+
 
       
     </div>
