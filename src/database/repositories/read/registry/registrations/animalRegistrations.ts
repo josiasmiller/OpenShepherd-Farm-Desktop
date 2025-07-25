@@ -63,90 +63,133 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Pedigree
       const pedigreeUnwrap = await unwrapOrFailWithAnimal(pedigreeResult, "pedigree", animalId);
+
+      var pedigree : PedigreeNode | null 
+
       if (pedigreeUnwrap.tag === "error") {
-        return pedigreeUnwrap;
+        pedigree = null;
+      } else {
+        pedigree = pedigreeUnwrap.data;
       }
-      const pedigree : PedigreeNode = pedigreeUnwrap.data!;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalIdentification
       const idUnwrap = await unwrapOrFailWithAnimal(animalIdentificationResult, "animalIdentification", animalId);
+      
+      var animalIdentification : AnimalIdentification | null
+      
       if (idUnwrap.tag === "error") {
-        return idUnwrap;
+        animalIdentification = null;
+      } else {
+        animalIdentification = idUnwrap.data;
       }
-      const animalIdentification : AnimalIdentification = idUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Breeder
       const breederUnwrap = await unwrapOrFailWithAnimal(breederResult, "breeder", animalId);
+
+      var breeder : Owner | null 
+
       if (breederUnwrap.tag === "error") {
-        return breederUnwrap;
+        breeder = null;
+      } else {
+        breeder = breederUnwrap.data;
       }
-      const breeder : Owner = breederUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Owner
       const ownerUnwrap = await unwrapOrFailWithAnimal(ownerResult, "owner", animalId);
+      var owner : Owner | null 
+
       if (ownerUnwrap.tag === "error") {
-        return ownerUnwrap;
+        owner = null;
+      } else {
+        owner = ownerUnwrap.data;
       }
-      const owner : Owner = ownerUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Official Tag
       const officialTagUnwrap = await unwrapOrFailWithAnimal(officialTagResult, "officialTag", animalId);
+
+      var officialTag : idTag | null
+
       if (officialTagUnwrap.tag === "error") {
-        return officialTagUnwrap;
+        officialTag = null;
+      } else {
+        officialTag = officialTagUnwrap.data;
       }
-      const officialTag : idTag | null = officialTagUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Unofficial Tag
       const unofficialTagUnwrap = await unwrapOrFailWithAnimal(unofficialTagResult, "unofficialTag", animalId);
+
+      var unofficialTag : idTag | null
+
       if (unofficialTagUnwrap.tag === "error") {
-        return unofficialTagUnwrap;
+        unofficialTag = null;
+      } else {
+        unofficialTag = unofficialTagUnwrap.data;
       }
-      const unofficialTag : idTag | null = unofficialTagUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // BirthInfo
       const birthInfoUnwrap = await unwrapOrFailWithAnimal(animalBirthInfoResult, "birthInfo", animalId);
+
+      var birthInfo : BirthInfo | null
+
       if (birthInfoUnwrap.tag === "error") {
-        return birthInfoUnwrap;
+        birthInfo = null;
+      } else {
+        birthInfo = birthInfoUnwrap.data;
       }
-      const birthInfo : BirthInfo = birthInfoUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalSex
       const sexUnwrap = await unwrapOrFailWithAnimal(animalSexResult, "animalSex", animalId);
+
+      var animalSex : Sex | null
+
       if (sexUnwrap.tag === "error") {
-        return sexUnwrap;
+        animalSex = null;
+      } else {
+        animalSex = sexUnwrap.data;
       }
-      const animalSex : Sex = sexUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Codon 136
       const codon136Unwrap = await unwrapOrFailWithAnimal(codon136Result, "codon136", animalId);
+      
+      var codon136 : CodonResponse | null
+      
       if (codon136Unwrap.tag === "error") {
-        return codon136Unwrap;
+        codon136 = null;
+      } else {
+        codon136 = codon136Unwrap.data;
       }
-      const codon136 : CodonResponse | null = codon136Unwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Codon 171
       const codon171Unwrap = await unwrapOrFailWithAnimal(codon171Result, "codon171", animalId);
+
+      var codon171 : CodonResponse | null
+      
       if (codon171Unwrap.tag === "error") {
-        return codon171Unwrap;
+        codon171 = null;
+      } else {
+        codon171 = codon171Unwrap.data;
       }
-      const codon171 : CodonResponse | null = codon171Unwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // 50 Day Weight
       const fiftyDayWeightUnwrap = await unwrapOrFailWithAnimal(fiftyDayWeightResult, "fiftyDayWeight", animalId);
+
+      var fiftyDayWeight : number | null
+      
       if (fiftyDayWeightUnwrap.tag === "error") {
-        return fiftyDayWeightUnwrap;
+        fiftyDayWeight = null;
+      } else {
+        fiftyDayWeight = fiftyDayWeightUnwrap.data;
       }
-      const fiftyDayWeight : number | null = fiftyDayWeightUnwrap.data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
 

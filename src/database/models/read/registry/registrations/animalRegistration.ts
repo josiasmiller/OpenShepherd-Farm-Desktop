@@ -9,15 +9,15 @@ import { Owner } from "../../owners/owner";
 export type AnimalRegistrationResult = {
   Codon171: CodonResponse | null;
   Codon136: CodonResponse | null;
-  animalIdentification: AnimalIdentification;
+  animalIdentification: AnimalIdentification | null;
   officialTag: idTag | null;
   unofficialTag: idTag | null;
-  sex: Sex;
-  FMICRON: string;
-  secondWeight: number;
-  Inbreeding: string;
-  pedigree: PedigreeNode;
-  breeder: Owner;
-  owner: Owner;
-  birthInfo: BirthInfo;
+  sex: Sex | null;
+  FMICRON: string | null;
+  secondWeight: number | null;
+  Inbreeding: string | null;
+  pedigree: PedigreeNode | null;
+  breeder: Owner | null;
+  owner: Owner | null;
+  birthInfo: BirthInfo | null;
 }
