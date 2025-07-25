@@ -10,37 +10,38 @@ import {
 } from '../../../../../database/dbUtils.js';
 
 // DB types
-import { 
+import {
+  AnimalIdentification,
   BirthType,
+  DIED_STILLBORN,
   DefaultSettingsResults,
-  getBreederFromOwnershipHistory,
-  getFlockPrefixIdByMembershipNumber,
-  getSpecificBirthType,
   InsertAnimalTableInput,
-  insertAnimalFlockTableRow,
-  insertIntoAnimalTable,
-  insertWeightRecord,
   InsertWeightRecordInput,
   Owner,
-  Species,
-  writeAnimalBreedPercentages,
-  insertGeneticCoatRow,
-  getOwnerAtBirth,
-  getSexFromAnimalId,
-  insertAnimalGoesToLocation,
-  insertBirthOwnershipRecord,
-  getLastBirthNotifyValue,
-  getRegistryCompanyIdForMembershipNumber,
-  getDefaultFlockBookId,
-  insertAnimalRegistrationRow,
-  incrementLastRegistrationNumber,
-  insertAnimalIdInfoRow,
-  getAnimalIdentification,
-  AnimalIdentification,
   Sex,
-  DIED_STILLBORN,
-  getActiveScrapieFlockNumberId
+  Species,
+  getActiveScrapieFlockNumberId,
+  getAnimalIdentification,
+  getBreederFromOwnershipHistory,
+  getDefaultFlockBookId,
+  getFlockPrefixIdByMembershipNumber,
+  getLastBirthNotifyValue,
+  getOwnerAtBirth,
+  getRegistryCompanyIdForMembershipNumber,
+  getSexFromAnimalId,
+  getSpecificBirthType,
+  incrementLastRegistrationNumber,
+  insertAnimalFlockTableRow,
+  insertAnimalGoesToLocation,
+  insertAnimalIdInfoRow,
+  insertAnimalRegistrationRow,
+  insertBirthOwnershipRecord,
+  insertIntoAnimalTable,
+  insertWeightRecord,
+  insertGeneticCoatRow,
+  writeAnimalBreedPercentages
 } from '../../../../../database/index.js';
+
 
 // mappings
 import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput.js';

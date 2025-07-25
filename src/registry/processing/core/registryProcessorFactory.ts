@@ -1,16 +1,7 @@
 import { RegistryProcessor, ValidationResult } from './types.js';
 import { processBirthRows } from '../impl/births/processor/birthProcessor.js';
 import { validateBirthRows } from '../impl/births/validation/birthValidator.js';
-// import { DeathProcessor } from '../deaths/deathProcessor';
-// import { DeathValidator } from '../deaths/deathValidator';
 
-const stubValidate = async () => {
-  return [];
-};
-
-const stubProcess = async () => {
-  return { success: true, insertedRowCount: 0 };
-};
 
 export const registryProcessorFactory = (type: string): RegistryProcessor => {
   switch (type) {
@@ -19,11 +10,8 @@ export const registryProcessorFactory = (type: string): RegistryProcessor => {
         validateRegistryRows: validateBirthRows,
         processRegistryRows: processBirthRows,
       };
-      // return {
-      //   validateRegistryRows: stubValidate,
-      //   processRegistryRows: processBirthRows,
-      // };
     case 'deaths':
+    // here is where more processors will be added as they are implemented
     //   return {
     //     validate: new DeathValidator().validate,
     //     process: new DeathProcessor().process,
