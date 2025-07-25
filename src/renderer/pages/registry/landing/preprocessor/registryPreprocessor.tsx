@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
-import { BirthParseRow } from '../../../../../registry/processing/births/parser/util/birthParseRow';
+import { BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
 import Swal from 'sweetalert2';
 import { ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';

@@ -40,7 +40,7 @@ import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 import { writeRegistration } from "../writers/pdf/writeRegistration.js";
-import { birthParser } from "../registry/processing/births/parser/birthParser.js";
+import { birthParser } from "../registry/processing/impl/births/parser/birthParser.js";
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
 import { RegistryProcessRequest } from "../registry/processing/core/types.js";

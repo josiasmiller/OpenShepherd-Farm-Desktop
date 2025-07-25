@@ -1,6 +1,6 @@
-import { AnimalIdInfoInput } from "../../../../../../database/index.js";
-import { RegistryRow } from "../../../../core/types.js";
-import { isUUIDv4 } from "../../../../helpers/registryHelpers.js";
+import { AnimalIdInfoInput } from "../../../../../../../database/index.js";
+import { RegistryRow } from "../../../../../core/types.js";
+import { isUUIDv4 } from "../../../../../helpers/registryHelpers.js";
 
 export function mapRegistryRowToFedTagInput(row: RegistryRow, animalId : string, scrapieId : string): AnimalIdInfoInput {
 

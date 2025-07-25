@@ -29,7 +29,7 @@ import {
   NewDefaultSettingsParameters,
   PedigreeNode
 } from "../database";
-import { BirthParseRow } from "../registry/processing/births/parser/util/birthParseRow";
+import { BirthParseRow } from "../registry/processing/impl/births/parser/util/birthParseRow";
 import { ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
 
 import { Result } from "../shared/results/resultTypes";

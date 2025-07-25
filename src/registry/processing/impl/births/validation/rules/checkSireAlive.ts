@@ -1,6 +1,6 @@
-import { RegistryRow, ValidationResponse } from '../../../core/types';
-import { getAnimalDeathDate, getGestationPeriod, Species } from '../../../../../database/index.js';
-import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
+import { RegistryRow, ValidationResponse } from '../../../../core/types';
+import { getAnimalDeathDate, getGestationPeriod, Species } from '../../../../../../database/index.js';
+import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes.js';
 
 export async function checkSireAlive(row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay : number = 86400000;

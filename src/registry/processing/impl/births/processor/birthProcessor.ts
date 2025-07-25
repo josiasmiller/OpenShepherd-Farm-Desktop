@@ -1,13 +1,13 @@
-import { RegistryRow, ProcessingResult } from '../../core/types';
-import { getSelectedDefault } from '../../../../main/store/selectedDefaultStore.js';
-import { handleResult, Result } from '../../../../shared/results/resultTypes.js';
+import { RegistryRow, ProcessingResult } from '../../../core/types';
+import { getSelectedDefault } from '../../../../../main/store/selectedDefaultStore.js';
+import { handleResult, Result } from '../../../../../shared/results/resultTypes.js';
 
 // DB actions
 import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
-} from '../../../../database/dbUtils.js';
+} from '../../../../../database/dbUtils.js';
 
 // DB types
 import { 
@@ -40,14 +40,14 @@ import {
   Sex,
   DIED_STILLBORN,
   getActiveScrapieFlockNumberId
-} from '../../../../database/index.js';
+} from '../../../../../database/index.js';
 
 // mappings
 import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput.js';
 import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput.js';
 import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagInput.js';
 import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput.js';
-import { OwnerType } from '../../../../database/client-types';
+import { OwnerType } from '../../../../../database/client-types.js';
 
 export async function processBirthRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
   try {

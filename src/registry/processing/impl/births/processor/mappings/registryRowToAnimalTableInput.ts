@@ -1,6 +1,6 @@
-import { InsertAnimalTableInput } from "../../../../../database/index.js";
-import { RegistryRow } from "../../../core/types";
-import { isUUIDv4 } from "../../../helpers/registryHelpers.js";
+import { InsertAnimalTableInput } from "../../../../../../database/index.js";
+import { RegistryRow } from "../../../../core/types.js";
+import { isUUIDv4 } from "../../../../helpers/registryHelpers.js";
 
 export function mapRegistryRowToInsertAnimalInput(row: RegistryRow): InsertAnimalTableInput {
 

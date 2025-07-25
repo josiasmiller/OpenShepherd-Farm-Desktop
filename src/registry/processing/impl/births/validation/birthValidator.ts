@@ -1,9 +1,9 @@
-import { RegistryRow, ValidationResult } from '../../core/types';
+import { RegistryRow, ValidationResult } from '../../../core/types';
 import { checkSireAlive } from './rules/checkSireAlive.js';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge.js';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge.js';
 import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring.js';
-import { Species } from '../../../../database';
+import { Species } from '../../../../../database';
 
 
 export async function validateBirthRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]> {

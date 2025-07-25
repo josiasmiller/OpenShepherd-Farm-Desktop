@@ -1,11 +1,11 @@
-import { RegistryRow, ValidationResponse } from '../../../core/types';
+import { RegistryRow, ValidationResponse } from '../../../../core/types';
 import {
   getGestationPeriod,
   getOffspringOfDam,
   OffspringInfo,
   Species,
-} from '../../../../../database/index.js';
-import { unwrapOrFailWithAnimal } from '../../../../../shared/results/resultTypes.js';
+} from '../../../../../../database/index.js';
+import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes.js';
 
 /**
  * Validates that the dam has not had another offspring born too recently,

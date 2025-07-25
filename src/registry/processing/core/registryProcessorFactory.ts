@@ -1,6 +1,6 @@
 import { RegistryProcessor, ValidationResult } from './types.js';
-import { processBirthRows } from '../births/processor/birthProcessor.js';
-import { validateBirthRows } from '../births/validation/birthValidator.js';
+import { processBirthRows } from '../impl/births/processor/birthProcessor.js';
+import { validateBirthRows } from '../impl/births/validation/birthValidator.js';
 // import { DeathProcessor } from '../deaths/deathProcessor';
 // import { DeathValidator } from '../deaths/deathValidator';
 
