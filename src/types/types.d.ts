@@ -12,7 +12,6 @@ import {
   County, 
   DeathReason,
   DefaultSettingsResults, 
-  DrugEvent, 
   FlockPrefix, 
   Premise, 
   RemoveReason,
@@ -30,6 +29,8 @@ import {
   NewDefaultSettingsParameters,
   PedigreeNode
 } from "../database";
+import { BirthParseRow } from "../registry/processing/impl/births/parser/util/birthParseRow";
+import { ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
 
 import { Result } from "../shared/results/resultTypes";
 
@@ -59,6 +60,7 @@ declare global {
       getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
       getLocations: () => Promise<Result<TagLocation[], string>>;
       getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
+      getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
       getSexes: () => Promise<Result<Sex[], string>>;
       getSpecies: () => Promise<Result<Species[], string>>;
       getStates: () => Promise<Result<State[], string>>;
@@ -72,6 +74,9 @@ declare global {
       isDatabaseLoaded: () => Promise<boolean>;
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
+      registryParseBirths: () => Promise<BirthParseRow[]>;
+      registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
+      setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };

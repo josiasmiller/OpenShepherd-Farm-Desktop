@@ -1,2 +1,2 @@
 
-export { OwnerType } from "./models/read/owners/ownerType"
+export { OwnerType } from "./models/read/owners/ownerType.js"

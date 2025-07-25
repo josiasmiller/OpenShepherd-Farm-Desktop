@@ -1,0 +1,38 @@
+/* ========================================================
+   Global Input Styles
+   Applies to all input, select, and textarea elements
+======================================================== */
+
+input,
+select,
+textarea {
+  height: 36px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 4px;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+}

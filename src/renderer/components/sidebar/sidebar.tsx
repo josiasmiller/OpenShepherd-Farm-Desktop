@@ -24,36 +24,84 @@ const Sidebar: React.FC = () => {
   };
 
   useEffect(() => {
+    const loadPreviousDefault = async () => {
+      try {
+        const saved : DefaultSettingsResults | null = await window.electronAPI.getSelectedDefault();
+
+        if (
+          saved &&
+          defaultList.some((def) => def.id === saved.id)
+        ) {
+          setSelectedDefault(saved.name);
+        }
+      } catch (error) {
+        console.error("Failed to load previous default:", error);
+      }
+    };
+
+    if (isDbLoaded && defaultList.length > 0) {
+      loadPreviousDefault();
+    }
+  }, [isDbLoaded, defaultList]);
+
+  const handleDefaultChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedName = e.target.value;
+    const newSelected = defaultList.find((def) => def.name === selectedName);
+    if (newSelected) {
+      setSelectedDefault(newSelected.name);
+      try {
+        await window.electronAPI.setSelectedDefault(newSelected);
+      } catch (error) {
+        console.error("Failed to persist selected default:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
     checkDbStatus();
   }, []);
+
 
   const handleSelectDatabase = async () => {
     try {
       const filePath: string | null = await window.electronAPI.selectDatabase();
-      if (filePath) {
-        setDbFileName(filePath);
+      if (!filePath) return;
 
-        // Fetch defaults
-        const defaults = await window.electronAPI.getExistingDefaults();
+      setDbFileName(filePath);
 
-        handleResult(defaults, {
-          success: (data : DefaultSettingsResults[]) => {
-            setDefaultList(data);
+      // Fetch defaults from DB
+      const defaults = await window.electronAPI.getExistingDefaults();
 
-            const initialDefault: DefaultSettingsResults = data[0]; 
-            setSelectedDefault(initialDefault.name);
-          },
-          error: (err: any) => {
-            console.error("Failed to fetch existing defaults:", err);
-          },
-        });
+      handleResult(defaults, {
+        success: async (data: DefaultSettingsResults[]) => {
+          setDefaultList(data);
 
-        await checkDbStatus(); // recheck DB loaded state after selection
-      }
+          try {
+            const saved = await window.electronAPI.getSelectedDefault();
+
+            // If saved default exists in the new DB's defaults
+            const match = saved && data.find((def) => def.id === saved.id);
+            if (match) {
+              setSelectedDefault(match.name);
+            } else {
+              setSelectedDefault(data[0]?.name || "");
+            }
+          } catch (error) {
+            console.error("Failed to restore saved default: ", error);
+            setSelectedDefault(data[0]?.name || "");
+          }
+        },
+        error: (err: any) => {
+          console.error("Failed to fetch existing defaults:", err);
+        },
+      });
+
+      await checkDbStatus(); // Refresh DB status
     } catch (err) {
       console.error("Failed to select database:", err);
     }
   };
+
 
   const handleNavClick = (path: string) => {
     if (!isDbLoaded && path !== "/") {
@@ -103,11 +151,19 @@ const Sidebar: React.FC = () => {
         >
           Animal Search
         </li>
+
         <li
           onClick={() => handleNavClick("/create-default")}
           style={getLinkStyle(isDbLoaded)}
         >
           Edit Defaults
+        </li>
+
+        <li
+          onClick={() => handleNavClick("/registry")}
+          style={getLinkStyle(isDbLoaded)}
+        >
+          Registry Features
         </li>
       </ul>
 
@@ -123,7 +179,7 @@ const Sidebar: React.FC = () => {
               id="defaultSelector"
               className="defaultSelector"
               value={selectedDefault}
-              onChange={(e) => setSelectedDefault(e.target.value)}
+              onChange={(e) => handleDefaultChange(e)}
             >
               {defaultList.map((def) => (
                 <option key={def.name} value={def.name}>{def.name}</option>

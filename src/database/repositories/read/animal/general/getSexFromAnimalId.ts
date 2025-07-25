@@ -10,7 +10,7 @@ type SexRow = {
 };
 
 export const getSexFromAnimalId = async (animalId: string): Promise<Result<Sex, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

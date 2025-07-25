@@ -3,6 +3,7 @@ import { ipcMain, shell } from "electron";
 
 import { 
   animalSearch,
+  DefaultSettingsResults,
   editExistingDefaultSettings,
   getAnimalIdentification,
   getBirthTypes,
@@ -39,6 +40,11 @@ import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
 
 import { writeRegistration } from "../writers/pdf/writeRegistration.js";
+import { birthParser } from "../registry/processing/impl/births/parser/birthParser.js";
+
+import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
+import { RegistryProcessRequest } from "../registry/processing/core/types.js";
+import { getSelectedDefault, setSelectedDefault } from "./store/selectedDefaultStore.js";
 
 export const registerIpcHandlers = () => {
   
@@ -106,6 +112,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-remove-reasons", getRemoveReasons);
 
+  ipcMain.handle('get-selected-default', (): DefaultSettingsResults | null => {
+    return getSelectedDefault();
+  });
+
   ipcMain.handle("get-sexes", getSexes);
 
   ipcMain.handle("get-species", getSpecies);
@@ -141,6 +151,20 @@ export const registerIpcHandlers = () => {
       throw new Error('Invalid URL'); // security check, we only want valid URLs sent
     }
     await shell.openExternal(url);
+  });
+
+  ipcMain.handle('registry-parse-births', birthParser);
+
+  ipcMain.handle(
+    "registry-process",
+    async (_event, args: RegistryProcessRequest) => {
+      const { processType, rows, species } = args;
+      return handleRegistryProcess(processType, rows, species);
+    }
+  );
+
+  ipcMain.on('set-selected-default', (_event, value: DefaultSettingsResults) => {
+    setSelectedDefault(value);
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
