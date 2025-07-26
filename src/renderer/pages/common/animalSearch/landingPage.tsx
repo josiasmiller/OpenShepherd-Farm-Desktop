@@ -133,9 +133,21 @@ const LandingPage = () => {
 
     if (response.success) {
 
+      var warnings : string[] = response.warnings;
+
+      // Format warnings as HTML
+      const warningHtml = warnings.length
+        ? `<div style="text-align: left;">
+            <h4>Warnings:</h4>
+            <ul>
+              ${warnings.map(w => `<li>${w}</li>`).join("")}
+            </ul>
+          </div>`
+        : "";
+
       Swal.fire({
         title: "Success",
-        text: "PDF saved successfully",
+        html: `PDF saved successfully.<br/><br/>${warningHtml}`,
         icon: "success",
         showCancelButton: true,
         confirmButtonText: "Open Folder",

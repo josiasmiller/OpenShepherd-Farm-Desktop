@@ -17,12 +17,20 @@ const pdfBytesBlack = fs.readFileSync(templatePathBlack);
 const templatePathWhite = path.join(__dirname, "..", "..", "renderer", "assets", "AWWMSA_registration_template_V3_white.pdf");
 const pdfBytesWhite = fs.readFileSync(templatePathWhite);
 
+export type RegistrationWriteResponse = {
+  success: boolean;
+  resultingDirectory: string;
+  errors: string[];
+  warnings: string[];
+}
+
 export const writeRegistration = async (
   animalIds: string[],
   registrationType: "black" | "white" | "chocolate",
-): Promise<{ success: boolean; resultingDirectory: string; errors : string[]; }> => {
+): Promise<RegistrationWriteResponse> => {
 
   var errors : string[] = [];
+  var warnings : string[] = [];
 
   // Show the folder selection dialog
   const { filePaths, canceled } = await dialog.showOpenDialog({
@@ -33,7 +41,12 @@ export const writeRegistration = async (
   // Handle user cancellation
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled folder selection.");
-    return { success: false, resultingDirectory: "", errors : errors };
+    return { 
+      success: false, 
+      resultingDirectory: "", 
+      errors : errors, 
+      warnings: warnings,
+    };
   }
 
   const directoryPath = filePaths[0];
@@ -47,6 +60,9 @@ export const writeRegistration = async (
       success: async (data : AnimalRegistrationResult[]) => {
         const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
         if (result instanceof Success) {
+          // extract warnings if there are any
+          var newWarnings : string[] = result.data;
+          warnings.push(...newWarnings);
           success = true;
         } else if (result instanceof Failure) {
           console.error("PDF generation failed:", result.error);
@@ -60,13 +76,22 @@ export const writeRegistration = async (
         errors.push(err);
       },
     });
-
     
-    return { success: success, resultingDirectory: directoryPath, errors : errors };
+    return { 
+      success: success, 
+      resultingDirectory: directoryPath, 
+      errors : errors, 
+      warnings: warnings,
+    };
 
   } catch (e) {
     console.error("Error setting form fields:", e);
-    return { success: false, resultingDirectory: directoryPath, errors : errors };
+    return { 
+      success: false,
+      resultingDirectory: directoryPath, 
+      errors : errors, 
+      warnings: warnings,
+    };
   }
 };
 
@@ -75,10 +100,14 @@ const _handleRegistrationWrite = async (
   data: AnimalRegistrationResult[],
   directoryPath: string,
   registrationType: "black" | "white" | "chocolate",
-): Promise<Result<void, string>> => {
+): Promise<Result<string[], string>> => {
+
+  var allWarnings : string[] = [];
 
   const now = new Date();
   const printDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
+
+  var animalIdx : number = 1;
 
   for (const regResult of data) {
     // Load the existing PDF and access the form
@@ -97,34 +126,61 @@ const _handleRegistrationWrite = async (
     }
 
     // create fields that need to be created
-    var fullAnimalName : string = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
+    var fullAnimalName : string = "";
+    var bday : string = "";
+    if (regResult.animalIdentification != null) {
+      fullAnimalName = `${regResult.animalIdentification.flockPrefix} ${regResult.animalIdentification.name}`;
 
-    var breederMailingAddress: string = _getOwnerMailingAddress(regResult.breeder);
-    var ownerMailingAddress: string = _getOwnerMailingAddress(regResult.owner);
+      var bday : string = regResult.animalIdentification.birthDate?.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }) ?? ""; // format the string to match "12 Mar 1997" format
+    }
 
-    var bday : string = regResult.animalIdentification.birthDate?.getUTCFullYear().toString() ?? "";
+    var breederMailingAddress: string = "";
+    if (regResult.breeder != null) {
+      breederMailingAddress = _getOwnerMailingAddress(regResult.breeder); 
+    }
+    
+    var ownerMailingAddress: string = "";
+    if (regResult.owner != null) {
+      ownerMailingAddress = _getOwnerMailingAddress(regResult.owner);
+    }
 
-    var bday : string = regResult.animalIdentification.birthDate?.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }) ?? ""; // format the string to match "12 Mar 1997" format
-
-    var birthType : string = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
-    var birthWeight : string = regResult.birthInfo.birthWeight.toString() ?? "";
+    var birthType : string = "";
+    var birthWeight : string = "";
+    if (regResult.birthInfo != null) {
+      var birthType = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
+      var birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
+    }
 
     const form = pdfDoc.getForm();
 
-    form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
-    form.getTextField("BirthYear").setText(bday);
-    form.getTextField("WgtBirth").setText(birthWeight);
+    if (regResult.animalIdentification != null) {
+        form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
+    }
 
-    if (regResult.secondWeight != 0) {
+    if (bday != "") {
+      form.getTextField("BirthYear").setText(bday);
+    }
+    if (birthWeight != "") {
+      form.getTextField("WgtBirth").setText(birthWeight);
+    }
+   
+
+    if (regResult.secondWeight != null && regResult.secondWeight != 0) {
       form.getTextField("Wgt2nd").setText(regResult.secondWeight.toString());
     }
 
-    form.getTextField("Name").setText(fullAnimalName);
-    form.getTextField("Sex").setText(regResult.sex.name);
+    if (fullAnimalName != "") {
+      form.getTextField("Name").setText(fullAnimalName);
+    }
+    
+    if (regResult.sex != null) {
+      form.getTextField("Sex").setText(regResult.sex.name);
+    }
+    
     form.getTextField("BirthType").setText(birthType);
     
     if (regResult.officialTag){
@@ -144,20 +200,13 @@ const _handleRegistrationWrite = async (
     if (regResult.Codon136) {
       form.getTextField("CODON136").setText(regResult.Codon136.alleles);
     }
-    
-    // more fields that may be populated later. leaving for now so I don't have to search and find the fields on the PDF again
-    // form.getTextField("UKRegNo").setText(regResult.UKRegNo);
-    // form.getTextField("DESC").setText(regResult.DESC);
-    // form.getTextField("FMICRON").setText(regResult.FMICRON);
-    // form.getTextField("Wgt2nd").setText(regResult.Wgt2nd);
-    // form.getTextField("Inbreeding").setText(regResult.Inbreeding);
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // pedigree fields
 
     // Generation 1
-    const sire = regResult.pedigree.sirePedigree ?? null;
-    const dam = regResult.pedigree.damPedigree ?? null;
+    const sire = regResult.pedigree?.sirePedigree ?? null;
+    const dam = regResult.pedigree?.damPedigree ?? null;
 
     // Generation 2
     const ss = sire?.sirePedigree ?? null;
@@ -242,47 +291,61 @@ const _handleRegistrationWrite = async (
 
     // paradoxically, the `BreederInfo` field is actually the field where the mailing address should be ...
     form.getTextField("BreederInfo").setText(breederMailingAddress);
-    // form.getTextField("BreederMailingAddress").setText(breederMailingAddress);
 
-    if (regResult.breeder.scrapieId) {
-      form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId.scrapieName);
+    if (regResult.breeder != null) {
+
+      if (regResult.breeder.scrapieId) {
+        form.getTextField("BreederScrapieID").setText(regResult.breeder.scrapieId.scrapieName);
+      }
+
+      form.getTextField("BreederFlockID").setText(regResult.breeder.flockId);
+      form.getTextField("BTelNo").setText(regResult.breeder.phoneNumber);
     }
-
-    form.getTextField("BreederFlockID").setText(regResult.breeder.flockId);
-    form.getTextField("BTelNo").setText(regResult.breeder.phoneNumber);
 
 
     // paradoxically, the `OwnerInfo` field is actually the field where the mailing address should be ...
     form.getTextField("OwnerInfo").setText(ownerMailingAddress);
-    // form.getTextField("OwnerMailingAddress").setText(ownerMailingAddress)
 
-    if (regResult.owner.scrapieId) {
-      form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId.scrapieName);
+    if (regResult.owner != null) {
+      if (regResult.owner.scrapieId) {
+        form.getTextField("OwnerScrapieID").setText(regResult.owner.scrapieId.scrapieName);
+      }
+
+      form.getTextField("OwnerFlockID").setText(regResult.owner.flockId);
+      form.getTextField("OTelNo").setText(regResult.owner.phoneNumber);
     }
-
-    form.getTextField("OwnerFlockID").setText(regResult.owner.flockId);
-    form.getTextField("OTelNo").setText(regResult.owner.phoneNumber);
 
     form.getTextField("PrintDate").setText(printDate);
 
     const pdfBytes = await pdfDoc.save();
 
-    const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_'); // replace spaces with underscores
-    const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
-    const registrationNum = regResult.animalIdentification.registrationNumber;
+    var filePath : string;
 
-    const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
-    const filePath = path.join(directoryPath, filename); 
+    if (regResult.animalIdentification) {
+      const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_'); // replace spaces with underscores
+      const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
+      const registrationNum = regResult.animalIdentification.registrationNumber;
 
-    // Write file, wrap in try/catch to catch fs errors
+      const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
+      filePath = path.join(directoryPath, filename); 
+    } else {
+      filePath = path.join(directoryPath, `registration_unknown_${animalIdx}.pdf`);
+    }
+
+    // Attempt to write file
     try {
       fs.writeFileSync(filePath, pdfBytes);
     } catch (e: any){
       return new Failure(`Failed to write PDF file: ${e.message}`);
-    }    
+    }
+
+    var specificWarnings : string[] = _generateWarnings(regResult, animalIdx);
+    allWarnings.push(...specificWarnings);
+
+    animalIdx++;
   }
   
-  return new Success(undefined);
+  return new Success(allWarnings);
 } 
 
 const _getOwnerMailingAddress = (o : Owner): string => {
@@ -372,3 +435,32 @@ const _getTagText = (tag: idTag): string => {
 
   return text;
 } 
+
+const _generateWarnings = (
+  regResult: AnimalRegistrationResult,
+  backupAnimalIdx: number
+): string[] => {
+  const warnings: string[] = [];
+
+  // Determine animal name for context
+  const animalName = regResult.animalIdentification?.name ?? `animal_${backupAnimalIdx}`;
+
+  // Utility function to add a warning with consistent phrasing
+  const addWarning = (field: string) => warnings.push(`Missing ${field} for ${animalName}.`);
+
+  if (regResult.Codon171 == null) addWarning("Codon171");
+  if (regResult.Codon136 == null) addWarning("Codon136");
+  if (regResult.animalIdentification == null) addWarning("animal identification");
+  if (regResult.officialTag == null) addWarning("official tag");
+  if (regResult.unofficialTag == null) addWarning("unofficial tag");
+  if (regResult.sex == null) addWarning("sex");
+  if (regResult.FMICRON == null) addWarning("FMICRON");
+  if (regResult.secondWeight == null) addWarning("second weight");
+  if (regResult.Inbreeding == null) addWarning("inbreeding value");
+  if (regResult.pedigree == null) addWarning("pedigree");
+  if (regResult.breeder == null) addWarning("breeder");
+  if (regResult.owner == null) addWarning("owner");
+  if (regResult.birthInfo == null) addWarning("birth information");
+
+  return warnings;
+};

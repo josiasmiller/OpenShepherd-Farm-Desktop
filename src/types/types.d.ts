@@ -33,6 +33,7 @@ import { BirthParseRow } from "../registry/processing/impl/births/parser/util/bi
 import { ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
 
 import { Result } from "../shared/results/resultTypes";
+import { RegistrationWriteResponse } from "../writers/pdf/writeRegistration";
 
 export {};
 
@@ -45,7 +46,7 @@ declare global {
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
-      exportRegistration: (animalIds: string[], registrationType: "black" | "white" | "chocolate") => Promise<{ success: boolean; resultingDirectory: string; errors: string[]; }>;
+      exportRegistration: (animalIds: string[], registrationType: "black" | "white" | "chocolate") => Promise<RegistrationWriteResponse>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getContactInfo: () => Promise<Result<Contact[], string>>;
       getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
