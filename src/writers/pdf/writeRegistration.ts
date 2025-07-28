@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { PDFDocument } from "pdf-lib";
-import { AnimalRegistrationResult, getAnimalRegistrationInfo, PedigreeNode } from "../../database/index.js";
+import { AnimalRegistrationResult, getAnimalRegistrationInfo, markRegistryCertificateAsPrinted, PedigreeNode } from "../../database/index.js";
 import { Failure, handleResult, Result, Success } from "../../shared/results/resultTypes.js";
 import { dialog } from "electron";
 import { Owner } from "../../database/models/read/owners/owner.js";
@@ -338,6 +338,30 @@ const _handleRegistrationWrite = async (
     } catch (e: any){
       return new Failure(`Failed to write PDF file: ${e.message}`);
     }
+
+    // after writing the file, write to the DB that the registration has been printed
+    if (regResult.animalIdentification) {
+      const animalId : string = regResult.animalIdentification?.id;
+
+      var certResult = await markRegistryCertificateAsPrinted(animalId);
+
+      await handleResult(certResult, {
+        success: async (_ : null) => {
+          // updated DB, don't need to do anything
+        },
+        error: (err : string) => {
+          console.error("Failed to update registry_certificate_print_table:", err);
+          const printCertificateWarning : string = `unable to update registry_certificate_print_table for ${regResult.animalIdentification!.name}`;
+          allWarnings.push(printCertificateWarning);
+        },
+      });
+
+    } else {
+      const printCertificateWarning : string = `unable to update registry_certificate_print_table for animal in row ${animalIdx}`;
+      allWarnings.push(printCertificateWarning);
+    }
+    
+
 
     var specificWarnings : string[] = _generateWarnings(regResult, animalIdx);
     allWarnings.push(...specificWarnings);
