@@ -9,7 +9,7 @@ export const EVALUATION_WEIGHT = "44d307ab-5c32-44c7-bb06-e65c11269716";
 // registration_type_table
 export const REGISTRATION_REGISTERED = "b434cd2d-93da-43d7-a930-7984abfa1788";
 export const REGISTRATION_WHITE_WELSH = "af6322cc-7443-4053-9ba1-992ad052ad15";
-export const REGISTRATION_CHOCOLATE_WELSJ = "ec7ae46c-8ff7-44c5-8f9b-ba01b40245ba";
+export const REGISTRATION_CHOCOLATE_WELSH = "ec7ae46c-8ff7-44c5-8f9b-ba01b40245ba";
 export const REGISTRATION_BIRTH_NOTIFY = "7b5175d0-13bd-49b3-96d3-2dd9809e125a";
 
 // transfer_reason_table
