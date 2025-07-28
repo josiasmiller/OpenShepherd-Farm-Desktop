@@ -4,7 +4,8 @@ import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
 
 /**
  * Updates the registry_certificate_print_table to set printed = 1
- * for the given animalId.
+ * and updates the modified timestamp for the given animalId.
+ * Returns Failure if no row was updated.
  * 
  * @param animalId UUID of the animal
  */
@@ -23,13 +24,15 @@ export async function markRegistryCertificateAsPrinted(
     WHERE id_animalid = ?
   `;
 
-  const values = [animalId];
+  const values = [modified, animalId];
 
   try {
     await new Promise<void>((resolve, reject) => {
       db.run(query, values, function (err) {
         if (err) {
           reject(err);
+        } else if (this.changes === 0) {
+          reject(new Error(`No rows updated for animalId: ${animalId}`));
         } else {
           resolve();
         }
