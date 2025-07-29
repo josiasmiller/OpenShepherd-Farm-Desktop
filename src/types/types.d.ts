@@ -34,6 +34,7 @@ import { ProcessingResult, RegistryProcessRequest } from "../registry/processing
 
 import { Result } from "../shared/results/resultTypes";
 import { RegistrationWriteResponse } from "../writers/pdf/writeRegistration";
+import { RegistrationParseRow } from "../registry/processing/impl/registrations/parser/util/registrationParseRow";
 
 export {};
 
@@ -76,6 +77,7 @@ declare global {
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
       registryParseBirths: () => Promise<BirthParseRow[]>;
+      registryParseRegistrations: () => Promise<RegistrationParseRow[]>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
       setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       selectDatabase: () => Promise<string>;

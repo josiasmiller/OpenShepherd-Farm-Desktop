@@ -1,6 +1,6 @@
 import { Species } from "../../../database";
 
-export type RegistryProcessType = 'births' | 'deaths';
+export type RegistryProcessType = 'births' | 'registrations' | 'deaths';
 
 export interface RegistryRow {
   [key: string]: any;
