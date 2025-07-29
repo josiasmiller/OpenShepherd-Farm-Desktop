@@ -52,51 +52,51 @@ export const PreprocessorPage: React.FC = () => {
     const birthColumns: RegistryFieldDef[] = [
       // Core birth info
       { key: 'isStillborn', label: 'Stillborn?', editable: true },
-      { key: 'prefix', label: 'Prefix', editable: true },
       { key: 'prefixKey', label: 'Prefix Key', editable: false },
+      { key: 'prefix', label: 'Prefix', editable: true },
       { key: 'animalName', label: 'Animal Name', editable: true },
       { key: 'birthdate', label: 'Birth Date', editable: true },
-      { key: 'sex', label: 'Sex', editable: false },
       { key: 'sexKey', label: 'Sex Key', editable: false },
+      { key: 'sex', label: 'Sex', editable: false },
 
       // Breeder and parents
       { key: 'breederId', label: 'Breeder ID', editable: true },
       { key: 'breederName', label: 'Breeder Name', editable: true },
-      { key: 'damId', label: 'Dam ID', editable: true },
       { key: 'sireId', label: 'Sire ID', editable: true },
+      { key: 'damId', label: 'Dam ID', editable: true },
 
       // Conception & birth type
-      { key: 'conceptionType', label: 'Conception Type', editable: true },
       { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: true },
+      { key: 'conceptionType', label: 'Conception Type', editable: true },
       { key: 'birthTypeKey', label: 'Birth Type', editable: true },
 
       // Appearance
-      { key: 'coatColor', label: 'Coat Color', editable: true },
       { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
+      { key: 'coatColor', label: 'Coat Color', editable: true },
       { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: false },
 
       // Farm tag
-      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
       { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
-      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
+      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
       { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
+      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
       { key: 'farmNum', label: 'Farm Tag Number', editable: true },
-      { key: 'farmType', label: 'Farm Tag Type', editable: true },
       { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
+      { key: 'farmType', label: 'Farm Tag Type', editable: true },
 
       // Federal tag
-      { key: 'fedColor', label: 'Federal Tag Color', editable: true },
       { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
-      { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
+      { key: 'fedColor', label: 'Federal Tag Color', editable: true },
       { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
+      { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
       { key: 'fedNum', label: 'Federal Tag Number', editable: true },
-      { key: 'fedType', label: 'Federal Tag Type', editable: true },
       { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
+      { key: 'fedType', label: 'Federal Tag Type', editable: true },
 
       // Weight
       { key: 'weight', label: 'Weight', editable: true },
-      { key: 'weightUnits', label: 'Weight Units', editable: true },
       { key: 'weightUnitsKey', label: 'Weight Units Key', editable: true },
+      { key: 'weightUnits', label: 'Weight Units', editable: true },
 
       // Misc
       { key: 'birthNotes', label: 'Notes', editable: true },
