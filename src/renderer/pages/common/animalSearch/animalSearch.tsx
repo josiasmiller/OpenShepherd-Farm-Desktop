@@ -177,6 +177,36 @@ const AnimalSearch: React.FC = () => {
     }
   };
 
+  const handleSelectAllClick = () => {
+    Swal.fire({
+      title: 'Select All Animals?',
+      text: `Are you sure you want to select all ${results.length} animals in the list?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, select all',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const existingIds = new Set(chosenAnimals.map((a) => a.animal_id));
+        const newAnimals = results.filter((a) => !existingIds.has(a.animal_id));
+
+        if (newAnimals.length > 0) {
+          setChosenAnimals([...chosenAnimals, ...newAnimals]);
+          setSelectionMessage(`${newAnimals.length} animal(s) selected`);
+        } else {
+          setSelectionMessage('All animals are already selected');
+        }
+
+        setTimeout(() => {
+          setSelectionMessage(null);
+        }, 3000);
+
+        Swal.fire('Selected!', 'Animals have been added to your selection.', 'success');
+      }
+    });
+  };
+
+
 
   // Remove an animal from chosen list
   const removeFromChosenAnimals = (animalId: string) => {
@@ -191,6 +221,35 @@ const AnimalSearch: React.FC = () => {
       }, 3000);
     }
   };
+
+  const handleRemoveAllClick = () => {
+    if (chosenAnimals.length === 0) {
+      setSelectionMessage('No animals to remove');
+      setTimeout(() => setSelectionMessage(null), 3000);
+      return;
+    }
+
+    Swal.fire({
+      title: 'Remove All Selected Animals?',
+      text: 'Are you sure you want to remove all animals from your selection?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove all',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setChosenAnimals([]);
+        setSelectionMessage('All animals removed');
+
+        setTimeout(() => {
+          setSelectionMessage(null);
+        }, 3000);
+
+        Swal.fire('Removed!', 'All animals have been removed from your selection.', 'success');
+      }
+    });
+  };
+
   
   return (
     <div className="animal-search-container">
@@ -335,7 +394,20 @@ const AnimalSearch: React.FC = () => {
           {message && <div className="results-message">{message}</div>}
 
           {results.length > 0 && (
+
             <div id="resultsTableContainer">
+
+              <div>
+                <button
+                  className="standard-button"
+                  onClick={handleSelectAllClick}
+                >
+                  Select All
+                </button>
+              </div>
+
+              <br></br>
+
               <table className="results-table">
                 <thead>
                   <tr>
@@ -402,6 +474,18 @@ const AnimalSearch: React.FC = () => {
 
           {chosenAnimals.length > 0 && (
             <div id="chosenTableContainer">
+
+              <div>
+                <button
+                  className="cancel-button"
+                  onClick={handleRemoveAllClick}
+                >
+                  Deselect All
+                </button>
+              </div>
+
+              <br></br>
+
               <table className="chosen-table">
                 <thead>
                   <tr>

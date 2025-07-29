@@ -178,7 +178,7 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
   }
 
   // Add limit for safety
-  animalQuery += " LIMIT 20";
+  animalQuery += " LIMIT 100";
 
   return new Promise((resolve, reject) => {
     db.all(animalQuery, values, (err, rows) => {
