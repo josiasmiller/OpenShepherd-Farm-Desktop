@@ -27,6 +27,12 @@ import {
   getLastRegisteredValue,
 } from '../../../../../database/index.js';
 
+/**
+ * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
+ * @param rows RegistryRows to be processed
+ * @param _ here only to satisfy interface
+ * @returns ProcessingResult indicating if the process was successful or not
+ */
 export async function processRegistrationRows(rows: RegistryRow[], _ : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction();

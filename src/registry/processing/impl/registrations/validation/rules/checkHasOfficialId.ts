@@ -2,6 +2,11 @@ import { RegistryRow, ValidationResponse } from '../../../../core/types';
 import { animalHasActiveOfficialTag } from '../../../../../../database/index.js';
 import { handleResult } from '../../../../../../shared/results/resultTypes.js';
 
+/**
+ * 
+ * @param row verifies that the given animal has any active official ID
+ * @returns ValidationResponse indicating if the check passed or failed
+ */
 export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 

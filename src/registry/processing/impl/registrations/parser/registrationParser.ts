@@ -5,6 +5,10 @@ import { registrationParseMap } from './util/registrationParseMap.js';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types.js';
 
+/**
+ * parses registration data from a given CSV
+ * @returns parseResult of exported data
+ */
 export const registrationParser = async (): Promise<ParseResult<RegistrationParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select Registration CSV File",

@@ -9,7 +9,9 @@ export function incrementRegisteredValue(originalRegNum: string): string {
   return incremented;
 }
 
-
+/**
+ * increments the last registration number for `Registered` type in the DB
+ */
 export async function incrementLastRegistrationNumber(): Promise<Result<string, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");

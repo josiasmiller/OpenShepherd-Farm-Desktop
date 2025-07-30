@@ -8,7 +8,11 @@ import { validateBirthRows } from '../impl/births/validation/birthValidator.js';
 import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor.js';
 import { validateRegistrationRows } from '../impl/registrations/validation/registrationsValidator.js';
 
-
+/**
+ * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType
+ * @param type type of registry process being handled
+ * @returns RegistryProcessor
+ */
 export const registryProcessorFactory = (type: RegistryProcessType): RegistryProcessor => {
   switch (type) {
     case 'births':

@@ -4,6 +4,12 @@ import { checkHasOfficialId } from './rules/checkHasOfficialId.js';
 import { Species } from '../../../../../database/index.js';
 
 
+/**
+ * validates the data extracted from a registration CSV
+ * @param rows rows to be processed
+ * @param _ here only to satisfy interface
+ * @returns ValidationResult indicating if the validation was successful or not
+ */
 export async function validateRegistrationRows(rows: RegistryRow[], _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 

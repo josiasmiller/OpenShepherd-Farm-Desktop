@@ -4,6 +4,11 @@ export function isUUIDv4(input: string): boolean {
   return uuidV4Regex.test(input);
 }
 
+/**
+ * increments a birth notify number by 1
+ * @param bn Birth Notify string (format BNYYYYYY where `YYYYYY` represents a numeric string)
+ * @returns string
+ */
 export function incrementBNValue(bn: string): string {
   const match = bn.match(/^([A-Za-z]+)(\d+)$/);
   if (!match) throw new Error("Invalid format");
@@ -17,6 +22,11 @@ export function incrementBNValue(bn: string): string {
   return `${prefix}${incrementedNumber}`;
 }
 
+/**
+ * increments a registration number by 1. includes left-padded zeroes.
+ * @param originalRegNum the original registration number to increment
+ * @returns incremented registraiton number
+ */
 export function incrementRegisteredValue(originalRegNum: string): string {
   const length = originalRegNum.length;
   const incremented = (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
