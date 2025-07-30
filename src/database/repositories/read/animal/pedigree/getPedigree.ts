@@ -16,7 +16,14 @@ type PedigreeRow = {
   birthType: string | null;
 };
 
-
+/**
+ * recursively retrieves the pedigree information of an animal.
+ * 
+ * @param animalId UUID of animal being sought
+ * @param depth how deep in the search this iteration is
+ * @returns A `Result` containing a `PedigreeNode` object or `null` on success, 
+ *          or a string error message on failure.
+ */
 export const getPedigree = async (
   animalId: string,
   depth: number
@@ -25,7 +32,7 @@ export const getPedigree = async (
     return new Success(null); // Base case: stop recursion
   }
 
-  const db = await getDatabase();
+  const db = getDatabase();
   if (!db) {
     return new Failure("DB Instance is null");
   }

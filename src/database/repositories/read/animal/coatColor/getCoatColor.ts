@@ -14,6 +14,8 @@ interface CoatColorRow {
 /**
  * Retrieves the coat color of a specific animal.
  * @param animalId UUID of the animal being searched for
+ * @returns A `Result` containing a `CoatColor` object on success, 
+ *          or a string error message on failure.
  */
 export async function getCoatColorForAnimal(
   animalId: string

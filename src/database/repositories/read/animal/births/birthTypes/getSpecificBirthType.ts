@@ -9,8 +9,14 @@ interface BirthTypeRow {
   display_order: number;
 }
 
+/**
+ * gets a specific `BirthType` from the DB 
+ * @param id UUID of rge birthtype being sought
+ * @returns A `Result` containing a `BirthType` object on success, 
+ *          or a string error message on failure.
+ */
 export const getSpecificBirthType = async (id: string): Promise<Result<BirthType, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

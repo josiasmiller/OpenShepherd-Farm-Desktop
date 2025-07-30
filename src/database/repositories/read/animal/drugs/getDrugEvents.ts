@@ -2,9 +2,14 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { DrugEvent } from "../../../../models/read/animal/drugs/drugEvent.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets the drug history of a given animal
+ * @param animalId UUID of the animal being sought
+ * @returns A `Result` containing an array of `DrugEvent` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getDrugHistory = async (animalId : string): Promise<Result<DrugEvent[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }
