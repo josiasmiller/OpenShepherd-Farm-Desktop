@@ -46,6 +46,9 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
+  /**
+   * parses births and then populates the table with the parsed data
+   */
   const handleBirths = async () => {
     // const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
     const parseResult: ParseResult<BirthParseRow> = await window.electronAPI.registryParseBirths();
@@ -113,6 +116,9 @@ export const PreprocessorPage: React.FC = () => {
     setHasSelectedFile(true);
   }
 
+  /**
+   * parses registrations and then populates the table with the parsed data
+   */
   const handleRegistrations = async () => {
     const parseResult: ParseResult<RegistrationParseRow> = await window.electronAPI.registryParseRegistrations();
     const parsedRegistrations : RegistrationParseRow[] = parseResult.rows;
@@ -165,12 +171,22 @@ export const PreprocessorPage: React.FC = () => {
   };
 
 
+  /**
+   * handles when a row is updated in any form
+   * @param index index of the row being changes
+   * @param updatedRow RegistryRow being updated
+   */
   const handleRowChange = (index: number, updatedRow: RegistryRow) => {
     const newData = [...rows];
     newData[index] = updatedRow;
     setRows(newData);
   };
 
+  /**
+   * creates a sweetalert pop up when any errors occur. This should be used in the handling functions to 
+   * indicate that any parsing errors occured. 
+   * @param warnings array of any warnings to be displayed to the user
+   */
   const handleWarnings = async (warnings : string[]) => {
     if (warnings.length > 0) {
       const htmlContent = `
@@ -189,6 +205,10 @@ export const PreprocessorPage: React.FC = () => {
     }
   }
 
+  /**
+   * submits the parsed & altered data to be validated & processed
+   * @returns nothing
+   */
   const handleSubmit = async () => {
     if (!processType) return;
 
