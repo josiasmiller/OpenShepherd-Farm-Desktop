@@ -6,6 +6,12 @@ export interface RegistryRow {
   [key: string]: any;
 }
 
+export type ParseResult<T> = {
+  rows: T[];
+  warnings: string[];
+};
+
+
 export interface ValidationResult {
   rowIndex: number;
   isValid: boolean;

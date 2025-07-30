@@ -7,7 +7,7 @@ import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/regist
 import { BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
 import { RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
-import { ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
+import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
 
 
@@ -47,7 +47,11 @@ export const PreprocessorPage: React.FC = () => {
   };
 
   const handleBirths = async () => {
-    const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
+    // const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
+    const parseResult: ParseResult<BirthParseRow> = await window.electronAPI.registryParseBirths();
+    const parsedBirths : BirthParseRow[] = parseResult.rows;
+
+    handleWarnings(parseResult.warnings);
 
     const birthColumns: RegistryFieldDef[] = [
       // Core birth info
@@ -110,7 +114,10 @@ export const PreprocessorPage: React.FC = () => {
   }
 
   const handleRegistrations = async () => {
-    const parsedRegistrations: RegistrationParseRow[] = await window.electronAPI.registryParseRegistrations();
+    const parseResult: ParseResult<RegistrationParseRow> = await window.electronAPI.registryParseRegistrations();
+    const parsedRegistrations : RegistrationParseRow[] = parseResult.rows;
+
+    handleWarnings(parseResult.warnings);
 
     const registrationColumns: RegistryFieldDef[] = [
       // Breeder
@@ -163,6 +170,24 @@ export const PreprocessorPage: React.FC = () => {
     newData[index] = updatedRow;
     setRows(newData);
   };
+
+  const handleWarnings = async (warnings : string[]) => {
+    if (warnings.length > 0) {
+      const htmlContent = `
+        <ul style="text-align: left; padding-left: 1.2em;">
+          ${warnings.map(warning => `<li>${warning}</li>`).join('')}
+        </ul>
+      `;
+
+      await Swal.fire({
+        title: "Warning(s) Detected",
+        html: htmlContent,
+        icon: "warning",
+        confirmButtonText: "Continue",
+        width: 600,
+      });
+    }
+  }
 
   const handleSubmit = async () => {
     if (!processType) return;

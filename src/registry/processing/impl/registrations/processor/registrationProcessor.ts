@@ -27,7 +27,7 @@ import {
   getLastRegisteredValue,
 } from '../../../../../database/index.js';
 
-export async function processRegistrationRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
+export async function processRegistrationRows(rows: RegistryRow[], _ : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction();
 
@@ -41,7 +41,6 @@ export async function processRegistrationRows(rows: RegistryRow[], species : Spe
 
         const animalId : string = row.animalId;
         const animalName : string = row.animalName;
-        // const breederId : string = row.breederId;
         const birthDateString: string = row.birthdate;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,9 +144,10 @@ export async function processRegistrationRows(rows: RegistryRow[], species : Spe
         mostRecentRegisteredValue = mostRecentRegisteredValue!;
         var newRegisteredValue : string = incrementRegisteredValue(mostRecentRegisteredValue);
 
-        await incrementLastRegistrationNumber();
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // increment the registration number in the DB
+        await incrementLastRegistrationNumber(); 
 
-        
         await insertAnimalRegistrationRow(
           breeder,
           animalId,

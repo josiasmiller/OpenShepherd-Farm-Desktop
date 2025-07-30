@@ -3,9 +3,9 @@ import Papa from 'papaparse';
 import { RegistrationParseRow } from './util/registrationParseRow.js';
 import { registrationParseMap } from './util/registrationParseMap.js';
 import { dialog } from 'electron';
+import { ParseResult } from '../../../core/types.js';
 
-export const registrationParser = async (): Promise<RegistrationParseRow[]> => {
-
+export const registrationParser = async (): Promise<ParseResult<RegistrationParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select Registration CSV File",
     properties: ["openFile"],
@@ -14,7 +14,7 @@ export const registrationParser = async (): Promise<RegistrationParseRow[]> => {
 
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return [];
+    return { rows: [], warnings: [] };
   }
 
   const selectedFile = filePaths[0];
@@ -24,8 +24,18 @@ export const registrationParser = async (): Promise<RegistrationParseRow[]> => {
     Papa.parse(fileContent, {
       header: true,
       skipEmptyLines: true,
-      complete: (results: Papa.ParseResult<Record<string, string>>) => {
-        const parsedData: RegistrationParseRow[] = results.data.map((row: Record<string, any>) => {
+      complete: (results) => {
+        const warnings: string[] = [];
+        const actualHeaders = results.meta.fields ?? [];
+        const expectedHeaders = Object.keys(registrationParseMap);
+
+        for (const header of expectedHeaders) {
+          if (!actualHeaders.includes(header)) {
+            warnings.push(`Missing expected column: "${header}"`);
+          }
+        }
+
+        const parsedData: RegistrationParseRow[] = (results.data as Record<string, any>[]).map((row) => {
           const parsedRow: Partial<RegistrationParseRow> = {};
 
           for (const [csvKey, fieldKey] of Object.entries(registrationParseMap)) {
@@ -41,9 +51,9 @@ export const registrationParser = async (): Promise<RegistrationParseRow[]> => {
           return parsedRow as RegistrationParseRow;
         });
 
-        resolve(parsedData);
+        resolve({ rows: parsedData, warnings });
       },
-      error: (err: Error) => reject(err),
+      error: (err : any) => reject(err),
     });
   });
 };

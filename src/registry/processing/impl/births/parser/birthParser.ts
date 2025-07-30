@@ -3,34 +3,39 @@ import Papa from 'papaparse';
 import { BirthParseRow } from './util/birthParseRow.js';
 import { birthParseMap } from './util/birthParseMap.js';
 import { dialog } from 'electron';
+import { ParseResult } from '../../../core/types.js';
 
-export const birthParser = async (): Promise<BirthParseRow[]> => {
-  // Show the file selection dialog (CSV only)
+export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select CSV File",
     properties: ["openFile"],
-    filters: [
-      { name: "CSV Files", extensions: ["csv"] }
-    ],
+    filters: [{ name: "CSV Files", extensions: ["csv"] }],
   });
 
-  // Handle user cancellation
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return [];
+    return { rows: [], warnings: [] };
   }
 
   const selectedFile = filePaths[0];
-
   const fileContent = await fs.readFile(selectedFile, 'utf-8');
 
   return new Promise((resolve, reject) => {
     Papa.parse(fileContent, {
       header: true,
       skipEmptyLines: true,
-      complete: (results: Papa.ParseResult<Record<string, string>>) => {
-        const parsedData: BirthParseRow[] = results.data.map((row: Record<string, any>) => {
+      complete: (results) => {
+        const warnings: string[] = [];
+        const actualHeaders = results.meta.fields ?? [];
+        const expectedHeaders = Object.keys(birthParseMap);
 
+        for (const header of expectedHeaders) {
+          if (!actualHeaders.includes(header)) {
+            warnings.push(`Missing expected column: "${header}"`);
+          }
+        }
+
+        const parsedData: BirthParseRow[] = (results.data as Record<string, any>[]).map((row) => {
           const parsedRow: Partial<BirthParseRow> = {};
 
           for (const [csvKey, fieldKey] of Object.entries(birthParseMap)) {
@@ -48,9 +53,9 @@ export const birthParser = async (): Promise<BirthParseRow[]> => {
           return parsedRow as BirthParseRow;
         });
 
-        resolve(parsedData);
+        resolve({ rows: parsedData, warnings });
       },
-      error: (err: Error) => reject(err),
+      error: (err: any) => reject(err),
     });
   });
 };
