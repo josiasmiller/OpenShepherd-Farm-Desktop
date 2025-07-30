@@ -148,7 +148,7 @@ export async function processRegistrationRows(rows: RegistryRow[], _ : Species):
         // increment the registration number in the DB
         await incrementLastRegistrationNumber(); 
 
-        await insertAnimalRegistrationRow(
+        var insertRegRowResult = await insertAnimalRegistrationRow(
           breeder,
           animalId,
           animalName,
@@ -157,6 +157,10 @@ export async function processRegistrationRows(rows: RegistryRow[], _ : Species):
           regCompanyId,
           flockBookId,
         );
+
+        if (insertRegRowResult.tag == 'error') {
+          throw new Error(insertRegRowResult.error);
+        }
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // update animal name to match most recent registration name
