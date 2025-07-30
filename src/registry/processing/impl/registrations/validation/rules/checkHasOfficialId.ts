@@ -1,8 +1,8 @@
 import { RegistryRow, ValidationResponse } from '../../../../core/types';
-import { animalHasActiveOfficialTag, Species } from '../../../../../../database/index.js';
+import { animalHasActiveOfficialTag } from '../../../../../../database/index.js';
 import { handleResult } from '../../../../../../shared/results/resultTypes.js';
 
-export async function checkHasOfficialId(row: RegistryRow, species: Species): Promise<ValidationResponse> {
+export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
   var tagResult = await animalHasActiveOfficialTag(row.animalId);

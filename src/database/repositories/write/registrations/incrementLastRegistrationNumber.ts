@@ -1,24 +1,16 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
-import { REGISTRATION_BIRTH_NOTIFY } from "../../../dbConstants.js";
+import { REGISTRATION_REGISTERED } from "../../../dbConstants.js";
 
 
-function incrementStringId(id: string): string {
-  const match = id.match(/^([A-Za-z]+)(\d+)$/);
-  if (!match) throw new Error("Invalid format");
-
-  const prefix = match[1];
-  const numberStr = match[2];
-
-  const numberLength = numberStr.length;
-  const incrementedNumber = (parseInt(numberStr, 10) + 1)
-    .toString()
-    .padStart(numberLength, "0");
-
-  return `${prefix}${incrementedNumber}`;
+export function incrementRegisteredValue(originalRegNum: string): string {
+  const length = originalRegNum.length;
+  const incremented = (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
+  return incremented;
 }
 
-export async function incrementLastBirthNotifyValue(): Promise<Result<string, string>> {
+
+export async function incrementLastRegistrationNumber(): Promise<Result<string, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
@@ -26,7 +18,7 @@ export async function incrementLastBirthNotifyValue(): Promise<Result<string, st
     const row = await new Promise<{ last_registration_number: string } | undefined>((resolve, reject) => {
       db.get(
         `SELECT last_registration_number FROM registration_type_table WHERE id_registrationtypeid = ?`,
-        [REGISTRATION_BIRTH_NOTIFY],
+        [REGISTRATION_REGISTERED],
         (err, row) => {
           if (err) reject(err);
           else resolve(row as { last_registration_number: string });
@@ -38,12 +30,12 @@ export async function incrementLastBirthNotifyValue(): Promise<Result<string, st
       return new Failure("Registration type not found or missing last_registration_number");
     }
 
-    const newNumber = incrementStringId(row.last_registration_number);
+    const newNumber = incrementRegisteredValue(row.last_registration_number);
 
     await new Promise<void>((resolve, reject) => {
       db.run(
         `UPDATE registration_type_table SET last_registration_number = ?, modified = datetime('now') WHERE id_registrationtypeid = ?`,
-        [newNumber, REGISTRATION_BIRTH_NOTIFY],
+        [newNumber, REGISTRATION_REGISTERED],
         (err) => {
           if (err) reject(err);
           else resolve();

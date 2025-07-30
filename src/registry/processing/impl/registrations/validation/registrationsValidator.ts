@@ -4,7 +4,7 @@ import { checkHasOfficialId } from './rules/checkHasOfficialId.js';
 import { Species } from '../../../../../database/index.js';
 
 
-export async function validateRegistrationRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]> {
+export async function validateRegistrationRows(rows: RegistryRow[], _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   for (let index = 0; index < rows.length; index++) {
@@ -12,7 +12,7 @@ export async function validateRegistrationRows(rows: RegistryRow[], species: Spe
     const errors: string[] = [];
 
     // Run all relevant checks
-    const officialCheck = await checkHasOfficialId(row, species);
+    const officialCheck = await checkHasOfficialId(row);
     errors.push(...officialCheck.errors);
 
     results.push({

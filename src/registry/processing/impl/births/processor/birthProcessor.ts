@@ -2,6 +2,8 @@ import { RegistryRow, ProcessingResult } from '../../../core/types';
 import { getSelectedDefault } from '../../../../../main/store/selectedDefaultStore.js';
 import { handleResult, Result } from '../../../../../shared/results/resultTypes.js';
 
+import { incrementBNValue } from "../../../helpers/registryHelpers.js";
+
 // DB actions
 import {
   beginTransaction,
@@ -232,7 +234,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         // get the most recent Birth Notify Number
 
         var bnValResult = await getLastBirthNotifyValue();
-        var mostRecentBn : string ;
+        var mostRecentBn : string;
 
         await handleResult(bnValResult, {
           success: (data: string | null) => {
@@ -367,20 +369,6 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       errors: [(error as Error).message]
     };
   }
-}
-
-
-function incrementBNValue(bn: string): string {
-  const match = bn.match(/^([A-Za-z]+)(\d+)$/);
-  if (!match) throw new Error("Invalid format");
-
-  const prefix = match[1];
-  const numberStr = match[2];
-
-  const numberLength = numberStr.length;
-  const incrementedNumber = (parseInt(numberStr, 10) + 1).toString().padStart(numberLength, '0');
-
-  return `${prefix}${incrementedNumber}`;
 }
 
 async function craftStillbornName(row: RegistryRow, iteration: number): Promise<string> {
