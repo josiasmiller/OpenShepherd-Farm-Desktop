@@ -95,8 +95,8 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
-export { incrementLastBirthNotifyValue } from "./repositories/write/registrations/incrementLastBirthNotifyValue.js";
-export { incrementLastRegistrationNumber } from "./repositories/write/registrations/incrementLastRegistrationNumber.js";
+export { incrementLastBirthNotifyValue } from "./repositories/write/registrations/registrationNumbers/incrementLastBirthNotifyValue.js";
+export { incrementLastRegistrationNumber } from "./repositories/write/registrations/registrationNumbers/incrementLastRegistrationNumber.js";
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow.js";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory.js";
 export { insertAnimalIdInfoRow } from "./repositories/write/animal/id/insertAnimalIdRow.js";
@@ -123,4 +123,10 @@ export { getGestationPeriod } from "./registry/getGestationPeriod.js";
 
 // DB constant
 
+export { RegistryType } from "./dbConstants.js";
+
 export { DIED_STILLBORN } from "./dbConstants.js";
+export { REGISTRATION_BIRTH_NOTIFY } from "./dbConstants.js";
+
+// DB mappings
+export { registryTypeToUuid } from "./dbConstants.js";

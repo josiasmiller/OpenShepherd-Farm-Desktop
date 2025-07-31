@@ -1,3 +1,22 @@
+export type RegistryType = "black" | "badger face" | "chocolate" | "white";
+
+export function registryTypeToUuid(input : RegistryType): string {
+  if (input == "black" || input == "badger face") {
+    return REGISTRATION_REGISTERED;
+  }
+
+  if (input == "chocolate") {
+    return REGISTRATION_CHOCOLATE_WELSH;
+  }
+
+  if (input == "white") {
+    return REGISTRATION_WHITE_WELSH;
+  }
+
+  throw new Error(`Unhandled RegidstryType: \'${input}\'`);
+}
+
+
 // company registries
 export const REGISTRY_COMPANY_ID = "3a7e2399-17fd-4a8f-af43-d66fde9e0539"; // ABWMSA
 export const REGISTRY_CHOCOLATE_WMSA = "dc9ffa44-049c-4b34-8430-61a442bbe025"; // ACWMSA

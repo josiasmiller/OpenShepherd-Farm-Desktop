@@ -4,7 +4,6 @@ import { Result, Success, Failure } from "../../../../shared/results/resultTypes
 import { OwnerType } from "../../../client-types.js";
 import { Owner } from "../../../models/read/owners/owner.js";
 import { getSQLiteDateStringNow } from "../../../dbUtils.js";
-import { REGISTRATION_REGISTERED } from "../../../dbConstants.js";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,
@@ -16,6 +15,7 @@ import { REGISTRATION_REGISTERED } from "../../../dbConstants.js";
  * @param registrationDate string representing the date in which the animal is registered
  * @param registrationCompanyId which company UUID to mark in `id_registry_company_id`
  * @param flockBookId the flock book UUID to mark in the database
+ * @param registrationTypeId the UUID of the registration type
  */
 export async function insertAnimalRegistrationRow(
   breeder: Owner,
@@ -25,6 +25,7 @@ export async function insertAnimalRegistrationRow(
   registrationDate: string,
   registrationCompanyId: string,
   flockBookId: string,
+  registrationTypeId: string,
 ): Promise<Result<null, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
@@ -43,7 +44,7 @@ export async function insertAnimalRegistrationRow(
         AND id_animalregistrationtypeid = ?
       LIMIT 1
       `,
-      [animalId, registrationCompanyId, REGISTRATION_REGISTERED],
+      [animalId, registrationCompanyId, registrationTypeId],
       (err, row) => {
         if (err) reject(err);
         else resolve(row);
@@ -52,7 +53,7 @@ export async function insertAnimalRegistrationRow(
   });
 
   if (existingRow) {
-    return new Failure(`A registration already exists for animalId=\'${animalId}\', id_registry_id_companyid=\'${registrationCompanyId}\', & id_animalregistrationtypeid=\'${REGISTRATION_REGISTERED}\'.`);
+    return new Failure(`A registration already exists for animalId=\'${animalId}\', id_registry_id_companyid=\'${registrationCompanyId}\', & id_animalregistrationtypeid=\'${registrationTypeId}\'.`);
   }
 
   // If not, proceed with insert
@@ -83,7 +84,7 @@ export async function insertAnimalRegistrationRow(
     animalName,
     registrationNumber,
     registrationCompanyId,
-    REGISTRATION_REGISTERED,
+    registrationTypeId,
     flockBookId,
     registrationDate,
     breeder.type === OwnerType.CONTACT ? breeder.contact.id : null,
