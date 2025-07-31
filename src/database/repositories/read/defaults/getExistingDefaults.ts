@@ -3,8 +3,13 @@ import { OwnerType } from "../../../models/read/owners/ownerType.js";
 import { DefaultSettingsResults } from "../../../models/read/defaults/getExistingDefaults.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
+/**
+ * gets all default settings in the DB
+ * @returns A `Result` containing an array of `DefaultSettingsResults` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResults[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

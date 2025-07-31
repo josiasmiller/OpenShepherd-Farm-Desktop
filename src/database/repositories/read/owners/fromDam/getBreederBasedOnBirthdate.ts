@@ -20,6 +20,15 @@ type BreederQueryRow = {
   membership_number: string | null;
 };
 
+/**
+ * gets the breeder of a given animal based on the animal_ownership_history_table
+ * 
+ * @param damId UUID of the animal's dam (mother)
+ * @param speciesId UUID of the species being sought
+ * @param childBirthDate the birthdate of the animal as a `Date` object
+ * @returns A `Result` containing an `Owner` object on success, 
+ *          or a string error message on failure.
+ */
 export async function getBreederFromOwnershipHistory(
   damId: string,
   speciesId: string,

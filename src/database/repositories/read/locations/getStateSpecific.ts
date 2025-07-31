@@ -11,7 +11,12 @@ type StateRow = {
   country_id: string;
 };
 
-// Function to fetch a single state from the database
+/**
+ * gets a specific state from the DB
+ * @param stateId specific UUID of state to retrieve
+ * @returns A `Result` containing a `State` object on success, 
+ *          or a string error message on failure.
+ */
 export const getStateSpecific = async (stateId: string): Promise<Result<State, string>> => {
   const db = await getDatabase();
   if (db == null) {

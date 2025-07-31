@@ -2,9 +2,13 @@ import { getDatabase } from "../../../dbConnections.js";
 import { Contact } from "../../../models/read/owners/contact.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch owners from the database
+/**
+ * gets all contacts from the DB
+ * @returns A `Result` containing an array of `Contact` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getContacts = async (): Promise<Result<Contact[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

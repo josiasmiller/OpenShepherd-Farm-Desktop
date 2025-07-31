@@ -5,7 +5,7 @@ import { BreedingAgesResult } from "../../../../models/read/animal/breeding/bree
 /**
  * gets the breeding ages of a given species
  * @param speciesId UUID of the species being sought
- * @returns A `Result` containing a `BreedingAgesResult` objects on success, 
+ * @returns A `Result` containing a `BreedingAgesResult` object on success, 
  *          or a string error message on failure.
  */
 export const getBreedingAges = async (

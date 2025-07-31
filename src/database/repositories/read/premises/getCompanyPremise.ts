@@ -3,9 +3,14 @@ import { getPremiseSpecific } from "./getPremiseSpecific.js"; // Adjust import p
 import { Premise } from "../../../models/read/premises/premise.js";
 import { Result, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch premise data associated with a given company ID
+/**
+ * gets the premise for a given company
+ * @param companyId UUID of the company being sought
+ * @returns A `Result` containing a `Premise` object on success, 
+ *          or a string error message on failure.
+ */
 export const getCompanyPremise = async (companyId: string): Promise<Result<Premise, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

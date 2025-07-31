@@ -26,10 +26,16 @@ type OwnerQueryRow = {
   company_phone: string | null;
 };
 
+/**
+ * gets the owner of an animal
+ * @param animalId UUID of the animal whose owner you are searching for
+ * @returns A `Result` containing an `Owner` object on success, 
+ *          or a string error message on failure.
+ */
 export const getOwner = async (
   animalId: string
 ): Promise<Result<Owner, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
   }

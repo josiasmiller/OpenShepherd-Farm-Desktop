@@ -1,6 +1,12 @@
 import { getDatabase } from "../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
+/**
+ * gets the UUID of the flock prefix of a given owner
+ * @param membershipNumber membership number of the owner
+ * @returns A `Result` containing a string on success, 
+ *          or a string error message on failure.
+ */
 export async function getFlockPrefixIdByMembershipNumber(
   membershipNumber: string
 ): Promise<Result<string, string>> {

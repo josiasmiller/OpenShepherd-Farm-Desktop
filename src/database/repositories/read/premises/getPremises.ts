@@ -17,8 +17,13 @@ type PremiseRow = {
   state_country_id: string;
 };
 
+/**
+ * gets all premises from the DB
+ * @returns A `Result` containing an array of `Premise` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getPremises = async (): Promise<Result<Premise[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

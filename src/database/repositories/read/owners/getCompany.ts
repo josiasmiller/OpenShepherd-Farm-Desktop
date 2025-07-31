@@ -2,9 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { Company } from "../../../models/read/owners/company.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch companies from the database
+/**
+ * gets companies from the DB, either all companies or just the registry companies
+ * @param onlyGetRegistryCompanies bool indicating if the function should only get the registry companies
+ * @returns A `Result` containing an array of `Company` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getCompanies = async (onlyGetRegistryCompanies: boolean): Promise<Result<Company[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }
