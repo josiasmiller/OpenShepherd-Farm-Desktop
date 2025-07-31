@@ -44,7 +44,11 @@ import { writeRegistration } from "../writers/pdf/writeRegistration";
 
 import { birthParser } from "../registry/processing/impl/births/parser/birthParser";
 import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
+<<<<<<< HEAD
 import { transferParser } from "../registry/processing/impl/transfers/parser/transferParser";
+=======
+import { deathParser } from "../registry/processing/impl/deaths/parser/deathparser";
+>>>>>>> 86db764 (feat: death process initial setup)
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
 import { RegistryProcessRequest } from "../registry/processing/core/types";
@@ -165,6 +169,8 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle('registry-parse-births', birthParser);
+
+  ipcMain.handle('registry-parse-deaths', deathParser);
 
   ipcMain.handle('registry-parse-registrations', registrationParser);
 

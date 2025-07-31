@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openDirectory: (path: string) => ipcRenderer.invoke('open-directory', path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
   registryParseBirths: () => ipcRenderer.invoke("registry-parse-births"),
+  registryParseDeaths: () => ipcRenderer.invoke("registry-parse-deaths"),
   registryParseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
   registryParseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),

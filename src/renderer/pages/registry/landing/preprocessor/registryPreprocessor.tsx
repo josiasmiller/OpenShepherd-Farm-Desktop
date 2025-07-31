@@ -4,7 +4,9 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
+
 import { BirthParseResponse, BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
+import { DeathParseRow } from '../../../../../registry/processing/impl/deaths/parser/util/deathParseRow';
 import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
@@ -23,7 +25,6 @@ type TableSection = {
 };
 
 type SectionsMap = Record<string, any[]>;
-
 
 export const PreprocessorPage: React.FC = () => {
   const location = useLocation();
@@ -47,11 +48,15 @@ export const PreprocessorPage: React.FC = () => {
 
       if (processType === 'births') {
         await handleBirths();
-      }
-      else if (processType === 'registrations') {
+        
+      } else if (processType === 'registrations') {
         await handleRegistrations();
+
       } else if (processType === 'transfers') {
         await handleTransfers();
+
+      } else if (processType == 'deaths') {
+        await handleDeaths();
       }
 
     } catch (error) {
@@ -196,6 +201,43 @@ export const PreprocessorPage: React.FC = () => {
     ]);
     setHasSelectedFile(true);
   };
+
+  /**
+   * parses deaths and then populates the table with the parsed data
+   */
+  const handleDeaths = async () => {
+    const parseResult: ParseResult<DeathParseRow> = await window.electronAPI.registryParseDeaths();
+    const parsedDeaths: DeathParseRow[] = []; // FIXME -->  //parseResult.data.rows;
+
+    handleWarnings(parseResult.warnings);
+
+    const deathColumns: RegistryFieldDef[] = [
+      { key: 'deathDate', label: 'Death Date', editable: true },
+      { key: 'animalId', label: 'Animal ID', editable: false },
+      { key: 'prefixKey', label: 'Prefix Key', editable: true },
+      { key: 'prefix', label: 'Prefix', editable: true },
+      { key: 'name', label: 'Animal Name', editable: true },
+      { key: 'registrationNumber', label: 'Registration Number', editable: false },
+      { key: 'reasonKey', label: 'Reason Key', editable: true },
+      { key: 'reason', label: 'Reason', editable: true },
+      { key: 'notes', label: 'Notes', editable: true },
+    ];
+
+    const rows: RegistryRow[] = parsedDeaths.map(r => ({ ...r }));
+
+    // setColumns(deathColumns);
+    // setRows(rows);
+    setTables([
+      {
+        title: "Death Records",
+        columns: deathColumns,
+        rows: rows,
+        editable: true,
+      },
+    ]);
+    setHasSelectedFile(true);
+  };
+
 
 
   const handleTransfers = async () => {

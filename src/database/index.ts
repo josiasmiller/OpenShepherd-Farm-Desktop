@@ -124,6 +124,7 @@ export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/w
 export { getAnimalDeathDate } from "./registry/getAnimalDeathDate";
 export { getGestationPeriod } from "./registry/getGestationPeriod";
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // DB constant

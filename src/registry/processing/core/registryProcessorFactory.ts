@@ -10,6 +10,10 @@ import { validateRegistrationRows } from '../impl/registrations/validation/regis
 import { validateTransferRows } from '../impl/transfers/validation/transferValidator';
 import { processTransferRows } from '../impl/transfers/processor/transferProcessor';
 
+// deaths
+import { processDeathRows } from '../impl/deaths/processor/deathProcessor.js';
+import { validateDeathRows } from '../impl/deaths/validation/deathValidator.js';
+
 /**
  * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType
  * @param type type of registry process being handled
@@ -28,11 +32,11 @@ export const registryProcessorFactory = (type: RegistryProcessType): RegistryPro
         processRegistryRows: processRegistrationRows,
       };
     case 'deaths':
-    // here is where more processors will be added as they are implemented
-    //   return {
-    //     validate: new DeathValidator().validate,
-    //     process: new DeathProcessor().process,
-    //   };
+      // DEBUG --> fixing after rebase
+      // return {
+      //   validateRegistryRows: validateDeathRows,
+      //   processRegistryRows: processDeathRows,
+      // };
     case 'transfers':
       return {
         validateRegistryRows: validateTransferRows,
