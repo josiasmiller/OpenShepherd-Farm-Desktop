@@ -2,7 +2,11 @@ import { getDatabase } from "../../../dbConnections.js";
 import { Country } from "../../../models/read/locations/country.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch countries from the database
+/**
+ * gets all countries from the DB
+ * @returns A `Result` containing an array of `Country` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getCountries = async (): Promise<Result<Country[], string>> => {
   const db = await getDatabase();
   if (db == null) {

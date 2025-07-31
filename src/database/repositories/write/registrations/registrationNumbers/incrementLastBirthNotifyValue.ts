@@ -18,6 +18,13 @@ function incrementStringId(id: string): string {
   return `${prefix}${incrementedNumber}`;
 }
 
+/**
+ * increments the last birth notify value by 1 and then returns the new, non-used registration value.
+ * Should always be in the format `BNYYYY` where `YYYY` is the current iteration
+ * 
+ * @returns A `Result` containing the new BN value on success, 
+ *          or a string error message on failure.
+ */
 export async function incrementLastBirthNotifyValue(): Promise<Result<string, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");

@@ -2,8 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { TissueSampleType } from "../../../models/read/tissues/tissueSampleType.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
+/**
+ * gets all tissue sample types from the DB 
+ * 
+ * @returns A `Result` containing an array of `TissueSampleType` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getTissueSampleTypes = async (): Promise<Result<TissueSampleType[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

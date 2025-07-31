@@ -2,6 +2,12 @@ import { getDatabase } from '../../../../dbConnections.js';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput.js';
 
+/**
+ * uploads an animal into the `animal_table`
+ * 
+ * @param input all pertinent data for uploading to the `animal_table`
+ * @returns the generated UUID of the animal inserted
+ */
 export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Promise<string> {
   const db = getDatabase();
   if (db == null) {

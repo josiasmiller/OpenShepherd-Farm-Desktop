@@ -11,10 +11,16 @@ type BirthInfoRow = {
   display_order: number;
 };
 
+/**
+ * gets the birth information of a given animal
+ * @param animalId UUID of animal being searched
+ * @returns A `Result` containing a `BirthInfo` object on success, 
+ *          or a string error message on failure.
+ */
 export const getBirthInfo = async (
   animalId: string
 ): Promise<Result<BirthInfo, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB instance is null");
   }

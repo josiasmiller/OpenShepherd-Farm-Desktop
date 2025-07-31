@@ -9,6 +9,12 @@ type SexRow = {
   species_id: string | null;
 };
 
+/**
+ * gets the sex of a given animal
+ * @param animalId UUID of the animal being sought
+ * @returns A `Result` containing a `Sex` object on success, 
+ *          or a string error message on failure.
+ */
 export const getSexFromAnimalId = async (animalId: string): Promise<Result<Sex, string>> => {
   const db = getDatabase();
   if (db == null) {

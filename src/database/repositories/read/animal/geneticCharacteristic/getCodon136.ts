@@ -6,10 +6,16 @@ type RawCodonRow = {
   codon136alleles: string;
 };
 
+/**
+ * gets the Codon136 data of a given animal
+ * @param animalId UUID of animal being sought
+ * @returns A `Result` containing a `CodonResponse` or `null` object on success, 
+ *          or a string error message on failure.
+ */
 export const getCodon136ForAnimal = async (
   animalId: string
 ): Promise<Result<CodonResponse | null, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
   const query = `

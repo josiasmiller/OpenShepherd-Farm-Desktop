@@ -4,9 +4,17 @@ import { UnitRequest, Unit } from "../../../models/read/units/unit.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
 
+/**
+ * gets all units for a given type of unit. When no parameters are given to this function, it retrieves all units
+ * regardless of their type.
+ * 
+ * @param queryParams 
+ * @returns A `Result` containing an array of `Unit` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getUnits = async (queryParams: UnitRequest): Promise<Result<Unit[], string>> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     if (db == null) {
       return new Failure<string>("DB Instance is null"); // Return Failure if DB instance is null
     }

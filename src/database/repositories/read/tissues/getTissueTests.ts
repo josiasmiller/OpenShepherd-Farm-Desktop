@@ -2,9 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { TissueTest } from "../../../models/read/tissues/tissueTest.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to get TissueTests with Result type handling for success and failure
+/**
+ * gets all tissue tests from the DB
+ * 
+ * @returns A `Result` containing an array of `TissueTest` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getTissueTests = async (): Promise<Result<TissueTest[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

@@ -3,9 +3,13 @@ import { FlockPrefix } from "../../../../models/read/animal/flocks/flockPrefix.j
 import { OwnerType } from "../../../../models/read/owners/ownerType.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all FlockPrefixes from the DB
+ * @returns A `Result` containing an array of `FlockPrefix` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getFlockPrefixes = async (): Promise<Result<FlockPrefix[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

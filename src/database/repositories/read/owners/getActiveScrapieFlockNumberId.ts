@@ -4,6 +4,8 @@ import { Result, Success, Failure } from "../../../../shared/results/resultTypes
 /**
  * Retrieves the most recent active scrapie flock number ID for the given owner.
  * @param ownerId UUID of the owner (can be contact or company)
+ * @returns A `Result` containing a string on success, 
+ *          or a string error message on failure.
  */
 export async function getActiveScrapieFlockNumberId(
   ownerId: string

@@ -27,10 +27,16 @@ type BreederQueryRow = {
   company_phone: string | null;
 };
 
+/**
+ * gets the breeder of an animal from the animal's UUID
+ * @param animalId UUID of the animal being sought
+ * @returns A `Result` containing an `Owner` object on success, 
+ *          or a string error message on failure.
+ */
 export const getBreeder = async (
   animalId: string
 ): Promise<Result<Owner, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
   }

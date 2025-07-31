@@ -19,6 +19,14 @@ type OwnershipQueryRow = {
   membership_number: string | null;
 };
 
+/**
+ * gets the owner of a given animal at the birthdate 
+ * 
+ * @param damId UUID of the animal's Dam
+ * @param birthDate birthdate of the given animal as a `Date` object  
+ * @returns A `Result` containing an `Owner` object on success, 
+ *          or a string error message on failure.
+ */
 export async function getOwnerAtBirth(
   damId: string,
   birthDate: Date

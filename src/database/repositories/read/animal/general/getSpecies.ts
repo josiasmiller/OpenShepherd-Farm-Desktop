@@ -2,9 +2,13 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Species } from "../../../../models/read/animal/general/species.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all species from the DB
+ * @returns A `Result` containing an array of `Species` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getSpecies = async (): Promise<Result<Species[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

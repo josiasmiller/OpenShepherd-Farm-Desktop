@@ -7,10 +7,19 @@ type WeightResponse = {
   ageInDays : number
 }
 
+/**
+ * estimates the 50 day weight of an animal based on the available information in the database.
+ * NOTE: this function returns a success with a number `0` when unable to calculate the 50 day weight.
+ *       Failures only occur when a DB issue crops up
+ * 
+ * @param animalId UUID of animal being sought
+ * @returns A `Result` containing a number on success, 
+ *          or a string error message on failure.
+ */
 export const estimateFiftyDayWeight = async (
   animalId: string
 ): Promise<Result<number, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

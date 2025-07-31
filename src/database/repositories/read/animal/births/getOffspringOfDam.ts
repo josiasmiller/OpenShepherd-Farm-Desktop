@@ -4,6 +4,8 @@ import { OffspringInfo } from "../../../../models/read/animal/births/offspringIn
 
 /**
  * Fetch all animals where the given animalId is the genetic dam.
+ * @returns A `Result` containing an array of `OffspringInfo` objects on success, 
+ *          or a string error message on failure.
  */
 export const getOffspringOfDam = async (
   damId: string

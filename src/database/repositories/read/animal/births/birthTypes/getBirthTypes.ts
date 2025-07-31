@@ -2,8 +2,14 @@ import { getDatabase } from "../../../../../dbConnections.js";
 import { BirthType } from "../../../../../models/read/animal/births/birthType.js";
 import { Result, Success, Failure } from "../../../../../../shared/results/resultTypes.js";
 
+/**
+ * Retrieves all birth types from the database.
+ *
+ * @returns A `Result` containing an array of `BirthType` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getBirthTypes = async (): Promise<Result<BirthType[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

@@ -2,9 +2,13 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { TransferReason } from "../../../../models/read/animal/transfers/transferReaon.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all transfer reasons from the DB
+ * @returns A `Result` containing an array of `TransferReason` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getTransferReasons = async (): Promise<Result<TransferReason[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

@@ -7,6 +7,8 @@ import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
  *
  * @param animalId UUID of the animal
  * @param newName New name to assign to the animal
+ * @returns A `Result` containing `null` on success, 
+ *          or a string error message on failure.
  */
 export async function updateAnimalName(
   animalId: string,

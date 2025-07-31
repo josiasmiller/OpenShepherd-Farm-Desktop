@@ -2,9 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { TagType } from "../../../models/read/tags/tagType.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch tag types from the database
+/**
+ * Gets all possible Tag Types from the DB
+ * 
+ * @returns A `Result` containing an array of `TagType` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getTagTypes = async (): Promise<Result<TagType[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

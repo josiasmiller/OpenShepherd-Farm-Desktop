@@ -2,6 +2,11 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { escapeLikeString } from "../../../../dbUtils.js";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../models/read/animal/animalSeach/animalSearch.js";
 
+/**
+ * performs a search for all animals based on the input parameters
+ * @param queryParams search parameters
+ * @returns array of search results
+ */
 export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promise<AnimalSearchResult[]> => {
   const db = getDatabase();
   if (db == null) {

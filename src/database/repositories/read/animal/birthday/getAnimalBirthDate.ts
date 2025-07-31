@@ -2,8 +2,14 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 import { getDbDate } from "../../../../dbUtils.js";
 
+/**
+ * gets the birthdate of an animal
+ * @param animalId UUID of animal 
+ * @returns A `Result` containing a `Date` object on success, 
+ *          or a string error message on failure.
+ */
 export const getAnimalBirthDate = async (animalId: string): Promise<Result<Date, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB instance is null");
   }

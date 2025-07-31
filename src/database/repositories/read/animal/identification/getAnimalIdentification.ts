@@ -4,7 +4,7 @@ import { Result, Success, Failure } from "../../../../../shared/results/resultTy
 import { getDbDate } from "../../../../dbUtils.js";
 
 export const getAnimalIdentification = async (animalId : string): Promise<Result<AnimalIdentification, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

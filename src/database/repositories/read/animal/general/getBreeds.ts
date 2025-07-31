@@ -2,9 +2,14 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Breed, BreedRequest } from "../../../../models/read/animal/general/breed.js";
 import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all breeds from the DB, or just breeds of a given species when requested
+ * @param queryParams parameters for the breed search
+ * @returns A `Result` containing an array of `Breed` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getBreeds = async (queryParams: BreedRequest): Promise<Result<Breed[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure<string>("DB Instance is null"); // Return Failure with a string error message if DB instance is null
   }

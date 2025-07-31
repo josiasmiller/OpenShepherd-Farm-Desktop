@@ -2,9 +2,13 @@ import { getDatabase } from "../../../dbConnections.js";
 import { State } from "../../../models/read/locations/state.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch states from the database
+/**
+ * gets all states from the DB
+ * @returns A `Result` containing an array of `State` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getStates = async (): Promise<Result<State[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

@@ -2,7 +2,11 @@ import { getDatabase } from "../../../dbConnections.js";
 import { DeathReason } from "../../../models/read/deaths/deathReason.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all death reasons from the DB
+ * @returns A `Result` containing an array of `DeathReason` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getDeathReasons = async (): Promise<Result<DeathReason[], string>> => {
   const db = getDatabase();
   if (db == null) {

@@ -17,9 +17,14 @@ type PremiseRow = {
   state_country_id: string | null;
 };
 
-// Fetch a single premise including state info
+/**
+ * gets a specific premise from the DB
+ * @param premiseId UUID of the premise being sought
+ * @returns A `Result` containing a `Premise` object on success, 
+ *          or a string error message on failure.
+ */
 export const getPremiseSpecific = async (premiseId: string): Promise<Result<Premise, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

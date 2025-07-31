@@ -2,10 +2,16 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 import { BreedingAgesResult } from "../../../../models/read/animal/breeding/breedingAges.js";
 
+/**
+ * gets the breeding ages of a given species
+ * @param speciesId UUID of the species being sought
+ * @returns A `Result` containing a `BreedingAgesResult` object on success, 
+ *          or a string error message on failure.
+ */
 export const getBreedingAges = async (
   speciesId: string
 ): Promise<Result<BreedingAgesResult, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

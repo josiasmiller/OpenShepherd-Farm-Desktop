@@ -2,9 +2,13 @@ import { getDatabase } from "../../../../dbConnections.js";
 import { Sex } from "../../../../models/read/animal/general/sex.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
 
-
+/**
+ * gets all sexes from the DB
+ * @returns A `Result` containing an array of `Sex` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getSexes = async (): Promise<Result<Sex[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

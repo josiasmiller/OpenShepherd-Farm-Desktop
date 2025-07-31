@@ -24,11 +24,16 @@ type TagQueryRow = {
   locationAbbrev: string;
 };
 
-
+/**
+ * gets the most recent farm tag (or any tag that is not official) of a given animal
+ * @param animalId UUID of animal being sought
+ * @returns A `Result` containing a `idTag` object or `null` on success, 
+ *          or a string error message on failure.
+ */
 export const getMostRecentUnofficialTag = async (
   animalId: string
 ): Promise<Result<idTag | null, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
   }
