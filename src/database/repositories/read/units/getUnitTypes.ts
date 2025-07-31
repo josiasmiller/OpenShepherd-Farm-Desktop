@@ -3,8 +3,14 @@ import { UnitType } from "../../../models/read/units/unitType.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
 
+/**
+ * gets all unit types from the DB
+ * 
+ * @returns A `Result` containing an array of `UnitType` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getUnitTypes = async (): Promise<Result<UnitType[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure<string>("DB Instance is null"); // Return Failure with string error message
   }

@@ -25,7 +25,11 @@ function incrementWhiteRegistryValue(originalRegNum: string): string {
 
 
 /**
- * increments the last registration number for `Registered` type in the DB
+ * increments a given reistration value and returns the new, non-used value
+ * 
+ * @param registrationTypeId UUID of the registration type being incremented. This should always relate to the black, chocolate, or white registries.
+ * @returns A `Result` containing the new registration number on success, 
+ *          or a string error message on failure.
  */
 export async function incrementLastRegistrationNumber(registrationTypeId : string): Promise<Result<string, string>> {
   const db = getDatabase();

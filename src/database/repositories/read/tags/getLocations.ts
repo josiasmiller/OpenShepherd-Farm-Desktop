@@ -2,9 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { TagLocation } from "../../../models/read/tags/location.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch locations from the database
+/**
+ * gets all ID tag locations
+ * 
+ * @returns A `Result` containing an array of `TagLocation` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getTagLocations = async (): Promise<Result<TagLocation[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

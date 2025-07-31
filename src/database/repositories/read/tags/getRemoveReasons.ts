@@ -2,9 +2,14 @@ import { getDatabase } from "../../../dbConnections.js";
 import { RemoveReason } from "../../../models/read/tags/removeReason.js";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
 
-// Function to fetch remove reasons from the database
+/**
+ * gets all DI remove reasons from the DB
+ * 
+ * @returns A `Result` containing an array of `RemoveReason` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getRemoveReasons = async (): Promise<Result<RemoveReason[], string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB Instance is null");
   }

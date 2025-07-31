@@ -21,6 +21,13 @@ import { getBreeder } from "../../owners/getBreeder.js";
 import { getOwner } from "../../owners/getOwner.js";
 
 
+/**
+ * Gets the registration information for all animals in the input array
+ * 
+ * @param animalIds UUID of animal(s) being sought
+ * @returns A `Result` containing an array of `AnimalRegistrationResult` objects on success, 
+ *          or a string error message on failure.
+ */
 export const getAnimalRegistrationInfo = async (
   animalIds: string[]
 ): Promise<Result<AnimalRegistrationResult[], string>> => {

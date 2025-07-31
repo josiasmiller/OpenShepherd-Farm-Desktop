@@ -6,6 +6,11 @@ import { AnimalIdInfoInput } from "../../../../models/write/animal/id/animalIdIn
 
 /**
  * Inserts a row into the animal_id_info_table.
+ * This indicates that an animal has a ID tag
+ * 
+ * @param input all pertinent data for a given ID tag
+ * @returns A `Result` containing `null` on success, 
+ *          or a string error message on failure.
  */
 export async function insertAnimalIdInfoRow(
   input: AnimalIdInfoInput

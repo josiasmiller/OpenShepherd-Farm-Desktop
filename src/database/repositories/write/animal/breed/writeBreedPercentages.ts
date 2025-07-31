@@ -9,6 +9,13 @@ interface BreedPercentageRow {
 
 type BreedMap = Map<string, number>;
 
+/**
+ * combines both parent's of an animal into one breed map
+ * 
+ * @param sireBreeds breed data for the animal's sire
+ * @param damBreeds breed data for the animal's dam
+ * @returns BreedMap
+ */
 function combineBreedPercentages(
   sireBreeds: BreedPercentageRow[],
   damBreeds: BreedPercentageRow[]
@@ -28,6 +35,14 @@ function combineBreedPercentages(
   return result;
 }
 
+/**
+ * writes the breed percentages to the DB of a given animal
+ * 
+ * @param animalId UUID of animal whose percentages must be written
+ * @param sireId UUID of the animal's father
+ * @param damId UUID of the animal's mother
+ * @returns void
+ */
 export async function writeAnimalBreedPercentages(
   animalId: string,
   sireId: string,

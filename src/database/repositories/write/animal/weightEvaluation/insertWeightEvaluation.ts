@@ -3,6 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput.js';
 import { getSQLiteDateStringNow } from '../../../../dbUtils.js';
 
+/**
+ * inserts a row into the `animal_evaluation_table`
+ * 
+ * @param input pertinent weight record data
+ * @returns A `Result` containing the UUID of the inserted row on success, 
+ *          or a string error message on failure.
+ */
 export async function insertWeightRecord(input: InsertWeightRecordInput): Promise<string> {
   const db = getDatabase();
   if (db == null) {
