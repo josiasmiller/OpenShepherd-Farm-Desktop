@@ -1,10 +1,16 @@
 import { Species } from "../../../database";
 
-export type RegistryProcessType = 'births' | 'deaths';
+export type RegistryProcessType = 'births' | 'registrations' | 'deaths';
 
 export interface RegistryRow {
   [key: string]: any;
 }
+
+export type ParseResult<T> = {
+  rows: T[];
+  warnings: string[];
+};
+
 
 export interface ValidationResult {
   rowIndex: number;

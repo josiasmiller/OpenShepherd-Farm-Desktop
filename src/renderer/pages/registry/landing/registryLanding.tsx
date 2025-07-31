@@ -43,6 +43,23 @@ const RegistryLanding: React.FC = () => {
     navigate('/registry/preprocess/births', { state: { species: selectedSpecies } });
   };
 
+  const handleRegistrations = () => {
+
+    if (!selectedSpecies) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Species Required',
+        text: 'Please select a species before continuing.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (isLoading) return;
+
+    navigate('/registry/preprocess/registrations', { state: { species: selectedSpecies } });
+  };
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -97,7 +114,14 @@ const RegistryLanding: React.FC = () => {
             className="forward-button"
             onClick={handleBirthNotifications}
           >
-            Handle Birth Notifications
+            Process Birth Notifications
+          </button>
+
+          <button
+            className="forward-button"
+            onClick={handleRegistrations}
+          >
+            Process Registrations
           </button>
         </div>
       </CollapsibleSection>

@@ -1,14 +1,29 @@
-import { RegistryProcessor, ValidationResult } from './types.js';
+import { RegistryProcessor, RegistryProcessType, ValidationResult } from './types.js';
+
+// births
 import { processBirthRows } from '../impl/births/processor/birthProcessor.js';
 import { validateBirthRows } from '../impl/births/validation/birthValidator.js';
 
+// registrations
+import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor.js';
+import { validateRegistrationRows } from '../impl/registrations/validation/registrationsValidator.js';
 
-export const registryProcessorFactory = (type: string): RegistryProcessor => {
+/**
+ * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType
+ * @param type type of registry process being handled
+ * @returns RegistryProcessor
+ */
+export const registryProcessorFactory = (type: RegistryProcessType): RegistryProcessor => {
   switch (type) {
     case 'births':
       return {
         validateRegistryRows: validateBirthRows,
         processRegistryRows: processBirthRows,
+      };
+    case 'registrations':
+      return {
+        validateRegistryRows: validateRegistrationRows,
+        processRegistryRows: processRegistrationRows,
       };
     case 'deaths':
     // here is where more processors will be added as they are implemented

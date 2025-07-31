@@ -47,6 +47,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openDirectory: (path: string) => ipcRenderer.invoke('open-directory', path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
   registryParseBirths: () => ipcRenderer.invoke("registry-parse-births"),
+  registryParseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
   registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
   setSelectedDefault: (value: DefaultSettingsResults) => ipcRenderer.send('set-selected-default', value),

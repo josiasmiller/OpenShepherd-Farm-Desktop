@@ -4,10 +4,18 @@ import { Result, Success, Failure } from "../../../../shared/results/resultTypes
 import { OwnerType } from "../../../client-types.js";
 import { Owner } from "../../../models/read/owners/owner.js";
 import { getSQLiteDateStringNow } from "../../../dbUtils.js";
-import { REGISTRATION_BIRTH_NOTIFY } from "../../../dbConstants.js";
+import { REGISTRATION_REGISTERED } from "../../../dbConstants.js";
 
 /**
- * Inserts a row into animal_registration_table for a registered animal.
+ * Inserts a row into animal_registration_table for a registered animal,
+ * but only if an identical registration doesn't already exist.
+ * @param breeder breeder of the animal
+ * @param animalId UUID of animal
+ * @param animalName string name of animal
+ * @param registrationNumber registration number of animal
+ * @param registrationDate string representing the date in which the animal is registered
+ * @param registrationCompanyId which company UUID to mark in `id_registry_company_id`
+ * @param flockBookId the flock book UUID to mark in the database
  */
 export async function insertAnimalRegistrationRow(
   breeder: Owner,
@@ -21,9 +29,34 @@ export async function insertAnimalRegistrationRow(
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
-  const id = uuidv4();
   const created = getSQLiteDateStringNow();
   const modified = created;
+
+  // First check: does a matching registration already exist?
+  const existingRow = await new Promise<any>((resolve, reject) => {
+    db.get(
+      `
+      SELECT 1
+      FROM animal_registration_table
+      WHERE id_animalid = ?
+        AND id_registry_id_companyid = ?
+        AND id_animalregistrationtypeid = ?
+      LIMIT 1
+      `,
+      [animalId, registrationCompanyId, REGISTRATION_REGISTERED],
+      (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      }
+    );
+  });
+
+  if (existingRow) {
+    return new Failure(`A registration already exists for animalId=\'${animalId}\', id_registry_id_companyid=\'${registrationCompanyId}\', & id_animalregistrationtypeid=\'${REGISTRATION_REGISTERED}\'.`);
+  }
+
+  // If not, proceed with insert
+  const id = uuidv4();
 
   const query = `
     INSERT INTO animal_registration_table (
@@ -42,7 +75,7 @@ export async function insertAnimalRegistrationRow(
       modified
     )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
-  `; // the NULL here is on the registration_description
+  `;
 
   const values = [
     id,
@@ -50,7 +83,7 @@ export async function insertAnimalRegistrationRow(
     animalName,
     registrationNumber,
     registrationCompanyId,
-    REGISTRATION_BIRTH_NOTIFY,
+    REGISTRATION_REGISTERED,
     flockBookId,
     registrationDate,
     breeder.type === OwnerType.CONTACT ? breeder.contact.id : null,

@@ -30,12 +30,11 @@ import {
   PedigreeNode
 } from "../database";
 import { BirthParseRow } from "../registry/processing/impl/births/parser/util/birthParseRow";
-import { ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
+import { ParseResult, ProcessingResult, RegistryProcessRequest } from "../registry/processing/core/types";
 
 import { Result } from "../shared/results/resultTypes";
 import { RegistrationWriteResponse } from "../writers/pdf/writeRegistration";
-
-export {};
+import { RegistrationParseRow } from "../registry/processing/impl/registrations/parser/util/registrationParseRow";
 
 declare global {
   interface Window {
@@ -75,7 +74,8 @@ declare global {
       isDatabaseLoaded: () => Promise<boolean>;
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
-      registryParseBirths: () => Promise<BirthParseRow[]>;
+      registryParseBirths: () => Promise<ParseResult<BirthParseRow>>;
+      registryParseRegistrations: () => Promise<ParseResult<RegistrationParseRow>>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
       setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       selectDatabase: () => Promise<string>;

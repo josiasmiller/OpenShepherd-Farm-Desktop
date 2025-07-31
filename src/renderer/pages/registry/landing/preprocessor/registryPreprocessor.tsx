@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
+
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
 import { BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
-import Swal from 'sweetalert2';
-import { ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
+import { RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
+
+import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
+
 
 
 export const PreprocessorPage: React.FC = () => {
@@ -28,70 +32,10 @@ export const PreprocessorPage: React.FC = () => {
       setLoading(true);
 
       if (processType === 'births') {
-        const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
-
-        const birthColumns: RegistryFieldDef[] = [
-          // Core birth info
-          { key: 'isStillborn', label: 'Stillborn?', editable: true },
-          { key: 'prefix', label: 'Prefix', editable: true },
-          { key: 'prefixKey', label: 'Prefix Key', editable: false },
-          { key: 'animalName', label: 'Animal Name', editable: true },
-          { key: 'birthdate', label: 'Birth Date', editable: true },
-          { key: 'sex', label: 'Sex', editable: false },
-          { key: 'sexKey', label: 'Sex Key', editable: false },
-
-          // Breeder and parents
-          { key: 'breederId', label: 'Breeder ID', editable: true },
-          { key: 'breederName', label: 'Breeder Name', editable: true },
-          { key: 'damId', label: 'Dam ID', editable: true },
-          { key: 'sireId', label: 'Sire ID', editable: true },
-
-          // Conception & birth type
-          { key: 'conceptionType', label: 'Conception Type', editable: true },
-          { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: true },
-          { key: 'birthTypeKey', label: 'Birth Type', editable: true },
-
-          // Appearance
-          { key: 'coatColor', label: 'Coat Color', editable: true },
-          { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
-          { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: false },
-
-          // Farm tag
-          { key: 'farmColor', label: 'Farm Tag Color', editable: true },
-          { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
-          { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
-          { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
-          { key: 'farmNum', label: 'Farm Tag Number', editable: true },
-          { key: 'farmType', label: 'Farm Tag Type', editable: true },
-          { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
-
-          // Federal tag
-          { key: 'fedColor', label: 'Federal Tag Color', editable: true },
-          { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
-          { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
-          { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
-          { key: 'fedNum', label: 'Federal Tag Number', editable: true },
-          { key: 'fedType', label: 'Federal Tag Type', editable: true },
-          { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
-
-          // Weight
-          { key: 'weight', label: 'Weight', editable: true },
-          { key: 'weightUnits', label: 'Weight Units', editable: true },
-          { key: 'weightUnitsKey', label: 'Weight Units Key', editable: true },
-
-          // Misc
-          { key: 'birthNotes', label: 'Notes', editable: true },
-        ];
-
-        const rows: RegistryRow[] = parsedBirths.map(b => ({ ...b }));
-
-        setColumns(birthColumns);
-        setRows(rows);
-        setHasSelectedFile(true);
+        await handleBirths();
       }
-
-      else if (processType === 'deaths') {
-        alert("Death processing not implemented yet");
+      else if (processType === 'registrations') {
+        await handleRegistrations();
       }
 
     } catch (error) {
@@ -102,12 +46,169 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
+  /**
+   * parses births and then populates the table with the parsed data
+   */
+  const handleBirths = async () => {
+    // const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
+    const parseResult: ParseResult<BirthParseRow> = await window.electronAPI.registryParseBirths();
+    const parsedBirths : BirthParseRow[] = parseResult.rows;
+
+    handleWarnings(parseResult.warnings);
+
+    const birthColumns: RegistryFieldDef[] = [
+      // Core birth info
+      { key: 'isStillborn', label: 'Stillborn?', editable: true },
+      { key: 'prefixKey', label: 'Prefix Key', editable: false },
+      { key: 'prefix', label: 'Prefix', editable: true },
+      { key: 'animalName', label: 'Animal Name', editable: true },
+      { key: 'birthdate', label: 'Birth Date', editable: true },
+      { key: 'sexKey', label: 'Sex Key', editable: false },
+      { key: 'sex', label: 'Sex', editable: false },
+
+      // Breeder and parents
+      { key: 'breederId', label: 'Breeder ID', editable: true },
+      { key: 'breederName', label: 'Breeder Name', editable: true },
+      { key: 'sireId', label: 'Sire ID', editable: true },
+      { key: 'damId', label: 'Dam ID', editable: true },
+
+      // Conception & birth type
+      { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: true },
+      { key: 'conceptionType', label: 'Conception Type', editable: true },
+      { key: 'birthTypeKey', label: 'Birth Type', editable: true },
+
+      // Appearance
+      { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
+      { key: 'coatColor', label: 'Coat Color', editable: true },
+      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: false },
+
+      // Farm tag
+      { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
+      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
+      { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
+      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
+      { key: 'farmNum', label: 'Farm Tag Number', editable: true },
+      { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
+      { key: 'farmType', label: 'Farm Tag Type', editable: true },
+
+      // Federal tag
+      { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
+      { key: 'fedColor', label: 'Federal Tag Color', editable: true },
+      { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
+      { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
+      { key: 'fedNum', label: 'Federal Tag Number', editable: true },
+      { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
+      { key: 'fedType', label: 'Federal Tag Type', editable: true },
+
+      // Weight
+      { key: 'weight', label: 'Weight', editable: true },
+      { key: 'weightUnitsKey', label: 'Weight Units Key', editable: true },
+      { key: 'weightUnits', label: 'Weight Units', editable: true },
+
+      // Misc
+      { key: 'birthNotes', label: 'Notes', editable: true },
+    ];
+
+    const rows: RegistryRow[] = parsedBirths.map(b => ({ ...b }));
+
+    setColumns(birthColumns);
+    setRows(rows);
+    setHasSelectedFile(true);
+  }
+
+  /**
+   * parses registrations and then populates the table with the parsed data
+   */
+  const handleRegistrations = async () => {
+    const parseResult: ParseResult<RegistrationParseRow> = await window.electronAPI.registryParseRegistrations();
+    const parsedRegistrations : RegistrationParseRow[] = parseResult.rows;
+
+    handleWarnings(parseResult.warnings);
+
+    const registrationColumns: RegistryFieldDef[] = [
+      // Breeder
+      { key: 'breederId', label: 'Breeder ID', editable: true },
+      { key: 'breederName', label: 'Breeder Name', editable: true },
+
+      // Animal core
+      { key: 'animalId', label: 'Animal ID', editable: false },
+      { key: 'registrationNumber', label: 'Registration Number', editable: false },
+      { key: 'animalPrefix', label: 'Prefix', editable: true },
+      { key: 'animalName', label: 'Animal Name', editable: true },
+      { key: 'birthdate', label: 'Birth Date', editable: true },
+      { key: 'sex', label: 'Sex', editable: false },
+      { key: 'birthType', label: 'Birth Type', editable: true },
+      { key: 'isOfficial', label: 'Is Official', editable: true },
+
+      // Federal Tag
+      { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
+      { key: 'fedType', label: 'Federal Tag Type', editable: true },
+      { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
+      { key: 'fedColor', label: 'Federal Tag Color', editable: true },
+      { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
+      { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
+      { key: 'fedNum', label: 'Federal Tag Number', editable: true },
+
+      // Farm Tag
+      { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
+      { key: 'farmType', label: 'Farm Tag Type', editable: true },
+      { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
+      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
+      { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
+      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
+      { key: 'farmNum', label: 'Farm Tag Number', editable: true },
+
+      // Appearance
+      { key: 'coatColorKey', label: 'Coat Color Key', editable: true },
+      { key: 'coatColor', label: 'Coat Color', editable: true },
+    ];
+
+    const rows: RegistryRow[] = parsedRegistrations.map(r => ({ ...r }));
+
+    setColumns(registrationColumns);
+    setRows(rows);
+    setHasSelectedFile(true);
+  };
+
+
+  /**
+   * handles when a row is updated in any form
+   * @param index index of the row being changes
+   * @param updatedRow RegistryRow being updated
+   */
   const handleRowChange = (index: number, updatedRow: RegistryRow) => {
     const newData = [...rows];
     newData[index] = updatedRow;
     setRows(newData);
   };
 
+  /**
+   * creates a sweetalert pop up when any errors occur. This should be used in the handling functions to 
+   * indicate that any parsing errors occured. 
+   * @param warnings array of any warnings to be displayed to the user
+   */
+  const handleWarnings = async (warnings : string[]) => {
+    if (warnings.length > 0) {
+      const htmlContent = `
+        <ul style="text-align: left; padding-left: 1.2em;">
+          ${warnings.map(warning => `<li>${warning}</li>`).join('')}
+        </ul>
+      `;
+
+      await Swal.fire({
+        title: "Warning(s) Detected",
+        html: htmlContent,
+        icon: "warning",
+        confirmButtonText: "Continue",
+        width: 600,
+      });
+    }
+  }
+
+  /**
+   * submits the parsed & altered data to be validated & processed
+   * @returns nothing
+   */
   const handleSubmit = async () => {
     if (!processType) return;
 

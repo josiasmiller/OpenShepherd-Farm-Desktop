@@ -1,13 +1,17 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { BirthParseRow } from './util/birthParseRow.js';
-import { birthParseMap } from './util/birthParseMap.js';
+import { RegistrationParseRow } from './util/registrationParseRow.js';
+import { registrationParseMap } from './util/registrationParseMap.js';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types.js';
 
-export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
+/**
+ * parses registration data from a given CSV
+ * @returns parseResult of exported data
+ */
+export const registrationParser = async (): Promise<ParseResult<RegistrationParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
-    title: "Select CSV File",
+    title: "Select Registration CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],
   });
@@ -27,7 +31,7 @@ export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
       complete: (results) => {
         const warnings: string[] = [];
         const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(birthParseMap);
+        const expectedHeaders = Object.keys(registrationParseMap);
 
         for (const header of expectedHeaders) {
           if (!actualHeaders.includes(header)) {
@@ -35,27 +39,25 @@ export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
           }
         }
 
-        const parsedData: BirthParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<BirthParseRow> = {};
+        const parsedData: RegistrationParseRow[] = (results.data as Record<string, any>[]).map((row) => {
+          const parsedRow: Partial<RegistrationParseRow> = {};
 
-          for (const [csvKey, fieldKey] of Object.entries(birthParseMap)) {
+          for (const [csvKey, fieldKey] of Object.entries(registrationParseMap)) {
             let value = row[csvKey];
 
-            if (fieldKey === 'isStillborn') {
+            if (fieldKey === 'isOfficial') {
               value = value?.toLowerCase() === 'true';
-            } else if (fieldKey === 'weight') {
-              value = value ? parseFloat(value) : 0;
             }
 
-            parsedRow[fieldKey as keyof BirthParseRow] = value;
+            parsedRow[fieldKey as keyof RegistrationParseRow] = value;
           }
 
-          return parsedRow as BirthParseRow;
+          return parsedRow as RegistrationParseRow;
         });
 
         resolve({ rows: parsedData, warnings });
       },
-      error: (err: any) => reject(err),
+      error: (err : any) => reject(err),
     });
   });
 };

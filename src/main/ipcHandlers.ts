@@ -41,10 +41,12 @@ import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js
 
 import { writeRegistration } from "../writers/pdf/writeRegistration.js";
 import { birthParser } from "../registry/processing/impl/births/parser/birthParser.js";
+import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser.js";
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
 import { RegistryProcessRequest } from "../registry/processing/core/types.js";
 import { getSelectedDefault, setSelectedDefault } from "./store/selectedDefaultStore.js";
+
 
 export const registerIpcHandlers = () => {
   
@@ -154,6 +156,8 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle('registry-parse-births', birthParser);
+
+  ipcMain.handle('registry-parse-registrations', registrationParser);
 
   ipcMain.handle(
     "registry-process",

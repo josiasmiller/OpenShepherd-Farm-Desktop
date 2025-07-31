@@ -37,14 +37,17 @@ export type { UnitType } from "./models/read/units/unitType.js";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch.js";
+export { animalHasActiveOfficialTag } from "./repositories/read/animal/tags/hasOfficialTag.js";
 export { getActiveScrapieFlockNumberId } from "./repositories/read/owners/getActiveScrapieFlockNumberId.js";
 export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnimalBirthDate.js";
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification.js";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes.js";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations.js";
 export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes.js";
+export { getBreederById } from "./repositories/read/owners/getBreederFromId.js";
 export { getBreederFromOwnershipHistory } from "./repositories/read/owners/fromDam/getBreederBasedOnBirthdate.js"
 export { getBreeds } from "./repositories/read/animal/general/getBreeds.js";
+export { getBreeder } from "./repositories/read/owners/getBreeder.js";
 export { getBreedingAges } from "./repositories/read/animal/breeding/getBreedingAges.js";
 export { getCoatColorForAnimal } from "./repositories/read/animal/coatColor/getCoatColor.js";
 export { getColors } from "./repositories/read/tags/getColors.js";
@@ -59,8 +62,10 @@ export { getExistingDefaults } from "./repositories/read/defaults/getExistingDef
 export { getFlockPrefixIdByMembershipNumber } from "./repositories/read/owners/geFlockPrefixIdFromMemebershipNumber.js";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes.js";
 export { getLastBirthNotifyValue } from "./repositories/read/registry/registrations/getLastBirthNotifyValue.js";
+export { getLastRegisteredValue } from "./repositories/read/registry/registrations/getLastRegisteredValue.js";
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam.js";
 export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate.js";
+export { getOwner } from "./repositories/read/owners/getOwner.js";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree.js"
 export { getPremises } from "./repositories/read/premises/getPremises.js";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber.js";
@@ -90,7 +95,8 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault.js";
-export { incrementLastRegistrationNumber } from "./repositories/write/registrations/incrementLastBirthNotifyValue.js";
+export { incrementLastBirthNotifyValue } from "./repositories/write/registrations/incrementLastBirthNotifyValue.js";
+export { incrementLastRegistrationNumber } from "./repositories/write/registrations/incrementLastRegistrationNumber.js";
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow.js";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory.js";
 export { insertAnimalIdInfoRow } from "./repositories/write/animal/id/insertAnimalIdRow.js";
@@ -101,6 +107,7 @@ export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/i
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation.js";
 export { markRegistryCertificateAsPrinted } from "./repositories/write/animal/registry/markRegistryCertificateAsPrinted.js";
 export { markRegistryCertificateNotPrinted } from "./repositories/write/animal/registry/markRegistryCertificateNotPrinted.js";
+export { updateAnimalName } from "./repositories/write/animal/name/updateAnimalName.js";
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault.js"; 
 export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/writeBreedPercentages.js";
 
