@@ -1,5 +1,4 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
-import { getSelectedDefault } from '../../../../../main/store/selectedDefaultStore.js';
 import { handleResult } from '../../../../../shared/results/resultTypes.js';
 
 import { incrementRegisteredValue } from "../../../helpers/registryHelpers.js";
@@ -13,7 +12,6 @@ import {
 
 // DB types
 import {
-  DefaultSettingsResults,
   insertAnimalRegistrationRow,
   Species,
   getBreeder,
@@ -25,6 +23,10 @@ import {
   incrementLastRegistrationNumber,
   markRegistryCertificateNotPrinted,
   getLastRegisteredValue,
+  getCoatColorForAnimal,
+  CoatColor,
+  registryTypeToUuid,
+  RegistryType,
 } from '../../../../../database/index.js';
 
 /**
@@ -36,11 +38,6 @@ import {
 export async function processRegistrationRows(rows: RegistryRow[], _ : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction();
-
-    var selectedDefault : DefaultSettingsResults | null = getSelectedDefault();
-    if (!selectedDefault) {
-      throw new Error("No Default Settings is Set");
-    }
 
     for (const row of rows) {
       try {
@@ -126,42 +123,19 @@ export async function processRegistrationRows(rows: RegistryRow[], _ : Species):
         // passed check, convert flockBookId to not be possibly undefined
         flockBookId = flockBookId!;
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // get the most recent Birth Notify Number
-
-        var registeredValResult = await getLastRegisteredValue();
-        var mostRecentRegisteredValue : string;
-
-        await handleResult(registeredValResult, {
-          success: (data: string | null) => {
-
-            if (data == null) {
-              throw new Error("No recent Birth Notify value retrieved. Did the schema or queries change?");
-            }
-
-            mostRecentRegisteredValue = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch most recent birth notify value: ", err);
-            throw new Error(err);
-          },
-        });
-
-        mostRecentRegisteredValue = mostRecentRegisteredValue!;
-        var newRegisteredValue : string = incrementRegisteredValue(mostRecentRegisteredValue);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // increment the registration number in the DB
-        await incrementLastRegistrationNumber(); 
+        /////////////////////////////////////////////////////////////////////
+        // get next registered number to put into DB
+        var { newRegNum, registrationTypeId } = await handleRegistrationNumber(animalId);
 
         var insertRegRowResult = await insertAnimalRegistrationRow(
           breeder,
           animalId,
           animalName,
-          newRegisteredValue,
+          newRegNum,
           birthDateString,
           regCompanyId,
           flockBookId,
+          registrationTypeId,
         );
 
         if (insertRegRowResult.tag == 'error') {
@@ -201,3 +175,70 @@ export async function processRegistrationRows(rows: RegistryRow[], _ : Species):
   }
 }
 
+/**
+ * This function:
+ *  - gets the coat color of the given animal to determine which registry to use
+ *  - uses the registration type to incrememnt the appropriate registration value
+ *  - returns the new incremented value to use as well as the registrationTypeUUID
+ * 
+ * @param animalId UUID of animal being sought
+ * @returns incremented registration value of the correct registration type
+ *          For example:
+ *          - white registry     --> 'W-0012' 
+ *          - chocolate registry --> 'C-0123'
+ *          - black registry     --> '012345'
+ */
+async function handleRegistrationNumber(animalId : string): Promise<{ newRegNum : string, registrationTypeId : string}> {
+
+  var ccResult = await getCoatColorForAnimal(animalId);
+
+  var coatColor : CoatColor;
+
+  await handleResult(ccResult, {
+    success: (data: CoatColor) => {
+
+      if (data == null) {
+        throw new Error(`No coat color for animalId=\'${animalId}\'`);
+      }
+
+      coatColor = data;
+    },
+    error: (err: string) => {
+      console.error(`Failed to fetch coat color for animalId=\'${animalId}\': `, err);
+      throw new Error(err);
+    },
+  });
+
+  coatColor = coatColor!;
+
+  // get the registration type from the coat color
+  var ccLower : string = coatColor.name.toLowerCase();
+  var registrationUuid : string = registryTypeToUuid(ccLower as RegistryType);
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // increment the registration number in the DB
+
+  var registeredValResult = await incrementLastRegistrationNumber(registrationUuid);
+  var newRegisteredValue : string;
+
+  await handleResult(registeredValResult, {
+    success: (data: string | null) => {
+
+      if (data == null) {
+        throw new Error("No recent Registration value retrieved. Did the schema or queries change?");
+      }
+
+      newRegisteredValue = data;
+    },
+    error: (err: string) => {
+      console.error("Failed to fetch most recent birth notify value: ", err);
+      throw new Error(err);
+    },
+  });
+
+  newRegisteredValue = newRegisteredValue!;
+  return { 
+    newRegNum: newRegisteredValue,
+    registrationTypeId: registrationUuid,
+  };
+}

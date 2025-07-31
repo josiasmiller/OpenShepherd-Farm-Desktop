@@ -1,6 +1,5 @@
 import { getDatabase } from "../../../../dbConnections.js";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { REGISTRATION_REGISTERED } from "../../../../dbConstants.js";
 
 type LastRegistrationRow = {
   last_registration_number: string | null;
@@ -9,7 +8,7 @@ type LastRegistrationRow = {
 /**
  * Retrieves the last_registration_number for the hardcoded registration type ID.
  */
-export async function getLastRegisteredValue(): Promise<Result<string | null, string>> {
+export async function getLastRegisteredValue(registrationType : string): Promise<Result<string | null, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
@@ -21,7 +20,7 @@ export async function getLastRegisteredValue(): Promise<Result<string | null, st
 
   try {
     const row = await new Promise<LastRegistrationRow | undefined>((resolve, reject) => {
-      db.get(query, [REGISTRATION_REGISTERED], (err, row) => {
+      db.get(query, [registrationType], (err, row) => {
         if (err) {
           reject(err instanceof Error ? err : new Error(String(err)));
         } else {

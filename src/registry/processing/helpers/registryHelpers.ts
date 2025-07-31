@@ -32,3 +32,5 @@ export function incrementRegisteredValue(originalRegNum: string): string {
   const incremented = (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
   return incremented;
 }
+
+

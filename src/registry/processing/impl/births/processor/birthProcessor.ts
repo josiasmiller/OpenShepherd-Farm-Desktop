@@ -41,7 +41,9 @@ import {
   insertIntoAnimalTable,
   insertWeightRecord,
   insertGeneticCoatRow,
-  writeAnimalBreedPercentages
+  writeAnimalBreedPercentages,
+  incrementLastBirthNotifyValue,
+  REGISTRATION_BIRTH_NOTIFY,
 } from '../../../../../database/index.js';
 
 
@@ -231,10 +233,10 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
         );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // get the most recent Birth Notify Number
+        // get the most recent Birth Notify Number (incrememnted by 1)
 
-        var bnValResult = await getLastBirthNotifyValue();
-        var mostRecentBn : string;
+        var bnValResult = await incrementLastBirthNotifyValue();
+        var newBNValue : string;
 
         await handleResult(bnValResult, {
           success: (data: string | null) => {
@@ -243,7 +245,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
               throw new Error("No recent Birth Notify value retrieved. Did the schema or queries change?");
             }
 
-            mostRecentBn = data;
+            newBNValue = data;
           },
           error: (err: string) => {
             console.error("Failed to fetch most recent birth notify value: ", err);
@@ -251,8 +253,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           },
         });
 
-        mostRecentBn = mostRecentBn!;
-        var newBNValue : string = incrementBNValue(mostRecentBn);
+        newBNValue = newBNValue!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID
@@ -305,12 +306,8 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           birthDateString, //TODO --> determine what day to register? just do "today"?
           regCompanyId,
           flockBookId,
+          REGISTRATION_BIRTH_NOTIFY,
         );
-    
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // increment the last Birth Notify Value
-
-        await incrementLastRegistrationNumber();
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add IDs to the DB
