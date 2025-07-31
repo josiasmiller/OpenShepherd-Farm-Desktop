@@ -47,7 +47,7 @@ export async function incrementLastRegistrationNumber(registrationTypeId : strin
       return new Failure("Registration type not found or missing last_registration_number");
     }
 
-    var newNumber : string; // = incrementRegisteredValue(row.last_registration_number);
+    var newNumber : string;
 
     if (registrationTypeId == REGISTRATION_REGISTERED) {
       var newNumber = incrementRegisteredValue(row.last_registration_number);
