@@ -324,10 +324,10 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
 
         var scrapieResult = await getActiveScrapieFlockNumberId(ownerId);
 
-        var scrapieId : string;
+        var scrapieId : string | null = null;
 
         await handleResult(scrapieResult, {
-          success: (data: string) => {
+          success: (data: string | null) => {
             scrapieId = data;
           },
           error: (err: string) => {

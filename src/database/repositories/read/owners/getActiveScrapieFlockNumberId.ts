@@ -9,7 +9,7 @@ import { Result, Success, Failure } from "../../../../shared/results/resultTypes
  */
 export async function getActiveScrapieFlockNumberId(
   ownerId: string
-): Promise<Result<string, string>> {
+): Promise<Result<string | null, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
@@ -30,7 +30,7 @@ export async function getActiveScrapieFlockNumberId(
       });
     });
 
-    if (!row) return new Failure("No active scrapie flock number found for the given owner ID");
+    if (!row) return new Success(null); // if no scrapie flock ID found, return null
 
     return new Success(row.id_scrapieflocknumberid);
   } catch (err: any) {

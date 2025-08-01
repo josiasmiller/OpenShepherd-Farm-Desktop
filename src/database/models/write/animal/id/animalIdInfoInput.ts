@@ -5,6 +5,6 @@ export type AnimalIdInfoInput = {
   idLocation: string;
   dateOn: string; // Format: YYYY-MM-DD
   idValue: string;
-  idScrapieFlock?: string;
+  idScrapieFlock: string | null;
   isOfficial: boolean;
 };

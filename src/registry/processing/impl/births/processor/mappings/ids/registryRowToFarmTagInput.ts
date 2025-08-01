@@ -24,5 +24,6 @@ export function mapRegistryRowToFarmTagInput(row: RegistryRow, animalId : string
     dateOn: row.birthdate,
     idValue: row.farmNum,
     isOfficial: false,
+    idScrapieFlock: null, // farm tags have no scrapie flock IDs because they are not official
   };
 }

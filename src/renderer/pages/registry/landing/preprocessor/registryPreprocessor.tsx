@@ -63,8 +63,8 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'prefix', label: 'Prefix', editable: true },
       { key: 'animalName', label: 'Animal Name', editable: true },
       { key: 'birthdate', label: 'Birth Date', editable: true },
-      { key: 'sexKey', label: 'Sex Key', editable: false },
-      { key: 'sex', label: 'Sex', editable: false },
+      { key: 'sexKey', label: 'Sex Key', editable: true },
+      { key: 'sex', label: 'Sex', editable: true },
 
       // Breeder and parents
       { key: 'breederId', label: 'Breeder ID', editable: true },
@@ -80,7 +80,7 @@ export const PreprocessorPage: React.FC = () => {
       // Appearance
       { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
       { key: 'coatColor', label: 'Coat Color', editable: true },
-      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: false },
+      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: true },
 
       // Farm tag
       { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
@@ -136,7 +136,7 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'animalPrefix', label: 'Prefix', editable: true },
       { key: 'animalName', label: 'Animal Name', editable: true },
       { key: 'birthdate', label: 'Birth Date', editable: true },
-      { key: 'sex', label: 'Sex', editable: false },
+      { key: 'sex', label: 'Sex', editable: true },
       { key: 'birthType', label: 'Birth Type', editable: true },
       { key: 'isOfficial', label: 'Is Official', editable: true },
 
