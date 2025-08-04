@@ -7,8 +7,6 @@ import LoadingIndicator from "../../../components/loadingIndicator/loadingIndica
 import { handleResult } from "../../../../shared/results/resultTypes";
 import { Species } from "../../../../database";
 import Swal from "sweetalert2";
-// import { setStoreSelectedSpecies, getStoreSelectedSpecies } from "src/main/store/impl/selectedSpecies";
-
 
 const RegistryLanding: React.FC = () => {
   const navigate = useNavigate();
