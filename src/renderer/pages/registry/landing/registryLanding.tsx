@@ -96,7 +96,8 @@ const RegistryLanding: React.FC = () => {
         },
       });
 
-      if (storedSpecies != null) {
+      // check if the storedSpecies was found and that it is a valid species in the existing list
+      if (storedSpecies != null && species.some((s) => s.id === storedSpecies.id)) {
         setSelectedSpecies(storedSpecies);
       }
     }; // end loadData definition
