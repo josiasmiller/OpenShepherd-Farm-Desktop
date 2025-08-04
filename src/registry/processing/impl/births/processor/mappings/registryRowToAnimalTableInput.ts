@@ -24,14 +24,26 @@ export function mapRegistryRowToInsertAnimalInput(row: RegistryRow): InsertAnima
     throw new Error("damId is not a UUIDv4 key: " + row.damId);
   }
 
+  var birthWeight : number | null = null;
+  var birthWeightUnitsId : string | null = null;
+  // Assign birthWeight if row.weight is a number
+  if (typeof row.weight === 'number') {
+    birthWeight = row.weight;
+  }
+
+  // Assign birthWeightUnitsId if row.weight_units_id is a string
+  if (typeof row.weight_units_id === 'string') {
+    birthWeightUnitsId = row.weight_units_id;
+  }
+
   return {
     name: row.animalName,
     sexId: row.sexKey,
     birthdate: row.birthdate,
     birthTime: "00:00:00", // for now, set at midnight
     birthTypeId: row.birthTypeKey,
-    birthWeight: row.weight,
-    birthWeightUnitsId: row.weightUnitsKey,
+    birthWeight: birthWeight,
+    birthWeightUnitsId: birthWeightUnitsId,
     birthOrder: 1,
     rearType: null,
     weanedDate: null,

@@ -6,8 +6,8 @@ export type InsertAnimalTableInput = {
   birthdate: string;
   birthTime?: string;
   birthTypeId: string;
-  birthWeight: number;
-  birthWeightUnitsId: string;
+  birthWeight: number | null;
+  birthWeightUnitsId: string | null;
   birthOrder?: number;
   rearType: BirthType | null;
   weanedDate: string | null;

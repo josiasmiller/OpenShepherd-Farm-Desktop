@@ -30,6 +30,7 @@ import {
   getTransferReasons,
   getUnits,
   getUnitTypes,
+  Species,
   writeNewDefaultSettings,
 } from "../database/index.js";
 
@@ -45,7 +46,8 @@ import { registrationParser } from "../registry/processing/impl/registrations/pa
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
 import { RegistryProcessRequest } from "../registry/processing/core/types.js";
-import { getSelectedDefault, setSelectedDefault } from "./store/selectedDefaultStore.js";
+import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault.js";
+import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies.js";
 
 
 export const registerIpcHandlers = () => {
@@ -114,8 +116,12 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-remove-reasons", getRemoveReasons);
 
-  ipcMain.handle('get-selected-default', (): DefaultSettingsResults | null => {
-    return getSelectedDefault();
+  ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
+    return getStoreSelectedDefault();
+  });
+
+  ipcMain.handle('get-store-selected-species', (): Species | null => {
+    return getStoreSelectedSpecies();
   });
 
   ipcMain.handle("get-sexes", getSexes);
@@ -167,8 +173,12 @@ export const registerIpcHandlers = () => {
     }
   );
 
-  ipcMain.on('set-selected-default', (_event, value: DefaultSettingsResults) => {
-    setSelectedDefault(value);
+  ipcMain.on('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
+    setStoreSelectedDefault(value);
+  });
+
+  ipcMain.on('set-store-selected-species', (_event, value: Species) => {
+    setStoreSelectedSpecies(value);
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {

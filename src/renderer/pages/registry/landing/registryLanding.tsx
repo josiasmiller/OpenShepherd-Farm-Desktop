@@ -8,7 +8,6 @@ import { handleResult } from "../../../../shared/results/resultTypes";
 import { Species } from "../../../../database";
 import Swal from "sweetalert2";
 
-
 const RegistryLanding: React.FC = () => {
   const navigate = useNavigate();
 
@@ -60,28 +59,51 @@ const RegistryLanding: React.FC = () => {
     navigate('/registry/preprocess/registrations', { state: { species: selectedSpecies } });
   };
 
+  const handleSpecies = async (e : React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    const found : Species | null = species.find((s) => s.id === selectedId) || null;
+    if (found != null) {
+      setSelectedSpecies(found);
+      await window.electronAPI.setStoreSelectedSpecies(found);
+    }
+  }
+
 
   useEffect(() => {
     const loadData = async () => {
 
       const [
         speciesResult,
+        storedSpecies,
       ] = await Promise.all([
         window.electronAPI.getSpecies(),
+        window.electronAPI.getStoreSelectedSpecies()
       ]);
 
       handleResult(speciesResult, {
         success: (data: Species[]) => {
           setSpecies(data);
+
+          if (storedSpecies) {
+            setSelectedSpecies(storedSpecies);
+          }
+
         },
         error: (err) => {
           console.error("Failed to fetch species:", err);
         },
       });
+
+      // check if the storedSpecies was found and that it is a valid species in the existing list
+      if (storedSpecies != null && species.some((s) => s.id === storedSpecies.id)) {
+        setSelectedSpecies(storedSpecies);
+      }
     }; // end loadData definition
   
     loadData();
   }, []); 
+
+
 
   return (
     <div>
@@ -92,11 +114,7 @@ const RegistryLanding: React.FC = () => {
         <select
           id="selectSpecies"
           value={selectedSpecies?.id ?? ''}
-          onChange={(e) => {
-            const selectedId = e.target.value;
-            const found = species.find((s) => s.id === selectedId) || null;
-            setSelectedSpecies(found);
-          }}
+          onChange={handleSpecies}
         >
           <option value="">Select Species</option>
           {speciesOptions}

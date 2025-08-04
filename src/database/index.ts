@@ -123,7 +123,7 @@ export { getGestationPeriod } from "./registry/getGestationPeriod.js";
 
 // DB constant
 
-export { RegistryType } from "./dbConstants.js";
+export type { RegistryType } from "./dbConstants.js";
 
 export { DIED_STILLBORN } from "./dbConstants.js";
 export { REGISTRATION_BIRTH_NOTIFY } from "./dbConstants.js";

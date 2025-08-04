@@ -5,7 +5,8 @@ import {
   BreedRequest, 
   UnitRequest, 
   NewDefaultSettingsParameters, 
-  DefaultSettingsResults
+  DefaultSettingsResults,
+  Species
 } from "../database";
 
 import { RegistryProcessRequest } from '../registry/processing/core/types';
@@ -32,7 +33,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getPedigree: (animalId: string) => ipcRenderer.invoke("get-peidgree", animalId),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
   getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
-  getSelectedDefault: (): Promise<DefaultSettingsResults | null> => ipcRenderer.invoke('get-selected-default'),
+  getStoreSelectedDefault: (): Promise<DefaultSettingsResults | null> => ipcRenderer.invoke('get-store-selected-default'),
+  getStoreSelectedSpecies: (): Promise<Species | null> => ipcRenderer.invoke('get-store-selected-species'),
   getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),
@@ -50,7 +52,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   registryParseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
   registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
-  setSelectedDefault: (value: DefaultSettingsResults) => ipcRenderer.send('set-selected-default', value),
+  setStoreSelectedDefault: (value: DefaultSettingsResults) => ipcRenderer.send('set-store-selected-default', value),
+  setStoreSelectedSpecies: (value: Species) => ipcRenderer.send('set-store-selected-species', value),
   writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 

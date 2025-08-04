@@ -45,6 +45,15 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now')
       );`
 
+    // handle cases where only the weight units are provided, but not the brith weight
+    var birthWeight : number | null = null;
+    var birthWeightUnitsId : String | null = null;
+
+    if (input.birthWeight != null && input.birthWeightUnitsId != null) {
+      birthWeight = input.birthWeight;
+      birthWeightUnitsId = input.birthWeightUnitsId;
+    }
+
     const values = [
       id,
       input.name,
@@ -53,8 +62,8 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
       input.birthdate,
       input.birthTime ?? "00:00:00",
       input.birthTypeId ?? '7585ea2e-dcdf-41cb-94c1-4d133d624c1e', // this UUID is also the default in the schema,
-      input.birthWeight,
-      input.birthWeightUnitsId,
+      birthWeight,
+      birthWeightUnitsId,
       input.birthOrder ?? 1,
       input.rearType?.id ?? null,
       null, // weaned_date

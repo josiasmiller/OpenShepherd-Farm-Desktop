@@ -1,5 +1,5 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
-import { getSelectedDefault } from '../../../../../main/store/selectedDefaultStore.js';
+import { getStoreSelectedDefault } from '../../../../../main/store/impl/selectedDefault.js';
 import { handleResult, Result } from '../../../../../shared/results/resultTypes.js';
 
 import { incrementBNValue } from "../../../helpers/registryHelpers.js";
@@ -58,7 +58,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
   try {
     await beginTransaction();
 
-    var selectedDefault : DefaultSettingsResults | null = getSelectedDefault();
+    var selectedDefault : DefaultSettingsResults | null = getStoreSelectedDefault();
     if (!selectedDefault) {
       throw new Error("No Default Settings is Set");
     }

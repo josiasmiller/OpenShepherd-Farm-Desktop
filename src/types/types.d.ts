@@ -60,7 +60,8 @@ declare global {
       getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
       getLocations: () => Promise<Result<TagLocation[], string>>;
       getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
-      getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
+      getStoreSelectedDefault: () => Promise<DefaultSettingsResults | null>;
+      getStoreSelectedSpecies: () => Promise<Species | null>;
       getSexes: () => Promise<Result<Sex[], string>>;
       getSpecies: () => Promise<Result<Species[], string>>;
       getStates: () => Promise<Result<State[], string>>;
@@ -77,7 +78,8 @@ declare global {
       registryParseBirths: () => Promise<ParseResult<BirthParseRow>>;
       registryParseRegistrations: () => Promise<ParseResult<RegistrationParseRow>>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
-      setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
+      setStoreSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
+      setStoreSelectedSpecies: (species: Species) => Promise<void>;
       selectDatabase: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };
