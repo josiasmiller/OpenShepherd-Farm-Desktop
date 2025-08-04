@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     const loadPreviousDefault = async () => {
       try {
-        const saved : DefaultSettingsResults | null = await window.electronAPI.getSelectedDefault();
+        const saved : DefaultSettingsResults | null = await window.electronAPI.getStoreSelectedDefault();
 
         if (
           saved &&
@@ -50,7 +50,7 @@ const Sidebar: React.FC = () => {
     if (newSelected) {
       setSelectedDefault(newSelected.name);
       try {
-        await window.electronAPI.setSelectedDefault(newSelected);
+        await window.electronAPI.setStoreSelectedDefault(newSelected);
       } catch (error) {
         console.error("Failed to persist selected default:", error);
       }
@@ -77,7 +77,7 @@ const Sidebar: React.FC = () => {
           setDefaultList(data);
 
           try {
-            const saved = await window.electronAPI.getSelectedDefault();
+            const saved = await window.electronAPI.getStoreSelectedDefault();
 
             // If saved default exists in the new DB's defaults
             const match = saved && data.find((def) => def.id === saved.id);

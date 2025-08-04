@@ -62,8 +62,8 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
       input.birthdate,
       input.birthTime ?? "00:00:00",
       input.birthTypeId ?? '7585ea2e-dcdf-41cb-94c1-4d133d624c1e', // this UUID is also the default in the schema,
-      input.birthWeight,
-      input.birthWeightUnitsId,
+      birthWeight,
+      birthWeightUnitsId,
       input.birthOrder ?? 1,
       input.rearType?.id ?? null,
       null, // weaned_date
