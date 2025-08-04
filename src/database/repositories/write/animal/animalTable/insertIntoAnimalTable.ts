@@ -45,6 +45,15 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now')
       );`
 
+    // handle cases where only the weight units are provided, but not the brith weight
+    var birthWeight : number | null = null;
+    var birthWeightUnitsId : String | null = null;
+
+    if (input.birthWeight != null && input.birthWeightUnitsId != null) {
+      birthWeight = input.birthWeight;
+      birthWeightUnitsId = input.birthWeightUnitsId;
+    }
+
     const values = [
       id,
       input.name,
