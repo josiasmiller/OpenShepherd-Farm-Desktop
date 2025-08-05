@@ -117,6 +117,7 @@ export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewD
 export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/writeBreedPercentages";
 
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // registry DB calls
@@ -124,6 +125,15 @@ export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/w
 export { getAnimalDeathDate } from "./registry/getAnimalDeathDate";
 export { getGestationPeriod } from "./registry/getGestationPeriod";
 
+export type { AnimalDeathDate } from "./registry/getAnimalDeathDate.js";
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// delete calls
+
+export { deleteAnimalAlerts } from "./repositories/delete/animal/deleteAnimalAlerts.js";
+export { deleteAnimalAtStudEntriesWithoutFrozenSemen } from "./repositories/delete/animal/deleteAnimalAtStudExceptFrozenSemen.js";
+export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAnimalForSaleEntry.js";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
