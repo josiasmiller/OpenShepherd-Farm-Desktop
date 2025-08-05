@@ -1,6 +1,6 @@
 // store/selectedSpecies.ts
-import type { Species } from '../../../database/index.js';
-import { getStoreItem, setStoreItem } from '../core.js';
+import type { Species } from '../../../database/index';
+import { getStoreItem, setStoreItem } from '../core';
 
 export function setStoreSelectedSpecies(value: Species) {
   setStoreItem('selectedSpecies', value);

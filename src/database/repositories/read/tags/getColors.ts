@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Color } from "../../../models/read/tags/color.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Color } from "../../../models/read/tags/color";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets all tag colors from the DB

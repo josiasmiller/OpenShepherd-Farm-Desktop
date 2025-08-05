@@ -1,5 +1,5 @@
-import { OwnerType } from "../../../models/read/owners/ownerType.js";
-import { NewDefaultSettingsParameters } from "../../../models/write/defaults/newDefaultSettings.js";
+import { OwnerType } from "../../../models/read/owners/ownerType";
+import { NewDefaultSettingsParameters } from "../../../models/write/defaults/newDefaultSettings";
 import { v4 as uuidv4 } from 'uuid';
 
 

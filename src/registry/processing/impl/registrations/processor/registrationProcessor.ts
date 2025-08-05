@@ -1,14 +1,14 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
-import { handleResult } from '../../../../../shared/results/resultTypes.js';
+import { handleResult } from '../../../../../shared/results/resultTypes';
 
-import { incrementRegisteredValue } from "../../../helpers/registryHelpers.js";
+import { incrementRegisteredValue } from "../../../helpers/registryHelpers";
 
 // DB actions
 import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
-} from '../../../../../database/dbUtils.js';
+} from '../../../../../database/dbUtils';
 
 // DB types
 import {
@@ -27,7 +27,7 @@ import {
   CoatColor,
   registryTypeToUuid,
   RegistryType,
-} from '../../../../../database/index.js';
+} from '../../../../../database/index';
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered

@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { idTag } from "../../../../models/read/animal/tags/idTag.js";
-import { getDbDate } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { idTag } from "../../../../models/read/animal/tags/idTag";
+import { getDbDate } from "../../../../dbUtils";
 
 type TagQueryRow = {
   tagId: string;

@@ -1,15 +1,15 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
-import { getStoreSelectedDefault } from '../../../../../main/store/impl/selectedDefault.js';
-import { handleResult, Result } from '../../../../../shared/results/resultTypes.js';
+import { getStoreSelectedDefault } from '../../../../../main/store/impl/selectedDefault';
+import { handleResult, Result } from '../../../../../shared/results/resultTypes';
 
-import { incrementBNValue } from "../../../helpers/registryHelpers.js";
+import { incrementBNValue } from "../../../helpers/registryHelpers";
 
 // DB actions
 import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
-} from '../../../../../database/dbUtils.js';
+} from '../../../../../database/dbUtils';
 
 // DB types
 import {
@@ -44,15 +44,15 @@ import {
   writeAnimalBreedPercentages,
   incrementLastBirthNotifyValue,
   REGISTRATION_BIRTH_NOTIFY,
-} from '../../../../../database/index.js';
+} from '../../../../../database/index';
 
 
 // mappings
-import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput.js';
-import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput.js';
-import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagInput.js';
-import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput.js';
-import { OwnerType } from '../../../../../database/client-types.js';
+import { mapRegistryRowToInsertAnimalInput } from './mappings/registryRowToAnimalTableInput';
+import { mapRegistryRowToWeightRecordInput } from './mappings/registryRowToWeightRecordInput';
+import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagInput';
+import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput';
+import { OwnerType } from '../../../../../database/client-types';
 
 export async function processBirthRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
   try {

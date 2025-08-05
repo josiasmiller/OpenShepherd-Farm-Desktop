@@ -1,6 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 import { contextBridge, ipcRenderer } from 'electron';
 
-import { 
+import {
   AnimalSearchRequest, 
   BreedRequest, 
   UnitRequest, 

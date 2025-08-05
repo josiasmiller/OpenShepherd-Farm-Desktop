@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { Company } from "../../../models/read/owners/company";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets companies from the DB, either all companies or just the registry companies

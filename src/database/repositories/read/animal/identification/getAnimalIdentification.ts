@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { getDbDate } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { getDbDate } from "../../../../dbUtils";
 
 export const getAnimalIdentification = async (animalId : string): Promise<Result<AnimalIdentification, string>> => {
   const db = getDatabase();

@@ -1,7 +1,7 @@
 import { RegistryRow, ValidationResult } from '../../../core/types';
-import { checkHasOfficialId } from './rules/checkHasOfficialId.js';
+import { checkHasOfficialId } from './rules/checkHasOfficialId';
 
-import { Species } from '../../../../../database/index.js';
+import { Species } from '../../../../../database/index';
 
 
 /**

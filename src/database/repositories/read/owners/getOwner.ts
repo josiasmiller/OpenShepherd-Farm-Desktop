@@ -1,18 +1,18 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { OwnerType } from "../../../models/read/owners/ownerType.js";
-import { getContactPremise } from "../premises/getContactPremise.js";
-import { getCompanyPremise } from "../premises/getCompanyPremise.js";
-import { Contact } from "../../../models/read/owners/contact.js";
-import { Company } from "../../../models/read/owners/company.js";
-import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo.js";
+import { getDatabase } from "../../../dbConnections";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "../../../../shared/results/resultTypes";
+import { Owner } from "../../../models/read/owners/owner";
+import { OwnerType } from "../../../models/read/owners/ownerType";
+import { getContactPremise } from "../premises/getContactPremise";
+import { getCompanyPremise } from "../premises/getCompanyPremise";
+import { Contact } from "../../../models/read/owners/contact";
+import { Company } from "../../../models/read/owners/company";
+import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
 
 import {
   REGISTRY_CHOCOLATE_WMSA,
   REGISTRY_COMPANY_ID,
   REGISTRY_WHITE_WMSA,
-} from "../../../dbConstants.js";
+} from "../../../dbConstants";
 
 type OwnerQueryRow = {
   to_id_contactid: string | null;

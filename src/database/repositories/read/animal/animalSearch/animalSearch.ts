@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { escapeLikeString } from "../../../../dbUtils.js";
-import { AnimalSearchRequest, AnimalSearchResult } from "../../../../models/read/animal/animalSeach/animalSearch.js";
+import { getDatabase } from "../../../../dbConnections";
+import { escapeLikeString } from "../../../../dbUtils";
+import { AnimalSearchRequest, AnimalSearchResult } from "../../../../models/read/animal/animalSeach/animalSearch";
 
 /**
  * performs a search for all animals based on the input parameters

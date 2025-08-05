@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { State } from "../../../models/read/locations/state.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { State } from "../../../models/read/locations/state";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 // Define the expected structure of a row from the database
 type StateRow = {

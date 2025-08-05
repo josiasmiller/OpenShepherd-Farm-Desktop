@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants.js";
-import { CoatColor } from "../../../../models/read/animal/coatColor/coatColor.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants";
+import { CoatColor } from "../../../../models/read/animal/coatColor/coatColor";
 
 interface CoatColorRow {
   coatColor: string;

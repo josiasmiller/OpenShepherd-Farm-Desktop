@@ -1,6 +1,6 @@
-import { getDatabase } from '../../../../dbConnections.js';
+import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
-import { getSQLiteDateStringNow } from '../../../../dbUtils.js';
+import { getSQLiteDateStringNow } from '../../../../dbUtils';
 
 interface BreedPercentageRow {
   id_breedid: string;

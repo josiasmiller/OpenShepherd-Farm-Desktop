@@ -1,8 +1,8 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree.js";
-import { REGISTRATION_REGISTERED } from "../../../../dbConstants.js";
-import { getDbDate } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree";
+import { REGISTRATION_REGISTERED } from "../../../../dbConstants";
+import { getDbDate } from "../../../../dbUtils";
 
 type PedigreeRow = {
   animalId: string;

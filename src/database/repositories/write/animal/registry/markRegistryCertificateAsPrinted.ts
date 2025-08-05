@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { getSQLiteDateStringNow } from "../../../../dbUtils.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { getSQLiteDateStringNow } from "../../../../dbUtils";
 
 /**
  * Updates the registry_certificate_print_table to set printed = 1

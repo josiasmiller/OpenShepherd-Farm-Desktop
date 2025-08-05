@@ -1,6 +1,6 @@
 import { RegistryRow, ValidationResponse } from '../../../../core/types';
-import { getGestationPeriod, getAnimalBirthDate, getBreedingAges, Species } from '../../../../../../database/index.js';
-import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes.js';
+import { getGestationPeriod, getAnimalBirthDate, getBreedingAges, Species } from '../../../../../../database/index';
+import { unwrapOrFailWithAnimal } from '../../../../../../shared/results/resultTypes';
 
 export async function checkSireBreedingAge(row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;

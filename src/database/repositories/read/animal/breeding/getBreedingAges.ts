@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { BreedingAgesResult } from "../../../../models/read/animal/breeding/breedingAges.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { BreedingAgesResult } from "../../../../models/read/animal/breeding/breedingAges";
 
 /**
  * gets the breeding ages of a given species

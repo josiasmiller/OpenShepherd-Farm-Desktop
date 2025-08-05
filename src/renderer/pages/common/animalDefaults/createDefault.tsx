@@ -849,7 +849,7 @@ const CreateDefaults: React.FC = () => {
     const result: FormParamResult = getDefaultParamsFromForm();
 
     if (!result.success) {
-      console.warn("Form not ready:", result.reason);
+      console.warn("Form not ready:", result);
       return;
     }
 
@@ -885,7 +885,7 @@ const CreateDefaults: React.FC = () => {
     const result: FormParamResult = getDefaultParamsFromForm();
 
     if (!result.success) {
-      console.warn("Form not ready:", result.reason);
+      console.warn("Form not ready:", result);
       return;
     }
 
@@ -1604,7 +1604,7 @@ const CreateDefaults: React.FC = () => {
 
     setOwnerPremiseId(defaultSetting.owner_id_premiseid ?? "");
 
-    setBreederSelection(defaultSetting.breederType || '');
+    setBreederSelection(defaultSetting.breederType);
 
     if (defaultSetting.breederType === OwnerType.CONTACT) {
       setBreederContactId(defaultSetting.breederId);
@@ -1617,7 +1617,7 @@ const CreateDefaults: React.FC = () => {
     setBreederPremiseId(defaultSetting.breeder_id_premiseid || '');
 
 
-    setTransferReasonSelection(defaultSetting.transferReasonContactType || '');
+    setTransferReasonSelection(defaultSetting.transferReasonContactType);
 
     if (defaultSetting.transferReasonContactType === OwnerType.CONTACT) {
       setTransferReasonContactId(defaultSetting.transferReasonContactId || '');

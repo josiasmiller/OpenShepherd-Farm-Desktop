@@ -1,8 +1,8 @@
-import { Premise } from "../premises/premise.js";
-import { ScrapieFlockInfo } from "../scrapie/scrapieFlockInfo.js";
-import { Company } from "./company.js";
-import { Contact } from "./contact.js";
-import { OwnerType } from "./ownerType.js";
+import { Premise } from "../premises/premise";
+import { ScrapieFlockInfo } from "../scrapie/scrapieFlockInfo";
+import { Company } from "./company";
+import { Contact } from "./contact";
+import { OwnerType } from "./ownerType";
 
 interface OwnerBase {
   premise: Premise;

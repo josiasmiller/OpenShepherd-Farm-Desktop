@@ -1,6 +1,6 @@
-import { InsertWeightRecordInput } from "../../../../../../database/index.js";
-import { RegistryRow } from "../../../../core/types.js";
-import { isUUIDv4 } from "../../../../helpers/registryHelpers.js";
+import { InsertWeightRecordInput } from "../../../../../../database/index";
+import { RegistryRow } from "../../../../core/types";
+import { isUUIDv4 } from "../../../../helpers/registryHelpers";
 
 export function mapRegistryRowToWeightRecordInput(row: RegistryRow, animalId: string): InsertWeightRecordInput {
 

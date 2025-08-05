@@ -1,6 +1,6 @@
 import fs from "fs";
-import { AnimalIdentification, TissueTestResult, getAnimalIdentification, getTissueTestResults } from "../../database/index.js";
-import { handleResult, Result } from "../../shared/results/resultTypes.js";
+import { AnimalIdentification, TissueTestResult, getAnimalIdentification, getTissueTestResults } from "../../database";
+import { handleResult, Result } from "../../shared/results/resultTypes";
 import { dialog } from "electron";
 
 

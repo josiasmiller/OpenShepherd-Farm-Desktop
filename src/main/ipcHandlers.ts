@@ -32,22 +32,22 @@ import {
   getUnitTypes,
   Species,
   writeNewDefaultSettings,
-} from "../database/index.js";
+} from "../database";
 
-import { selectNewDb } from "../scripts/dbSelect.js";
-import { getDatabase } from "../database/dbConnections.js";
-import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes.js";
-import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents.js";
-import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults.js";
+import { selectNewDb } from "../scripts/dbSelect";
+import { getDatabase } from "../database/dbConnections";
+import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes";
+import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents";
+import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults";
 
-import { writeRegistration } from "../writers/pdf/writeRegistration.js";
-import { birthParser } from "../registry/processing/impl/births/parser/birthParser.js";
-import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser.js";
+import { writeRegistration } from "../writers/pdf/writeRegistration";
+import { birthParser } from "../registry/processing/impl/births/parser/birthParser";
+import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
 
-import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess.js";
-import { RegistryProcessRequest } from "../registry/processing/core/types.js";
-import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault.js";
-import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies.js";
+import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
+import { RegistryProcessRequest } from "../registry/processing/core/types";
+import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
+import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 
 
 export const registerIpcHandlers = () => {

@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase } from "../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
-import { OwnerType } from "../../../client-types.js";
-import { Owner } from "../../../models/read/owners/owner.js";
-import { getSQLiteDateStringNow } from "../../../dbUtils.js";
+import { getDatabase } from "../../../dbConnections";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
+import { OwnerType } from "../../../client-types";
+import { Owner } from "../../../models/read/owners/owner";
+import { getSQLiteDateStringNow } from "../../../dbUtils";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,

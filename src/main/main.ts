@@ -1,52 +1,42 @@
-import { app, BrowserWindow } from 'electron';
-import { registerIpcHandlers } from "./ipcHandlers.js";
+import log from 'electron-log/main'
+
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+
+log.initialize()
+log.info('Starting main')
+
+import {app, BrowserWindow} from 'electron';
+import {registerIpcHandlers} from "./ipcHandlers";
 import path from "path";
-import { fileURLToPath } from 'url';
 
-let mainWindow: BrowserWindow | null;
+log.info('imports complete')
 
-const getPlatformIcon = () => {
-  if (process.platform === 'win32') {
-    return path.join(getCurrentDirectory(), '..', 'renderer', 'assets', 'icon.ico');
-  } else if (process.platform === 'darwin') {
-    return path.join(getCurrentDirectory(), '..', 'renderer', 'assets', 'icon.icns');
-  } else {
-    return path.join(getCurrentDirectory(), 'assets', 'AnimalTrakker_icon_512x512.png');
-  }
-};
+try {
 
-const getCurrentDirectory = () => {
-  return path.dirname(fileURLToPath(import.meta.url));
-};
+  let mainWindow: BrowserWindow | null;
 
-app.whenReady().then(() => {
+  app.whenReady().then(() => {
 
-  const currentDirectory = getCurrentDirectory();
-  const preloadPath = path.join(currentDirectory, 'preload.cjs');
-  const absolutePreloadPath = path.resolve(preloadPath);
+    mainWindow = new BrowserWindow({
+      width: 1440,
+      height: 900,
+      webPreferences: {
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+        nodeIntegration: false,
+        contextIsolation: true,
+      }
+    });
 
-  mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 900,
-    icon: getPlatformIcon(),
-    webPreferences: {
-      preload: absolutePreloadPath,
-      contextIsolation: true,
-      nodeIntegration: false,
-    }
-  });
-
-  const isDev : boolean = process.env.NODE_ENV === 'development';
-
-  if (isDev) {
-    console.log("Running Dev");
-    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     mainWindow.webContents.openDevTools();
-  } else {
-    const indexHtml = path.join(getCurrentDirectory(), '..', 'renderer', 'index.html'); // for now, getCurrentDirectory routes to the `main.js`
-    mainWindow.loadFile(indexHtml);
-  }
 
-  registerIpcHandlers();
-  console.log("main finished");
-});
+    registerIpcHandlers();
+    console.log("main finished");
+  });
+}
+catch (e) {
+  log.info(`Main Error: ${e}`);
+}
+
+log.info('Main Script Executed')

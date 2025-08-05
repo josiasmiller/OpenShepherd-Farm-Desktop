@@ -1,4 +1,4 @@
-import { RegistrationParseRow } from './registrationParseRow.js';
+import { RegistrationParseRow } from './registrationParseRow';
 
 export const registrationParseMap: Record<string, keyof RegistrationParseRow> = {
   BREEDER_ID: 'breederId',

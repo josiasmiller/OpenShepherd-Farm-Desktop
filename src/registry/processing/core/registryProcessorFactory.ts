@@ -1,12 +1,12 @@
-import { RegistryProcessor, RegistryProcessType, ValidationResult } from './types.js';
+import { RegistryProcessor, RegistryProcessType, ValidationResult } from './types';
 
 // births
-import { processBirthRows } from '../impl/births/processor/birthProcessor.js';
-import { validateBirthRows } from '../impl/births/validation/birthValidator.js';
+import { processBirthRows } from '../impl/births/processor/birthProcessor';
+import { validateBirthRows } from '../impl/births/validation/birthValidator';
 
 // registrations
-import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor.js';
-import { validateRegistrationRows } from '../impl/registrations/validation/registrationsValidator.js';
+import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor';
+import { validateRegistrationRows } from '../impl/registrations/validation/registrationsValidator';
 
 /**
  * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType

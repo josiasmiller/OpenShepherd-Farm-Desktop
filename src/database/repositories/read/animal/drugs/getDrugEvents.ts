@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { DrugEvent } from "../../../../models/read/animal/drugs/drugEvent.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { DrugEvent } from "../../../../models/read/animal/drugs/drugEvent";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 /**
  * gets the drug history of a given animal

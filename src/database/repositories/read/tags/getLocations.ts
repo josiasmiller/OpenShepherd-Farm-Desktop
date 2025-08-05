@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../dbConnections.js";
-import { TagLocation } from "../../../models/read/tags/location.js";
-import { Result, Success, Failure } from "../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../dbConnections";
+import { TagLocation } from "../../../models/read/tags/location";
+import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 
 /**
  * gets all ID tag locations

@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
-import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants.js";
+import { getDatabase } from "../../../../dbConnections";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
+import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
 
 
 function incrementStringId(id: string): string {

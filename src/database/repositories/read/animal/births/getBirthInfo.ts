@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections.js";
-import { BirthType } from "../../../../models/read/animal/births/birthType.js";
-import { BirthInfo } from "../../../../models/read/animal/births/birthInfo.js";
-import { Result, Success, Failure } from "../../../../../shared/results/resultTypes.js";
+import { getDatabase } from "../../../../dbConnections";
+import { BirthType } from "../../../../models/read/animal/births/birthType";
+import { BirthInfo } from "../../../../models/read/animal/births/birthInfo";
+import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
 type BirthInfoRow = {
   birth_weight: number | null;

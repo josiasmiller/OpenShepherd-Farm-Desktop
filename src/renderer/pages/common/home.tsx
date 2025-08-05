@@ -1,6 +1,6 @@
 import React from "react";
 
-import logo from "../../assets/AnimalTrakker.png";
+import logo from "../../assets/images/AnimalTrakker.png";
 import "../../styles/styles.css";
 
 
