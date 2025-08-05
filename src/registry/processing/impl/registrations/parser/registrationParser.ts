@@ -49,7 +49,7 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
               value = value?.toLowerCase() === 'true';
             }
 
-            parsedRow[fieldKey as keyof RegistrationParseRow] = value;
+            (parsedRow as Record<keyof RegistrationParseRow, typeof value>)[fieldKey] = value;
           }
 
           return parsedRow as RegistrationParseRow;

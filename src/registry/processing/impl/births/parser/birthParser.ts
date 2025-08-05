@@ -47,7 +47,7 @@ export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
               value = value ? parseFloat(value) : 0;
             }
 
-            parsedRow[fieldKey as keyof BirthParseRow] = value;
+            (parsedRow as Record<keyof BirthParseRow, typeof value>)[fieldKey] = value;
           }
 
           return parsedRow as BirthParseRow;
