@@ -1,5 +1,5 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
-import { handleResult } from '../../../../../shared/results/resultTypes.js';
+import { handleResult } from '../../../../../shared/results/resultTypes';
 
 
 // DB actions
@@ -7,7 +7,7 @@ import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
-} from '../../../../../database/dbUtils.js';
+} from '../../../../../database/dbUtils';
 
 // DB types
 import {
@@ -18,7 +18,7 @@ import {
   markAnimalDeathLocation,
   Species,
   updateAnimalDeath,
-} from '../../../../../database/index.js';
+} from '../../../../../database';
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered

@@ -1,4 +1,4 @@
-import { DeathParseRow } from './deathParseRow.js';
+import { DeathParseRow } from './deathParseRow';
 
 export const deathParseMap: Record<string, keyof DeathParseRow> = {
   "DEATH DATE": 'deathDate', // not ideal for keys but since this is how the CSV stores it.. it must be this way for now

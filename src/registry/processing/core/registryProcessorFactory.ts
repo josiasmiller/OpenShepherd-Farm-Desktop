@@ -11,8 +11,8 @@ import { validateTransferRows } from '../impl/transfers/validation/transferValid
 import { processTransferRows } from '../impl/transfers/processor/transferProcessor';
 
 // deaths
-import { processDeathRows } from '../impl/deaths/processor/deathProcessor.js';
-import { validateDeathRows } from '../impl/deaths/validation/deathValidator.js';
+import { processDeathRows } from '../impl/deaths/processor/deathProcessor';
+import { validateDeathRows } from '../impl/deaths/validation/deathValidator';
 
 /**
  * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType

@@ -1,7 +1,7 @@
-import { getDatabase } from '../../../../dbConnections.js';
-import { getSQLiteDateStringNow } from '../../../../dbUtils.js';
+import { getDatabase } from '../../../../dbConnections';
+import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { Result, Success, Failure } from '../../../../../shared/results/resultTypes.js';
+import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
 
 type LastLocationQueryRow = { 

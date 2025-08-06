@@ -105,13 +105,16 @@ export { incrementLastRegistrationNumber } from "./repositories/write/registrati
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory";
 export { insertAnimalIdInfoRow } from "./repositories/write/animal/id/insertAnimalIdRow";
+export { insertAnimalNote } from "./repositories/write/animal/notes/insertAnimalNote";
 export { insertAnimalRegistrationRow } from "./repositories/write/registrations/insertAnimalRegistrationRow";
 export { insertBirthOwnershipRecord } from "./repositories/write/animal/ownership/insertBirthOwnershipRecord";
 export { insertGeneticCoatRow } from "./repositories/write/animal/characteristics/insertGeneticCoatRow";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation";
+export { markAnimalDeathLocation } from "./repositories/write/animal/death/markAnimalDeathLocation";
 export { markRegistryCertificateAsPrinted } from "./repositories/write/animal/registry/markRegistryCertificateAsPrinted";
 export { markRegistryCertificateNotPrinted } from "./repositories/write/animal/registry/markRegistryCertificateNotPrinted";
+export { updateAnimalDeath } from "./repositories/write/animal/death/updateAnimalDeath";
 export { updateAnimalName } from "./repositories/write/animal/name/updateAnimalName";
 export { writeNewDefaultSettings } from "./repositories/write/defaults/writeNewDefault"; 
 export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/writeBreedPercentages";
@@ -125,15 +128,15 @@ export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/w
 export { getAnimalDeathDate } from "./registry/getAnimalDeathDate";
 export { getGestationPeriod } from "./registry/getGestationPeriod";
 
-export type { AnimalDeathDate } from "./registry/getAnimalDeathDate.js";
+export type { AnimalDeathDate } from "./registry/getAnimalDeathDate";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // delete calls
 
-export { deleteAnimalAlerts } from "./repositories/delete/animal/deleteAnimalAlerts.js";
-export { deleteAnimalAtStudEntriesWithoutFrozenSemen } from "./repositories/delete/animal/deleteAnimalAtStudExceptFrozenSemen.js";
-export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAnimalForSaleEntry.js";
+export { deleteAnimalAlerts } from "./repositories/delete/animal/deleteAnimalAlerts";
+export { deleteAnimalAtStudEntriesWithoutFrozenSemen } from "./repositories/delete/animal/deleteAnimalAtStudExceptFrozenSemen";
+export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAnimalForSaleEntry";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

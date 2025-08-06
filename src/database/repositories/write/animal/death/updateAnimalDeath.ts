@@ -1,6 +1,6 @@
-import { getDatabase } from '../../../../dbConnections.js';
-import { getSQLiteDateStringNow } from '../../../../dbUtils.js';
-import { Result, Success, Failure } from '../../../../../shared/results/resultTypes.js';
+import { getDatabase } from '../../../../dbConnections';
+import { getSQLiteDateStringNow } from '../../../../dbUtils';
+import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
 /**
  * Updates the death date and death reason for a given animal.

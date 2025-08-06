@@ -1,6 +1,6 @@
-import { RegistryRow, ValidationResult } from '../../../core/types.js';
-import { Species } from '../../../../../database/index.js';
-import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead.js';
+import { RegistryRow, ValidationResult } from '../../../core/types';
+import { Species } from '../../../../../database';
+import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
 
 
 export async function validateDeathRows(rows: RegistryRow[], _: Species): Promise<ValidationResult[]> {

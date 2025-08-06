@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { DeathParseRow } from './util/deathParseRow.js';
-import { deathParseMap } from './util/deathParseMap.js';
+import { DeathParseRow } from './util/deathParseRow';
+import { deathParseMap } from './util/deathParseMap';
 import { dialog } from 'electron';
-import { ParseResult } from '../../../core/types.js';
+import { ParseResult } from '../../../core/types';
 
 export const deathParser = async (): Promise<ParseResult<DeathParseRow>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({

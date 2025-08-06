@@ -1,6 +1,6 @@
-import { RegistryRow, ValidationResponse } from '../../../../core/types.js';
-import { AnimalDeathDate, getAnimalDeathDate } from '../../../../../../database/index.js';
-import { handleResult } from '../../../../../../shared/results/resultTypes.js';
+import { RegistryRow, ValidationResponse } from '../../../../core/types';
+import { AnimalDeathDate, getAnimalDeathDate } from '../../../../../../database';
+import { handleResult } from '../../../../../../shared/results/resultTypes';
 
 export async function checkIsAnimalAlreadyDead(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
