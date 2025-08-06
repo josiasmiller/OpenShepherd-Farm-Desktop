@@ -1,11 +1,15 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { BirthParseRow } from './util/birthParseRow';
+import { BirthParseResponse, BirthParseRow } from './util/birthParseRow';
 import { birthParseMap } from './util/birthParseMap';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
-export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
+/**
+ * parses birth data from a given CSV chosen by the user
+ * @returns ParseResult of given data
+ */
+export const birthParser = async (): Promise<ParseResult<BirthParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select CSV File",
     properties: ["openFile"],
@@ -14,7 +18,12 @@ export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
 
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return { rows: [], warnings: [] };
+    return { 
+      data: {
+        rows : []
+      }, 
+      warnings: [] 
+    };
   }
 
   const selectedFile = filePaths[0];
@@ -53,7 +62,12 @@ export const birthParser = async (): Promise<ParseResult<BirthParseRow>> => {
           return parsedRow as BirthParseRow;
         });
 
-        resolve({ rows: parsedData, warnings });
+        resolve({
+          data: {
+            rows: parsedData,
+          } as BirthParseResponse,
+          warnings,
+        });
       },
       error: (err: any) => reject(err),
     });

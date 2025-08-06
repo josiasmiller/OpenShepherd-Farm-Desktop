@@ -1,20 +1,20 @@
-export type BirthParseResponse = {
-  rows : BirthParseRow[];
+
+export type TransferParseResponse = {
+  rows: TransferParseRow[];
+  seller: string; //fixme --> will need to implement a type for seller
 }
 
-export type BirthParseRow = {
+export type TransferParseRow = {
   breederId: string;
   breederName: string;
-  isStillborn: boolean;
+  animalId: string;
+  registrationNumber: string;
+  animalPrefix: string;
   animalName: string;
-  sexKey: string;
-  sex: string;
   birthdate: string;
-  birthTypeKey: string;
-  sireId: string;
-  damId: string;
-  prefixKey: string;
-  prefix: string;
+  sex: string;
+  birthType: string;
+  isOfficial: boolean;
   fedTypeKey: string;
   fedType: string;
   fedColorKey: string;
@@ -29,13 +29,6 @@ export type BirthParseRow = {
   farmLocKey: string;
   farmLoc: string;
   farmNum: string;
-  weight: number;
-  weightUnitsKey: string;
-  weightUnits: string;
-  coatColorTableKey: string;
   coatColorKey: string;
   coatColor: string;
-  conceptionTypeKey: string;
-  conceptionType: string;
-  birthNotes: string;
 };

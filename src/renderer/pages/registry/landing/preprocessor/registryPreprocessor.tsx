@@ -4,8 +4,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
-import { BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
-import { RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
+import { BirthParseResponse, BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
+import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
@@ -51,8 +51,8 @@ export const PreprocessorPage: React.FC = () => {
    */
   const handleBirths = async () => {
     // const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
-    const parseResult: ParseResult<BirthParseRow> = await window.electronAPI.registryParseBirths();
-    const parsedBirths : BirthParseRow[] = parseResult.rows;
+    const parseResult: ParseResult<BirthParseResponse> = await window.electronAPI.registryParseBirths();
+    const parsedBirths : BirthParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
 
@@ -120,8 +120,8 @@ export const PreprocessorPage: React.FC = () => {
    * parses registrations and then populates the table with the parsed data
    */
   const handleRegistrations = async () => {
-    const parseResult: ParseResult<RegistrationParseRow> = await window.electronAPI.registryParseRegistrations();
-    const parsedRegistrations : RegistrationParseRow[] = parseResult.rows;
+    const parseResult: ParseResult<RegistrationParseResponse> = await window.electronAPI.registryParseRegistrations();
+    const parsedRegistrations : RegistrationParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
 

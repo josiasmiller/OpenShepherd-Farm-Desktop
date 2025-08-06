@@ -1,15 +1,15 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { RegistrationParseResponse, RegistrationParseRow } from './util/registrationParseRow';
-import { registrationParseMap } from './util/registrationParseMap';
+import { TransferParseResponse, TransferParseRow } from './util/transferParseRow';
+import { transferParseMap } from './util/transferParseMap';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
 /**
  * parses registration data from a given CSV
- * @returns ParseResult of exported data
+ * @returns parseResponse of exported data
  */
-export const registrationParser = async (): Promise<ParseResult<RegistrationParseResponse>> => {
+export const transferParser = async (): Promise<ParseResult<TransferParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select Registration CSV File",
     properties: ["openFile"],
@@ -18,11 +18,12 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
 
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return { 
+    return {
       data: {
-        rows : []
+        rows: [],
+        seller: 'fixme',
       }, 
-      warnings: [] 
+      warnings: [], 
     };
   }
 
@@ -36,7 +37,7 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
       complete: (results) => {
         const warnings: string[] = [];
         const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(registrationParseMap);
+        const expectedHeaders = Object.keys(transferParseMap);
 
         for (const header of expectedHeaders) {
           if (!actualHeaders.includes(header)) {
@@ -44,25 +45,26 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
           }
         }
 
-        const parsedData: RegistrationParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<RegistrationParseRow> = {};
+        const parsedData: TransferParseRow[] = (results.data as Record<string, any>[]).map((row) => {
+          const parsedRow: Partial<TransferParseRow> = {};
 
-          for (const [csvKey, fieldKey] of Object.entries(registrationParseMap)) {
+          for (const [csvKey, fieldKey] of Object.entries(transferParseMap)) {
             let value = row[csvKey];
 
             if (fieldKey === 'isOfficial') {
               value = value?.toLowerCase() === 'true';
             }
 
-            (parsedRow as Record<keyof RegistrationParseRow, typeof value>)[fieldKey] = value;
+            (parsedRow as Record<keyof TransferParseRow, typeof value>)[fieldKey] = value;
           }
 
-          return parsedRow as RegistrationParseRow;
+          return parsedRow as TransferParseRow;
         });
 
         resolve({
           data: {
             rows: parsedData,
+            seller: 'fixme',
           }, 
           warnings 
         });
