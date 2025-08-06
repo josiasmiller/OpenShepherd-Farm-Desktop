@@ -21,8 +21,8 @@ export interface ValidationResult {
 
 export interface RegistryProcessRequest {
   processType: RegistryProcessType;
-  rows: RegistryRow[];
   species: Species;
+  sections: Record<string, RegistryRow[]>;
 }
 
 export interface ProcessingResult {
@@ -32,8 +32,8 @@ export interface ProcessingResult {
 }
 
 export interface RegistryProcessor {
-  validateRegistryRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]>;
-  processRegistryRows(rows: RegistryRow[], species: Species): Promise<ProcessingResult>;
+  validateRegistryRows(sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]>;
+  processRegistryRows(sections: Record<string, RegistryRow[]>, species: Species): Promise<ProcessingResult>;
 }
 
 export type ValidationResponse = {

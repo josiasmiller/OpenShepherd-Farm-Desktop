@@ -41,13 +41,16 @@ import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents";
 import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults";
 
 import { writeRegistration } from "../writers/pdf/writeRegistration";
+
 import { birthParser } from "../registry/processing/impl/births/parser/birthParser";
 import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
+import { transferParser } from "../registry/processing/impl/transfers/parser/transferParser";
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
 import { RegistryProcessRequest } from "../registry/processing/core/types";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
+
 
 
 export const registerIpcHandlers = () => {
@@ -165,13 +168,16 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle('registry-parse-registrations', registrationParser);
 
+  ipcMain.handle('registry-parse-transfers', transferParser);
+
   ipcMain.handle(
     "registry-process",
     async (_event, args: RegistryProcessRequest) => {
-      const { processType, rows, species } = args;
-      return handleRegistryProcess(processType, rows, species);
+      const { processType, species, sections } = args;
+      return handleRegistryProcess(processType, species, sections);
     }
   );
+
 
   ipcMain.on('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
     setStoreSelectedDefault(value);

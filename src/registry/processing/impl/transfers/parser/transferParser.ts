@@ -1,17 +1,21 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { TransferParseResponse, TransferParseRow } from './util/transferParseRow';
-import { transferParseMap } from './util/transferParseMap';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
+import {
+  TransferParseResponse,
+  AnimalRow,
+  SellerInfo,
+  ExistingMemberBuyer,
+  NewBuyer,
+} from './util/transferParseData';
 
 /**
- * parses registration data from a given CSV
- * @returns parseResponse of exported data
+ * Parses a transfer CSV with multiple sections (animals, seller, buyer)
  */
 export const transferParser = async (): Promise<ParseResult<TransferParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
-    title: "Select Registration CSV File",
+    title: "Select Transfer CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],
   });
@@ -19,57 +23,72 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
     return {
-      data: {
-        rows: [],
-        seller: 'fixme',
-      }, 
-      warnings: [], 
+      data: { animals: [], seller: null, buyer: null },
+      warnings: [],
     };
   }
 
   const selectedFile = filePaths[0];
   const fileContent = await fs.readFile(selectedFile, 'utf-8');
 
-  return new Promise((resolve, reject) => {
-    Papa.parse(fileContent, {
+  const lines = fileContent.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const warnings: string[] = [];
+
+  // Locate section headers
+  const sellerHeaderIndex = lines.findIndex(line => line.startsWith("Seller ContactID"));
+  const existingMemberIndex = lines.findIndex(line => line.startsWith("Existing Member:"));
+  const newBuyerIndex = lines.findIndex(line => line.startsWith("NEW BUYER:"));
+
+  if (sellerHeaderIndex === -1) {
+    warnings.push("Missing 'Seller ContactID' section.");
+  }
+
+  const buyerSectionStart = existingMemberIndex !== -1 ? existingMemberIndex : newBuyerIndex;
+  const buyerIsNew = newBuyerIndex !== -1;
+
+  // Get raw sections
+  const animalSection = lines.slice(0, sellerHeaderIndex);
+  const sellerSection = lines.slice(sellerHeaderIndex, buyerSectionStart !== -1 ? buyerSectionStart : undefined);
+  const buyerSection = buyerSectionStart !== -1 ? lines.slice(buyerSectionStart + 1) : [];
+
+  // Parse helper
+  const parseCsvSection = <T>(csvLines: string[]): T[] => {
+    const csvText = csvLines.join("\n");
+    const result = Papa.parse<T>(csvText, {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
-        const warnings: string[] = [];
-        const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(transferParseMap);
-
-        for (const header of expectedHeaders) {
-          if (!actualHeaders.includes(header)) {
-            warnings.push(`Missing expected column: "${header}"`);
-          }
-        }
-
-        const parsedData: TransferParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<TransferParseRow> = {};
-
-          for (const [csvKey, fieldKey] of Object.entries(transferParseMap)) {
-            let value = row[csvKey];
-
-            if (fieldKey === 'isOfficial') {
-              value = value?.toLowerCase() === 'true';
-            }
-
-            (parsedRow as Record<keyof TransferParseRow, typeof value>)[fieldKey] = value;
-          }
-
-          return parsedRow as TransferParseRow;
-        });
-
-        resolve({
-          data: {
-            rows: parsedData,
-            seller: 'fixme',
-          }, 
-          warnings 
-        });
-      },
-      error: (err : any) => reject(err),
     });
-  });
+    if (result.errors.length) {
+      result.errors.forEach(e => warnings.push(`Parse error: ${e.message}`));
+    }
+    return result.data;
+  };
+
+  // Parse animal rows
+  const animals = parseCsvSection<AnimalRow>(animalSection);
+
+  // Parse seller row
+  const sellerData = parseCsvSection<SellerInfo>(sellerSection);
+  const seller = sellerData.length > 0 ? sellerData[0] : null;
+
+  // Parse buyer
+  let buyer: ExistingMemberBuyer | NewBuyer | null = null;
+  if (buyerIsNew) {
+    const parsed = parseCsvSection<NewBuyer>(buyerSection);
+    if (parsed.length > 0) buyer = parsed[0];
+  } else if (existingMemberIndex !== -1) {
+    const parsed = parseCsvSection<ExistingMemberBuyer>(buyerSection);
+    if (parsed.length > 0) buyer = parsed[0];
+  } else {
+    warnings.push("Missing buyer section (either 'Existing Member:' or 'NEW BUYER:').");
+  }
+
+  return {
+    data: {
+      animals,
+      seller,
+      buyer,
+    },
+    warnings,
+  };
 };

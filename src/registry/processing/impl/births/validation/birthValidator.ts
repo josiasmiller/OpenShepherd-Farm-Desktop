@@ -6,8 +6,13 @@ import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring';
 import { Species } from '../../../../../database';
 
 
-export async function validateBirthRows(rows: RegistryRow[], species: Species): Promise<ValidationResult[]> {
+export async function validateBirthRows(sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
+
+  console.log("MITCH DEBUG !! SECTIONS");
+  console.log(sections)
+
+  var rows : RegistryRow[] = sections.birth_records;
 
   for (let index = 0; index < rows.length; index++) {
     const row = rows[index];

@@ -36,6 +36,7 @@ import { ParseResult, ProcessingResult, RegistryProcessRequest } from "../regist
 import { BirthParseResponse } from "../registry/processing/impl/births/parser/util/birthParseRow";
 import { RegistrationWriteResponse } from "../writers/pdf/writeRegistration";
 import { RegistrationParseResponse } from "../registry/processing/impl/registrations/parser/util/registrationParseRow";
+import { TransferParseResponse } from "src/registry/processing/impl/transfers/parser/util/transferParseData";
 
 declare global {
   interface Window {
@@ -78,6 +79,7 @@ declare global {
       openExternalURL: (url: string) => Promise<void>;
       registryParseBirths: () => Promise<ParseResult<BirthParseResponse>>;
       registryParseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
+      registryParseTransfers: () => Promise<ParseResult<TransferParseResponse>>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
       setStoreSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       setStoreSelectedSpecies: (species: Species) => Promise<void>;

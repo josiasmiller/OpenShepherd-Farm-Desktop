@@ -10,6 +10,19 @@ import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
 
+type EditableTableData = {
+  title: string;
+  columns: RegistryFieldDef[];
+  rows: RegistryRow[];
+  editable: boolean;
+};
+
+type TableSection = {
+  title: string;
+  rows: any[]; // or a better shared base type if you have one
+};
+
+type SectionsMap = Record<string, any[]>;
 
 
 export const PreprocessorPage: React.FC = () => {
@@ -20,8 +33,9 @@ export const PreprocessorPage: React.FC = () => {
   const navigationState = location.state as { species?: Species };
   const species : Species = navigationState?.species!;
 
-  const [rows, setRows] = useState<RegistryRow[]>([]);
-  const [columns, setColumns] = useState<RegistryFieldDef[]>([]);
+  const [tables, setTables] = useState<EditableTableData[]>([]);
+
+  // const [rows, setRows] = useState<RegistryRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
 
@@ -36,6 +50,8 @@ export const PreprocessorPage: React.FC = () => {
       }
       else if (processType === 'registrations') {
         await handleRegistrations();
+      } else if (processType === 'transfers') {
+        await handleTransfers();
       }
 
     } catch (error) {
@@ -50,9 +66,8 @@ export const PreprocessorPage: React.FC = () => {
    * parses births and then populates the table with the parsed data
    */
   const handleBirths = async () => {
-    // const parsedBirths: BirthParseRow[] = await window.electronAPI.registryParseBirths();
     const parseResult: ParseResult<BirthParseResponse> = await window.electronAPI.registryParseBirths();
-    const parsedBirths : BirthParseRow[] = parseResult.data.rows;
+    const parsedBirths: BirthParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
 
@@ -111,17 +126,23 @@ export const PreprocessorPage: React.FC = () => {
 
     const rows: RegistryRow[] = parsedBirths.map(b => ({ ...b }));
 
-    setColumns(birthColumns);
-    setRows(rows);
+    setTables([
+      {
+        title: "Birth Records",
+        columns: birthColumns,
+        rows,
+        editable: true,
+      }
+    ]);
     setHasSelectedFile(true);
-  }
+  };
 
   /**
-   * parses registrations and then populates the table with the parsed data
+   * Parses registrations and then populates the table with the parsed data
    */
   const handleRegistrations = async () => {
     const parseResult: ParseResult<RegistrationParseResponse> = await window.electronAPI.registryParseRegistrations();
-    const parsedRegistrations : RegistrationParseRow[] = parseResult.data.rows;
+    const parsedRegistrations: RegistrationParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
 
@@ -163,24 +184,83 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'coatColor', label: 'Coat Color', editable: true },
     ];
 
-    const rows: RegistryRow[] = parsedRegistrations.map(r => ({ ...r }));
+    const registrationRows: RegistryRow[] = parsedRegistrations.map((r) => ({ ...r }));
 
-    setColumns(registrationColumns);
-    setRows(rows);
+    setTables([
+      {
+        title: "Registration Records",
+        columns: registrationColumns,
+        rows: registrationRows,
+        editable: true,
+      },
+    ]);
     setHasSelectedFile(true);
   };
 
 
+  const handleTransfers = async () => {
+    const parseResult = await window.electronAPI.registryParseTransfers();
+    const { animals, seller, buyer } = parseResult.data;
+
+    handleWarnings(parseResult.warnings);
+
+    const tables: EditableTableData[] = [];
+
+    // Animals table
+    tables.push({
+      title: "Transferred Animals",
+      editable: true,
+      columns: [
+        { key: 'animalId', label: 'Animal ID', editable: false },
+        { key: 'registrationNumber', label: 'Registration Number', editable: false },
+        { key: 'prefix', label: 'Prefix', editable: true },
+        { key: 'name', label: 'Name', editable: true },
+        { key: 'birthDate', label: 'Birth Date', editable: true },
+        { key: 'birthType', label: 'Birth Type', editable: true },
+        { key: 'sex', label: 'Sex', editable: true },
+        { key: 'coatColor', label: 'Coat Color', editable: true },
+      ],
+      rows: animals.map(a => ({ ...a })),
+    });
+
+    // Seller info
+    if (seller) {
+      tables.push({
+        title: "Seller Info",
+        editable: false,
+        columns: Object.keys(seller).map(key => ({ key, label: key, editable: false })),
+        rows: [seller],
+      });
+    }
+
+    // Buyer info
+    if (buyer) {
+      tables.push({
+        title: "Buyer Info",
+        editable: false,
+        columns: Object.keys(buyer).map(key => ({ key, label: key, editable: false })),
+        rows: [buyer],
+      });
+    }
+
+    setTables(tables);
+    setHasSelectedFile(true);
+  };
+
+
+
   /**
    * handles when a row is updated in any form
-   * @param index index of the row being changes
+   * @param tableIndex which table is being updated
+   * @param rowIndex index of the row being changes
    * @param updatedRow RegistryRow being updated
    */
-  const handleRowChange = (index: number, updatedRow: RegistryRow) => {
-    const newData = [...rows];
-    newData[index] = updatedRow;
-    setRows(newData);
+  const handleRowChange = (tableIndex: number, rowIndex: number, updatedRow: RegistryRow) => {
+    const newTables = [...tables];
+    newTables[tableIndex].rows[rowIndex] = updatedRow;
+    setTables(newTables);
   };
+
 
   /**
    * creates a sweetalert pop up when any errors occur. This should be used in the handling functions to 
@@ -206,8 +286,7 @@ export const PreprocessorPage: React.FC = () => {
   }
 
   /**
-   * submits the parsed & altered data to be validated & processed
-   * @returns nothing
+   * Submits the parsed & altered data to be validated & processed
    */
   const handleSubmit = async () => {
     if (!processType) return;
@@ -216,8 +295,12 @@ export const PreprocessorPage: React.FC = () => {
 
     const args: RegistryProcessRequest = {
       processType: pt,
-      rows: rows,
       species: species,
+      sections: tables.reduce<SectionsMap>((acc: SectionsMap, table: TableSection) => {
+        const key = table.title.toLowerCase().replace(/\s+/g, '_'); // take the table title like "Birth Records" and make it `birth_records` (lowercase & replace spaces with underscores)
+        acc[key] = table.rows;
+        return acc;
+      }, {}),
     };
 
     const result: ProcessingResult = await window.electronAPI.registryProcess(args);
@@ -226,16 +309,15 @@ export const PreprocessorPage: React.FC = () => {
       let errorHtml = "<ul><li>Unknown error occurred.</li></ul>";
 
       if (Array.isArray(result.errors) && result.errors.length > 0) {
-        // Format the array of error messages into a bullet list
         errorHtml = `<ul>${result.errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
       }
 
       Swal.fire({
         title: "Unable to Process",
-        html: errorHtml, // Using html to render HTML content instead of raw text
+        html: errorHtml,
         icon: "error",
         confirmButtonText: "OK",
-        width: "40em", // wider modal for better list display
+        width: "40em",
       });
     } else {
       navigate('/registry');
@@ -247,6 +329,7 @@ export const PreprocessorPage: React.FC = () => {
       });
     }
   };
+
 
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 
@@ -262,12 +345,24 @@ export const PreprocessorPage: React.FC = () => {
 
       {hasSelectedFile && (
         <>
-          <EditableTable rows={rows} columns={columns} onChange={handleRowChange} />
-          <div className="padded-horizontal-lg" style={{ paddingTop: '4em' }}>
+          {tables.map((table: EditableTableData, i: number) => (
+            <div key={i} style={{ marginBottom: "2em" }}>
+              <h2>{table.title}</h2>
+              <EditableTable
+                rows={table.rows}
+                columns={table.columns}
+                editable={table.editable}
+                onChange={(rowIndex, updatedRow) => handleRowChange(i, rowIndex, updatedRow)}
+              />
+            </div>
+          ))}
+
+          <div className="padded-horizontal-lg">
             <button className='wide-button' onClick={handleSubmit}>Continue</button>
           </div>
         </>
       )}
+
     </div>
   );
 };
