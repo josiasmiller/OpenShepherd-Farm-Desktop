@@ -5,6 +5,7 @@ import { handleResult } from '../../../../../../shared/results/resultTypes';
 export async function checkIsAnimalAlreadyDead(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
   const animalId = row.animalId;
+  const animalName = row.name;
 
   var ddResult = await getAnimalDeathDate(animalId);
 
@@ -23,7 +24,7 @@ export async function checkIsAnimalAlreadyDead(row: RegistryRow): Promise<Valida
   animalDd = animalDd!;
 
   if (animalDd.deathDate != null) {
-    errors.push(`animal with ID=\'${animalId}\' died on \'${animalDd.deathDate}\'`);
+    errors.push(`animal with ID=\'${animalId}\' and name=\'${animalName}\' died on \'${animalDd.deathDate}\'`);
   }
 
   return { checkName: "checkAnimalAlive", errors, passed: errors.length === 0 };
