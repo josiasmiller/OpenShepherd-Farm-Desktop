@@ -9,7 +9,7 @@ import { idTag } from "../../../../models/read/animal/tags/idTag";
 import { Owner } from "../../../../models/read/owners/owner";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration";
 import { getBirthInfo } from "../../animal/births/getBirthInfo";
-import { getSexFromAnimalId } from "../../animal/general/getSexFromAnimalId";
+import { getSexFromAnimalId } from "../../animal/sex/getSexFromAnimalId";
 import { getCodon136ForAnimal } from "../../animal/geneticCharacteristic/getCodon136";
 import { getCodon171ForAnimal } from "../../animal/geneticCharacteristic/getCodon171";
 import { getAnimalIdentification } from "../../animal/identification/getAnimalIdentification";

@@ -82,15 +82,6 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'coatColor', label: 'Coat Color', editable: true },
       { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: true },
 
-      // Farm tag
-      { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
-      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
-      { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
-      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
-      { key: 'farmNum', label: 'Farm Tag Number', editable: true },
-      { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
-      { key: 'farmType', label: 'Farm Tag Type', editable: true },
-
       // Federal tag
       { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
       { key: 'fedColor', label: 'Federal Tag Color', editable: true },
@@ -99,6 +90,15 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'fedNum', label: 'Federal Tag Number', editable: true },
       { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
       { key: 'fedType', label: 'Federal Tag Type', editable: true },
+
+      // Farm tag
+      { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
+      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
+      { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
+      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
+      { key: 'farmNum', label: 'Farm Tag Number', editable: true },
+      { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
+      { key: 'farmType', label: 'Farm Tag Type', editable: true },
 
       // Weight
       { key: 'weight', label: 'Weight', editable: true },
@@ -263,7 +263,7 @@ export const PreprocessorPage: React.FC = () => {
       {hasSelectedFile && (
         <>
           <EditableTable rows={rows} columns={columns} onChange={handleRowChange} />
-          <div className="padded-horizontal-lg">
+          <div className="padded-horizontal-lg" style={{ paddingTop: '4em' }}>
             <button className='wide-button' onClick={handleSubmit}>Continue</button>
           </div>
         </>

@@ -43,6 +43,7 @@ export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnima
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations";
+export { getBirthTypeByDisplayOrder } from "./repositories/read/animal/births/birthTypes/getBirthTypeByDisplayOrder";
 export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes";
 export { getBreederById } from "./repositories/read/owners/getBreederFromId";
 export { getBreederFromOwnershipHistory } from "./repositories/read/owners/fromDam/getBreederBasedOnBirthdate"
@@ -59,6 +60,7 @@ export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons";
 export { getDefaultFlockBookId } from "./repositories/read/registry/registrations/getFlockBookIdFromRegCompany";
 export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults";
+export { getFlockPrefixByAnimalId } from "./repositories/read/animal/flock/getFlockPrefixByAnimalId";
 export { getFlockPrefixIdByMembershipNumber } from "./repositories/read/owners/geFlockPrefixIdFromMemebershipNumber";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes";
 export { getLastBirthNotifyValue } from "./repositories/read/registry/registrations/getLastBirthNotifyValue";
@@ -70,8 +72,9 @@ export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons";
-export { getSexes } from "./repositories/read/animal/general/getSexes";
-export { getSexFromAnimalId } from "./repositories/read/animal/general/getSexFromAnimalId";
+export { getSexById } from "./repositories/read/animal/sex/getSexById";
+export { getSexes } from "./repositories/read/animal/sex/getSexes";
+export { getSexFromAnimalId } from "./repositories/read/animal/sex/getSexFromAnimalId";
 export { getSpecies } from "./repositories/read/animal/general/getSpecies";
 export { getSpecificBirthType } from "./repositories/read/animal/births/birthTypes/getSpecificBirthType";
 export { getStates } from "./repositories/read/locations/getStates"
@@ -96,6 +99,7 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault";
 export { incrementLastBirthNotifyValue } from "./repositories/write/registrations/registrationNumbers/incrementLastBirthNotifyValue";
+export { incrementLastDiedAtBirthValue } from "./repositories/write/registrations/registrationNumbers/incrementLastDiedAtBirthValue";
 export { incrementLastRegistrationNumber } from "./repositories/write/registrations/registrationNumbers/incrementLastRegistrationNumber";
 export { insertAnimalFlockTableRow } from "./repositories/write/animal/flock/insertAnimalFlockTableRow";
 export { insertAnimalGoesToLocation } from "./repositories/write/animal/location/insertToRowAnimalLocationHistory";
@@ -127,6 +131,7 @@ export type { RegistryType } from "./dbConstants";
 
 export { DIED_STILLBORN } from "./dbConstants";
 export { REGISTRATION_BIRTH_NOTIFY } from "./dbConstants";
+export { REGISTRATION_DIED_AT_BIRTH } from "./dbConstants";
 
 // DB mappings
 export { registryTypeToUuid } from "./dbConstants";
