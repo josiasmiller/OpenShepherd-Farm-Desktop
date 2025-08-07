@@ -383,8 +383,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       }
     }
 
-    // await commitTransaction();
-    await rollbackTransaction();
+    await commitTransaction();
     return {
       success: true,
       insertedRowCount: rows.length
