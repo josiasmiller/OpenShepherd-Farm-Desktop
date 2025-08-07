@@ -6,13 +6,15 @@ import { Result, Success, Failure } from "../../../../../shared/results/resultTy
 /**
  * Inserts a new location history row for an animal at birth (from null → to premise).
  * @param animalId - The animal's ID
- * @param premiseId - The destination premise ID
+ * @param fromPremiseId - The premise ID from where the animal comes
+ * @param toPremiseId - The destination premise ID
  * @param movementDate - The date the movement occurred (YYYY-MM-DD)
  * @returns Result containing the new row's UUID or an error message
  */
 export async function insertAnimalGoesToLocation(
   animalId: string,
-  premiseId: string,
+  fromPremiseId: string | null,
+  toPremiseId: string | null,
   movementDate: string
 ): Promise<Result<string, string>> {
   const db = getDatabase();
@@ -31,7 +33,7 @@ export async function insertAnimalGoesToLocation(
       to_id_premiseid,
       created,
       modified
-    ) VALUES (?, ?, ?, NULL, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   try {
@@ -42,7 +44,8 @@ export async function insertAnimalGoesToLocation(
           idAnimalLocationHistoryId,
           animalId,
           movementDate,
-          premiseId,
+          fromPremiseId,
+          toPremiseId,
           created,
           modified,
         ],
