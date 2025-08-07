@@ -25,6 +25,7 @@ import {
   Species,
   getActiveScrapieFlockNumberId,
   getAnimalIdentification,
+  getBirthTypeByDisplayOrder,
   getBreederFromOwnershipHistory,
   getDefaultFlockBookId,
   getFlockPrefixByAnimalId,
@@ -32,7 +33,6 @@ import {
   getOwnerAtBirth,
   getRegistryCompanyIdForMembershipNumber,
   getSexById,
-  getSpecificBirthType,
   incrementLastBirthNotifyValue,
   incrementLastDiedAtBirthValue,
   insertAnimalFlockTableRow,
@@ -63,27 +63,37 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       throw new Error("No Default Setting is Set");
     }
 
-    var rearTypeResult : Result<BirthType, string> = await getSpecificBirthType(selectedDefault.rear_type);
-    var foundDefaultRear : boolean = false;
-    var rearType : BirthType;
+    ///////////////////////////////////////////////////////////////
+    // determine the rear type of the living animals
+    let numStillborn : number = 0
 
-    await handleResult(rearTypeResult, {
-      success: (data: BirthType) => {
-        rearType = data;
-        foundDefaultRear = true;
-      },
-      error: (err: string) => {
-        console.error("Failed to fetch Rear Type:", err);
-        throw new Error(err);  // convert string to Error
-      },
-    });
-
-    if (!foundDefaultRear) {
-      return{
-        success: false,
-        errors: ["unable to determine \'rear type\' from the default settings."]
-      };
+    for (const row of rows) {
+      if (row.isStillborn) {
+        numStillborn += 1;
+      }
     }
+
+    let numNotStillborn : number = rows.length - numStillborn;
+    var rearType : BirthType | null = null;
+
+    if (numNotStillborn > 0) {
+      var rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(numNotStillborn);
+      
+      await handleResult(rearTypeResult, {
+        success: (data: BirthType) => {
+          rearType = data;
+        },
+        error: (err: string) => {
+          console.error("Failed to fetch Rear Type:", err);
+          throw new Error(err);  // convert string to Error
+        },
+      });
+
+      rearType = rearType!;
+    }
+
+    // end finding rear type of animal
+    ///////////////////////////////////////////////////////////////
 
     let stillbornIteration : number = 0;
 
@@ -108,7 +118,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
           animalTableInput.deathReasonId = DIED_STILLBORN;
           animalTableInput.deathDate = birthDateString; // death date us the same as brith date for stillborns
         } else {
-          animalTableInput.rearType = rearType!; // not stillborn-- so add rear type
+          animalTableInput.rearType = rearType; // not stillborn-- so add rear type
         }
 
        
@@ -373,8 +383,7 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
       }
     }
 
-    // await commitTransaction();
-    await rollbackTransaction(); // MITCH DEBUG --> DO NOT MERGE!!!
+    await commitTransaction();
     return {
       success: true,
       insertedRowCount: rows.length
