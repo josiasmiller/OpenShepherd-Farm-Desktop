@@ -334,10 +334,10 @@ export const PreprocessorPage: React.FC = () => {
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 
   return (
-    <div>
+    <div style={{ height: '100vh', overflowY: 'auto' }}>
       <h1 className="app-header">{capitalizedType ? `Preprocess ${capitalizedType}` : 'Preprocess Records'}</h1>
 
-      <div className="padded-horizontal-lg">
+      <div className="padded-horizontal-lg" style={{ paddingBottom: '4em' }}>
         <button className='wide-button' onClick={selectAndLoadFile} disabled={loading}>
           {loading ? 'Loading...' : 'Select CSV File'}
         </button>
@@ -347,7 +347,11 @@ export const PreprocessorPage: React.FC = () => {
         <>
           {tables.map((table: EditableTableData, i: number) => (
             <div key={i} style={{ marginBottom: "2em" }}>
-              <h2>{table.title}</h2>
+
+              <div className="padded-horizontal-lg">
+                <h2>{table.title}</h2>
+              </div>
+              
               <EditableTable
                 rows={table.rows}
                 columns={table.columns}
@@ -357,7 +361,7 @@ export const PreprocessorPage: React.FC = () => {
             </div>
           ))}
 
-          <div className="padded-horizontal-lg">
+          <div className="padded-horizontal-lg" style={{ paddingBottom: '8em' }}>
             <button className='wide-button' onClick={handleSubmit}>Continue</button>
           </div>
         </>
