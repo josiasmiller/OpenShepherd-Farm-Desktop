@@ -45,6 +45,7 @@ const config: ForgeConfig = {
     packagerConfig: {
         asar: true,
         junk: true,
+        prune: true, //enable node module tree shaking, specifically devDependencies
         icon: path.resolve(__dirname, 'src/renderer/assets/icon'),
         name: fromBuildIdentifier({
             farm: 'AnimalTrakker Farm Desktop',
@@ -60,7 +61,6 @@ const config: ForgeConfig = {
             registry: '0.0.1'
         }).map[buildIdentifier],
         appCategoryType: 'public.app-category.utilities', // mac specific categorization
-        prune: true, //enable node module tree shaking, specifically devDependencies
     },
     hooks: {
         readPackageJson: async (
@@ -87,6 +87,9 @@ const config: ForgeConfig = {
         }, ['win32']),
         new MakerDMG({
             icon: iconPath,
+            iconSize: 128,
+            background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_background_1024x500.png'),
+            format: 'ULFO'
         }, ['darwin']),
         new MakerDeb({
             options: {
