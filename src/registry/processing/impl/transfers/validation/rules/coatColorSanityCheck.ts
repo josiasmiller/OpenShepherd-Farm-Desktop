@@ -3,11 +3,14 @@ import { CoatColor, getCoatColorForAnimal } from "../../../../../../database";
 import { ValidationResponse } from "../../../../core/types";
 
 const allowedColorCombinations: Record<string, string[]> = {
+
+  // TODO --> implement correct mapping of which animals can breed which colors
+  //          also include chocolate!
+
   "White|White": ["White"],
   "White|Black": ["White", "Black"],
   "Black|Black": ["Black"],
   "Black|Brown": ["Black", "Brown"],
-  
 };
 
 function canProduce(sireColor: string, damColor: string, offspringColor: string): boolean {
