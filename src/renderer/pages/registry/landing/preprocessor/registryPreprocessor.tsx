@@ -317,6 +317,7 @@ export const PreprocessorPage: React.FC = () => {
       species: species,
       sections: tables.reduce<SectionsMap>((acc: SectionsMap, table: TableSection) => {
         const key = table.title.toLowerCase().replace(/\s+/g, '_'); // take the table title like "Birth Records" and make it `birth_records` (lowercase & replace spaces with underscores)
+                                                                    // Note this comes from the `TableSection` data
         acc[key] = table.rows;
         return acc;
       }, {}),

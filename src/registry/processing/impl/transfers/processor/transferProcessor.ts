@@ -21,6 +21,15 @@ import {
  * @returns ProcessingResult indicating if the process was successful or not
  */
 export async function processTransferRows(sections: Record<string, RegistryRow[]>, _: Species): Promise<ProcessingResult> {
+
+
+  // PLACEHOLDER --> this will be removed when the processing code is implemented:
+  return {
+    success: true,
+    insertedRowCount: 0,
+    errors: ["Transfer Processing has not yet been implemented"],
+  };
+
   try {
     await beginTransaction();
 
