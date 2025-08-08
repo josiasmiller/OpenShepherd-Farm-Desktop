@@ -31,7 +31,8 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
   const selectedFile = filePaths[0];
   const fileContent = await fs.readFile(selectedFile, 'utf-8');
 
-  const lines = fileContent.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  // Keep raw CSV lines (only filter out empty lines)
+  const lines = fileContent.split(/\r?\n/).filter(line => line.trim().length > 0);
   const warnings: string[] = [];
 
   // Locate section headers
@@ -47,23 +48,30 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
   const buyerIsNew = newBuyerIndex !== -1;
 
   // Get raw sections
-  const animalSection = lines.slice(0, sellerHeaderIndex);
-  const sellerSection = lines.slice(sellerHeaderIndex, buyerSectionStart !== -1 ? buyerSectionStart : undefined);
-  const buyerSection = buyerSectionStart !== -1 ? lines.slice(buyerSectionStart + 1) : [];
+  const animalSection = sellerHeaderIndex !== -1
+    ? lines.slice(0, sellerHeaderIndex)
+    : [];
+  const sellerSection = sellerHeaderIndex !== -1
+    ? lines.slice(sellerHeaderIndex, buyerSectionStart !== -1 ? buyerSectionStart : undefined)
+    : [];
+  const buyerSection = buyerSectionStart !== -1
+    ? lines.slice(buyerSectionStart + 1)
+    : [];
 
   // Parse helper
   const parseCsvSection = <T>(csvLines: string[]): T[] => {
+    if (csvLines.length === 0) return [];
     const csvText = csvLines.join("\n");
     const result = Papa.parse<T>(csvText, {
       header: true,
       skipEmptyLines: true,
+      dynamicTyping: false,
     });
     if (result.errors.length) {
       result.errors.forEach(e => warnings.push(`Parse error: ${e.message}`));
     }
     return result.data;
   };
-
   // Parse animal rows
   const animals = parseCsvSection<AnimalRow>(animalSection);
 

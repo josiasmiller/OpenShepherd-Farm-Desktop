@@ -206,6 +206,28 @@ export const PreprocessorPage: React.FC = () => {
 
     const tables: EditableTableData[] = [];
 
+    console.log("MITCH DEBUG RENDERER");
+    console.log(animals);
+
+    const headerMap: Record<string, string> = {
+      "Animal ID": "animalId",
+      "Registration Number": "registrationNumber",
+      "Prefix": "prefix",
+      "Name": "name",
+      "Birth Date": "birthDate",
+      "Birth Type": "birthType",
+      "Sex": "sex",
+      "Coat Color": "coatColor",
+    };
+
+    const normalizedAnimals = animals.map(a => {
+      const mapped: any = {};
+      for (const [csvKey, ourKey] of Object.entries(headerMap)) {
+        mapped[ourKey] = a[csvKey as keyof typeof a] ?? "";
+      }
+      return mapped;
+    });
+
     // Animals table
     tables.push({
       title: "Transferred Animals",
@@ -220,7 +242,7 @@ export const PreprocessorPage: React.FC = () => {
         { key: 'sex', label: 'Sex', editable: true },
         { key: 'coatColor', label: 'Coat Color', editable: true },
       ],
-      rows: animals.map(a => ({ ...a })),
+      rows: normalizedAnimals,
     });
 
     // Seller info
