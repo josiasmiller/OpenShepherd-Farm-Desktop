@@ -28,7 +28,7 @@ import {
   getBirthTypeByDisplayOrder,
   getBreederFromOwnershipHistory,
   getDefaultFlockBookId,
-  getFlockPrefixByAnimalId,
+  getFlockPrefixByAnimalIdFromRegistration,
   getFlockPrefixIdByMembershipNumber,
   getOwnerAtBirth,
   getRegistryCompanyIdForMembershipNumber,
@@ -423,7 +423,7 @@ async function craftStillbornName(row: RegistryRow, iteration: number): Promise<
   //////////////////////////////////////////////////////////
   // get flock prefix of dam
   
-  const fpResult = await getFlockPrefixByAnimalId(damId);
+  const fpResult = await getFlockPrefixByAnimalIdFromRegistration(damId);
   let flockPrefix : FlockPrefix
 
   await handleResult(fpResult, {

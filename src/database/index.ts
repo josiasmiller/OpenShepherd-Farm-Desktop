@@ -60,7 +60,7 @@ export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons";
 export { getDefaultFlockBookId } from "./repositories/read/registry/registrations/getFlockBookIdFromRegCompany";
 export { getDrugHistory } from "./repositories/read/animal/drugs/getDrugEvents";
 export { getExistingDefaults } from "./repositories/read/defaults/getExistingDefaults";
-export { getFlockPrefixByAnimalId } from "./repositories/read/animal/flock/getFlockPrefixByAnimalId";
+export { getFlockPrefixByAnimalIdFromRegistration } from "./repositories/read/animal/flock/getFlockPrefixByAnimalIdFromRegistration";
 export { getFlockPrefixIdByMembershipNumber } from "./repositories/read/owners/geFlockPrefixIdFromMemebershipNumber";
 export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefixes";
 export { getLastBirthNotifyValue } from "./repositories/read/registry/registrations/getLastBirthNotifyValue";
