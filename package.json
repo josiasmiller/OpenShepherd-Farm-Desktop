@@ -5,13 +5,13 @@
   "author": "AnimalTrakker",
   "scripts": {
     "package": "npm run package:farm && npm run package:registry",
-    "package:farm": "cross-env APP_VARIANT=farm electron-forge package",
-    "package:registry": "cross-env APP_VARIANT=registry electron-forge package",
-    "start:farm": "cross-env APP_VARIANT=farm NODE_ENV=development electron-forge start",
-    "start:registry": "cross-env APP_VARIANT=registry NODE_ENV=development electron-forge start",
+    "package:farm": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge package",
+    "package:registry": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge package",
+    "start:farm": "cross-env APP_VARIANT=farm NODE_ENV=development DEBUG=electron-forge:* electron-forge start",
+    "start:registry": "cross-env APP_VARIANT=registry NODE_ENV=development DEBUG=electron-forge:* electron-forge start",
     "make": "npm run make:farm && npm run make:registry",
-    "make:farm": "cross-env APP_VARIANT=farm electron-forge make",
-    "make:registry": "cross-env APP_VARIANT=registry electron-forge make"
+    "make:farm": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge make",
+    "make:registry": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge make"
   },
   "keywords": [],
   "license": "ISC",
@@ -34,7 +34,6 @@
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
-    "appdmg": "0.6.6",
     "copy-webpack-plugin": "13.0.0",
     "cross-env": "10.0.0",
     "css-loader": "6.11.0",
@@ -63,5 +62,8 @@
     "sqlite3": "5.1.7",
     "sweetalert2": "11.22.2",
     "uuid": "11.1.0"
+  },
+  "optionalDependencies": {
+    "appdmg": "0.6.6"
   }
 }
