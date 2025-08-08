@@ -7,6 +7,8 @@ import { validateBirthRows } from '../impl/births/validation/birthValidator';
 // registrations
 import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor';
 import { validateRegistrationRows } from '../impl/registrations/validation/registrationsValidator';
+import { validateTransferRows } from '../impl/transfers/validation/transferValidator';
+import { processTransferRows } from '../impl/transfers/processor/transferProcessor';
 
 /**
  * Factory for retrieving the pertinent validator and processor for a given RegistryProcessType
@@ -31,6 +33,11 @@ export const registryProcessorFactory = (type: RegistryProcessType): RegistryPro
     //     validate: new DeathValidator().validate,
     //     process: new DeathProcessor().process,
     //   };
+    case 'transfers':
+      return {
+        validateRegistryRows: validateTransferRows,
+        processRegistryRows: processTransferRows,
+      }
     default:
       throw new Error(`Unknown process type: ${type}`);
   }

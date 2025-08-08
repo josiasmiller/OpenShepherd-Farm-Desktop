@@ -206,9 +206,6 @@ export const PreprocessorPage: React.FC = () => {
 
     const tables: EditableTableData[] = [];
 
-    console.log("MITCH DEBUG RENDERER");
-    console.log(animals);
-
     const headerMap: Record<string, string> = {
       "Animal ID": "animalId",
       "Registration Number": "registrationNumber",

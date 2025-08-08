@@ -37,6 +37,7 @@ export type { UnitType } from "./models/read/units/unitType";
 
 // export read repositories
 export { animalSearch } from "./repositories/read/animal/animalSearch/animalSearch";
+export { animalHasActiveFederalTag } from "./repositories/read/animal/tags/hasFederalTag";
 export { animalHasActiveOfficialTag } from "./repositories/read/animal/tags/hasOfficialTag";
 export { getActiveScrapieFlockNumberId } from "./repositories/read/owners/getActiveScrapieFlockNumberId";
 export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnimalBirthDate";
