@@ -35,8 +35,8 @@ const buildDisplayName = fromBuildIdentifier({
 }).map[buildIdentifier]
 
 const buildDescription = fromBuildIdentifier({
-    farm: 'AnimalTrakker Farm Desktop Application',
-    registry: 'AnimalTrakker Registry Desktop Application'
+    farm: 'AnimalTrakker Farm',
+    registry: 'AnimalTrakker Registry'
 }).map[buildIdentifier]
 
 const config: ForgeConfig = {
@@ -48,8 +48,8 @@ const config: ForgeConfig = {
         prune: true, //enable node module tree shaking, specifically devDependencies
         icon: path.resolve(__dirname, 'src/renderer/assets/icon'),
         name: fromBuildIdentifier({
-            farm: 'AnimalTrakker Farm Desktop',
-            registry: 'AnimalTrakker Registry Desktop'
+            farm: 'AnimalTrakker Farm',
+            registry: 'AnimalTrakker Registry'
         }).map[buildIdentifier],
         executableName: buildPackageName,
         appBundleId: fromBuildIdentifier({
@@ -89,7 +89,8 @@ const config: ForgeConfig = {
             icon: iconPath,
             iconSize: 128,
             background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_background_1024x500.png'),
-            format: 'ULFO'
+            format: 'ULFO',
+            overwrite: true
         }, ['darwin']),
         new MakerDeb({
             options: {
