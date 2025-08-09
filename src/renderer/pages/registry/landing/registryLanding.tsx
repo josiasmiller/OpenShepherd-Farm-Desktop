@@ -59,6 +59,24 @@ const RegistryLanding: React.FC = () => {
     navigate('/registry/preprocess/registrations', { state: { species: selectedSpecies } });
   };
 
+
+  const handleTransfers = () => {
+
+    if (!selectedSpecies) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Species Required',
+        text: 'Please select a species before continuing.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (isLoading) return;
+
+    navigate('/registry/preprocess/transfers', { state: { species: selectedSpecies } });
+  };
+
   const handleSpecies = async (e : React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
     const found : Species | null = species.find((s) => s.id === selectedId) || null;
@@ -67,7 +85,6 @@ const RegistryLanding: React.FC = () => {
       await window.electronAPI.setStoreSelectedSpecies(found);
     }
   }
-
 
   useEffect(() => {
     const loadData = async () => {
@@ -140,6 +157,14 @@ const RegistryLanding: React.FC = () => {
             onClick={handleRegistrations}
           >
             Process Registrations
+          </button>
+
+
+          <button
+            className="forward-button"
+            onClick={handleTransfers}
+          >
+            Process Tranfers
           </button>
         </div>
       </CollapsibleSection>

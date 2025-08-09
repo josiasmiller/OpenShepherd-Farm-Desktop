@@ -10,8 +10,10 @@ import { Species } from '../../../../../database/index';
  * @param _ here only to satisfy interface
  * @returns ValidationResult indicating if the validation was successful or not
  */
-export async function validateRegistrationRows(rows: RegistryRow[], _: Species): Promise<ValidationResult[]> {
+export async function validateRegistrationRows(sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
+
+  var rows : RegistryRow[] = sections.registration_records;
 
   for (let index = 0; index < rows.length; index++) {
     const row = rows[index];

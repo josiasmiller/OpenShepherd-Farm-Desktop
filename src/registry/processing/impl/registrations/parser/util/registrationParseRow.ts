@@ -1,4 +1,9 @@
 
+export type RegistrationParseResponse = {
+  rows: RegistrationParseRow[];
+}
+
+
 export type RegistrationParseRow = {
   breederId: string;
   breederName: string;

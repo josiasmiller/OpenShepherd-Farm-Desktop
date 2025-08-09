@@ -1,3 +1,7 @@
+export type BirthParseResponse = {
+  rows : BirthParseRow[];
+}
+
 export type BirthParseRow = {
   breederId: string;
   breederName: string;

@@ -54,7 +54,7 @@ import { mapRegistryRowToFedTagInput } from './mappings/ids/registryRowToFedTagI
 import { mapRegistryRowToFarmTagInput } from './mappings/ids/registryRowToFarmTagInput';
 import { OwnerType } from '../../../../../database/client-types';
 
-export async function processBirthRows(rows: RegistryRow[], species : Species): Promise<ProcessingResult> {
+export async function processBirthRows(sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction();
 
@@ -96,6 +96,8 @@ export async function processBirthRows(rows: RegistryRow[], species : Species): 
     ///////////////////////////////////////////////////////////////
 
     let stillbornIteration : number = 0;
+    // extract rows to be processed from the `sections` input
+    var rows : RegistryRow[] = sections.birth_records;
 
     for (const row of rows) {
       try {

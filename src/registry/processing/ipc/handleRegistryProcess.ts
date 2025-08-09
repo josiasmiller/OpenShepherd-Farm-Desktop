@@ -10,12 +10,13 @@ import {
 
 export async function handleRegistryProcess(
   processType: RegistryProcessType,
-  rows: RegistryRow[],
   species: Species,
+  sections: Record<string, RegistryRow[]>,
 ): Promise<ProcessingResult> {
+
   const processor : RegistryProcessor = registryProcessorFactory(processType);
 
-  const validationResults : ValidationResult[] = await processor.validateRegistryRows(rows, species);
+  const validationResults : ValidationResult[] = await processor.validateRegistryRows(sections, species);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {
@@ -30,5 +31,5 @@ export async function handleRegistryProcess(
     };
   }
 
-  return processor.processRegistryRows(rows, species);
+  return processor.processRegistryRows(sections, species);
 }

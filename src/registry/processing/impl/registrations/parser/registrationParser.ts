@@ -1,15 +1,15 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { RegistrationParseRow } from './util/registrationParseRow';
+import { RegistrationParseResponse, RegistrationParseRow } from './util/registrationParseRow';
 import { registrationParseMap } from './util/registrationParseMap';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
 /**
  * parses registration data from a given CSV
- * @returns parseResult of exported data
+ * @returns ParseResult of exported data
  */
-export const registrationParser = async (): Promise<ParseResult<RegistrationParseRow>> => {
+export const registrationParser = async (): Promise<ParseResult<RegistrationParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select Registration CSV File",
     properties: ["openFile"],
@@ -18,7 +18,12 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
 
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return { rows: [], warnings: [] };
+    return { 
+      data: {
+        rows : []
+      }, 
+      warnings: [] 
+    };
   }
 
   const selectedFile = filePaths[0];
@@ -55,7 +60,12 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
           return parsedRow as RegistrationParseRow;
         });
 
-        resolve({ rows: parsedData, warnings });
+        resolve({
+          data: {
+            rows: parsedData,
+          }, 
+          warnings 
+        });
       },
       error: (err : any) => reject(err),
     });
