@@ -158,7 +158,9 @@ const RegistryLanding: React.FC = () => {
         isOpen={showProccesors}
         onToggle={() => setShowProccesors(!showProccesors)}
       >
-        <div className="action-buttons registry-section">
+        <div className="action-buttons registry-section" 
+             style={{ display: 'flex', flexWrap: 'wrap', gap: '1em' }}
+        >
           <button
             className="forward-button"
             onClick={handleBirthNotifications}
