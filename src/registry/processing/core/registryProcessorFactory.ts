@@ -32,11 +32,10 @@ export const registryProcessorFactory = (type: RegistryProcessType): RegistryPro
         processRegistryRows: processRegistrationRows,
       };
     case 'deaths':
-      // DEBUG --> fixing after rebase
-      // return {
-      //   validateRegistryRows: validateDeathRows,
-      //   processRegistryRows: processDeathRows,
-      // };
+      return {
+        validateRegistryRows: validateDeathRows,
+        processRegistryRows: processDeathRows,
+      };
     case 'transfers':
       return {
         validateRegistryRows: validateTransferRows,

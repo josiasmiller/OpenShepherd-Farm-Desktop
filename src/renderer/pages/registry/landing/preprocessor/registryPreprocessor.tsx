@@ -6,7 +6,7 @@ import { EditableTable } from '../../../../components/editableTable/editableTabl
 import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
 
 import { BirthParseResponse, BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
-import { DeathParseRow } from '../../../../../registry/processing/impl/deaths/parser/util/deathParseRow';
+import { DeathParseResponse, DeathParseRow } from '../../../../../registry/processing/impl/deaths/parser/util/deathParseRow';
 import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
@@ -206,8 +206,8 @@ export const PreprocessorPage: React.FC = () => {
    * parses deaths and then populates the table with the parsed data
    */
   const handleDeaths = async () => {
-    const parseResult: ParseResult<DeathParseRow> = await window.electronAPI.registryParseDeaths();
-    const parsedDeaths: DeathParseRow[] = []; // FIXME -->  //parseResult.data.rows;
+    const parseResult: ParseResult<DeathParseResponse> = await window.electronAPI.registryParseDeaths();
+    const parsedDeaths: DeathParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
 
@@ -225,8 +225,6 @@ export const PreprocessorPage: React.FC = () => {
 
     const rows: RegistryRow[] = parsedDeaths.map(r => ({ ...r }));
 
-    // setColumns(deathColumns);
-    // setRows(rows);
     setTables([
       {
         title: "Death Records",

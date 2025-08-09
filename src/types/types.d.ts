@@ -37,7 +37,7 @@ import { BirthParseResponse } from "../registry/processing/impl/births/parser/ut
 import { RegistrationWriteResponse } from "../writers/pdf/writeRegistration";
 import { RegistrationParseResponse } from "../registry/processing/impl/registrations/parser/util/registrationParseRow";
 import { TransferParseResponse } from "src/registry/processing/impl/transfers/parser/util/transferParseData";
-import { DeathParseRow } from "../registry/processing/impl/deaths/parser/util/deathParseRow";
+import { DeathParseResponse } from "../registry/processing/impl/deaths/parser/util/deathParseRow";
 
 
 declare global {
@@ -80,7 +80,7 @@ declare global {
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
       registryParseBirths: () => Promise<ParseResult<BirthParseResponse>>;
-      registryParseDeaths: () => Promise<ParseResult<DeathParseRow>>;
+      registryParseDeaths: () => Promise<ParseResult<DeathParseResponse>>;
       registryParseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
       registryParseTransfers: () => Promise<ParseResult<TransferParseResponse>>;
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;

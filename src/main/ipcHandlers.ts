@@ -43,18 +43,14 @@ import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults";
 import { writeRegistration } from "../writers/pdf/writeRegistration";
 
 import { birthParser } from "../registry/processing/impl/births/parser/birthParser";
+import { deathParser } from "../registry/processing/impl/deaths/parser/deathParser";
 import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
-<<<<<<< HEAD
 import { transferParser } from "../registry/processing/impl/transfers/parser/transferParser";
-=======
-import { deathParser } from "../registry/processing/impl/deaths/parser/deathparser";
->>>>>>> 86db764 (feat: death process initial setup)
 
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
 import { RegistryProcessRequest } from "../registry/processing/core/types";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
-
 
 
 export const registerIpcHandlers = () => {

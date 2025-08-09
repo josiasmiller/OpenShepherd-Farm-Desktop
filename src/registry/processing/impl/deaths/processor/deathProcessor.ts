@@ -26,9 +26,11 @@ import {
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeathRows(rows: RegistryRow[], _ : Species): Promise<ProcessingResult> {
+export async function processDeathRows(sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction();
+
+    var rows : RegistryRow[] = sections.death_records;
 
     for (const row of rows) {
       try {

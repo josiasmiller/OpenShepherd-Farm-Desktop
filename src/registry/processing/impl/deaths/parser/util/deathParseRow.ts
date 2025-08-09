@@ -1,4 +1,9 @@
 
+
+export type DeathParseResponse = {
+  rows: DeathParseRow[];
+}
+
 export type DeathParseRow = {
   deathDate: string;
   animalId: string;

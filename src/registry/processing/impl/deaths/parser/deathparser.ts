@@ -1,11 +1,11 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { DeathParseRow } from './util/deathParseRow';
+import { DeathParseResponse, DeathParseRow } from './util/deathParseRow';
 import { deathParseMap } from './util/deathParseMap';
 import { dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
-export const deathParser = async (): Promise<ParseResult<DeathParseRow>> => {
+export const deathParser = async (): Promise<ParseResult<DeathParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog({
     title: "Select Death CSV File",
     properties: ["openFile"],
@@ -14,7 +14,12 @@ export const deathParser = async (): Promise<ParseResult<DeathParseRow>> => {
 
   if (canceled || filePaths.length === 0) {
     console.log("User cancelled CSV file selection.");
-    return { rows: [], warnings: [] };
+    return { 
+      data: {
+        rows : []
+      }, 
+      warnings: [] 
+    };
   }
 
   const selectedFile = filePaths[0];
@@ -45,7 +50,12 @@ export const deathParser = async (): Promise<ParseResult<DeathParseRow>> => {
           return parsedRow as DeathParseRow;
         });
 
-        resolve({ rows: parsedData, warnings });
+        resolve({ 
+          data: {
+            rows : parsedData
+          }, 
+          warnings: warnings 
+        });
       },
       error: (err: any) => reject(err),
     });
