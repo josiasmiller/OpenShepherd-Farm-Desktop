@@ -2,7 +2,7 @@ import { getDatabase } from '../../../dbConnections';
 import { Result, Success, Failure } from '../../../../shared/results/resultTypes';
 
 /**
- * Deletes an animal's record from animal_for_sale_table.
+ * Deletes an animal's record(s) from animal_for_sale_table.
  *
  * @param animalId - The ID of the animal.
  * @returns Result<null, string> indicating success or failure.

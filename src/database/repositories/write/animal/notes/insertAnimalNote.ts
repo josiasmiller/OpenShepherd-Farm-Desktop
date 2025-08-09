@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
 /**
- * Inserts a death note into the animal_note_table for the given animal.
+ * Inserts a note into the animal_note_table for the given animal.
  *
  * @param animalId - The ID of the animal.
  * @param noteText - The text of the note to be inserted.
