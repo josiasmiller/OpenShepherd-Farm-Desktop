@@ -86,9 +86,14 @@ const config: ForgeConfig = {
             description: buildDescription,
         }, ['win32']),
         new MakerDMG({
-            icon: iconPath,
-            iconSize: 128,
-            background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_background_1024x500.png'),
+            iconSize: 72, //Do not set icon path here as it refers to the icon at the top of the DMG window, which defaults to the application icon
+            background: path.resolve(__dirname, 'packaging', 'common', 'images', 'installer_dmg_background.png'),
+            //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
+            //which is the default for electron dmg makers.
+            contents: [
+                { x: 112, y: 274, type: "file", path: `./out/${buildIdentifier}/AnimalTrakker ${capitalize(buildIdentifier)}-darwin-x64/AnimalTrakker ${capitalize(buildIdentifier)}.app`},
+                { x: 428, y: 274, type: "link", path: "/Applications"}
+            ],
             format: 'ULFO',
             overwrite: true
         }, ['darwin']),
