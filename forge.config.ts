@@ -88,6 +88,7 @@ const config: ForgeConfig = {
         }, ['win32']),
         new MakerDMG((targetArch) => {
             return {
+                icon: path.resolve(__dirname, 'packaging', 'common', 'null_file'), //reference empty file to force electron forge to fall back to default mac volumne icon
                 iconSize: 72, //Do not set icon path here as it refers to the icon at the top of the DMG window, which defaults to the application icon
                 background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_dmg_background.png'),
                 //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
@@ -102,7 +103,7 @@ const config: ForgeConfig = {
         }, ['darwin']),
         new MakerDeb({
             options: {
-                icon: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'AnimalTrakker_icon_512x512.png'),
+                icon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher.png'),
                 genericName: buildDisplayName,
                 description: buildDescription,
                 productDescription: buildDescription,
