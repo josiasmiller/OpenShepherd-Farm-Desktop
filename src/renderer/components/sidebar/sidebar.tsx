@@ -159,12 +159,13 @@ const Sidebar: React.FC = () => {
           Edit Defaults
         </li>
 
+        {isRegistryDesktop() && (
         <li
           onClick={() => handleNavClick("/registry")}
           style={getLinkStyle(isDbLoaded)}
         >
           Registry Features
-        </li>
+        </li>)}
       </ul>
 
       <div className="database-selector">
