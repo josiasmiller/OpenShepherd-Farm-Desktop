@@ -87,7 +87,7 @@ const config: ForgeConfig = {
         }, ['win32']),
         new MakerDMG({
             iconSize: 72, //Do not set icon path here as it refers to the icon at the top of the DMG window, which defaults to the application icon
-            background: path.resolve(__dirname, 'packaging', 'common', 'images', 'installer_dmg_background.png'),
+            background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_dmg_background.png'),
             //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
             //which is the default for electron dmg makers.
             contents: [
