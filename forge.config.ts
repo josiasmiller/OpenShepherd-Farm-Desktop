@@ -94,8 +94,10 @@ const config: ForgeConfig = {
                 //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
                 //which is the default for electron dmg makers.
                 contents: [
-                    { x: 112, y: 274, type: "file", path: `./out/${buildIdentifier}/AnimalTrakker ${capitalize(buildIdentifier)}-darwin-${targetArch}/AnimalTrakker ${capitalize(buildIdentifier)}.app`},
-                    { x: 428, y: 274, type: "link", path: "/Applications"}
+                    { x: 112, y: 274, type: "file", path: path.resolve(__dirname, 'out', buildIdentifier, `AnimalTrakker ${capitalize(buildIdentifier)}-darwin-${targetArch}`, `AnimalTrakker ${capitalize(buildIdentifier)}.app`) },
+                    { x: 428, y: 274, type: "link", path: "/Applications" },
+                    { x: 3000, y: 100, type: "position", path: ".background" },
+                    { x: 3000, y: 100, type: "position", path: ".VolumeIcon.icns" }
                 ],
                 format: 'ULFO',
                 overwrite: true
