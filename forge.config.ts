@@ -1,5 +1,6 @@
 import type { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { MakerSquirrel } from '@electron-forge/maker-squirrel';
+import type { ForgeArch } from '@electron-forge/shared-types';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerDMG } from "@electron-forge/maker-dmg";
@@ -85,17 +86,19 @@ const config: ForgeConfig = {
             authors: 'AnimalTrakker',
             description: buildDescription,
         }, ['win32']),
-        new MakerDMG({
-            iconSize: 72, //Do not set icon path here as it refers to the icon at the top of the DMG window, which defaults to the application icon
-            background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_dmg_background.png'),
-            //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
-            //which is the default for electron dmg makers.
-            contents: [
-                { x: 112, y: 274, type: "file", path: `./out/${buildIdentifier}/AnimalTrakker ${capitalize(buildIdentifier)}-darwin-x64/AnimalTrakker ${capitalize(buildIdentifier)}.app`},
-                { x: 428, y: 274, type: "link", path: "/Applications"}
-            ],
-            format: 'ULFO',
-            overwrite: true
+        new MakerDMG((targetArch) => {
+            return {
+                iconSize: 72, //Do not set icon path here as it refers to the icon at the top of the DMG window, which defaults to the application icon
+                background: path.resolve(__dirname, 'packaging', buildIdentifier, 'images', 'installer_dmg_background.png'),
+                //Icon x,y placement is based on the installer_dmg_background.png file's contents and a 540 x 360 pt window
+                //which is the default for electron dmg makers.
+                contents: [
+                    { x: 112, y: 274, type: "file", path: `./out/${buildIdentifier}/AnimalTrakker ${capitalize(buildIdentifier)}-darwin-${targetArch}/AnimalTrakker ${capitalize(buildIdentifier)}.app`},
+                    { x: 428, y: 274, type: "link", path: "/Applications"}
+                ],
+                format: 'ULFO',
+                overwrite: true
+            }
         }, ['darwin']),
         new MakerDeb({
             options: {
