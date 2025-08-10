@@ -26,7 +26,7 @@ const rendererHtmlPath = isDevelopment ? './src/renderer/index.dev.html' : './sr
 
 const buildIdentifier = appVariantFromEnv()
 
-const iconPath = path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'icon.icns');
+const launchIconPath = path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher');
 const buildPackageName = `animaltrakker-${buildIdentifier}-desktop`
 
 const buildDisplayName = fromBuildIdentifier({
@@ -46,7 +46,7 @@ const config: ForgeConfig = {
         asar: true,
         junk: true,
         prune: true, //enable node module tree shaking, specifically devDependencies
-        icon: path.resolve(__dirname, 'src/renderer/assets/icon'),
+        icon: launchIconPath,
         name: fromBuildIdentifier({
             farm: 'AnimalTrakker Farm',
             registry: 'AnimalTrakker Registry'
@@ -81,7 +81,7 @@ const config: ForgeConfig = {
         new MakerZIP({}),
         new MakerSquirrel({
             name: buildPackageName,
-            setupIcon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'icon.ico'),
+            setupIcon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher.ico'),
             authors: 'AnimalTrakker',
             description: buildDescription,
         }, ['win32']),
