@@ -11,6 +11,8 @@ import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
 import { Species } from '../../../../../database';
+import { DatabaseStateCheckResponse } from '../../../../../registry/processing/ipc/handleDatabaseStateCheck';
+import { handleResult, Result } from '../../../../../shared/results/resultTypes';
 
 type EditableTableData = {
   title: string;
@@ -390,6 +392,90 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
+  /**
+   * Submits the parsed & altered data to be validated & processed
+   */
+  const handlePreCheck = async () => {
+    const response: DatabaseStateCheckResponse = await window.electronAPI.databaseStateCheck();
+
+    const failedChecks = [];
+    if (!response.blackVerified) failedChecks.push("Black registration numbers");
+    if (!response.chocolateVerified) failedChecks.push("Chocolate registration numbers");
+    if (!response.whiteVerified) failedChecks.push("White registration numbers");
+
+    if (failedChecks.length === 0) {
+      // All good
+      Swal.fire({
+        title: "Success",
+        text: "All database state checks passed. Everything is OK.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    // Some checks failed - build HTML message
+    const htmlMessage = `
+      <p>The following registration types are <strong>not up to date</strong>:</p>
+      <ul style="text-align: left;">
+        ${failedChecks.map(item => `<li>${item}</li>`).join("")}
+      </ul>
+      <p>Would you like to fix these issues now?</p>
+    `;
+
+    const result = await Swal.fire({
+      title: "Database State Issues Detected",
+      icon: "warning",
+      html: htmlMessage,
+      showCancelButton: true,
+      confirmButtonText: "Yes, fix them",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const resolveResult: Result<boolean, string> = await window.electronAPI.resolveDatabaseIssues(response);
+
+        let wasSuccessful = false;
+
+        await handleResult(resolveResult, {
+          success: (data: boolean) => {
+            wasSuccessful = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to resolve database state issues: ", err);
+            throw new Error(err);
+          },
+        });
+
+        if (wasSuccessful) {
+          await Swal.fire({
+            title: "Success",
+            text: "Database issues have been fixed successfully.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        } else {
+          await Swal.fire({
+            title: "Warning",
+            text: "The database issues were detected but could not be fixed automatically. Please check manually.",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (err: any) {
+        await Swal.fire({
+          title: "Error",
+          text: `An error occurred while fixing database issues: ${err.message || err}`,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
+  };
+
+
+
 
   const capitalizedType = (processType ?? 'Unknown').charAt(0).toUpperCase() + (processType ?? 'Unknown').slice(1);
 
@@ -398,6 +484,10 @@ export const PreprocessorPage: React.FC = () => {
       <h1 className="app-header">{capitalizedType ? `Preprocess ${capitalizedType}` : 'Preprocess Records'}</h1>
 
       <div className="padded-horizontal-lg" style={{ paddingBottom: '4em' }}>
+        <div className="padded-horizontal-lg" style={{ paddingBottom: '2em' }}>
+          <button className='wide-button' onClick={handlePreCheck}>Pre-check Database</button>
+        </div>
+
         <button className='wide-button' onClick={selectAndLoadFile} disabled={loading}>
           {loading ? 'Loading...' : 'Select CSV File'}
         </button>

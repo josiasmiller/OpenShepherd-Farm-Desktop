@@ -1,5 +1,5 @@
-import { getDatabase } from "../dbConnections";
-import { Result, Success, Failure } from "../../shared/results/resultTypes";
+import { getDatabase } from "../../dbConnections";
+import { Result, Success, Failure } from "../../../shared/results/resultTypes";
 
 export type AnimalDeathDate = {
   animalId: string;

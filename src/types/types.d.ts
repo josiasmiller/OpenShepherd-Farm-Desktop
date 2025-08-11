@@ -44,6 +44,10 @@ declare global {
   interface Window {
     electronAPI: {
       animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
+
+      databaseStateCheck: () => Promise<DatabaseStateCheckResponse>;
+      resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => Promise<Result<boolean, string>>;
+
       getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
       editExistingDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;

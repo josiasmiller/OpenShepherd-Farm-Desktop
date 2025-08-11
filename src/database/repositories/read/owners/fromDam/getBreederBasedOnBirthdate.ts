@@ -6,7 +6,7 @@ import { Company } from "../../../../models/read/owners/company";
 import { getContactPremise } from "../../premises/getContactPremise";
 import { getCompanyPremise } from "../../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../../scrapie/getScrapieFlockInfo";
-import { getGestationPeriod } from "../../../../registry/getGestationPeriod";
+import { getGestationPeriod } from "../../../../registry/read/getGestationPeriod";
 import { OwnerType } from "../../../../client-types";
 
 type BreederQueryRow = {
