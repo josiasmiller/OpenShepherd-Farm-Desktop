@@ -65,7 +65,7 @@ export async function incrementLastRegistrationNumber(registrationTypeId : strin
     await new Promise<void>((resolve, reject) => {
       db.run(
         `UPDATE registration_type_table SET last_registration_number = ?, modified = datetime('now') WHERE id_registrationtypeid = ?`,
-        [newNumber, REGISTRATION_REGISTERED],
+        [newNumber, registrationTypeId],
         (err) => {
           if (err) reject(err);
           else resolve();

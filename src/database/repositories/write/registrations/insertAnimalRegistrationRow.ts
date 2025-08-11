@@ -93,21 +93,6 @@ export async function insertAnimalRegistrationRow(
     modified,
   ];
 
-  console.log("MITCH DEBUG REGISTRATIONS:");
-  console.log(values);
-  console.log("==============");
-  console.log("Contact ID");
-  console.log(breeder.type === OwnerType.CONTACT ? breeder.contact.id : null);
-  console.log("Company ID");
-  console.log(breeder.type === OwnerType.COMPANY ? breeder.company.id : null);
-  console.log("Registration Number");
-  console.log(registrationNumber);
-  console.log("Registration Type");
-  console.log(registrationTypeId);
-  console.log("FlockBook ID");
-  console.log(flockBookId);
-  // console.log("contact ID");
-
   try {
     await new Promise<void>((resolve, reject) => {
       db.run(query, values, function (err) {
