@@ -47,7 +47,10 @@ import { deathParser } from "../registry/processing/impl/deaths/parser/deathPars
 import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "../registry/processing/impl/transfers/parser/transferParser";
 
+import { DatabaseStateCheckResponse, handleDatabaseStateCheck } from "../registry/processing/ipc/handleDatabaseStateCheck";
 import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
+import { resolveDatabaseIssues } from "../registry/processing/ipc/resolveDatabaseStateIssues";
+
 import { RegistryProcessRequest } from "../registry/processing/core/types";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
@@ -180,6 +183,11 @@ export const registerIpcHandlers = () => {
     }
   );
 
+  ipcMain.handle("database-state-check", handleDatabaseStateCheck);
+
+  ipcMain.handle("resolve-database-issues",(_event, dbscr: DatabaseStateCheckResponse) => {
+    return resolveDatabaseIssues(dbscr);
+  });
 
   ipcMain.on('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
     setStoreSelectedDefault(value);

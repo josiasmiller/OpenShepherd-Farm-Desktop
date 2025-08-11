@@ -1,5 +1,5 @@
-import { Result, Success, Failure } from "../../shared/results/resultTypes";
-import { getDatabase } from "../dbConnections";
+import { Result, Success, Failure } from "../../../shared/results/resultTypes";
+import { getDatabase } from "../../dbConnections";
 
 export type GestationPeriod = {
   earlyDays: number;

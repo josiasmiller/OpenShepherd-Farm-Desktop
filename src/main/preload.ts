@@ -11,9 +11,12 @@ import {
 } from "../database";
 
 import { RegistryProcessRequest } from '../registry/processing/core/types';
+import { DatabaseStateCheckResponse } from '../registry/processing/ipc/handleDatabaseStateCheck';
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
+  databaseStateCheck: () => ipcRenderer.invoke("database-state-check"),
+  resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => ipcRenderer.invoke("resolve-database-issues", dbscr),
   editExistingDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("edit-existing-default", queryParams),
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),

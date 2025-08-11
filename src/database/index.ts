@@ -125,10 +125,13 @@ export { writeAnimalBreedPercentages } from "./repositories/write/animal/breed/w
 
 // registry DB calls
 
-export { getAnimalDeathDate } from "./registry/getAnimalDeathDate";
-export { getGestationPeriod } from "./registry/getGestationPeriod";
+export { getAnimalDeathDate } from "./registry/read/getAnimalDeathDate";
+export { getGestationPeriod } from "./registry/read/getGestationPeriod";
 
-export type { AnimalDeathDate } from "./registry/getAnimalDeathDate";
+// db state checkers
+export { verifyLastRegistrationNumberIsUpToDate } from "./registry/read/dbStateCheck/verifyLastRegistrationNumberUpToDate";
+
+export type { AnimalDeathDate } from "./registry/read/getAnimalDeathDate";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -144,9 +147,16 @@ export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAni
 
 export type { RegistryType } from "./dbConstants";
 
-export { DIED_STILLBORN } from "./dbConstants";
-export { REGISTRATION_BIRTH_NOTIFY } from "./dbConstants";
-export { REGISTRATION_DIED_AT_BIRTH } from "./dbConstants";
+export { 
+    DIED_STILLBORN,
+    REGISTRATION_BIRTH_NOTIFY,
+    REGISTRATION_DIED_AT_BIRTH,
+    REGISTRATION_CHOCOLATE_WELSH,
+    REGISTRATION_WHITE_WELSH,
+    REGISTRATION_REGISTERED,
+} from "./dbConstants";
+
+export { }
 
 // DB mappings
 export { registryTypeToUuid } from "./dbConstants";
