@@ -155,8 +155,6 @@ export {
     REGISTRATION_WHITE_WELSH,
     REGISTRATION_REGISTERED,
 } from "./dbConstants";
-// export { REGISTRATION_BIRTH_NOTIFY } from "./dbConstants";
-// export { REGISTRATION_DIED_AT_BIRTH } from "./dbConstants";
 
 export { }
 
