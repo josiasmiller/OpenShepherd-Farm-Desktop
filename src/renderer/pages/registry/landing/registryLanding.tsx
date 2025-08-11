@@ -59,7 +59,6 @@ const RegistryLanding: React.FC = () => {
     navigate('/registry/preprocess/registrations', { state: { species: selectedSpecies } });
   };
 
-
   const handleTransfers = () => {
 
     if (!selectedSpecies) {
@@ -73,8 +72,23 @@ const RegistryLanding: React.FC = () => {
     }
 
     if (isLoading) return;
-
     navigate('/registry/preprocess/transfers', { state: { species: selectedSpecies } });
+  };
+
+  const handleDeaths = () => {
+
+    if (!selectedSpecies) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Species Required',
+        text: 'Please select a species before continuing.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    if (isLoading) return;
+    navigate('/registry/preprocess/deaths', { state: { species: selectedSpecies } });
   };
 
   const handleSpecies = async (e : React.ChangeEvent<HTMLSelectElement>) => {
@@ -144,7 +158,9 @@ const RegistryLanding: React.FC = () => {
         isOpen={showProccesors}
         onToggle={() => setShowProccesors(!showProccesors)}
       >
-        <div className="action-buttons registry-section">
+        <div className="action-buttons registry-section" 
+             style={{ display: 'flex', flexWrap: 'wrap', gap: '1em' }}
+        >
           <button
             className="forward-button"
             onClick={handleBirthNotifications}
@@ -159,12 +175,18 @@ const RegistryLanding: React.FC = () => {
             Process Registrations
           </button>
 
-
           <button
             className="forward-button"
             onClick={handleTransfers}
           >
             Process Tranfers
+          </button>
+
+          <button
+            className="forward-button"
+            onClick={handleDeaths}
+          >
+            Process Deaths
           </button>
         </div>
       </CollapsibleSection>
