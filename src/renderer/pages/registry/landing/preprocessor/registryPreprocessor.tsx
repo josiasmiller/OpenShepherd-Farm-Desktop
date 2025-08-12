@@ -37,8 +37,6 @@ export const PreprocessorPage: React.FC = () => {
   const species : Species = navigationState?.species!;
 
   const [tables, setTables] = useState<EditableTableData[]>([]);
-
-  // const [rows, setRows] = useState<RegistryRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
 
@@ -351,44 +349,58 @@ export const PreprocessorPage: React.FC = () => {
    */
   const handleSubmit = async () => {
     if (!processType) return;
+    if (loading) return;
 
-    const pt: RegistryProcessType = processType as RegistryProcessType;
+    try {
+      setLoading(true);
 
-    const args: RegistryProcessRequest = {
-      processType: pt,
-      species: species,
-      sections: tables.reduce<SectionsMap>((acc: SectionsMap, table: TableSection) => {
-        const key = table.title.toLowerCase().replace(/\s+/g, '_'); // take the table title like "Birth Records" and make it `birth_records` (lowercase & replace spaces with underscores)
-                                                                    // Note this comes from the `TableSection` data
-        acc[key] = table.rows;
-        return acc;
-      }, {}),
-    };
+      const pt: RegistryProcessType = processType as RegistryProcessType;
 
-    const result: ProcessingResult = await window.electronAPI.registryProcess(args);
+      const args: RegistryProcessRequest = {
+        processType: pt,
+        species: species,
+        sections: tables.reduce<SectionsMap>((acc: SectionsMap, table: TableSection) => {
+          const key = table.title.toLowerCase().replace(/\s+/g, '_'); // take the table title like "Birth Records" and make it `birth_records` (lowercase & replace spaces with underscores)
+                                                                      // Note this comes from the `TableSection` data
+          acc[key] = table.rows;
+          return acc;
+        }, {}),
+      };
 
-    if (!result.success) {
-      let errorHtml = "<ul><li>Unknown error occurred.</li></ul>";
+      const result: ProcessingResult = await window.electronAPI.registryProcess(args);
 
-      if (Array.isArray(result.errors) && result.errors.length > 0) {
-        errorHtml = `<ul>${result.errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
+      if (!result.success) {
+        let errorHtml = "<ul><li>Unknown error occurred.</li></ul>";
+
+        if (Array.isArray(result.errors) && result.errors.length > 0) {
+          errorHtml = `<ul>${result.errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
+        }
+
+        Swal.fire({
+          title: "Unable to Process",
+          html: errorHtml,
+          icon: "error",
+          confirmButtonText: "OK",
+          width: "40em",
+        });
+      } else {
+        navigate('/registry');
+        Swal.fire({
+          title: "Success",
+          text: `CSV processed successfully.\n${result.insertedRowCount ?? 0} rows processed.`,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
       }
-
+    } catch (err : any) {
       Swal.fire({
-        title: "Unable to Process",
-        html: errorHtml,
+        title: "Error",
+        text: `An unexpected error occurred: ${(err as Error).message}`,
         icon: "error",
         confirmButtonText: "OK",
-        width: "40em",
       });
-    } else {
-      navigate('/registry');
-      Swal.fire({
-        title: "Success",
-        text: `CSV processed successfully.\n${result.insertedRowCount ?? 0} rows processed.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -512,7 +524,7 @@ export const PreprocessorPage: React.FC = () => {
           ))}
 
           <div className="padded-horizontal-lg" style={{ paddingBottom: '8em' }}>
-            <button className='wide-button' onClick={handleSubmit}>Continue</button>
+            <button className='wide-button' onClick={handleSubmit}>{loading ? 'Loading...' : 'Continue'}</button>
           </div>
         </>
       )}
