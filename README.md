@@ -1,10 +1,10 @@
-# AnimalTrakker Farm Desktop (Electron + Vite)
+# AnimalTrakker Desktop (an Electron Application)
 
 ---
 
 ## Overview
 
-This is the desktop application for the AnimalTrakker Farm ecosystem, built using [Electron](https://www.electronjs.org/) and [Vite](https://vitejs.dev/) for a fast and modern development experience. It leverages **TypeScript**, **Jest** for testing, and **Electron Forge** for packaging and distribution.
+This is the desktop application for the AnimalTrakker ecosystem, written in [Typescript](https://www.typescriptlang.org/) for [Electron](https://www.electronjs.org/), and built using [Electron Forge](https://www.electronforge.io/) and [Webpack](https://webpack.js.org/).
 
 ---
 
@@ -36,25 +36,29 @@ From the project root directory, install all required dependencies:
 npm install
 ```
 
+Any additional dependencies added through the course of development should be added with exact versions specified.
+This can be achieved by adding the `--save-exact` command line argument like so:
+
+```sh
+npm install <package-name>@<verison|latest> --save-exect
+```
+Example:
+```sh
+npm install some-package@latest --save-exact
+npm install some-dev-package@0.4.2 --save-exact --save-dev
+```
+
+This ensures that package.json is updated with an exact package version for the dependency, which is the preferred approach for this project.
+
 ### Development Workflow
 
-In development mode, you’ll need to run both the Vite dev server **and** the Electron app in parallel:
-
-1. **Run Vite Dev Server** (in one terminal):
+To transpile the TypeScript code, package the app and assets, and run the application:
 
 ```sh
-npm run vite
+npm run start:{app_variant}
 ```
 
-2. **Start Electron App** (in a second terminal):
-
-To build the TypeScript code and copy assets (for debugging or intermediate purposes):
-
-```sh
-npm run build:{app_version}
-```
-
-In this case, `{app_version}` can be `standard` for the `Farm Desktop` or `registry` for the `Registry Desktop`. It is case sensitive.
+In this case, `{app_variant}` can be `farm` for the `Farm Desktop` or `registry` for the `Registry Desktop`. The App Variant is case sensitive.
 
 ### Production Build & Packaging
 
@@ -63,33 +67,22 @@ We use **[Electron Forge](https://www.electronforge.io/)** to build and package 
 To create a production-ready package:
 
 ```sh
-npm run make
+npm run make:{app_variant} //packages and creates installers for {app_variant}
+npm run make //Packages and creates installers for all app variants
 ```
 
 This will:
-- Compile the source (`tsc`)
-- Copy static assets
+- Transpile the Typescript source
+- Bundle transpiled code and assets with Webpack
+- Create the Electron application folder hierarchy
 - Create distributables (installers, executables, etc.) using Electron Forge
 
 You can also manually package (without making distributables) using:
 
 ```sh
-npm run package
+npm run package:{app_variant} //Packages Electron folder hiearchy for {app_variant}
+npm run package //Packages Electron folder hierarchy for all app variants
 ```
-
----
-
-## Running Tests
-
-We use **[Jest](https://jestjs.io/)** for testing.
-
-To run the test suite:
-
-```sh
-npm run test
-```
-
-Ensure tests are kept up to date as you develop new features.
 
 ---
 
@@ -97,27 +90,28 @@ Ensure tests are kept up to date as you develop new features.
 
 Here’s a summary of the key npm scripts:
 
-| Script         | Description                                  |
-|----------------|----------------------------------------------|
-| `npm start`    | Launches the Electron app with Vite dev server |
-| `npm run vite` | Starts the Vite development server            |
-| `npm run build`| Compiles TypeScript and copies assets         |
-| `npm run build_start`| Runs both `build` and `start`         |
-| `npm run test` | Runs Jest test suite                         |
-| `npm run package` | Creates a packaged version of the app     |
-| `npm run make` | Builds + packages app for production         |
+| Script                     | Description                                    |
+|----------------------------|------------------------------------------------|
+| `npm run start:farm`       | Launches the Electron app as Farm Desktop      |
+| `npm run start:registry`   | Launches the Electron app as Registry Desktop  |
+| `npm run package:farm`     | Packages the Electron app as Farm Desktop      |
+| `npm run package:registry` | Packages the Electron app as Registry Desktop  |
+| `npm run package`          | Packages the Electron app for all app variants |
+| `npm run make:farm`        | Creates installers for Farm Desktop            |
+| `npm run make:registry`    | Creates installers for Registry Desktop        |
+| `npm run make`             | Creates installers for all app variants        |
 
 ---
 
 ## File Structure
 
-We follow [Electron's recommended file structure](https://www.electronjs.org/docs/latest/development/source-code-directory-structure), with custom scripts to handle asset copying and building.
-
 ```
+├── .idea            # Webstorm Configuration
+├── .vscode          # VS Code Configuration
+├── .webpack/        # Build output
+├── out/             # Packaging and Make output
 ├── src/             # Source code (renderer, main process)
-├── dist/            # Build output
-├── scripts/         # Custom build scripts (e.g., copyAssets.js)
-├── public/          # Static assets
+├── packaging/       # Assets associated with application packaging and installers
 ├── package.json     # Project metadata and scripts
 └── README.md        # This file
 ```
