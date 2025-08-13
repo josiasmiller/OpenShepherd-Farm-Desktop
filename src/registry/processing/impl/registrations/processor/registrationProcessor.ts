@@ -13,7 +13,6 @@ import {
   insertAnimalRegistrationRow,
   Species,
   getBreederById,
-  getOwner,
   Owner,
   getRegistryCompanyIdForMembershipNumber,
   getDefaultFlockBookId,
@@ -118,28 +117,9 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
         // we are certain breeder is not null/undefined at this point
         breeder = breeder!;
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // get Owner
-        // var ownerResult = await getOwner(animalId);
-
-        // var owner : Owner;
-
-        // await handleResult(ownerResult, {
-        //   success: (data: Owner) => {
-        //     owner = data;
-        //   },
-        //   error: (err: string) => {
-        //     console.error("Failed to fetch Owner:", err);
-        //     throw new Error(err);
-        //   },
-        // });
-
-        // owner = owner!;
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID
 
-        // var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(owner.flockId);
         var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(breeder.flockId);
 
         var regCompanyId : string;
@@ -214,8 +194,7 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
       }
     }
 
-    // await commitTransaction();
-    await rollbackTransaction();
+    await commitTransaction();
     return {
       success: true,
       insertedRowCount: rows.length
