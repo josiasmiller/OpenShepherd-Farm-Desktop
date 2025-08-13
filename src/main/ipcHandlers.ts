@@ -130,7 +130,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-remove-reasons", getRemoveReasons);
 
   ipcMain.handle("get-scrapie-flock-info", async (_, ownerId: string, isCompany: boolean) => {
-    return await getScrapieFlockInfo(ownerId, isCompany);
+    return getScrapieFlockInfo(ownerId, isCompany);
   });
 
   ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
