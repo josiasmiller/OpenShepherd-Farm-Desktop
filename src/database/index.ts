@@ -57,6 +57,7 @@ export { getColors } from "./repositories/read/tags/getColors";
 export { getCompanies } from "./repositories/read/owners/getCompany";
 export { getContacts } from "./repositories/read/owners/getContact";
 export { getCountries } from "./repositories/read/locations/getCountries";
+export { getCountryPrefixForOwner } from "./repositories/read/tags/getCountryPrefixForOwner";
 export { getCounties } from "./repositories/read/locations/getCounties";
 export { getDeathReasons } from "./repositories/read/deaths/getDeathReaons";
 export { getDefaultFlockBookId } from "./repositories/read/registry/registrations/getFlockBookIdFromRegCompany";

@@ -10,7 +10,7 @@ import { DeathParseResponse, DeathParseRow } from '../../../../../registry/proce
 import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
-import { getBreederById, getScrapieFlockInfo, isOwnerCompany, Owner, ScrapieFlockInfo, Species } from '../../../../../database';
+import { ScrapieFlockInfo, Species } from '../../../../../database';
 import { DatabaseStateCheckResponse } from '../../../../../registry/processing/ipc/handleDatabaseStateCheck';
 import { handleResult, Result } from '../../../../../shared/results/resultTypes';
 
@@ -23,7 +23,7 @@ type EditableTableData = {
 
 type TableSection = {
   title: string;
-  rows: any[]; // or a better shared base type if you have one
+  rows: any[];
 };
 
 type SectionsMap = Record<string, any[]>;
@@ -571,62 +571,69 @@ export const PreprocessorPage: React.FC = () => {
   const handleFixFederalRegnums = async () => {
     if (!tables.length) return;
 
-    // Clone tables so we don’t mutate state directly
     const updatedTables = [...tables];
+    const changes: string[] = []; // Track changes for Swal
 
-    // Process the first table’s rows asynchronously
     const newRows = await Promise.all(
-      updatedTables[0].rows.map(async (row) => {
+      updatedTables[0].rows.map(async (row, index) => {
         const fedType = (row.fedType || "").toString().toLowerCase();
         let prefix: string | null = null;
 
+        const breederId: string = row.breederId;
+        if (!breederId) {
+          console.warn("Skipping row without breederId");
+          return row;
+        }
+
+        const isCompanyResult = await window.electronAPI.isOwnerCompany(breederId);
+        let isCompany: boolean = false;
+
+        await handleResult(isCompanyResult, {
+          success: (data: boolean) => {
+            isCompany = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to get if owner is a company: ", err);
+            throw new Error(err);
+          },
+        });
+
         if (fedType === "federal scrapie") {
-          const breederId: string = row.breederId;
-          if (!breederId) {
-            console.warn("Skipping row without breederId");
-            return row; // Skip updating
-          }
-
-          const isCompanyResult = await window.electronAPI.isOwnerCompany(breederId);
-
-          let isCompany : boolean = false;
-
-          await handleResult(isCompanyResult, {
-            success: (data: boolean) => {
-              isCompany = data;
-            },
-            error: (err: string) => {
-              console.error("Failed to get if owner is a company: ", err);
-              throw new Error(err);
-            },
-          });
-
           const scrapieResult = await window.electronAPI.getScrapieFlockInfo(breederId, isCompany);
-
-          let scrapieInfo : ScrapieFlockInfo | null = null;
 
           await handleResult(scrapieResult, {
             success: (data: ScrapieFlockInfo | null) => {
-              scrapieInfo = data;
+              if (data != null) {
+                prefix = data.scrapieName + "-";
+              }
             },
             error: (err: string) => {
               console.error("Failed to get scrapie flock info: ", err);
               throw new Error(err);
             },
           });
-
-          if (scrapieInfo != null) {
-            prefix = scrapieInfo.scrapieName;
-          }
         } else if (fedType === "electronic") {
-          // TODO --> fetch country code here
-          prefix = "electrobuzz";
+          const countryPrefixResult = await window.electronAPI.getCountryPrefixForOwner(breederId, isCompany);
+
+          await handleResult(countryPrefixResult, {
+            success: (data: string) => {
+              prefix = data + "_";
+            },
+            error: (err: string) => {
+              console.error("Failed to get country tag code: ", err);
+              throw new Error(err);
+            },
+          });
         }
 
         if (prefix && !row.fedNum?.startsWith(prefix)) {
+          const oldFedNum = row.fedNum ?? "";
+          const newFedNum = `${prefix}${oldFedNum}`;
+          changes.push(`Row ${index + 1}: "${oldFedNum}" → "${newFedNum}"`);
+
           return {
             ...row,
-            fedNum: `${prefix}${row.fedNum ?? ""}`,
+            fedNum: newFedNum,
           };
         }
 
@@ -640,9 +647,23 @@ export const PreprocessorPage: React.FC = () => {
     };
 
     setTables(updatedTables);
+
+    // Show Swal summary
+    if (changes.length > 0) {
+      Swal.fire({
+        icon: "success",
+        title: "Federal Registration Numbers Updated",
+        html: changes.join("<br>"),
+        width: "600px",
+      });
+    } else {
+      Swal.fire({
+        icon: "info",
+        title: "No Updates Needed",
+        text: "All federal registration numbers were already correct.",
+      });
+    }
   };
-
-
 
 
 

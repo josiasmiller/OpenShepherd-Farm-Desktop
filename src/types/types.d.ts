@@ -61,6 +61,7 @@ declare global {
       getBreeds: (params: BreedRequest) => Promise<Result<Breed[], string>>;
       getColors: () => Promise<Result<Color[], string>>;
       getCountries: () => Promise<Result<Country[], string>>;
+      getCountryPrefixForOwner: (ownerId : string, isCompany: boolean) => Promise<Result<string, string>>;
       getCounties: () => Promise<Result<County[], string>>;
       getDeathReasons: () => Promise<Result<DeathReason[], string>>;
       getExistingDefaults: () => Promise<Result<DefaultSettingsResults[], string>>;

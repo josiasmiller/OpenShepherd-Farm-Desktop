@@ -8,7 +8,6 @@ import {
   NewDefaultSettingsParameters, 
   DefaultSettingsResults,
   Species,
-  isOwnerCompany
 } from "../database";
 
 import { RegistryProcessRequest } from '../registry/processing/core/types';
@@ -29,8 +28,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getColors: () => ipcRenderer.invoke("get-colors"),
   getCompanyInfo: (onlyGetRegistryCompanies: boolean) => ipcRenderer.invoke("get-company-info", onlyGetRegistryCompanies),
   getContactInfo: () => ipcRenderer.invoke("get-contact-info"),
-  getCounties: () => ipcRenderer.invoke("get-counties"),
   getCountries: () => ipcRenderer.invoke("get-countries"),
+  getCountryPrefixForOwner: (ownerId : string, isCompany: boolean) => ipcRenderer.invoke("get-country-prefix-for-owner", ownerId, isCompany),
+  getCounties: () => ipcRenderer.invoke("get-counties"),
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),
   getExistingDefaults: () => ipcRenderer.invoke("get-existing-defaults"),
   getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),

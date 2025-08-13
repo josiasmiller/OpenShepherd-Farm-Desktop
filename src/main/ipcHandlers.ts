@@ -13,6 +13,7 @@ import {
   getContacts,
   getCounties, 
   getCountries,
+  getCountryPrefixForOwner,
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
@@ -107,6 +108,10 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-counties", getCounties);
 
   ipcMain.handle("get-countries", getCountries);
+
+  ipcMain.handle("get-country-prefix-for-owner", async (_, ownerId: string, isCompany: boolean) => {
+    return getCountryPrefixForOwner(ownerId, isCompany);
+  });
 
   ipcMain.handle("get-death-reasons", getDeathReasons);
 
