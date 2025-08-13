@@ -50,6 +50,7 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
         const birthDateString: string = row.birthdate;
         const breederId : string = row.breederId;
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // determine if breederId is for an contact or company
 
         let isCompany : boolean = false;
