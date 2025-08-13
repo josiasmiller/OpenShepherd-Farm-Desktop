@@ -3,6 +3,7 @@ import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerDMG } from "@electron-forge/maker-dmg";
+import { MakerWix } from "@electron-forge/maker-wix";
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { fromBuildIdentifier } from "@electron-forge/core/dist/util/forge-config";
@@ -31,7 +32,9 @@ const rendererHtmlPath = isDevelopment ? './src/renderer/index.dev.html' : './sr
 
 const buildIdentifier = appVariantFromEnv()
 
+const buildAuthor = 'AnimalTrakker'
 const launchIconPath = path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher');
+
 const buildPackageName = `animaltrakker-${buildIdentifier}-desktop`
 const buildAppVersion = readAndValidateSemver(`version.${buildIdentifier}`)
 
@@ -76,7 +79,7 @@ const config: ForgeConfig = {
             packageJson.name = buildPackageName
             packageJson.productName = buildDisplayName
             packageJson.description = buildDescription
-            packageJson.author = 'AnimalTrakker'
+            packageJson.author = buildAuthor
             packageJson.version = buildAppVersion
             return packageJson
         },
@@ -86,8 +89,16 @@ const config: ForgeConfig = {
         new MakerSquirrel({
             name: buildPackageName,
             setupIcon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher.ico'),
-            authors: 'AnimalTrakker',
+            authors: buildAuthor,
             description: buildDescription,
+        }, ['win32']),
+        new MakerWix({
+            exe: buildPackageName,
+            name: buildDisplayName,
+            version: buildAppVersion,
+            icon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher.ico'),
+            manufacturer: buildAuthor,
+            description: buildDescription
         }, ['win32']),
         new MakerDMG((targetArch) => {
             return {
@@ -112,8 +123,7 @@ const config: ForgeConfig = {
                 genericName: buildDisplayName,
                 description: buildDescription,
                 productDescription: buildDescription,
-                maintainer: "AnimalTrakker",
-
+                maintainer: buildAuthor,
             }
         }, ['linux']),
     ],
