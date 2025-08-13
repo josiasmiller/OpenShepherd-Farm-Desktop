@@ -71,15 +71,15 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
 
         if (hasFederalTagInfo(row)) {
 
-          // first check for companies
-          const scrapieCompanyResult = await getScrapieFlockInfo(
+          // get scrapie flock information for tag
+          const scrapieResult = await getScrapieFlockInfo(
             breederId,
             isCompany,
           );
 
           let sfi : ScrapieFlockInfo | null = null;
 
-          await handleResult(scrapieCompanyResult, {
+          await handleResult(scrapieResult, {
             success: (data: ScrapieFlockInfo | null) => {
               sfi = data;
             },

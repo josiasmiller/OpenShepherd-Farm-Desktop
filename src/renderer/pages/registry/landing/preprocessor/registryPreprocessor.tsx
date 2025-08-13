@@ -10,7 +10,7 @@ import { DeathParseResponse, DeathParseRow } from '../../../../../registry/proce
 import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
-import { Species } from '../../../../../database';
+import { getBreederById, getScrapieFlockInfo, isOwnerCompany, Owner, ScrapieFlockInfo, Species } from '../../../../../database';
 import { DatabaseStateCheckResponse } from '../../../../../registry/processing/ipc/handleDatabaseStateCheck';
 import { handleResult, Result } from '../../../../../shared/results/resultTypes';
 
@@ -569,9 +569,79 @@ export const PreprocessorPage: React.FC = () => {
    * For electronic tags, the federal registration number is set to be prefixed by the country code of the given animal (for example, `840_` for american animals)
    */
   const handleFixFederalRegnums = async () => {
-    // TODO --> implement me
-    console.log("This indicates that the function can be called!");
+    if (!tables.length) return;
+
+    // Clone tables so we don’t mutate state directly
+    const updatedTables = [...tables];
+
+    // Process the first table’s rows asynchronously
+    const newRows = await Promise.all(
+      updatedTables[0].rows.map(async (row) => {
+        const fedType = (row.fedType || "").toString().toLowerCase();
+        let prefix: string | null = null;
+
+        if (fedType === "federal scrapie") {
+          const breederId: string = row.breederId;
+          if (!breederId) {
+            console.warn("Skipping row without breederId");
+            return row; // Skip updating
+          }
+
+          const isCompanyResult = await window.electronAPI.isOwnerCompany(breederId);
+
+          let isCompany : boolean = false;
+
+          await handleResult(isCompanyResult, {
+            success: (data: boolean) => {
+              isCompany = data;
+            },
+            error: (err: string) => {
+              console.error("Failed to get if owner is a company: ", err);
+              throw new Error(err);
+            },
+          });
+
+          const scrapieResult = await window.electronAPI.getScrapieFlockInfo(breederId, isCompany);
+
+          let scrapieInfo : ScrapieFlockInfo | null = null;
+
+          await handleResult(scrapieResult, {
+            success: (data: ScrapieFlockInfo | null) => {
+              scrapieInfo = data;
+            },
+            error: (err: string) => {
+              console.error("Failed to get scrapie flock info: ", err);
+              throw new Error(err);
+            },
+          });
+
+          if (scrapieInfo != null) {
+            prefix = scrapieInfo.scrapieName;
+          }
+        } else if (fedType === "electronic") {
+          // TODO --> fetch country code here
+          prefix = "electrobuzz";
+        }
+
+        if (prefix && !row.fedNum?.startsWith(prefix)) {
+          return {
+            ...row,
+            fedNum: `${prefix}${row.fedNum ?? ""}`,
+          };
+        }
+
+        return row;
+      })
+    );
+
+    updatedTables[0] = {
+      ...updatedTables[0],
+      rows: newRows,
+    };
+
+    setTables(updatedTables);
   };
+
 
 
 

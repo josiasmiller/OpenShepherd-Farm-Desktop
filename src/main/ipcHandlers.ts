@@ -19,6 +19,7 @@ import {
   getPedigree,
   getPremises,
   getRemoveReasons,
+  getScrapieFlockInfo,
   getSexes,
   getSpecies,
   getStates,
@@ -30,6 +31,7 @@ import {
   getTransferReasons,
   getUnits,
   getUnitTypes,
+  isOwnerCompany,
   Species,
   writeNewDefaultSettings,
 } from "../database";
@@ -122,6 +124,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-remove-reasons", getRemoveReasons);
 
+  ipcMain.handle("get-scrapie-flock-info", async (_, ownerId: string, isCompany: boolean) => {
+    return await getScrapieFlockInfo(ownerId, isCompany);
+  });
+
   ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
     return getStoreSelectedDefault();
   });
@@ -151,6 +157,10 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle("get-unit-types", getUnitTypes);
+
+  ipcMain.handle("is-owner-company", async (_, ownerId) => {
+    return isOwnerCompany(ownerId);
+  });
 
   ipcMain.handle("is-database-loaded", () => {
     return getDatabase() !== null;

@@ -27,7 +27,8 @@ import {
   UnitRequest, 
   UnitType,
   NewDefaultSettingsParameters,
-  PedigreeNode
+  PedigreeNode,
+  ScrapieFlockInfo
 } from "../database";
 
 import { Result } from "../shared/results/resultTypes";
@@ -66,6 +67,7 @@ declare global {
       getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
       getLocations: () => Promise<Result<TagLocation[], string>>;
       getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
+      getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => Promise<Result<ScrapieFlockInfo | null, string>>;
       getStoreSelectedDefault: () => Promise<DefaultSettingsResults | null>;
       getStoreSelectedSpecies: () => Promise<Species | null>;
       getSexes: () => Promise<Result<Sex[], string>>;
@@ -78,6 +80,7 @@ declare global {
       getTransferReasons: () => Promise<Result<Unit[], string>>;
       getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
       getUnitTypes: () => Promise<Result<UnitType[], string>>;
+      isOwnerCompany: (ownerId: string) => Promise<Result<boolean, string>>;
       isDatabaseLoaded: () => Promise<boolean>;
       openDirectory: (path: string) => Promise<void>;
       openExternalURL: (url: string) => Promise<void>;
