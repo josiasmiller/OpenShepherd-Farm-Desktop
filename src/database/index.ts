@@ -22,6 +22,7 @@ export type { Owner } from "./models/read/owners/owner"
 export type { PedigreeNode } from "./models/read/animal/pedigree/pedigree"
 export type { Premise } from "./models/read/premises/premise";
 export type { RemoveReason } from "./models/read/tags/removeReason";
+export type { ScrapieFlockInfo } from "./models/read/scrapie/scrapieFlockInfo";
 export type { Sex } from "./models/read/animal/general/sex";
 export type { Species } from "./models/read/animal/general/species";
 export type { State } from "./models/read/locations/state";
@@ -73,6 +74,7 @@ export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons";
+export { getScrapieFlockInfo } from "./repositories/read/scrapie/getScrapieFlockInfo";
 export { getSexById } from "./repositories/read/animal/sex/getSexById";
 export { getSexes } from "./repositories/read/animal/sex/getSexes";
 export { getSexFromAnimalId } from "./repositories/read/animal/sex/getSexFromAnimalId";
@@ -88,6 +90,7 @@ export { getTissueTestResults } from "./repositories/read/animal/tests/getTissue
 export { getTransferReasons } from "./repositories/read/animal/transfers/getTransferReasons";
 export { getUnits } from "./repositories/read/units/getUnits";
 export { getUnitTypes } from "./repositories/read/units/getUnitTypes";
+export { isOwnerCompany } from "./repositories/read/owners/isOwnerCompany"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

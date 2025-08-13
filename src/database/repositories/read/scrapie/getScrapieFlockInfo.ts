@@ -11,7 +11,7 @@ export const getScrapieFlockInfo = async (
   ownerId: string,
   isCompany: boolean
 ): Promise<Result<ScrapieFlockInfo | null, string>> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   if (db == null) {
     return new Failure("DB instance is null");
   }

@@ -1,8 +1,6 @@
 import { RegistryRow, ProcessingResult } from '../../../core/types';
 import { handleResult } from '../../../../../shared/results/resultTypes';
 
-import { incrementRegisteredValue } from "../../../helpers/registryHelpers";
-
 // DB actions
 import {
   beginTransaction,
@@ -14,7 +12,7 @@ import {
 import {
   insertAnimalRegistrationRow,
   Species,
-  getBreeder,
+  getBreederById,
   getOwner,
   Owner,
   getRegistryCompanyIdForMembershipNumber,
@@ -22,12 +20,16 @@ import {
   updateAnimalName,
   incrementLastRegistrationNumber,
   markRegistryCertificateNotPrinted,
-  getLastRegisteredValue,
   getCoatColorForAnimal,
   CoatColor,
   registryTypeToUuid,
   RegistryType,
+  insertAnimalIdInfoRow,
+  getScrapieFlockInfo,
+  ScrapieFlockInfo,
+  isOwnerCompany,
 } from '../../../../../database/index';
+import { mapRegistryRowToFedTagInput } from './mappings/registryRowToFedTagInput';
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
@@ -47,12 +49,61 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
         const animalId : string = row.animalId;
         const animalName : string = row.animalName;
         const birthDateString: string = row.birthdate;
+        const breederId : string = row.breederId;
+
+        // determine if breederId is for an contact or company
+
+        let isCompany : boolean = false;
+        let isCompanyResult = await isOwnerCompany(breederId);
+
+        await handleResult(isCompanyResult, {
+          success: (data: boolean) => {
+            isCompany = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch if owner is a contact or company:", err);
+            throw new Error(err);
+          },
+        });
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // get breeder
-        var breederResult = await getBreeder(animalId);
+        // add federal tag to DB
 
-        var breeder : Owner;
+        if (hasFederalTagInfo(row)) {
+
+          // first check for companies
+          const scrapieCompanyResult = await getScrapieFlockInfo(
+            breederId,
+            isCompany,
+          );
+
+          let sfi : ScrapieFlockInfo | null = null;
+
+          await handleResult(scrapieCompanyResult, {
+            success: (data: ScrapieFlockInfo | null) => {
+              sfi = data;
+            },
+            error: (err: string) => {
+              console.error("Failed to fetch ScrapieFlockInfo:", err);
+              throw new Error(err);
+            },
+          });
+
+          let scrapieId : string | null = null;
+
+          if (sfi != null) {
+            scrapieId = sfi.flockNumberId;
+          }
+
+          const fedTagInput = mapRegistryRowToFedTagInput(row, animalId, scrapieId);
+          await insertAnimalIdInfoRow(fedTagInput);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // get breeder
+
+        let breeder : Owner;
+        let breederResult = await getBreederById(breederId, isCompany);
 
         await handleResult(breederResult, {
           success: (data: Owner) => {
@@ -69,26 +120,27 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get Owner
-        var ownerResult = await getOwner(animalId);
+        // var ownerResult = await getOwner(animalId);
 
-        var owner : Owner;
+        // var owner : Owner;
 
-        await handleResult(ownerResult, {
-          success: (data: Owner) => {
-            owner = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch Owner:", err);
-            throw new Error(err);
-          },
-        });
+        // await handleResult(ownerResult, {
+        //   success: (data: Owner) => {
+        //     owner = data;
+        //   },
+        //   error: (err: string) => {
+        //     console.error("Failed to fetch Owner:", err);
+        //     throw new Error(err);
+        //   },
+        // });
 
-        owner = owner!;
+        // owner = owner!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID
 
-        var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(owner.flockId);
+        // var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(owner.flockId);
+        var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(breeder.flockId);
 
         var regCompanyId : string;
 
@@ -162,7 +214,8 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
       }
     }
 
-    await commitTransaction();
+    // await commitTransaction();
+    await rollbackTransaction();
     return {
       success: true,
       insertedRowCount: rows.length
@@ -243,4 +296,61 @@ async function handleRegistrationNumber(animalId : string): Promise<{ newRegNum 
     newRegNum: newRegisteredValue,
     registrationTypeId: registrationUuid,
   };
+}
+
+
+/**
+ * checks if a given row has all pertinent information required to properly upload a federal tag to the DB
+ * 
+ * @param row row being processed
+ * @returns bool indicating if all required information is present to upload a federal tag to the DB
+ */
+function hasFederalTagInfo(row: RegistryRow): boolean {
+  
+  // extract data from registry row
+  const fedType: string = row.fedType;
+  if (!fedType) {
+    return false;
+  }
+
+  if (fedType.toLowerCase() != 'federal scrapie' && fedType.toLowerCase() != 'electronic') {
+    return false; // not a federal scrapie, not official?
+  }
+
+  const breederid = row.breederId;
+  if (!breederid) {
+    return false;
+  }
+
+  const idType = row.fedTypeKey;
+  if (!idType) {
+    return false;
+  }
+
+  const idColor =  row.fedColorKey;
+  if (!idColor) {
+    return false;
+  }
+
+  const idLocation = row.fedLocKey;
+  if (!idLocation) {
+    return false;
+  }
+
+  const dateOn = row.birthdate;
+  if (!dateOn) {
+    return false;
+  }
+
+  const idValue = row.fedNum;
+  if (!idValue) {
+    return false;
+  }
+
+  const isOfficial = row.isOfficial;
+  if (!isOfficial) {
+    return false;
+  }
+  
+  return true;
 }
