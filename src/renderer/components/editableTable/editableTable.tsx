@@ -26,13 +26,16 @@ export const EditableTable: React.FC<EditableTableProps> = ({ rows, columns, onC
 
                     if (typeof value === 'boolean') {
                       return (
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={(e) =>
-                            onChange(idx, { ...row, [col.key]: e.target.checked })
-                          }
-                        />
+                        <label style={{ cursor: 'pointer', padding: '0.25rem', display: 'inline-flex', alignItems: 'center' }}>
+                          <input
+                            type="checkbox"
+                            style={{ width: '2em', height: '2em' }}
+                            checked={value}
+                            onChange={(e) =>
+                              onChange(idx, { ...row, [col.key]: e.target.checked })
+                            }
+                          />
+                        </label>
                       );
                     } else if (typeof value === 'number') {
                       return (

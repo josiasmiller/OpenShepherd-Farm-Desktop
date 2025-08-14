@@ -13,12 +13,14 @@ import {
   getContacts,
   getCounties, 
   getCountries,
+  getCountryPrefixForOwner,
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
   getPedigree,
   getPremises,
   getRemoveReasons,
+  getScrapieFlockInfo,
   getSexes,
   getSpecies,
   getStates,
@@ -30,6 +32,7 @@ import {
   getTransferReasons,
   getUnits,
   getUnitTypes,
+  isOwnerCompany,
   Species,
   writeNewDefaultSettings,
 } from "../database";
@@ -106,6 +109,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle("get-countries", getCountries);
 
+  ipcMain.handle("get-country-prefix-for-owner", async (_, ownerId: string, isCompany: boolean) => {
+    return getCountryPrefixForOwner(ownerId, isCompany);
+  });
+
   ipcMain.handle("get-death-reasons", getDeathReasons);
 
   ipcMain.handle("get-existing-defaults", getExistingDefaults);
@@ -121,6 +128,10 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-premise-info", getPremises);
 
   ipcMain.handle("get-remove-reasons", getRemoveReasons);
+
+  ipcMain.handle("get-scrapie-flock-info", async (_, ownerId: string, isCompany: boolean) => {
+    return getScrapieFlockInfo(ownerId, isCompany);
+  });
 
   ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
     return getStoreSelectedDefault();
@@ -151,6 +162,10 @@ export const registerIpcHandlers = () => {
   });
 
   ipcMain.handle("get-unit-types", getUnitTypes);
+
+  ipcMain.handle("is-owner-company", async (_, ownerId) => {
+    return isOwnerCompany(ownerId);
+  });
 
   ipcMain.handle("is-database-loaded", () => {
     return getDatabase() !== null;

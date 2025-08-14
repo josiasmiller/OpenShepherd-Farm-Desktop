@@ -51,7 +51,7 @@ export const registrationParser = async (): Promise<ParseResult<RegistrationPars
             let value = row[csvKey];
 
             if (fieldKey === 'isOfficial') {
-              value = value?.toLowerCase() === 'true';
+              value = value?.toLowerCase() === 'true' || value?.toLowerCase() === '1'; // check if field is 'true' or '1'
             }
 
             (parsedRow as Record<keyof RegistrationParseRow, typeof value>)[fieldKey] = value;

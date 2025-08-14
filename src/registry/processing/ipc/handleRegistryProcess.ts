@@ -15,7 +15,6 @@ export async function handleRegistryProcess(
 ): Promise<ProcessingResult> {
 
   const processor : RegistryProcessor = registryProcessorFactory(processType);
-
   const validationResults : ValidationResult[] = await processor.validateRegistryRows(sections, species);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
@@ -24,7 +23,6 @@ export async function handleRegistryProcess(
       .filter((r) => !r.isValid)
       .flatMap((r) => r.errors);
 
-    console.error("Validation failed:", allErrors);
     return {
       success: false,
       errors: allErrors,

@@ -7,7 +7,7 @@ import {
   UnitRequest, 
   NewDefaultSettingsParameters, 
   DefaultSettingsResults,
-  Species
+  Species,
 } from "../database";
 
 import { RegistryProcessRequest } from '../registry/processing/core/types';
@@ -28,8 +28,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getColors: () => ipcRenderer.invoke("get-colors"),
   getCompanyInfo: (onlyGetRegistryCompanies: boolean) => ipcRenderer.invoke("get-company-info", onlyGetRegistryCompanies),
   getContactInfo: () => ipcRenderer.invoke("get-contact-info"),
-  getCounties: () => ipcRenderer.invoke("get-counties"),
   getCountries: () => ipcRenderer.invoke("get-countries"),
+  getCountryPrefixForOwner: (ownerId : string, isCompany: boolean) => ipcRenderer.invoke("get-country-prefix-for-owner", ownerId, isCompany),
+  getCounties: () => ipcRenderer.invoke("get-counties"),
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),
   getExistingDefaults: () => ipcRenderer.invoke("get-existing-defaults"),
   getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),
@@ -37,6 +38,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getPedigree: (animalId: string) => ipcRenderer.invoke("get-peidgree", animalId),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
   getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
+  getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => ipcRenderer.invoke("get-scrapie-flock-info", ownerId, isCompany),
   getStoreSelectedDefault: (): Promise<DefaultSettingsResults | null> => ipcRenderer.invoke('get-store-selected-default'),
   getStoreSelectedSpecies: (): Promise<Species | null> => ipcRenderer.invoke('get-store-selected-species'),
   getSexes: () => ipcRenderer.invoke("get-sexes"),
@@ -49,6 +51,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getTransferReasons: () => ipcRenderer.invoke("get-transfer-reasons"),
   getUnits: (queryParams: UnitRequest) => ipcRenderer.invoke("get-units", queryParams),
   getUnitTypes: () => ipcRenderer.invoke("get-unit-types"),
+  isOwnerCompany: (ownerId : string) => ipcRenderer.invoke("is-owner-company", ownerId),
   isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
   openDirectory: (path: string) => ipcRenderer.invoke('open-directory', path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),

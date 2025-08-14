@@ -10,7 +10,7 @@ import { DeathParseResponse, DeathParseRow } from '../../../../../registry/proce
 import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
-import { Species } from '../../../../../database';
+import { ScrapieFlockInfo, Species } from '../../../../../database';
 import { DatabaseStateCheckResponse } from '../../../../../registry/processing/ipc/handleDatabaseStateCheck';
 import { handleResult, Result } from '../../../../../shared/results/resultTypes';
 
@@ -23,10 +23,97 @@ type EditableTableData = {
 
 type TableSection = {
   title: string;
-  rows: any[]; // or a better shared base type if you have one
+  rows: any[];
 };
 
 type SectionsMap = Record<string, any[]>;
+
+type ActionButton = {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+};
+
+const processTypeButtons: Record<string, (ctx: {
+  handlePreCheck: () => void;
+  selectAndLoadFile: () => void;
+  handleFixFederalRegnums: () => void;
+  loading: boolean;
+}) => ActionButton[]> = {
+  births: ({ handlePreCheck, selectAndLoadFile, loading }) => [
+    {
+      label: "Pre-check Database",
+      onClick: handlePreCheck,
+      className: "wide-button"
+    },
+    {
+      label: loading ? "Loading..." : "Select Birth Notify CSV",
+      onClick: selectAndLoadFile,
+      disabled: loading,
+      className: "wide-button"
+    }
+  ],
+
+  registrations: ({ handlePreCheck, handleFixFederalRegnums, selectAndLoadFile, loading }) => [
+    {
+      label: "Pre-check Database",
+      onClick: handlePreCheck,
+      className: "wide-button"
+    },
+    {
+      label: "Fix Federal Registration Numbers",
+      onClick: handleFixFederalRegnums,
+      className: "wide-button"
+    },
+    {
+      label: loading ? "Loading..." : "Select Registrations CSV",
+      onClick: selectAndLoadFile,
+      disabled: loading,
+      className: "wide-button"
+    }
+  ],
+
+  deaths: ({ handlePreCheck, selectAndLoadFile, loading }) => [
+    {
+      label: "Pre-check Database",
+      onClick: handlePreCheck,
+      className: "wide-button"
+    },
+    {
+      label: loading ? "Loading..." : "Select Deaths CSV",
+      onClick: selectAndLoadFile,
+      disabled: loading,
+      className: "wide-button"
+    }
+  ],
+
+  transfers: ({ handlePreCheck, selectAndLoadFile, loading }) => [
+    {
+      label: "Pre-check Database",
+      onClick: handlePreCheck,
+      className: "wide-button"
+    },
+    {
+      label: loading ? "Loading..." : "Select Transfers CSV",
+      onClick: selectAndLoadFile,
+      disabled: loading,
+      className: "wide-button"
+    }
+  ],
+
+  // Default fallback
+  default: ({ selectAndLoadFile, loading }) => [
+    {
+      label: loading ? "Loading..." : "Select CSV File",
+      onClick: selectAndLoadFile,
+      disabled: loading,
+      className: "wide-button"
+    }
+  ]
+};
+
+
 
 export const PreprocessorPage: React.FC = () => {
   const location = useLocation();
@@ -486,6 +573,109 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
+  /**
+   * looks through the federal registration numbers and makes checks if they are federal scrapie tags or electronic tags.
+   * 
+   * For federal scrapie tags, the federal registration number is set to be prefixed by the `scrapie_flockid` from the `scrapie_flock_number_table`
+   * 
+   * For electronic tags, the federal registration number is set to be prefixed by the country code of the given animal (for example, `840_` for american animals)
+   */
+  const handleFixFederalRegnums = async () => {
+    if (!tables.length) return;
+
+    const updatedTables = [...tables];
+    const changes: string[] = []; // Track changes for Swal
+
+    const newRows = await Promise.all(
+      updatedTables[0].rows.map(async (row, index) => {
+        const fedType = (row.fedType || "").toString().toLowerCase();
+        let prefix: string | null = null;
+
+        const breederId: string = row.breederId;
+        if (!breederId) {
+          console.warn("Skipping row without breederId");
+          return row;
+        }
+
+        const isCompanyResult = await window.electronAPI.isOwnerCompany(breederId);
+        let isCompany: boolean = false;
+
+        await handleResult(isCompanyResult, {
+          success: (data: boolean) => {
+            isCompany = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to get if owner is a company: ", err);
+            throw new Error(err);
+          },
+        });
+
+        if (fedType === "federal scrapie") {
+          const scrapieResult = await window.electronAPI.getScrapieFlockInfo(breederId, isCompany);
+
+          await handleResult(scrapieResult, {
+            success: (data: ScrapieFlockInfo | null) => {
+              if (data != null) {
+                prefix = data.scrapieName + "-";
+              }
+            },
+            error: (err: string) => {
+              console.error("Failed to get scrapie flock info: ", err);
+              throw new Error(err);
+            },
+          });
+        } else if (fedType === "electronic") {
+          const countryPrefixResult = await window.electronAPI.getCountryPrefixForOwner(breederId, isCompany);
+
+          await handleResult(countryPrefixResult, {
+            success: (data: string) => {
+              prefix = data + "_";
+            },
+            error: (err: string) => {
+              console.error("Failed to get country tag code: ", err);
+              throw new Error(err);
+            },
+          });
+        }
+
+        if (prefix && !row.fedNum?.startsWith(prefix)) {
+          const oldFedNum = row.fedNum ?? "";
+          const newFedNum = `${prefix}${oldFedNum}`;
+          changes.push(`Row ${index + 1}: "${oldFedNum}" → "${newFedNum}"`);
+
+          return {
+            ...row,
+            fedNum: newFedNum,
+          };
+        }
+
+        return row;
+      })
+    );
+
+    updatedTables[0] = {
+      ...updatedTables[0],
+      rows: newRows,
+    };
+
+    setTables(updatedTables);
+
+    // Show Swal summary
+    if (changes.length > 0) {
+      Swal.fire({
+        icon: "success",
+        title: "Federal Registration Numbers Updated",
+        html: changes.join("<br>"),
+        width: "600px",
+      });
+    } else {
+      Swal.fire({
+        icon: "info",
+        title: "No Updates Needed",
+        text: "All federal registration numbers were already correct.",
+      });
+    }
+  };
 
 
 
@@ -496,14 +686,27 @@ export const PreprocessorPage: React.FC = () => {
       <h1 className="app-header">{capitalizedType ? `Preprocess ${capitalizedType}` : 'Preprocess Records'}</h1>
 
       <div className="padded-horizontal-lg" style={{ paddingBottom: '4em' }}>
-        <div className="padded-horizontal-lg" style={{ paddingBottom: '2em' }}>
-          <button className='wide-button' onClick={handlePreCheck}>Pre-check Database</button>
-        </div>
-
-        <button className='wide-button' onClick={selectAndLoadFile} disabled={loading}>
-          {loading ? 'Loading...' : 'Select CSV File'}
-        </button>
+        {(
+          processTypeButtons[processType ?? ""] ??
+          processTypeButtons.default
+        )({
+          handlePreCheck,
+          selectAndLoadFile,
+          handleFixFederalRegnums,
+          loading,
+        }).map((btn, idx) => (
+          <div key={idx} className="padded-horizontal-lg" style={{ paddingBottom: '2em' }}>
+            <button
+              className={btn.className ?? ""}
+              onClick={btn.onClick}
+              disabled={btn.disabled}
+            >
+              {btn.label}
+            </button>
+          </div>
+        ))}
       </div>
+
 
       {hasSelectedFile && (
         <>
