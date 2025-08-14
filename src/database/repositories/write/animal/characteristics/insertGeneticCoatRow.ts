@@ -1,5 +1,4 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -20,9 +19,6 @@ export async function insertGeneticCoatRow(
 
   const id = uuidv4();
 
-  const created = getSQLiteDateStringNow();
-  const modified = created;
-
   const geneticCharacteristicTableId = '0972486b-7b99-427e-b942-fa5ec88c2678'; // fixed UUID for coat color
   const calculationMethodId = '1ae4b983-104a-4e8e-b269-ff3790608c8d';          // fixed UUID for 'Observation'
 
@@ -37,7 +33,7 @@ export async function insertGeneticCoatRow(
       genetic_characteristic_time,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, ?, "00:00:00", ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, "00:00:00", datetime('now'), datetime('now'))
   `;
 
   return new Promise<string>((resolve, reject) => {
@@ -50,8 +46,6 @@ export async function insertGeneticCoatRow(
         coatColorId,
         calculationMethodId,
         dateObserved,
-        created,
-        modified,
       ],
       function (err: Error | null) {
         if (err) {

@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure, handleResult } from "../../../../../shared/results/resultTypes";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { 
   REGISTRATION_CHOCOLATE_WELSH,
   REGISTRATION_REGISTERED,
@@ -48,8 +47,6 @@ export async function markRegistryCertificateNotPrinted(
   coatColor = coatColor!;
 
   const id = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   let companyId: string | undefined;
   let registrationTypeId: string | undefined;
@@ -83,7 +80,7 @@ export async function markRegistryCertificateNotPrinted(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
   `;
 
   const values = [
@@ -92,8 +89,6 @@ export async function markRegistryCertificateNotPrinted(
     animalId,
     registrationTypeId,
     0, // when initially inserting, the papers are NOT printed.
-    created,
-    modified,
   ];
 
   try {

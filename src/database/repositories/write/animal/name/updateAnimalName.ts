@@ -1,6 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 
 /**
  * Updates the animal_name and modified timestamp for a given animal ID.
@@ -17,16 +16,14 @@ export async function updateAnimalName(
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
-  const modified = getSQLiteDateStringNow();
-
   const query = `
     UPDATE animal_table
     SET animal_name = ?,
-        modified = ?
+        modified = datetime('now')
     WHERE id_animalid = ?
   `;
 
-  const values = [newName, modified, animalId];
+  const values = [newName, animalId];
 
   try {
     const changes = await new Promise<number>((resolve, reject) => {

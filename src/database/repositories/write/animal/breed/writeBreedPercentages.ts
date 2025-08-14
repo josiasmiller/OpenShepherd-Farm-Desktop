@@ -1,6 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 
 interface BreedPercentageRow {
   id_breedid: string;
@@ -73,8 +72,6 @@ export async function writeAnimalBreedPercentages(
   }
 
   const breedMap = combineBreedPercentages(sireBreeds, damBreeds);
-
-  const now = getSQLiteDateStringNow();
   
   const insertBreed = (
     breedId: string,
@@ -89,9 +86,9 @@ export async function writeAnimalBreedPercentages(
           breed_percentage,
           created,
           modified
-        ) VALUES (?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
       `;
-      const values = [uuidv4(), animalId, breedId, percentage, now, now];
+      const values = [uuidv4(), animalId, breedId, percentage];
       db.run(query, values, function (err) {
         if (err) reject(err);
         else resolve();

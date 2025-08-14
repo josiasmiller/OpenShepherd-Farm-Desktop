@@ -3,7 +3,6 @@ import { getDatabase } from "../../../dbConnections";
 import { Result, Success, Failure } from "../../../../shared/results/resultTypes";
 import { OwnerType } from "../../../client-types";
 import { Owner } from "../../../models/read/owners/owner";
-import { getSQLiteDateStringNow } from "../../../dbUtils";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,
@@ -29,9 +28,6 @@ export async function insertAnimalRegistrationRow(
 ): Promise<Result<null, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
-
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   // First check: does a matching registration already exist?
   const existingRow = await new Promise<any>((resolve, reject) => {
@@ -75,7 +71,7 @@ export async function insertAnimalRegistrationRow(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, datetime('now'), datetime('now'))
   `;
 
   const values = [
@@ -89,8 +85,6 @@ export async function insertAnimalRegistrationRow(
     registrationDate,
     breeder.type === OwnerType.CONTACT ? breeder.contact.id : null,
     breeder.type === OwnerType.COMPANY ? breeder.company.id : null,
-    created,
-    modified,
   ];
 
   try {
