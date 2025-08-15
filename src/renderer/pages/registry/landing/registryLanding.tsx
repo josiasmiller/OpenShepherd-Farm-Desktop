@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 
 import React, { useEffect, useMemo } from "react";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
+import { BackButton } from "../../../components/backButton/backButton";
+
 import { useState } from "react";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import { handleResult } from "../../../../shared/results/resultTypes";
@@ -138,6 +140,8 @@ const RegistryLanding: React.FC = () => {
 
   return (
     <div>
+
+      <BackButton />
 
       <div className="padded-horizontal-lg search-filters">
         <label htmlFor="selectSpecies">Species</label>

@@ -1,5 +1,6 @@
 import React from "react";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
+import { BackButton } from "../../../components/backButton/backButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
@@ -251,6 +252,10 @@ const AnimalSearch: React.FC = () => {
   
   return (
     <div className="animal-search-container">
+
+      <div style={{ display: "flex", justifyContent: "flex-start", padding: "1rem" }}>
+        <BackButton />
+      </div>
 
       <CollapsibleSection
         title="Search for Animals"
