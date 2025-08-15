@@ -119,24 +119,25 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
         breeder = breeder!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // get the registry company ID
+        // get the registry company ID for a given animal via the animal's coat color
 
-        var regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(breeder.flockId);
+        var coatColorResult = await getCoatColorForAnimal(animalId);
+        let coatColor : CoatColor
+        let regCompanyId : string;
 
-        var regCompanyId : string;
-
-        await handleResult(regCompanyIdResult, {
-          success: (data: string) => {
-            regCompanyId = data;
+        await handleResult(coatColorResult, {
+          success: (data: CoatColor) => {
+            coatColor = data;
           },
           error: (err: string) => {
-            console.error("Failed to fetch registry company id: ", err);
+            console.error("Failed to fetch animal coat color: ", err);
             throw new Error(err);
           },
         });
 
-        // passed check, convert regCompanyId to not be possibly undefined
-        regCompanyId = regCompanyId!;
+        // passed check, we know coatColor is valid here now
+        coatColor = coatColor!;
+        regCompanyId = coatColor.registryCompanyId;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get flock book ID

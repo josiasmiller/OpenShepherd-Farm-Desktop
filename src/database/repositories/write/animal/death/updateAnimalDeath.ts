@@ -1,5 +1,4 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
 /**
@@ -18,20 +17,18 @@ export async function updateAnimalDeath(
   const db = getDatabase();
   if (!db) return new Failure('DB instance is null');
 
-  const modified = getSQLiteDateStringNow();
-
   const query = `
     UPDATE animal_table
     SET
       death_date = ?,
       id_deathreasonid = ?,
-      modified = ?
+      modified = datetime('now')
     WHERE id_animalid = ?
   `;
 
   try {
     await new Promise<void>((resolve, reject) => {
-      db.run(query, [deathDate, deathReasonId, modified, animalId], function (err) {
+      db.run(query, [deathDate, deathReasonId, animalId], function (err) {
         if (err) reject(err);
         else resolve();
       });

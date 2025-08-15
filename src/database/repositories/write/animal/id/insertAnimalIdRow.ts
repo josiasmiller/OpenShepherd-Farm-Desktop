@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { AnimalIdInfoInput } from "../../../../models/write/animal/id/animalIdInfoInput";
 
 /**
@@ -19,8 +18,6 @@ export async function insertAnimalIdInfoRow(
   if (!db) return new Failure("DB instance is null");
 
   const id = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   const query = `
     INSERT INTO animal_id_info_table (
@@ -40,7 +37,7 @@ export async function insertAnimalIdInfoRow(
       id_idremovereasonid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL, datetime('now'), datetime('now'))
   `;
 
   const values = [
@@ -55,8 +52,6 @@ export async function insertAnimalIdInfoRow(
     input.idValue,
     input.idScrapieFlock ?? null,
     input.isOfficial ? 1 : 0,
-    created,
-    modified,
   ];
 
   try {

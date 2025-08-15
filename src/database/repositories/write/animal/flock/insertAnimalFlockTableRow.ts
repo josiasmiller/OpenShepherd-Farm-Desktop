@@ -1,5 +1,4 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -17,8 +16,6 @@ export async function insertAnimalFlockTableRow(
   if (!db) throw new Error("DB instance is null");
 
   const idAnimalFlockprefixid = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   const query = `
     INSERT INTO animal_flock_prefix_table (
@@ -27,7 +24,7 @@ export async function insertAnimalFlockTableRow(
       id_flockprefixid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, datetime('now'), datetime('now'))
   `;
 
   return new Promise<string>((resolve, reject) => {
@@ -37,8 +34,6 @@ export async function insertAnimalFlockTableRow(
         idAnimalFlockprefixid,
         idAnimalId,
         idFlockprefixId,
-        created,
-        modified,
       ],
       function (err: Error | null) {
         if (err) {

@@ -1,5 +1,4 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
@@ -20,8 +19,6 @@ export async function insertAnimalNote(
   if (!db) return new Failure('DB instance is null');
 
   const id = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   const query = `
     INSERT INTO animal_note_table (
@@ -33,13 +30,13 @@ export async function insertAnimalNote(
       id_predefinednotesid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, "00:00:00", NULL, ?, ?)
+    ) VALUES (?, ?, ?, ?, "00:00:00", NULL, datetime('now'), datetime('now'))
   `;
 
   return new Promise<Result<string, string>>((resolve, reject) => {
     db.run(
       query,
-      [id, animalId, noteText, noteDate, created, modified],
+      [id, animalId, noteText, noteDate],
       (err: Error | null) => {
         if (err) {
           resolve(new Failure(`Failed to insert death note: ${err.message}`));

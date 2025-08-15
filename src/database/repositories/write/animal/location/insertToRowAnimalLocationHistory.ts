@@ -1,5 +1,4 @@
 import { getDatabase } from "../../../../dbConnections";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 
@@ -21,8 +20,6 @@ export async function insertAnimalGoesToLocation(
   if (!db) return new Failure("DB instance is null");
 
   const idAnimalLocationHistoryId = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   const query = `
     INSERT INTO animal_location_history_table (
@@ -33,7 +30,7 @@ export async function insertAnimalGoesToLocation(
       to_id_premiseid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
   `;
 
   try {
@@ -46,8 +43,6 @@ export async function insertAnimalGoesToLocation(
           movementDate,
           fromPremiseId,
           toPremiseId,
-          created,
-          modified,
         ],
         (err: Error | null) => {
           if (err) reject(err);

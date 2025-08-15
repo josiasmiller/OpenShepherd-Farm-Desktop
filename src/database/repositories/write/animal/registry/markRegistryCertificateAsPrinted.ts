@@ -1,6 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 
 /**
  * Updates the registry_certificate_print_table to set printed = 1
@@ -15,20 +14,16 @@ export async function markRegistryCertificateAsPrinted(
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
-  const modified = getSQLiteDateStringNow();
-
   const query = `
     UPDATE registry_certificate_print_table
     SET printed = 1,
-        modified = ?
+        modified = datetime('now')
     WHERE id_animalid = ?
   `;
 
-  const values = [modified, animalId];
-
   try {
     await new Promise<void>((resolve, reject) => {
-      db.run(query, values, function (err) {
+      db.run(query, [animalId], function (err) {
         if (err) {
           reject(err);
         } else if (this.changes === 0) {

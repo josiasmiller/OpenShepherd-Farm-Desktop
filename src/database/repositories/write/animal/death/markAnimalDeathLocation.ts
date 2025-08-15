@@ -1,5 +1,4 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from '../../../../../shared/results/resultTypes';
 
@@ -24,8 +23,6 @@ export async function markAnimalDeathLocation(
   const db = getDatabase();
   if (!db) return new Failure('DB instance is null');
 
-  const created = getSQLiteDateStringNow();
-  const modified = created;
   const newId = uuidv4();
 
   try {
@@ -67,9 +64,9 @@ export async function markAnimalDeathLocation(
           to_id_premiseid,
           created,
           modified
-        ) VALUES (?, ?, ?, ?, NULL, ?, ?)
+        ) VALUES (?, ?, ?, ?, NULL, datetime('now'), datetime('now'))
         `,
-        [newId, animalId, deathDate, fromPremiseId, created, modified],
+        [newId, animalId, deathDate, fromPremiseId, ],
         (err) => {
           if (err) reject(err);
           else resolve();

@@ -1,7 +1,6 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput';
-import { getSQLiteDateStringNow } from '../../../../dbUtils';
 
 /**
  * inserts a row into the `animal_evaluation_table`
@@ -17,7 +16,6 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
   }
 
   const id = uuidv4();
-  const now = getSQLiteDateStringNow();
 
   const query = `
     INSERT INTO animal_evaluation_table (
@@ -32,7 +30,7 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
       created,
       modified
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now')
     );
   `;
 
@@ -45,8 +43,6 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
     input.evalDate,
     input.evalTime,
     input.ageInDays,
-    now,
-    now
   ];
 
   return new Promise((resolve, reject) => {

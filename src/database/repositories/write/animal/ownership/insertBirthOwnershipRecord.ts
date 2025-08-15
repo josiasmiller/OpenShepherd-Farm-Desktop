@@ -1,5 +1,4 @@
 import { getDatabase } from "../../../../dbConnections";
-import { getSQLiteDateStringNow } from "../../../../dbUtils";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "../../../../../shared/results/resultTypes";
 import { Owner } from "../../../../models/read/owners/owner";
@@ -23,8 +22,6 @@ export async function insertBirthOwnershipRecord(
   if (!db) return new Failure("DB instance is null");
 
   const idAnimalOwnershipHistoryId = uuidv4();
-  const created = getSQLiteDateStringNow();
-  const modified = created;
 
   const query = `
     INSERT INTO animal_ownership_history_table (
@@ -41,7 +38,7 @@ export async function insertBirthOwnershipRecord(
       created,
       modified
     )
-    VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, NULL, NULL, ?, ?)
+    VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, NULL, NULL, datetime('now'), datetime('now'))
   `;
 
   const toContactId = owner.type === OwnerType.CONTACT ? owner.contact.id : null;
@@ -58,8 +55,6 @@ export async function insertBirthOwnershipRecord(
           toContactId,
           toCompanyId,
           NATURAL_ADDITION,
-          created,
-          modified
         ],
         (err: Error | null) => {
           if (err) reject(err);
