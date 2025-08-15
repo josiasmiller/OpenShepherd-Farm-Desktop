@@ -1,13 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./pages/App";
+import App from "./pages/App"; 
+import { PageStateProvider } from "./context/pageStateContext";
 
-const root = document.getElementById("root");
+const root = document.getElementById("root") as HTMLElement;
 
 if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <App />
+      <PageStateProvider>
+        <App />
+      </PageStateProvider>
     </React.StrictMode>
   );
 } else {

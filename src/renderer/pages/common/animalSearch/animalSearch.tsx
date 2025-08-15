@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { BackButton } from "../../../components/backButton/backButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimalSearchRequest, AnimalSearchResult } from "../../../../database";
+
 import Swal from "sweetalert2";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import {isRegistryDesktop} from "../../../../app/appBuild";
+import { usePageState } from "../../../context/pageStateContext";
 
 const AnimalSearch: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { savePageState, getPageState } = usePageState();
 
   // State for search filters
   const [searchParams, setSearchParams] = useState({
@@ -30,6 +35,27 @@ const AnimalSearch: React.FC = () => {
   const [results, setResults] = useState<AnimalSearchResult[]>([]);
   const [chosenAnimals, setChosenAnimals] = useState<AnimalSearchResult[]>([]);
   const [message, setMessage] = useState("Search for animals to display results.");
+
+  // Restore state on mount
+  useEffect(() => {
+    const saved = getPageState(location.pathname);
+    if (saved) {
+      if (saved.results) setResults(saved.results);
+      if (saved.chosenAnimals) setChosenAnimals(saved.chosenAnimals);
+      if (saved.searchParams) setSearchParams(saved.searchParams);
+    }
+  }, [location.pathname, getPageState]);
+
+  // Save before leaving
+  useEffect(() => {
+    return () => {
+      savePageState(location.pathname, {
+        results,
+        chosenAnimals,
+        searchParams,
+      });
+    };
+  }, [location.pathname, results, chosenAnimals, searchParams, savePageState]);
 
   const [showSearch, setShowSearch] = useState(true);
   const [showResults, setShowResults] = useState(true);
@@ -249,6 +275,12 @@ const AnimalSearch: React.FC = () => {
     });
   };
 
+  // Remove duplicates based on animal_id
+  const uniqueResults: AnimalSearchResult[] = Array.from(
+    new Map<string, AnimalSearchResult>(
+      results.map((animal) => [animal.animal_id, animal])
+    ).values()
+  );
   
   return (
     <div className="animal-search-container">
@@ -396,7 +428,7 @@ const AnimalSearch: React.FC = () => {
         <div className="results-section">
           {message && <div className="results-message">{message}</div>}
 
-          {results.length > 0 && (
+          {uniqueResults.length > 0 && (
 
             <div id="resultsTableContainer">
 
@@ -431,7 +463,7 @@ const AnimalSearch: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((animal) => (
+                  {uniqueResults.map((animal) => (
                     <tr key={animal.animal_id}>
                       <td>
                         <button
