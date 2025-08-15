@@ -20,7 +20,6 @@ const AnimalSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useState({
     name: "",
     status: "",
-    registrationType: "",
     registrationNumber: "",
     birthStartDate: "",
     birthEndDate: "",
@@ -46,7 +45,7 @@ const AnimalSearch: React.FC = () => {
     }
   }, [location.pathname, getPageState]);
 
-  // Save before leaving
+  // Save state before leaving
   useEffect(() => {
     return () => {
       savePageState(location.pathname, {
@@ -133,10 +132,6 @@ const AnimalSearch: React.FC = () => {
 
       if (searchParams.status != null && searchParams.status != "") {
         animalRequest.status = searchParams.status;
-      }
-
-      if (searchParams.registrationType != null && searchParams.registrationType != "") {
-        animalRequest.registrationType = searchParams.registrationType;
       }
 
       if (searchParams.registrationNumber != null && searchParams.registrationNumber != "") {
@@ -305,12 +300,6 @@ const AnimalSearch: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Enter Name"
               />
-            </div>
-            <div>
-              <label htmlFor="searchRegistrationType">Registration Type</label>
-              <select id="searchRegistrationType" value={searchParams.registrationType} onChange={handleChange}>
-                <option value="">Select Type</option>
-              </select>
             </div>
             <div>
               <label htmlFor="registrationNumber">Registration Number</label>
