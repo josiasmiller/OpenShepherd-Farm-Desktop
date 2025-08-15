@@ -43,6 +43,11 @@ const buildDisplayName = fromBuildIdentifier({
     registry: 'AnimalTrakker Registry'
 }).map[buildIdentifier]
 
+const buildShortDisplayName = fromBuildIdentifier({
+    farm: 'AnimalTrakkerFarm',
+    registry: 'AnimalTrakkerRegistry'
+}).map[buildIdentifier]
+
 const buildDescription = fromBuildIdentifier({
     farm: 'AnimalTrakker Farm',
     registry: 'AnimalTrakker Registry'
@@ -95,6 +100,7 @@ const config: ForgeConfig = {
         new MakerWix({
             exe: buildPackageName,
             name: buildDisplayName,
+            shortName: buildShortDisplayName,
             version: buildAppVersion,
             icon: path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher.ico'),
             manufacturer: buildAuthor,
