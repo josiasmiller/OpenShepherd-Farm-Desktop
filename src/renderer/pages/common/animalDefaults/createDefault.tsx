@@ -1717,13 +1717,11 @@ const CreateDefaults: React.FC = () => {
   return (
     <div className="container">
 
-      <div style={{ display: "flex", justifyContent: "flex-start", padding: "1rem" }}>
-        <BackButton />
-      </div>
-
-
       {/* Top Section */}
       <div className="create-defaults-top-section">
+
+        <BackButton />
+
         <h2>Default Settings</h2>
         <div className="button-group">
           <button
