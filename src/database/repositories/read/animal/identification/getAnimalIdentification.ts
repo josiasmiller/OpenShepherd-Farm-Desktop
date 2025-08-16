@@ -9,8 +9,6 @@ export const getAnimalIdentification = async (animalId : string): Promise<Result
     return new Failure("DB Instance is null");
   }
 
-  console.log("MITCH DEBUG GETTING ANIMAL IDENTIFICATIONINFO");
-
   let identificationQuery = `
     SELECT
       flock_prefix_table.flock_prefix,
