@@ -20,7 +20,6 @@ export type AnimalSearchResult = {
 export type AnimalSearchRequest = {
   name?: string | null;
   status?: string | null;         
-  registrationType?: string | null;
   registrationNumber?: string | null;
 
   birthStartDate?: string | null;   // Start date for birth range

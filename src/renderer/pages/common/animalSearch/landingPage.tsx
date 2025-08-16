@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
+import { BackButton } from "../../../components/backButton/backButton";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import {isRegistryDesktop} from "../../../../app/appBuild";
 
@@ -187,6 +188,11 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page-container">
+      
+      <div style={{ display: "flex", justifyContent: "flex-start", padding: "1rem" }}>
+        <BackButton />
+      </div>
+
       {/* Top Half */}
       <div className="landing-page-top">
         <h2>Landing Page</h2>

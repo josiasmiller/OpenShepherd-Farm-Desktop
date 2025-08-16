@@ -31,6 +31,7 @@ import Swal from "sweetalert2";
 import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from "../../../../shared/results/resultTypes";
 import { getCurrentFormattedTimestamp } from "../../../../scripts/times";
+import { BackButton } from "../../../components/backButton/backButton";
 
 const CreateDefaults: React.FC = () => {
 
@@ -1715,8 +1716,12 @@ const CreateDefaults: React.FC = () => {
 
   return (
     <div className="container">
+
       {/* Top Section */}
       <div className="create-defaults-top-section">
+
+        <BackButton />
+
         <h2>Default Settings</h2>
         <div className="button-group">
           <button

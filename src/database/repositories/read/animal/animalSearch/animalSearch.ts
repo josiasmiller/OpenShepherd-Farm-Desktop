@@ -100,11 +100,6 @@ export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promi
     values.push(`%${escapedRegNum}%`);
   }
 
-  if (queryParams.registrationType) {
-    conditions.push("a.registration_type = ?");
-    values.push(queryParams.registrationType);
-  }
-
   if (queryParams.birthStartDate) {
     conditions.push("a.birth_date >= ?");
     values.push(queryParams.birthStartDate);
