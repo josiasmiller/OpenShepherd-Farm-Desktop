@@ -1,4 +1,4 @@
-import { Failure, Result, Success, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes";
+import { Failure, handleResult, Result, Success, unwrapOrFailWithAnimal } from "../../../../../shared/results/resultTypes";
 import { getDatabase } from "../../../../dbConnections";
 import { BirthInfo } from "../../../../models/read/animal/births/birthInfo";
 import { Sex } from "../../../../models/read/animal/general/sex";
@@ -6,7 +6,7 @@ import { CodonResponse } from "../../../../models/read/animal/geneticCharacteris
 import { AnimalIdentification } from "../../../../models/read/animal/identification/animalIdentification";
 import { PedigreeNode } from "../../../../models/read/animal/pedigree/pedigree";
 import { idTag } from "../../../../models/read/animal/tags/idTag";
-import { Owner } from "../../../../models/read/owners/owner";
+import { Owner, OwnerContact } from "../../../../models/read/owners/owner";
 import { AnimalRegistrationResult } from "../../../../models/read/registry/registrations/animalRegistration";
 import { getBirthInfo } from "../../animal/births/getBirthInfo";
 import { getSexFromAnimalId } from "../../animal/sex/getSexFromAnimalId";
@@ -19,6 +19,8 @@ import { getMostRecentOfficialTag } from "../../animal/tags/getRecentOfficialTag
 import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeight";
 import { getBreeder } from "../../owners/getBreeder";
 import { getOwner } from "../../owners/getOwner";
+import { Company, getCompaniesForContact } from "../../owners/getCompaniesForContact";
+import { OwnerType } from "../../../../client-types";
 
 
 /**
@@ -52,7 +54,7 @@ export const getAnimalRegistrationInfo = async (
         animalSexResult,
         codon136Result,
         codon171Result,
-        fiftyDayWeightResult
+        fiftyDayWeightResult,
       ] = await Promise.all([
         getPedigree(animalId, 4),
         getAnimalIdentification(animalId),
@@ -199,6 +201,44 @@ export const getAnimalRegistrationInfo = async (
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
+      // after getting the previous data, get any companies for a given contact owner
+
+      let ownerCompanies : Company[] = [];
+
+      if (owner.type === OwnerType.CONTACT) {
+        const contactOwner = owner as OwnerContact;
+        const contactCompanyResult = await getCompaniesForContact(contactOwner.contact.id);
+
+        await handleResult(contactCompanyResult, {
+          success: (data: Company[]) => {
+            ownerCompanies = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to get owner companies: ", err);
+            throw new Error(err);
+          },
+        });
+      }
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // after getting the previous data, get any companies for a given contact owner
+
+      let breederCompanies : Company[] = [];
+
+      if (breeder.type === OwnerType.CONTACT) {
+        const breederOwner = owner as OwnerContact;
+        const breederCompanyResult = await getCompaniesForContact(breederOwner.contact.id);
+
+        await handleResult(breederCompanyResult, {
+          success: (data: Company[]) => {
+            breederCompanies = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to get owner companies: ", err);
+            throw new Error(err);
+          },
+        });
+      }
 
       const registration: AnimalRegistrationResult = {
         animalIdentification: animalIdentification,
@@ -214,6 +254,8 @@ export const getAnimalRegistrationInfo = async (
         birthInfo: birthInfo,
         Codon136: codon136,
         Codon171: codon171,
+        ownerCompanies: ownerCompanies,
+        breederCompanies: breederCompanies,
       };
 
       results.push(registration);
