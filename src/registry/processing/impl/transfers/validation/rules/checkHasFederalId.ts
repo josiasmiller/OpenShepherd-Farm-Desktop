@@ -1,5 +1,5 @@
 import { RegistryRow, ValidationResponse } from '../../../../core/types';
-import { animalHasActiveFederalTag } from '../../../../../../database/index';
+import { animalHasActiveOfficialTag } from '../../../../../../database/index';
 import { handleResult } from '../../../../../../shared/results/resultTypes';
 
 /**
@@ -10,7 +10,7 @@ import { handleResult } from '../../../../../../shared/results/resultTypes';
 export async function checkHasFederalId(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
-  var tagResult = await animalHasActiveFederalTag(row.animalId);
+  var tagResult = await animalHasActiveOfficialTag(row.animalId);
 
   await handleResult(tagResult, {
     success: (data: boolean) => {
