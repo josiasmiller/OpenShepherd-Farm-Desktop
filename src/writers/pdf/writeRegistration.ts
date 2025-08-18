@@ -154,10 +154,10 @@ const _handleRegistrationWrite = async (
       ownerMailingAddress = _getOwnerMailingAddress(regResult.owner, regResult.ownerCompanies);
     }
 
-    let birthTypeAbbreviation : string = "";
+    let birthTypeName : string = "";
     let birthWeight : string = "";
     if (regResult.birthInfo != null) {
-      birthTypeAbbreviation = regResult.birthInfo.birthType.abbreviation ?? ""; // first node of the pedigree is the actual animal being searched
+      birthTypeName = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
       birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
     }
 
@@ -187,7 +187,7 @@ const _handleRegistrationWrite = async (
       form.getTextField("Sex").setText(regResult.sex.name);
     }
     
-    form.getTextField("BirthType").setText(birthTypeAbbreviation);
+    form.getTextField("BirthType").setText(birthTypeName);
     
     if (regResult.officialTag){
       const offical_text: string = _getTagText(regResult.officialTag, true);
@@ -449,7 +449,7 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
     pn.registrationNumber,
     pn.sexName.charAt(0).toUpperCase(), // abbreviate the name of the sex (for example `Ram` --> `R`, `Ewe` --> `E`)
     birthDateFormatted,
-    pn.birthType,
+    pn.birthTypeAbbreviation,
   ].filter((part) => part && part.trim() !== "")
     .join(", ");
 
