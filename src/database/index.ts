@@ -55,6 +55,7 @@ export { getBreedingAges } from "./repositories/read/animal/breeding/getBreeding
 export { getCoatColorForAnimal } from "./repositories/read/animal/coatColor/getCoatColor";
 export { getColors } from "./repositories/read/tags/getColors";
 export { getCompanies } from "./repositories/read/owners/getCompany";
+export { getCompaniesForContact } from "./repositories/read/owners/getCompaniesForContact";
 export { getContacts } from "./repositories/read/owners/getContact";
 export { getCountries } from "./repositories/read/locations/getCountries";
 export { getCountryPrefixForOwner } from "./repositories/read/tags/getCountryPrefixForOwner";

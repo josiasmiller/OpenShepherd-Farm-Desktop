@@ -4,6 +4,7 @@ import { CodonResponse } from "../../animal/geneticCharacteristic/codonResponse"
 import { AnimalIdentification } from "../../animal/identification/animalIdentification";
 import { PedigreeNode } from "../../animal/pedigree/pedigree";
 import { idTag } from "../../animal/tags/idTag";
+import { Company } from "../../owners/company";
 import { Owner } from "../../owners/owner";
 
 export type AnimalRegistrationResult = {
@@ -20,4 +21,6 @@ export type AnimalRegistrationResult = {
   breeder: Owner | null;
   owner: Owner | null;
   birthInfo: BirthInfo | null;
+  ownerCompanies: Company[] | null;
+  breederCompanies: Company[] | null;
 }

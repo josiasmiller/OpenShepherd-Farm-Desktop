@@ -14,6 +14,7 @@ type PedigreeRow = {
   sexName: string | null;
   birthDate: string | null;
   birthType: string | null;
+  birthTypeAbbrev: string | null;
 };
 
 /**
@@ -47,7 +48,8 @@ export const getPedigree = async (
       ar.registration_number AS registrationNumber,
       s.sex_name AS sexName,
       a.birth_date AS birthDate,
-      bt.birth_type AS birthType
+      bt.birth_type AS birthType,
+      bt.birth_type_abbrev AS birthTypeAbbrev
     FROM animal_table a
     LEFT JOIN animal_registration_table ar 
       ON ar.id_animalid = a.id_animalid 
@@ -114,6 +116,7 @@ export const getPedigree = async (
         sexName: row.sexName,
         birthDate: bday,
         birthType: row.birthType,
+        birthTypeAbbreviation: row.birthTypeAbbrev,
       };
 
       resolve(new Success(pedigreeNode));

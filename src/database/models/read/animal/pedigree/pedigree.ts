@@ -13,5 +13,6 @@ export type PedigreeNode = {
   sexName: string | null;
   birthDate: Date | null;
   birthType: string | null;
+  birthTypeAbbreviation: string | null;
 }
           

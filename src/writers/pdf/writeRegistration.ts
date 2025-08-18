@@ -4,6 +4,7 @@ import {PDFDocument} from "pdf-lib";
 
 import {
     AnimalRegistrationResult,
+    Company,
     getAnimalRegistrationInfo,
     markRegistryCertificateAsPrinted,
     Owner,
@@ -19,6 +20,9 @@ const pdfBytesBlack = fs.readFileSync(templatePathBlack);
 
 const templatePathWhite = path.join(__dirname, 'assets', 'documents', 'AWWMSA_registration_template_V3_white.pdf')
 const pdfBytesWhite = fs.readFileSync(templatePathWhite);
+
+const templatePathChocolate = path.join(__dirname, 'assets', 'documents', 'AWWMSA_registration_template_V4_chocolate.pdf')
+const pdfBytesChocolate = fs.readFileSync(templatePathChocolate);
 
 export type RegistrationWriteResponse = {
   success: boolean;
@@ -120,7 +124,7 @@ const _handleRegistrationWrite = async (
     } else if (registrationType === "white") {
       pdfDoc = await PDFDocument.load(pdfBytesWhite);
     } else if (registrationType === "chocolate") {
-      return new Failure("chocolate registry not yet implemented");
+      pdfDoc = await PDFDocument.load(pdfBytesChocolate);
     }
 
     if (!pdfDoc) {
@@ -142,18 +146,18 @@ const _handleRegistrationWrite = async (
 
     let breederMailingAddress: string = "";
     if (regResult.breeder != null) {
-      breederMailingAddress = _getOwnerMailingAddress(regResult.breeder); 
+      breederMailingAddress = _getOwnerMailingAddress(regResult.breeder, regResult.breederCompanies); 
     }
     
     let ownerMailingAddress: string = "";
     if (regResult.owner != null) {
-      ownerMailingAddress = _getOwnerMailingAddress(regResult.owner);
+      ownerMailingAddress = _getOwnerMailingAddress(regResult.owner, regResult.ownerCompanies);
     }
 
-    let birthType : string = "";
+    let birthTypeName : string = "";
     let birthWeight : string = "";
     if (regResult.birthInfo != null) {
-      birthType = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
+      birthTypeName = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
       birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
     }
 
@@ -183,15 +187,15 @@ const _handleRegistrationWrite = async (
       form.getTextField("Sex").setText(regResult.sex.name);
     }
     
-    form.getTextField("BirthType").setText(birthType);
+    form.getTextField("BirthType").setText(birthTypeName);
     
     if (regResult.officialTag){
-      const offical_text: string = _getTagText(regResult.officialTag);
+      const offical_text: string = _getTagText(regResult.officialTag, true);
       form.getTextField("OfficialEarTag").setText(offical_text);
     }
 
     if (regResult.unofficialTag){
-      const farm_text: string = _getTagText(regResult.unofficialTag);
+      const farm_text: string = _getTagText(regResult.unofficialTag, false);
       form.getTextField("FarmID").setText(farm_text);
     }
 
@@ -328,7 +332,14 @@ const _handleRegistrationWrite = async (
       const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
       const registrationNum = regResult.animalIdentification.registrationNumber;
 
-      const filename = `registration_${flockName}_${animalName}_${registrationNum}.pdf`;
+      let filenamePrefix = "";
+
+      if (regResult.breederCompanies.length > 1 || regResult.breederCompanies.length > 1) {
+        filenamePrefix = "EDIT_";
+      }
+
+      const filename = `${filenamePrefix}registration_${flockName}_${animalName}_${registrationNum}.pdf`;
+
       filePath = path.join(directoryPath, filename); 
     } else {
       filePath = path.join(directoryPath, `registration_unknown_${animalIdx}.pdf`);
@@ -362,10 +373,8 @@ const _handleRegistrationWrite = async (
       const printCertificateWarning : string = `unable to update registry_certificate_print_table for animal in row ${animalIdx}`;
       allWarnings.push(printCertificateWarning);
     }
-    
 
-
-    var specificWarnings : string[] = _generateWarnings(regResult, animalIdx);
+    let specificWarnings : string[] = _generateWarnings(regResult, animalIdx);
     allWarnings.push(...specificWarnings);
 
     animalIdx++;
@@ -374,11 +383,16 @@ const _handleRegistrationWrite = async (
   return new Success(allWarnings);
 } 
 
-const _getOwnerMailingAddress = (o : Owner): string => {
+const _getOwnerMailingAddress = (o : Owner, companies : Company[]): string => {
   const premAddress = o.premise.address;
   const premCity = o.premise.city;
-  const premState = o.premise.state.name;
+  const premAbbrev = o.premise.state.abbreviation;
   const premPost = o.premise.postcode;
+
+  let companyName : string = "";
+  if (companies.length > 0) {
+    companyName = companies.map(c => c.name).join(" | ");
+  }
 
   let name : string;
 
@@ -390,7 +404,13 @@ const _getOwnerMailingAddress = (o : Owner): string => {
     throw new Error("Invalid Owner Type");
   }
 
-  return `${name}, ${premAddress}, ${premCity}, ${premState}, ${premPost}`;
+  if (companyName != "") {
+    return `${name}, ${companyName}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+  } else {
+    return `${name}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+  }
+
+  
 }
 
 const _buildRegistryName = (pn : PedigreeNode | null): string => {
@@ -427,9 +447,9 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
   // Other fields joined with commas
   const otherParts = [
     pn.registrationNumber,
-    pn.sexName,
+    pn.sexName.charAt(0).toUpperCase(), // abbreviate the name of the sex (for example `Ram` --> `R`, `Ewe` --> `E`)
     birthDateFormatted,
-    pn.birthType,
+    pn.birthTypeAbbreviation,
   ].filter((part) => part && part.trim() !== "")
     .join(", ");
 
@@ -439,7 +459,7 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
       .join(", ");
 }
 
-const _getTagText = (tag: idTag): string => {
+const _getTagText = (tag: idTag, isOfficial: boolean): string => {
   let abbrev_color = "";
   if (tag.maleColor.abbrev) {
     abbrev_color = tag.maleColor.abbrev;
@@ -452,13 +472,20 @@ const _getTagText = (tag: idTag): string => {
 
   let text: string;
   if (abbrev_color && abbrev_loc) {
-    text = `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
+
+    if (isOfficial) {
+      text = `${tag.idNumber}/${abbrev_loc}/${abbrev_color}`;
+    } else {
+      text = `${abbrev_loc}/${abbrev_color}/${tag.idNumber}`;
+    }
+
+    
   } else {
     text = tag.idNumber;
   }
 
   return text;
-} 
+}
 
 const _generateWarnings = (
   regResult: AnimalRegistrationResult,
