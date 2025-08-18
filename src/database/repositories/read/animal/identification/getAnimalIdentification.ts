@@ -35,7 +35,11 @@ export const getAnimalIdentification = async (animalId : string): Promise<Result
         registration_number: string; 
       };
 
-      var bday : Date | null = getDbDate(row.birth_date);
+      let bday : Date | null = null;
+
+      if (row && row.birth_date) {
+        bday = getDbDate(row.birth_date);
+      }
 
       // only resolve if a valid row is returned
       if (row) {
