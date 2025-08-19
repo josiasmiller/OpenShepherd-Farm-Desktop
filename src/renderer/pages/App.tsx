@@ -3,6 +3,7 @@ import { HashRouter  as Router, Routes, Route } from "react-router-dom";
 import Home from "./common/home"
 import AnimalSearch from "./common/animalSearch/animalSearch"
 import CreateDefault from "./common/animalDefaults/createDefault"
+import ManagePremises from "./common/premises/managePremises"
 import Sidebar from "../components/sidebar/sidebar";
 import LandingPage from "./common/animalSearch/landingPage";
 import RegistryLanding from "./registry/landing/registryLanding";
@@ -22,6 +23,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/animal-search" element={<AnimalSearch />} />
             <Route path="/create-default" element={<CreateDefault />} />
+            <Route path="/manage-premises" element={<ManagePremises />} />
             <Route path="/registry" element={<RegistryLanding />} />
 
             {/* Routes that do NOT show up on the side bar: */}

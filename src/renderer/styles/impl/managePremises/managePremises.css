@@ -1,0 +1,10 @@
+
+.manage-premises-top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-primary-container);
+  min-height: 60px;
+}

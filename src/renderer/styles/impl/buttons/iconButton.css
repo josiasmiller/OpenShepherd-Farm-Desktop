@@ -1,0 +1,42 @@
+
+.standard-icon-button {
+  background-color: var(--md-sys-color-primary);           /* Primary theme color */
+  color: var(--md-sys-color-on-primary);                   /* Text color for contrast */
+  border: none;
+  padding: 12px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.standard-icon-button:hover {
+  background-color: var(--md-sys-color-primary-container); /* Slightly shifted hue */
+  color: var(--md-sys-color-on-primary-container);         /* Adjust contrast */
+  transform: scale(1.05);
+}
+
+.standard-icon-button:active {
+  transform: scale(0.95);
+}
+
+.destructive-icon-button {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  border: none;
+  padding: 12px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Hover effect for destructive-icon-button button */
+.destructive-icon-button:hover {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  transform: scale(1.05);
+}
+
+.destructive-icon-button:active {
+  transform: scale(0.95);
+}

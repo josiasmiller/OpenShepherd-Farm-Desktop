@@ -73,6 +73,7 @@ export {
 } from "./dtos";
 
 export { AnimalTrakkerIPC } from './apis'
+export { ApiEventRegistrarFunc } from './apis'
 
 declare global {
   interface Window extends AnimalTrakkerIPC {}

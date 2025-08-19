@@ -41,6 +41,10 @@ import {
 } from "./dtos";
 
 import { Result } from "packages/core";
+import {Observable} from "rxjs";
+
+export type ApiEventRegistrarFunc<T> = (listener: (data: T) => void) => ApiEventRegistrationCleanupFunc
+export type ApiEventRegistrationCleanupFunc = () => void
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
@@ -97,6 +101,14 @@ export interface LookupAPI {
   isOwnerCompany: (ownerId: string) => Promise<Result<boolean, string>>;
 }
 
+// -------------------- Premises --------------------
+export interface PremiseAPI {
+  queryPremises: () => Promise<Result<Premise[], string>>;
+  onPremiseAdded: ApiEventRegistrarFunc<Premise>
+  onPremiseUpdated: ApiEventRegistrarFunc<Premise>
+  onPremiseRemoved: ApiEventRegistrarFunc<Premise>
+}
+
 // -------------------- Registry --------------------
 export interface RegistryAPI {
   parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
@@ -136,4 +148,5 @@ export interface AnimalTrakkerIPC {
   registryAPI: RegistryAPI;
   storeAPI: StoreAPI;
   systemAPI: SystemAPI;
+  premiseAPI: PremiseAPI;
 }

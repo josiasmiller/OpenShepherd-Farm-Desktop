@@ -24,11 +24,11 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+
 import SidebarHeader from './SidebarHeader'
 import {styled} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home.js";
 import SearchIcon from "@mui/icons-material/Search.js";
-import LocationCityIcon from "@mui/icons-material/LocationCity.js";
 import EditIcon from "@mui/icons-material/Edit.js";
 import InventoryIcon from "@mui/icons-material/Inventory.js";
 
