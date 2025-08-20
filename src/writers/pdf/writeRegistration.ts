@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {PDFDocument} from "pdf-lib";
+import {PDFDocument, StandardFonts} from "pdf-lib";
 
 import {
     AnimalRegistrationResult,
@@ -163,14 +163,18 @@ const _handleRegistrationWrite = async (
       }) ?? ""; // format the string to match "12 Mar 1997" format
     }
 
-    let breederMailingAddress: string = "";
+    let breederMailingAddressPartOne: string = "";
+    let breederMailingAddressPartTwo: string = "";
     if (regResult.breeder != null) {
-      breederMailingAddress = _getOwnerMailingAddress(regResult.breeder, regResult.breederCompanies); 
+      breederMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.breeder, regResult.breederCompanies);
+      breederMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.breeder); 
     }
-    
-    let ownerMailingAddress: string = "";
+
+    let ownerMailingAddressPartOne: string = "";
+    let ownerMailingAddressPartTwo: string = "";
     if (regResult.owner != null) {
-      ownerMailingAddress = _getOwnerMailingAddress(regResult.owner, regResult.ownerCompanies);
+      ownerMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.owner, regResult.ownerCompanies);
+      ownerMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.owner); 
     }
 
     let birthTypeName : string = "";
@@ -315,7 +319,8 @@ const _handleRegistrationWrite = async (
 
 
     // paradoxically, the `BreederInfo` field is actually the field where the mailing address should be ...
-    form.getTextField("BreederInfo").setText(breederMailingAddress);
+    form.getTextField("BreederInfo").setText(breederMailingAddressPartOne);
+    form.getTextField("BreederMailingAddress").setText(breederMailingAddressPartTwo);
 
     if (regResult.breeder != null) {
 
@@ -329,7 +334,8 @@ const _handleRegistrationWrite = async (
 
 
     // paradoxically, the `OwnerInfo` field is actually the field where the mailing address should be ...
-    form.getTextField("OwnerInfo").setText(ownerMailingAddress);
+    form.getTextField("OwnerInfo").setText(ownerMailingAddressPartOne);
+    form.getTextField("OwnerMailingAddress").setText(ownerMailingAddressPartTwo);
 
     if (regResult.owner != null) {
       if (regResult.owner.scrapieId) {
@@ -416,11 +422,8 @@ const _handleRegistrationWrite = async (
   return new Success(allWarnings);
 } 
 
-const _getOwnerMailingAddress = (o : Owner, companies : Company[]): string => {
+const _getOwnerMailingAddressSectionOne = (o : Owner, companies : Company[]): string => {
   const premAddress = o.premise.address;
-  const premCity = o.premise.city;
-  const premAbbrev = o.premise.state.abbreviation;
-  const premPost = o.premise.postcode;
 
   let companyName : string = "";
   if (companies.length > 0) {
@@ -438,12 +441,18 @@ const _getOwnerMailingAddress = (o : Owner, companies : Company[]): string => {
   }
 
   if (companyName != "") {
-    return `${name}, ${companyName}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+    return `${name}, ${companyName}, ${premAddress}`;
   } else {
-    return `${name}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+    return `${name}, ${premAddress},`;
   }
+}
 
-  
+const _getOwnerMailingAddressSectionTwo = (o : Owner): string => {
+  const premCity = o.premise.city;
+  const premAbbrev = o.premise.state.abbreviation;
+  const premPost = o.premise.postcode;
+
+  return `${premCity}, ${premAbbrev}, ${premPost}`;
 }
 
 const _buildRegistryName = (pn : PedigreeNode | null): string => {
