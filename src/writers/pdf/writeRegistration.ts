@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {PDFDocument, StandardFonts} from "pdf-lib";
+import {PDFDocument} from "pdf-lib";
 
 import {
     AnimalRegistrationResult,
@@ -25,9 +25,9 @@ const templatePathChocolate = path.join(__dirname, 'assets', 'documents', 'AWWMS
 const pdfBytesChocolate = fs.readFileSync(templatePathChocolate);
 
 const signatureXloc : number = 180;
-const signatureYloc : number = 90;
-const signatureWidth : number = 60;
-const signatureHeight : number = 25;
+const signatureYloc : number = 80;
+const signatureWidth : number = 90;
+const signatureHeight : number = 45;
 
 export type RegistrationWriteResponse = {
   success: boolean;
