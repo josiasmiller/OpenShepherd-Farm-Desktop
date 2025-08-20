@@ -4,6 +4,7 @@ import type { DefaultSettingsResults, Species } from '../../database';
 export type AppStoreSchema = {
   selectedDefault: DefaultSettingsResults | null;
   selectedSpecies: Species | null;
+  selectedSignatureFilepath: string;
   // extend as needed
 };
 
@@ -11,6 +12,7 @@ export const store = new Store<AppStoreSchema>({
   defaults: {
     selectedDefault: null,
     selectedSpecies: null,
+    selectedSignatureFilepath: null,
   },
 });
 

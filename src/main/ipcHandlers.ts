@@ -37,6 +37,7 @@ import {
   writeNewDefaultSettings,
 } from "../database";
 
+import { pngFileDialog } from "../scripts/selectPng";
 import { selectNewDb } from "../scripts/dbSelect";
 import { getDatabase } from "../database/dbConnections";
 import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes";
@@ -57,6 +58,7 @@ import { resolveDatabaseIssues } from "../registry/processing/ipc/resolveDatabas
 import { RegistryProcessRequest } from "../registry/processing/core/types";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
+import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
 
 
 export const registerIpcHandlers = () => {
@@ -81,11 +83,13 @@ export const registerIpcHandlers = () => {
     return writeTissueTestResults(animals);
   });
 
-  ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate") => {
-    return writeRegistration(animals, registrationType);
+  ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
+    return writeRegistration(animals, registrationType, signatureFilePath);
   });
 
   ipcMain.handle("select-database", selectNewDb);
+
+  ipcMain.handle("select-png-file", pngFileDialog);
 
   ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
     return getAnimalIdentification(animalId);
@@ -139,6 +143,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.handle('get-store-selected-species', (): Species | null => {
     return getStoreSelectedSpecies();
+  });
+
+  ipcMain.handle("get-store-selected-signature-file-path", (): string => {
+    return getStoreSelectedFilepath();
   });
 
   ipcMain.handle("get-sexes", getSexes);
@@ -210,6 +218,10 @@ export const registerIpcHandlers = () => {
 
   ipcMain.on('set-store-selected-species', (_event, value: Species) => {
     setStoreSelectedSpecies(value);
+  });
+
+  ipcMain.on('set-store-selected-signature-file-path', (_event, value: string) => {
+    setStoreSelectedFilepath(value);
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {

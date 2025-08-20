@@ -24,6 +24,11 @@ const pdfBytesWhite = fs.readFileSync(templatePathWhite);
 const templatePathChocolate = path.join(__dirname, 'assets', 'documents', 'AWWMSA_registration_template_V4_chocolate.pdf')
 const pdfBytesChocolate = fs.readFileSync(templatePathChocolate);
 
+const signatureXloc : number = 180;
+const signatureYloc : number = 80;
+const signatureWidth : number = 90;
+const signatureHeight : number = 45;
+
 export type RegistrationWriteResponse = {
   success: boolean;
   resultingDirectory: string;
@@ -34,6 +39,7 @@ export type RegistrationWriteResponse = {
 export const writeRegistration = async (
   animalIds: string[],
   registrationType: "black" | "white" | "chocolate",
+  signatureFilePath: string | null, 
 ): Promise<RegistrationWriteResponse> => {
 
   const errors : string[] = [];
@@ -65,7 +71,8 @@ export const writeRegistration = async (
 
     await handleResult(registrationResults, {
       success: async (data : AnimalRegistrationResult[]) => {
-        const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
+        const result = await _handleRegistrationWrite(data, directoryPath, registrationType, signatureFilePath);
+        
         if (result instanceof Success) {
           // extract warnings if there are any
           warnings.push(...(result.data));
@@ -106,9 +113,21 @@ const _handleRegistrationWrite = async (
   data: AnimalRegistrationResult[],
   directoryPath: string,
   registrationType: "black" | "white" | "chocolate",
+  signatureFilePath: string | null, 
 ): Promise<Result<string[], string>> => {
 
   var allWarnings : string[] = [];
+
+  // load signature if provided
+  let signatureImageBytes: Uint8Array | null = null;
+  if (signatureFilePath) {
+    try {
+      signatureImageBytes = fs.readFileSync(signatureFilePath);
+    } catch (err) {
+      return new Failure(`Could not read signature file: ${err.message}`);
+    }
+  }
+
 
   const now = new Date();
   const printDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
@@ -144,14 +163,18 @@ const _handleRegistrationWrite = async (
       }) ?? ""; // format the string to match "12 Mar 1997" format
     }
 
-    let breederMailingAddress: string = "";
+    let breederMailingAddressPartOne: string = "";
+    let breederMailingAddressPartTwo: string = "";
     if (regResult.breeder != null) {
-      breederMailingAddress = _getOwnerMailingAddress(regResult.breeder, regResult.breederCompanies); 
+      breederMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.breeder, regResult.breederCompanies);
+      breederMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.breeder); 
     }
-    
-    let ownerMailingAddress: string = "";
+
+    let ownerMailingAddressPartOne: string = "";
+    let ownerMailingAddressPartTwo: string = "";
     if (regResult.owner != null) {
-      ownerMailingAddress = _getOwnerMailingAddress(regResult.owner, regResult.ownerCompanies);
+      ownerMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.owner, regResult.ownerCompanies);
+      ownerMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.owner); 
     }
 
     let birthTypeName : string = "";
@@ -296,7 +319,8 @@ const _handleRegistrationWrite = async (
 
 
     // paradoxically, the `BreederInfo` field is actually the field where the mailing address should be ...
-    form.getTextField("BreederInfo").setText(breederMailingAddress);
+    form.getTextField("BreederInfo").setText(breederMailingAddressPartOne);
+    form.getTextField("BreederMailingAddress").setText(breederMailingAddressPartTwo);
 
     if (regResult.breeder != null) {
 
@@ -310,7 +334,8 @@ const _handleRegistrationWrite = async (
 
 
     // paradoxically, the `OwnerInfo` field is actually the field where the mailing address should be ...
-    form.getTextField("OwnerInfo").setText(ownerMailingAddress);
+    form.getTextField("OwnerInfo").setText(ownerMailingAddressPartOne);
+    form.getTextField("OwnerMailingAddress").setText(ownerMailingAddressPartTwo);
 
     if (regResult.owner != null) {
       if (regResult.owner.scrapieId) {
@@ -322,6 +347,20 @@ const _handleRegistrationWrite = async (
     }
 
     form.getTextField("PrintDate").setText(printDate);
+
+    if (signatureImageBytes) {
+      const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
+      const pages = pdfDoc.getPages();
+      const page = pages[0];  // put signature only on first page
+
+      page.drawImage(signatureImage, {
+        x: signatureXloc,
+        y: signatureYloc,
+        width: signatureWidth,
+        height: signatureHeight,
+      });
+    }
+
 
     const pdfBytes = await pdfDoc.save();
 
@@ -383,11 +422,8 @@ const _handleRegistrationWrite = async (
   return new Success(allWarnings);
 } 
 
-const _getOwnerMailingAddress = (o : Owner, companies : Company[]): string => {
+const _getOwnerMailingAddressSectionOne = (o : Owner, companies : Company[]): string => {
   const premAddress = o.premise.address;
-  const premCity = o.premise.city;
-  const premAbbrev = o.premise.state.abbreviation;
-  const premPost = o.premise.postcode;
 
   let companyName : string = "";
   if (companies.length > 0) {
@@ -405,12 +441,18 @@ const _getOwnerMailingAddress = (o : Owner, companies : Company[]): string => {
   }
 
   if (companyName != "") {
-    return `${name}, ${companyName}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+    return `${name}, ${companyName}, ${premAddress}`;
   } else {
-    return `${name}, ${premAddress}, ${premCity}, ${premAbbrev}, ${premPost}`;
+    return `${name}, ${premAddress},`;
   }
+}
 
-  
+const _getOwnerMailingAddressSectionTwo = (o : Owner): string => {
+  const premCity = o.premise.city;
+  const premAbbrev = o.premise.state.abbreviation;
+  const premPost = o.premise.postcode;
+
+  return `${premCity}, ${premAbbrev}, ${premPost}`;
 }
 
 const _buildRegistryName = (pn : PedigreeNode | null): string => {

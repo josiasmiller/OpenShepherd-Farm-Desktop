@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
   exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
-  exportRegistration: (animals: string[], registrationType: "black" | "white" | "chocolate") => ipcRenderer.invoke("export-registration", animals, registrationType),
+  exportRegistration: (animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => ipcRenderer.invoke("export-registration", animals, registrationType, signatureFilePath),
   getAnimalIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedRequest) => ipcRenderer.invoke("get-breeds", queryParams),
@@ -41,6 +41,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => ipcRenderer.invoke("get-scrapie-flock-info", ownerId, isCompany),
   getStoreSelectedDefault: (): Promise<DefaultSettingsResults | null> => ipcRenderer.invoke('get-store-selected-default'),
   getStoreSelectedSpecies: (): Promise<Species | null> => ipcRenderer.invoke('get-store-selected-species'),
+  getStoreSelectedSignatureFilePath: (): Promise<string> => ipcRenderer.invoke("get-store-selected-signature-file-path"),
   getSexes: () => ipcRenderer.invoke("get-sexes"),
   getSpecies: () => ipcRenderer.invoke("get-species"),
   getStates: () => ipcRenderer.invoke("get-states"),
@@ -61,8 +62,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   registryParseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   registryProcess: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   selectDatabase: () => ipcRenderer.invoke("select-database"),
+  selectPngFile: () => ipcRenderer.invoke("select-png-file"),
   setStoreSelectedDefault: (value: DefaultSettingsResults) => ipcRenderer.send('set-store-selected-default', value),
   setStoreSelectedSpecies: (value: Species) => ipcRenderer.send('set-store-selected-species', value),
+  setStoreSelectedSignatureFilePath: (value: string) => ipcRenderer.send("set-store-selected-signature-file-path", value),
   writeNewDefaultSettings: (queryParams: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", queryParams),
 });
 
