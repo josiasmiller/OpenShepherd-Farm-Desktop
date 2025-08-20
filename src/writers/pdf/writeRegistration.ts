@@ -72,7 +72,7 @@ export const writeRegistration = async (
     await handleResult(registrationResults, {
       success: async (data : AnimalRegistrationResult[]) => {
         const result = await _handleRegistrationWrite(data, directoryPath, registrationType, signatureFilePath);
-        // const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
+        
         if (result instanceof Success) {
           // extract warnings if there are any
           warnings.push(...(result.data));
