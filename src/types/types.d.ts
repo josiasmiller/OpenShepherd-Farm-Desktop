@@ -52,7 +52,7 @@ declare global {
       exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
       exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
       exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
-      exportRegistration: (animalIds: string[], registrationType: "black" | "white" | "chocolate") => Promise<RegistrationWriteResponse>;
+      exportRegistration: (animalIds: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => Promise<RegistrationWriteResponse>;
       getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
       getContactInfo: () => Promise<Result<Contact[], string>>;
       getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
@@ -71,6 +71,7 @@ declare global {
       getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => Promise<Result<ScrapieFlockInfo | null, string>>;
       getStoreSelectedDefault: () => Promise<DefaultSettingsResults | null>;
       getStoreSelectedSpecies: () => Promise<Species | null>;
+      getStoreSelectedSignatureFilePath: () => Promise<string>;
       getSexes: () => Promise<Result<Sex[], string>>;
       getSpecies: () => Promise<Result<Species[], string>>;
       getStates: () => Promise<Result<State[], string>>;
@@ -92,7 +93,9 @@ declare global {
       registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
       setStoreSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
       setStoreSelectedSpecies: (species: Species) => Promise<void>;
+      setStoreSelectedSignatureFilePath: (filePath: string) => Promise<void>;
       selectDatabase: () => Promise<string>;
+      selectPngFile: () => Promise<string>;
       writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
     };
   }

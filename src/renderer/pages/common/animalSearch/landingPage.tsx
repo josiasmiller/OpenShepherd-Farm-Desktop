@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from "../../../../database";
 import Swal from "sweetalert2";
@@ -12,9 +12,23 @@ const LandingPage = () => {
   const [showRegistryFeatures, setShowRegistryFeatures] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStr, setLoadingStr] = useState<string>("");
+  const [signaturePath, setSignaturePath] = useState<string | null>(null);
 
   const location = useLocation();
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
+
+  useEffect(() => {
+    const loadData = async () => {
+
+      const signatureFp = await window.electronAPI.getStoreSelectedSignatureFilePath();
+
+      if (signatureFp) {
+        setSignaturePath(signatureFp);
+      }
+    }; // end loadData definition
+  
+    loadData();
+  }, []); 
 
   const getAnimalIds = (): string[] => {
     return chosenAnimals.map(animal => animal.animal_id);
@@ -130,7 +144,11 @@ const LandingPage = () => {
 
     const animalIds: string[] = getAnimalIds();
 
-    const response = await window.electronAPI.exportRegistration(animalIds, registrationType);
+    const response = await window.electronAPI.exportRegistration(
+      animalIds, 
+      registrationType, 
+      signaturePath ?? null,
+    );
 
     if (response.success) {
 
@@ -177,6 +195,15 @@ const LandingPage = () => {
     setIsLoading(false);
   };
 
+  const handleChooseSignature = async () => {
+    const fp : string = await window.electronAPI.selectPngFile();
+    
+    if (fp) {
+      setSignaturePath(fp);
+      await window.electronAPI.setStoreSelectedSignatureFilePath(fp);
+    }
+  };
+
   return (
     <div className="landing-page-container">
       
@@ -213,6 +240,19 @@ const LandingPage = () => {
           onToggle={() => setShowRegistryFeatures(!showRegistryFeatures)}
         >
           <div className="action-buttons registry-section">
+
+            <div style={{ marginBottom: "1rem" }}>
+              <button className="forward-button" onClick={handleChooseSignature}>
+                Choose Signature Image
+              </button>
+              {signaturePath && (
+                <span style={{ marginLeft: "1rem" }}>
+                  Selected: {signaturePath}
+                </span>
+              )}
+            </div>
+
+
             <button className="forward-button" onClick={() => {printRegistryPapers("black")}}>
               Print Black Welsh Registration
             </button>

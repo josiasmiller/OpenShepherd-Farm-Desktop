@@ -24,6 +24,11 @@ const pdfBytesWhite = fs.readFileSync(templatePathWhite);
 const templatePathChocolate = path.join(__dirname, 'assets', 'documents', 'AWWMSA_registration_template_V4_chocolate.pdf')
 const pdfBytesChocolate = fs.readFileSync(templatePathChocolate);
 
+const signatureXloc : number = 180;
+const signatureYloc : number = 90;
+const signatureWidth : number = 60;
+const signatureHeight : number = 25;
+
 export type RegistrationWriteResponse = {
   success: boolean;
   resultingDirectory: string;
@@ -34,6 +39,7 @@ export type RegistrationWriteResponse = {
 export const writeRegistration = async (
   animalIds: string[],
   registrationType: "black" | "white" | "chocolate",
+  signatureFilePath: string | null, 
 ): Promise<RegistrationWriteResponse> => {
 
   const errors : string[] = [];
@@ -65,7 +71,8 @@ export const writeRegistration = async (
 
     await handleResult(registrationResults, {
       success: async (data : AnimalRegistrationResult[]) => {
-        const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
+        const result = await _handleRegistrationWrite(data, directoryPath, registrationType, signatureFilePath);
+        // const result = await _handleRegistrationWrite(data, directoryPath, registrationType);
         if (result instanceof Success) {
           // extract warnings if there are any
           warnings.push(...(result.data));
@@ -106,9 +113,21 @@ const _handleRegistrationWrite = async (
   data: AnimalRegistrationResult[],
   directoryPath: string,
   registrationType: "black" | "white" | "chocolate",
+  signatureFilePath: string | null, 
 ): Promise<Result<string[], string>> => {
 
   var allWarnings : string[] = [];
+
+  // load signature if provided
+  let signatureImageBytes: Uint8Array | null = null;
+  if (signatureFilePath) {
+    try {
+      signatureImageBytes = fs.readFileSync(signatureFilePath);
+    } catch (err) {
+      return new Failure(`Could not read signature file: ${err.message}`);
+    }
+  }
+
 
   const now = new Date();
   const printDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
@@ -322,6 +341,20 @@ const _handleRegistrationWrite = async (
     }
 
     form.getTextField("PrintDate").setText(printDate);
+
+    if (signatureImageBytes) {
+      const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
+      const pages = pdfDoc.getPages();
+      const page = pages[0];  // put signature only on first page
+
+      page.drawImage(signatureImage, {
+        x: signatureXloc,
+        y: signatureYloc,
+        width: signatureWidth,
+        height: signatureHeight,
+      });
+    }
+
 
     const pdfBytes = await pdfDoc.save();
 

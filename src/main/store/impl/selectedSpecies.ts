@@ -1,4 +1,3 @@
-// store/selectedSpecies.ts
 import type { Species } from '../../../database/index';
 import { getStoreItem, setStoreItem } from '../core';
 
