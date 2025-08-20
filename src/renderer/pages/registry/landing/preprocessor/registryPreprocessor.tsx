@@ -592,7 +592,7 @@ export const PreprocessorPage: React.FC = () => {
         const fedType = (row.fedType || "").toString().toLowerCase();
         let prefix: string | null = null;
 
-        const breederId: string = row.breederId;
+        const breederId: string = row.breederId.toString();
         if (!breederId) {
           console.warn("Skipping row without breederId");
           return row;
@@ -639,7 +639,7 @@ export const PreprocessorPage: React.FC = () => {
           });
         }
 
-        if (prefix && !row.fedNum?.startsWith(prefix)) {
+        if (prefix && !row.fedNum?.toString()?.startsWith(prefix)) {
           const oldFedNum = row.fedNum ?? "";
           const newFedNum = `${prefix}${oldFedNum}`;
           changes.push(`Row ${index + 1}: "${oldFedNum}" → "${newFedNum}"`);
@@ -724,7 +724,6 @@ export const PreprocessorPage: React.FC = () => {
               <EditableTable
                 rows={table.rows}
                 columns={table.columns}
-                editable={table.editable}
                 onChange={(rowIndex, updatedRow) => handleRowChange(i, rowIndex, updatedRow)}
               />
             </div>
