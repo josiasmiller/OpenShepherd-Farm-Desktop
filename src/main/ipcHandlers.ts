@@ -1,5 +1,5 @@
 
-import { ipcMain, shell } from "electron";
+import { BrowserWindow, ipcMain, shell } from "electron";
 
 import { 
   animalSearch,
@@ -60,8 +60,7 @@ import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/s
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
 
-
-export const registerIpcHandlers = () => {
+export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   
   ipcMain.handle("animal-search", async (_, queryParams) => {
     return animalSearch(queryParams);
@@ -87,9 +86,13 @@ export const registerIpcHandlers = () => {
     return writeRegistration(animals, registrationType, signatureFilePath);
   });
 
-  ipcMain.handle("select-database", selectNewDb);
+  ipcMain.handle("select-database", async (_, ) => {
+    return selectNewDb(mainWindow);
+  });
 
-  ipcMain.handle("select-png-file", pngFileDialog);
+  ipcMain.handle("select-png-file", async (_, ) => {
+    return pngFileDialog(mainWindow);
+  });
 
   ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
     return getAnimalIdentification(animalId);
@@ -190,13 +193,21 @@ export const registerIpcHandlers = () => {
     await shell.openExternal(url);
   });
 
-  ipcMain.handle('registry-parse-births', birthParser);
+  ipcMain.handle('registry-parse-births', async (_, ) => {
+    return birthParser(mainWindow);
+  });
 
-  ipcMain.handle('registry-parse-deaths', deathParser);
+  ipcMain.handle('registry-parse-deaths', async (_, ) => {
+    return deathParser(mainWindow);
+  });
 
-  ipcMain.handle('registry-parse-registrations', registrationParser);
+  ipcMain.handle('registry-parse-registrations', async (_, ) => {
+    return registrationParser(mainWindow);
+  });
 
-  ipcMain.handle('registry-parse-transfers', transferParser);
+  ipcMain.handle('registry-parse-transfers', async (_, ) => {
+    return transferParser(mainWindow);
+  });
 
   ipcMain.handle(
     "registry-process",

@@ -2,11 +2,11 @@ import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { DeathParseResponse, DeathParseRow } from './util/deathParseRow';
 import { deathParseMap } from './util/deathParseMap';
-import { dialog } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
-export const deathParser = async (): Promise<ParseResult<DeathParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog({
+export const deathParser = async (mainWindow: BrowserWindow): Promise<ParseResult<DeathParseResponse>> => {
+  const { filePaths, canceled } = await dialog.showOpenDialog( mainWindow, {
     title: "Select Death CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],

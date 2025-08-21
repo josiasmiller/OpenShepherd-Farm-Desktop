@@ -12,9 +12,11 @@ import path from "path";
 
 log.info('imports complete')
 
+
+
 try {
 
-  let mainWindow: BrowserWindow | null;
+  let mainWindow: BrowserWindow | null = null;
 
   app.whenReady().then(() => {
 
@@ -31,7 +33,7 @@ try {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     mainWindow.webContents.openDevTools();
 
-    registerIpcHandlers();
+    registerIpcHandlers(mainWindow);
     console.log("main finished");
   });
 }

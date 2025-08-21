@@ -2,15 +2,15 @@ import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { RegistrationParseResponse, RegistrationParseRow } from './util/registrationParseRow';
 import { registrationParseMap } from './util/registrationParseMap';
-import { dialog } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
 /**
  * parses registration data from a given CSV
  * @returns ParseResult of exported data
  */
-export const registrationParser = async (): Promise<ParseResult<RegistrationParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog({
+export const registrationParser = async (mainWindow: BrowserWindow): Promise<ParseResult<RegistrationParseResponse>> => {
+  const { filePaths, canceled } = await dialog.showOpenDialog( mainWindow, {
     title: "Select Registration CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],

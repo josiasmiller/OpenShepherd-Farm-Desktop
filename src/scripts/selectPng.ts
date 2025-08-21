@@ -1,7 +1,7 @@
-import { dialog } from "electron";
+import { BrowserWindow, dialog } from "electron";
 
-export const pngFileDialog = async () => {
-  const { filePaths } = await dialog.showOpenDialog({
+export const pngFileDialog = async (mainWindow: BrowserWindow) => {
+  const { filePaths } = await dialog.showOpenDialog(mainWindow, {
     title: "Select PNG File",
     properties: ["openFile"],
     filters: [{ name: "PNG file", extensions: ["PNG", "png"] }],
