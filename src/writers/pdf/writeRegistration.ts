@@ -187,7 +187,7 @@ const _handleRegistrationWrite = async (
     const form = pdfDoc.getForm();
 
     if (regResult.animalIdentification != null) {
-        form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
+      form.getTextField("RegNo").setText(regResult.pedigree.registrationNumber);
     }
 
     if (bday != "") {
@@ -369,7 +369,7 @@ const _handleRegistrationWrite = async (
     if (regResult.animalIdentification) {
       const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_'); // replace spaces with underscores
       const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
-      const registrationNum = regResult.animalIdentification.registrationNumber;
+      const registrationNum = regResult.pedigree.registrationNumber;
 
       let filenamePrefix = "";
 

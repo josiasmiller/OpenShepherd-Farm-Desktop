@@ -53,7 +53,7 @@ export const getPedigree = async (
     FROM animal_table a
     LEFT JOIN animal_registration_table ar 
       ON ar.id_animalid = a.id_animalid 
-      AND ar.id_animalregistrationtypeid = ?
+
     LEFT JOIN animal_flock_prefix_table afp 
       ON afp.id_animalid = a.id_animalid
     LEFT JOIN flock_prefix_table fr 
@@ -63,11 +63,12 @@ export const getPedigree = async (
     LEFT JOIN birth_type_table bt 
       ON bt.id_birthtypeid = a.id_birthtypeid
     WHERE a.id_animalid = ?
+    ORDER BY ar.registration_date DESC
     LIMIT 1
   `;
 
   return new Promise((resolve) => {
-    db.get(query, [REGISTRATION_REGISTERED, animalId], async (err, row: PedigreeRow | undefined) => {
+    db.get(query, [animalId], async (err, row: PedigreeRow | undefined) => {
       if (err) {
         resolve(new Failure(`Database error: ${err.message}`));
         return;
