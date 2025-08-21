@@ -187,7 +187,6 @@ const _handleRegistrationWrite = async (
     const form = pdfDoc.getForm();
 
     if (regResult.animalIdentification != null) {
-      // form.getTextField("RegNo").setText(regResult.animalIdentification.registrationNumber);
       form.getTextField("RegNo").setText(regResult.pedigree.registrationNumber);
     }
 
