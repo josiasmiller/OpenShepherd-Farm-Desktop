@@ -67,8 +67,6 @@ export const getPedigree = async (
     LIMIT 1
   `;
 
-  // AND ar.id_animalregistrationtypeid = ?
-
   return new Promise((resolve) => {
     db.get(query, [animalId], async (err, row: PedigreeRow | undefined) => {
       if (err) {
