@@ -78,6 +78,8 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
     // determine the rear type of the living animals
     let numStillborn : number = 0
 
+    var rows : RegistryRow[] = sections.birth_records;
+
     for (const row of rows) {
       if (row.isStillborn) {
         numStillborn += 1;
