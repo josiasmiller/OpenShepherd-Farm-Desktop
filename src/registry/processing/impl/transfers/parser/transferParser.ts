@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { dialog } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 import {
   TransferParseResponse,
@@ -13,8 +13,8 @@ import {
 /**
  * Parses a transfer CSV with multiple sections (animals, seller, buyer)
  */
-export const transferParser = async (): Promise<ParseResult<TransferParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog({
+export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseResult<TransferParseResponse>> => {
+  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
     title: "Select Transfer CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],

@@ -2,15 +2,15 @@ import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { BirthParseResponse, BirthParseRow } from './util/birthParseRow';
 import { birthParseMap } from './util/birthParseMap';
-import { dialog } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { ParseResult } from '../../../core/types';
 
 /**
  * parses birth data from a given CSV chosen by the user
  * @returns ParseResult of given data
  */
-export const birthParser = async (): Promise<ParseResult<BirthParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog({
+export const birthParser = async (mainWindow: BrowserWindow): Promise<ParseResult<BirthParseResponse>> => {
+  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
     title: "Select CSV File",
     properties: ["openFile"],
     filters: [{ name: "CSV Files", extensions: ["csv"] }],

@@ -1,9 +1,9 @@
-import { dialog } from "electron";
+import { BrowserWindow, dialog } from "electron";
 import { openDb } from "../database/dbConnections";
 
 
-export const selectNewDb = async () => {
-  const { filePaths } = await dialog.showOpenDialog({
+export const selectNewDb = async (parentWindow: BrowserWindow) => {
+  const { filePaths } = await dialog.showOpenDialog(parentWindow, {
     title: "Select Database File",
     properties: ["openFile"],
     filters: [{ name: "SQLite Database", extensions: ["db", "sqlite", "sqlite3"] }],
