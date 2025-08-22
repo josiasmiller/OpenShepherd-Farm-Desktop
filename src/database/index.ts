@@ -76,6 +76,7 @@ export { getOwnerById } from "./repositories/read/owners/getOwnerById";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
+export { getRegistrationTypeIdByRegNum } from "./repositories/read/registry/registrations/getRegistrationTypeByRegNum";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons";
 export { getScrapieFlockInfo } from "./repositories/read/scrapie/getScrapieFlockInfo";
 export { getSexById } from "./repositories/read/animal/sex/getSexById";

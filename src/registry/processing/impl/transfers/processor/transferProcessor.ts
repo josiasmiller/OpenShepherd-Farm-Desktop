@@ -11,9 +11,15 @@ import {
 
 // DB types
 import {
+  CoatColor,
   deleteAnimalForSaleEntry,
+  getBreeder,
+  getCoatColorForAnimal,
+  getDefaultFlockBookId,
   getOwnerById,
+  getRegistrationTypeIdByRegNum,
   insertAnimalGoesToLocation,
+  insertAnimalRegistrationRow,
   insertTransferOfOwnershipRecord,
   Owner,
   Species,
@@ -113,6 +119,90 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         await deleteAnimalForSaleEntry(animalInfo.animalId);
 
         ///////////////////////////////////////////////////////////////////////////////////////////
+        // get breeder for insertion into animal registration row
+        const breederResult = await getBreeder(animalInfo.animalId);
+        let breeder : Owner = null;
+
+        await handleResult(breederResult, {
+          success: (data: Owner) => {
+            breeder = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to retrieve breeder:", err);
+            throw new Error(err);
+          },
+        });
+
+        breeder = breeder!;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // get the registry company ID for a given animal via the animal's coat color
+
+        var coatColorResult = await getCoatColorForAnimal(animalInfo.animalId);
+        let coatColor : CoatColor
+        let regCompanyId : string;
+
+        await handleResult(coatColorResult, {
+          success: (data: CoatColor) => {
+            coatColor = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch animal coat color: ", err);
+            throw new Error(err);
+          },
+        });
+
+        // passed check, we know coatColor is valid here now
+        coatColor = coatColor!;
+        regCompanyId = coatColor.registryCompanyId;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // get flock book ID
+
+        var flockBookResult = await getDefaultFlockBookId(regCompanyId);
+
+        var flockBookId : string
+
+        await handleResult(flockBookResult, {
+          success: (data: string) => {
+            flockBookId = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch flock book id: ", err);
+            throw new Error(err);
+          },
+        });
+
+        // passed check, convert flockBookId to not be possibly undefined
+        flockBookId = flockBookId!;
+
+        // get registration type ID
+
+        const regTypeReuslt = await getRegistrationTypeIdByRegNum(animalInfo.registrationNumber);
+        let regType : string = null;
+
+        await handleResult(regTypeReuslt, {
+          success: (data: string) => {
+            regType = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to fetch registration type ID: ", err);
+            throw new Error(err);
+          },
+        });
+
+        regType = regType!;
+
+        await insertAnimalRegistrationRow(
+          breeder,
+          animalInfo.animalId,
+          animalInfo.name,
+          animalInfo.registrationNumber,
+          seller.movedAt,
+          regCompanyId,
+          flockBookId,
+          regType,
+        );
 
 
       } catch (innerError) {
@@ -120,8 +210,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
       }
     }
 
-    await rollbackTransaction();
-    // await commitTransaction(); // TEMP --> not committing to DB while debugging
+    await commitTransaction();
     return {
       success: true,
       insertedRowCount: transferResonse.animals.length,
@@ -153,8 +242,8 @@ function parseTransferSections(sections: Record<string, RegistryRow[]>): Transfe
     throw new Error("Missing seller_info section");
   }
   const seller: SellerInfo = {
-    contactId: rawSeller['Seller ContactID'],
-    companyId: rawSeller['Seller CompanyID'],
+    contactId: normalizeId(rawSeller['Seller ContactID']),
+    companyId: normalizeId(rawSeller['Seller CompanyID']),
     premiseId: rawSeller['Seller Premise ID'],
     soldAt: rawSeller[' Sold At'],
     movedAt: rawSeller['Moved At'],
@@ -172,8 +261,8 @@ function parseTransferSections(sections: Record<string, RegistryRow[]>): Transfe
     // Existing member
     buyer = {
       membershipNumber: rawBuyer['Membership Number'],
-      contactId: rawBuyer['Buyer Contact ID'],
-      companyId: rawBuyer[' Buyer Company ID'],
+      contactId: normalizeId(rawBuyer['Buyer Contact ID']),
+      companyId: normalizeId(rawBuyer[' Buyer Company ID']),
       premiseId: rawBuyer[' Buyer Premise ID'],
       firstName: rawBuyer[' First Name'],
       lastName: rawBuyer['Last Name'],
@@ -206,6 +295,12 @@ function parseTransferSections(sections: Record<string, RegistryRow[]>): Transfe
   }
 
   return { animals, seller, buyer };
+}
+
+function normalizeId(value: string | undefined): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed === "" || trimmed.toLowerCase() === "none" ? null : trimmed;
 }
 
 function isNewBuyer(buyer: ExistingMemberBuyer | NewBuyer): buyer is NewBuyer {
