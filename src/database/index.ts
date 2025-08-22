@@ -70,8 +70,9 @@ export { getFlockPrefixes } from "./repositories/read/animal/flock/getFlockPrefi
 export { getLastBirthNotifyValue } from "./repositories/read/registry/registrations/getLastBirthNotifyValue";
 export { getLastRegisteredValue } from "./repositories/read/registry/registrations/getLastRegisteredValue";
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam";
-export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate";
 export { getOwner } from "./repositories/read/owners/getOwner";
+export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate";
+export { getOwnerById } from "./repositories/read/owners/getOwnerById";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
@@ -115,6 +116,7 @@ export { insertAnimalRegistrationRow } from "./repositories/write/registrations/
 export { insertBirthOwnershipRecord } from "./repositories/write/animal/ownership/insertBirthOwnershipRecord";
 export { insertGeneticCoatRow } from "./repositories/write/animal/characteristics/insertGeneticCoatRow";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable";
+export { insertTransferOfOwnershipRecord } from "./repositories/write/animal/ownership/insertTransferOfOwnershipRecord";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation";
 export { markAnimalDeathLocation } from "./repositories/write/animal/death/markAnimalDeathLocation";
 export { markRegistryCertificateAsPrinted } from "./repositories/write/animal/registry/markRegistryCertificateAsPrinted";
@@ -147,8 +149,7 @@ export { deleteAnimalAtStudEntriesWithoutFrozenSemen } from "./repositories/dele
 export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAnimalForSaleEntry";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// DB constant
+// DB constants
 
 export type { RegistryType } from "./dbConstants";
 
@@ -159,6 +160,7 @@ export {
     REGISTRATION_CHOCOLATE_WELSH,
     REGISTRATION_WHITE_WELSH,
     REGISTRATION_REGISTERED,
+    TRANSFERRED_BREEDING,
 } from "./dbConstants";
 
 export { }

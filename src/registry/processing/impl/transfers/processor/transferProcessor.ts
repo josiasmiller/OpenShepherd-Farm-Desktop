@@ -11,7 +11,13 @@ import {
 
 // DB types
 import {
+  deleteAnimalForSaleEntry,
+  getOwnerById,
+  insertAnimalGoesToLocation,
+  insertTransferOfOwnershipRecord,
+  Owner,
   Species,
+  TRANSFERRED_BREEDING,
 } from '../../../../../database/index';
 import { AnimalRow, ExistingMemberBuyer, NewBuyer, SellerInfo, TransferParseResponse } from '../parser/util/transferParseData';
 
@@ -40,7 +46,73 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
     for (const animalInfo of transferResonse.animals) {
       try {
 
-        // TODO --> implement processing functionality
+        await insertAnimalGoesToLocation(
+          animalInfo.animalId,
+          seller.premiseId,
+          buyer.premiseId,
+          seller.movedAt,
+        );
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // get the seller Owner from the DB
+
+        const sellerId = seller.contactId ?? seller.companyId;
+        if (!sellerId) {
+          throw new Error("Seller must have either contactId or companyId");
+        }
+
+        const sellerOwnerResult = await getOwnerById(sellerId);
+        let sellerOwner : Owner = null;
+
+        await handleResult(sellerOwnerResult, {
+          success: (data: Owner) => {
+            sellerOwner = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to retrieve seller owner:", err);
+            throw new Error(err);
+          },
+        });
+
+        sellerOwner = sellerOwner!;
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // get the buyer Owner from the DB
+
+        const buyerId = buyer.contactId ?? buyer.companyId;
+        if (!buyerId) {
+          throw new Error("Buyer must have either contactId or companyId");
+        }
+
+        const buyerOwnerResult = await getOwnerById(buyerId);
+        let buyerOwner : Owner = null;
+
+        await handleResult(buyerOwnerResult, {
+          success: (data: Owner) => {
+            buyerOwner = data;
+          },
+          error: (err: string) => {
+            console.error("Failed to retrieve buyer owner:", err);
+            throw new Error(err);
+          },
+        });
+
+        buyerOwner = buyerOwner!;
+
+        await insertTransferOfOwnershipRecord(
+          animalInfo.animalId,
+          sellerOwner,
+          buyerOwner,
+          seller.movedAt,
+          TRANSFERRED_BREEDING,
+        );
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // remove any for sale records from DB for given animal
+
+        await deleteAnimalForSaleEntry(animalInfo.animalId);
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
 
       } catch (innerError) {
