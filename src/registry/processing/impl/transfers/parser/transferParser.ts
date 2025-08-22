@@ -72,6 +72,7 @@ export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseRe
     }
     return result.data;
   };
+  
   // Parse animal rows
   const animals = parseCsvSection<AnimalRow>(animalSection);
 
