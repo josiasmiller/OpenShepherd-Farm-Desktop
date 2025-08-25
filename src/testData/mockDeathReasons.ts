@@ -1,5 +1,5 @@
-import type { DeathReason } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { DeathReason } from '../main/database';
+import { Success } from 'packages/core/src/resultTypes';
 
 export const mockDeathReasons = new Success<DeathReason[]>([
   { id: '1', name: 'Natural Causes', display_order: 1 },

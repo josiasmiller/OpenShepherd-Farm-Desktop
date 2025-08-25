@@ -1,5 +1,5 @@
-import type { Contact } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { Contact } from '../main/database';
+import { Success } from 'packages/core/src/resultTypes';
 
 export const mockContacts = new Success<Contact[]>([
   { id: "1", firstName: "John", lastName: "Doe" },

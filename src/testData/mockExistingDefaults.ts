@@ -1,6 +1,6 @@
-import type { DefaultSettingsResults } from '../database';
-import { OwnerType } from '../database/client-types';
-import { Success } from '../shared/results/resultTypes';
+import type { DefaultSettingsResults } from '../main/database';
+import { OwnerType } from '../main/database/client-types';
+import { Success } from 'packages/core/src/resultTypes';
 
 export const mockExistingDefaults = new Success<DefaultSettingsResults[]>([
   {

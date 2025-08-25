@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"],
+  "exclude": ["./build/*", "./**/*.test.ts", "./**/*.test.tsx"],
+  "references": [
+    { "path": "../packages/appBuild" },
+    { "path": "../packages/api" },
+    { "path": "../packages/core" },
+    { "path": "../packages/time"}
+  ]
+}

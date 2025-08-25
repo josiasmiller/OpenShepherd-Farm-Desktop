@@ -6,8 +6,8 @@ import { BackButton } from "../../../components/backButton/backButton";
 
 import { useState } from "react";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
-import { handleResult } from "../../../../shared/results/resultTypes";
-import { Species } from "../../../../database";
+import { handleResult } from "packages/core";
+import { Species } from "packages/api";
 import Swal from "sweetalert2";
 
 const RegistryLanding: React.FC = () => {
@@ -28,7 +28,6 @@ const RegistryLanding: React.FC = () => {
   ), [species]);
 
   const handleBirthNotifications = () => {
-
     if (!selectedSpecies) {
       Swal.fire({
         icon: 'warning',

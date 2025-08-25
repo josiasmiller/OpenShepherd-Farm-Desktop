@@ -1,4 +1,4 @@
-import type { Unit } from '../database';
+import type { Unit } from '../main/database';
 
 // note --> the `unit type` field should reference the correspdoning ID from `mockUnitTypes.ts`
 

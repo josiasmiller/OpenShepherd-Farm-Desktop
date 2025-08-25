@@ -1,0 +1,1 @@
+export { Result, Success, Failure, handleResult, unwrapOrFailWithAnimal } from './resultTypes'

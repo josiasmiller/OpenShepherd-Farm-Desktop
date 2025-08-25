@@ -1,4 +1,4 @@
-import type { Species } from '../../../database/index';
+import type { Species } from 'packages/api';
 import { getStoreItem, setStoreItem } from '../core';
 
 export function setStoreSelectedSpecies(value: Species) {

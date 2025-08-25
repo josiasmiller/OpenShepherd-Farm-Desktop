@@ -1,0 +1,9 @@
+{
+  "name": "animaltrakker-ipc-api",
+  "version": "1.0.0",
+  "description": "The api constract for the electron ipc bridge.",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

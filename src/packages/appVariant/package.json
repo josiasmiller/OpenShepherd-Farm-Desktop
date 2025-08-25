@@ -1,0 +1,9 @@
+{
+  "name": "app-variant",
+  "version": "1.0.0",
+  "description": "Utilities for application variants.",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

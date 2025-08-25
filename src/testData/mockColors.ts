@@ -1,5 +1,5 @@
-import type { Color } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { Color } from '../main/database';
+import { Success } from 'packages/core/src/resultTypes';
 
 export const mockColors = new Success<Color[]>([
   { id: '1', name: 'Black', display_order: 1 },

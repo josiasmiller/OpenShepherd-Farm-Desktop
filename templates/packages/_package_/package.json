@@ -1,0 +1,9 @@
+{
+  "name": "<package>",
+  "version": "1.0.0",
+  "description": "<description>",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

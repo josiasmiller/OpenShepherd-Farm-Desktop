@@ -3,7 +3,6 @@ import React from "react";
 import logo from "../../assets/images/AnimalTrakker.png";
 import "../../styles/styles.css";
 
-
 const Home: React.FC = () => {
   const handleExternalLinkClick = () => {
     window.open("https://support.animaltrakker.com/", "_blank");

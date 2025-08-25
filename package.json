@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "author": "AnimalTrakker",
   "scripts": {
+    "clean": "run-script-os",
+    "clean:win32": "ECHO \"DELTREE .webpack && DELTREE out && DEL /S /Q /F src/*.tsbuildinfo && FOR /D /R \"src\" %d IN (\"build|lib\") DO @IF EXIST \"%d\" DELTREE \"%d\"\"",
+    "clean:darwin:linux": "rm -rf .webpack && rm -rf out && find src -name \"*.tsbuildinfo\" -type f -delete && find src -type d -regextype egrep -regex \".*/(lib|build)$\" -exec rm -rf {} \\;",
     "package": "npm run package:farm && npm run package:registry",
     "package:farm": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge package",
     "package:registry": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge package",
@@ -45,8 +48,10 @@
     "identity-obj-proxy": "3.0.0",
     "node-loader": "2.1.0",
     "npm-check-updates": "18.0.2",
+    "run-script-os": "1.1.6",
     "style-loader": "3.3.4",
     "ts-loader": "9.5.2",
+    "ts-node": "10.9.2",
     "tsconfig-paths-webpack-plugin": "4.2.0",
     "typescript": "5.8.3"
   },
@@ -65,6 +70,6 @@
     "uuid": "11.1.0"
   },
   "optionalDependencies": {
-    "appdmg": "0.6.6"
+    "appdmg": "^0.6.6"
   }
 }

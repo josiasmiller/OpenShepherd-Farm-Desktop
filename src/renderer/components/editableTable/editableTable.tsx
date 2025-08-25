@@ -1,5 +1,5 @@
 import React from "react";
-import { RegistryFieldDef, RegistryRow } from "../../types/registry/registryProcess";
+import { RegistryFieldDef, RegistryRow } from "packages/api";
 
 interface EditableTableProps {
   rows: RegistryRow[];
