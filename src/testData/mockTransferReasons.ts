@@ -1,5 +1,5 @@
-import type { TransferReason } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { TransferReason } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockTransferReasons = new Success<TransferReason[]>([
   { id: '1', name: 'Moved to different farm', display_order: 1 },

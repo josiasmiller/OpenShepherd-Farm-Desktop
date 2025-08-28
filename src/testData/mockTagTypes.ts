@@ -1,5 +1,5 @@
-import type { TagType } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { TagType } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockTagTypes = new Success<TagType[]>([
   { id: '1', name: 'Visual', display_order: 1 },

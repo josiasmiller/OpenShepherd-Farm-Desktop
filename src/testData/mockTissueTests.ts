@@ -1,5 +1,5 @@
-import type { TissueTest } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { TissueTest } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockTissueTests = new Success<TissueTest[]>([
   { id: '1', name: 'Scrapie Test', display_order: 1 },

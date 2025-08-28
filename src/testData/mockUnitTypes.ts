@@ -1,4 +1,4 @@
-import type { UnitType } from '../main/database';
+import type { UnitType } from 'packages/api';
 
 export const mockUnitTypes: UnitType[] = [
   { id: "1", name: "Weight",   display_order: 1 },

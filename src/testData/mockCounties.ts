@@ -1,5 +1,5 @@
-import type { County } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { County } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockCounties = new Success<County[]>([
   { id: '1', name: 'Travis County',   state_id: 'TX' },

@@ -1,5 +1,5 @@
-import type { Premise } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { Premise } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockPremises = new Success<Premise[]>([
   { 

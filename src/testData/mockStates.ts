@@ -1,5 +1,5 @@
-import type { State } from '../main/database';
-import { Success } from 'packages/core/src/resultTypes';
+import type { State } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockStates = new Success<State[]>([
   { 
