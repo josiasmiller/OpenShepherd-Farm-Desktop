@@ -1,7 +1,7 @@
 {
-  "name": "<package>",
+  "name": "animaltrakker-time",
   "version": "1.0.0",
-  "description": "<description>",
+  "description": "Date and time utilities",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib"
