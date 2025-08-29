@@ -8,10 +8,9 @@ import {
   NewDefaultSettingsParameters, 
   DefaultSettingsResults,
   Species,
-} from "../database";
+} from "packages/api";
 
-import { RegistryProcessRequest } from '../registry/processing/core/types';
-import { DatabaseStateCheckResponse } from '../registry/processing/ipc/handleDatabaseStateCheck';
+import { RegistryProcessRequest, DatabaseStateCheckResponse } from 'packages/api';
 
 contextBridge.exposeInMainWorld("electronAPI", {
   animalSearch: (queryParams: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", queryParams),
@@ -21,7 +20,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   exportAnimalNotesCsv: (animals: string[]) => ipcRenderer.invoke("export-animal-notes-csv", animals),
   exportDrugHistoryCsv: (animals: string[]) => ipcRenderer.invoke("export-drug-history-csv", animals),
   exportTissueTestResultsCsv: (animals: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", animals),
-  exportRegistration: (animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => ipcRenderer.invoke("export-registration", animals, registrationType, signatureFilePath),
+  exportRegistration: (animals: number, registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) =>
+      ipcRenderer.invoke("export-registration", animals, registrationType, signatureFilePath),
   getAnimalIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
   getBirthTypes: () => ipcRenderer.invoke("get-birth-types"),
   getBreeds: (queryParams: BreedRequest) => ipcRenderer.invoke("get-breeds", queryParams),

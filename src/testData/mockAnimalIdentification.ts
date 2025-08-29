@@ -1,5 +1,5 @@
-import type { AnimalIdentification } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { AnimalIdentification } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockAnimalIdentification = new Success<AnimalIdentification[]>([
   { id: "1", flockPrefix: "Desert Weyr", name: "Samuel", registrationNumber: "12345", birthDate: new Date(Date.UTC(2012, 0, 1)) }, // Jan 1, 2012

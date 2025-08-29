@@ -3,7 +3,6 @@ import { BrowserWindow, ipcMain, shell } from "electron";
 
 import { 
   animalSearch,
-  DefaultSettingsResults,
   editExistingDefaultSettings,
   getAnimalIdentification,
   getBirthTypes,
@@ -33,29 +32,28 @@ import {
   getUnits,
   getUnitTypes,
   isOwnerCompany,
-  Species,
   writeNewDefaultSettings,
-} from "../database";
+} from "./database";
 
-import { pngFileDialog } from "../scripts/selectPng";
-import { selectNewDb } from "../scripts/dbSelect";
-import { getDatabase } from "../database/dbConnections";
-import { writeAnimalNotesCsv } from "../writers/csv/writeAnimalNotes";
-import { writeDrugHistoryCsv } from "../writers/csv/writeDrugEvents";
-import { writeTissueTestResults } from "../writers/csv/writeTissueTestResults";
+import { pngFileDialog } from "./selectPng";
+import { selectNewDb } from "./dbSelect";
+import { getDatabase } from "./database/dbConnections";
+import { writeAnimalNotesCsv } from "./writers/csv/writeAnimalNotes";
+import { writeDrugHistoryCsv } from "./writers/csv/writeDrugEvents";
+import { writeTissueTestResults } from "./writers/csv/writeTissueTestResults";
 
-import { writeRegistration } from "../writers/pdf/writeRegistration";
+import { writeRegistration } from "./writers/pdf/writeRegistration";
 
-import { birthParser } from "../registry/processing/impl/births/parser/birthParser";
-import { deathParser } from "../registry/processing/impl/deaths/parser/deathParser";
-import { registrationParser } from "../registry/processing/impl/registrations/parser/registrationParser";
-import { transferParser } from "../registry/processing/impl/transfers/parser/transferParser";
+import { birthParser } from "./registry/processing/impl/births/parser/birthParser";
+import { deathParser } from "./registry/processing/impl/deaths/parser/deathParser";
+import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
+import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
+import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
+import {DatabaseStateCheckResponse, DefaultSettingsResults} from "packages/api";
+import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
+import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
-import { DatabaseStateCheckResponse, handleDatabaseStateCheck } from "../registry/processing/ipc/handleDatabaseStateCheck";
-import { handleRegistryProcess } from "../registry/processing/ipc/handleRegistryProcess";
-import { resolveDatabaseIssues } from "../registry/processing/ipc/resolveDatabaseStateIssues";
-
-import { RegistryProcessRequest } from "../registry/processing/core/types";
+import { RegistryProcessRequest, Species } from "packages/api";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";

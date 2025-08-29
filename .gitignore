@@ -97,3 +97,7 @@ out/
 
 # packaged data
 dist/
+
+# src lib/build dirs
+src/**/lib/
+src/**/build/

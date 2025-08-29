@@ -1,12 +1,12 @@
 import type { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import type { ForgeArch } from '@electron-forge/shared-types';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
-import { appVariantFromEnv } from "./src/app/appEnv";
+//LEAVE IMPORT AS RELATIVE PATH. DO NOT CONVERT TO ALIAS.
+import { appVariantFromEnv } from "./buildSrc/appVariantFromEnv";
 import { fromBuildIdentifier } from "@electron-forge/core/dist/util/forge-config";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";

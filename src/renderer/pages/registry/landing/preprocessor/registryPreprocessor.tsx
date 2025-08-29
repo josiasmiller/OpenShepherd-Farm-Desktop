@@ -4,16 +4,16 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { BackButton } from "../../../../components/backButton/backButton";
 
-import { RegistryFieldDef, RegistryRow } from '../../../../types/registry/registryProcess';
+import { RegistryFieldDef, RegistryRow } from 'packages/api';
 
-import { BirthParseResponse, BirthParseRow } from '../../../../../registry/processing/impl/births/parser/util/birthParseRow';
-import { DeathParseResponse, DeathParseRow } from '../../../../../registry/processing/impl/deaths/parser/util/deathParseRow';
-import { RegistrationParseResponse, RegistrationParseRow } from '../../../../../registry/processing/impl/registrations/parser/util/registrationParseRow';
+import { BirthParseResponse, BirthParseRow } from 'packages/api';
+import { DeathParseResponse, DeathParseRow } from 'packages/api';
+import { RegistrationParseResponse, RegistrationParseRow } from 'packages/api';
 
-import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '../../../../../registry/processing/core/types';
-import { ScrapieFlockInfo, Species } from '../../../../../database';
-import { DatabaseStateCheckResponse } from '../../../../../registry/processing/ipc/handleDatabaseStateCheck';
-import { handleResult, Result } from '../../../../../shared/results/resultTypes';
+import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from 'packages/api';
+import { ScrapieFlockInfo, Species } from 'packages/api';
+import { DatabaseStateCheckResponse } from 'packages/api';
+import { handleResult, Result } from 'packages/core/src/resultTypes';
 
 type EditableTableData = {
   title: string;

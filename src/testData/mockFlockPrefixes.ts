@@ -1,6 +1,5 @@
-import type { FlockPrefix } from '../database';
-import { OwnerType } from '../database/client-types';
-import { Success } from '../shared/results/resultTypes';
+import { OwnerType, FlockPrefix } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockFlockPrefixes = new Success<FlockPrefix[]>([
   { 

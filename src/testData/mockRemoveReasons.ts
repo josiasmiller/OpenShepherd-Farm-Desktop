@@ -1,5 +1,5 @@
-import type { RemoveReason } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { RemoveReason } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockRemoveReasons = new Success<RemoveReason[]>([
   { id: '1', name: 'Replaced', display_order: 1 },

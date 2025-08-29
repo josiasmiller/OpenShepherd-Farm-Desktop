@@ -1,0 +1,9 @@
+{
+  "name": "animaltrakker-core",
+  "version": "1.0.0",
+  "description": "Core types and functionality",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

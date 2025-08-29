@@ -1,5 +1,5 @@
-import type { TissueSampleContainerType } from '../database';
-import { Success } from '../shared/results/resultTypes';
+import type { TissueSampleContainerType } from 'packages/api';
+import { Success } from 'packages/core';
 
 export const mockTissueSampleContainerTypes = new Success<TissueSampleContainerType[]>([
   { id: '1', name: 'Tube',     display_order: 1 },

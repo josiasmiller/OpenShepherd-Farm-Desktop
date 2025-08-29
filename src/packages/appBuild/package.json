@@ -1,0 +1,9 @@
+{
+  "name": "animaltrakker-app-build",
+  "version": "1.0.0",
+  "description": "Utilities for application variants in the application build.",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

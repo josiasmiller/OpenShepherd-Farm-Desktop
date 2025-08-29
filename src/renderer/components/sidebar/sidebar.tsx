@@ -5,9 +5,9 @@ import Swal from "sweetalert2";
 import "../../styles/styles.css";
 import transparentLogo from "../../assets/images/AnimalTrakker.png";
 
-import { handleResult } from "../../../shared/results/resultTypes";
-import { DefaultSettingsResults } from "../../../database";
-import {isRegistryDesktop} from "../../../app/appBuild";
+import { handleResult } from "packages/core";
+import { DefaultSettingsResults } from "packages/api";
+import { isRegistryDesktop } from "packages/appBuild";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();

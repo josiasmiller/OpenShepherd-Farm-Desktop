@@ -2,6 +2,8 @@ import type { Configuration } from 'webpack';
 
 import { rules } from './webpack.rules';
 import { plugins } from './webpack.plugins';
+import {TsconfigPathsPlugin} from "tsconfig-paths-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 
 export const rendererConfig: Configuration = {
   module: {
@@ -27,8 +29,16 @@ export const rendererConfig: Configuration = {
         }]
     ),
   },
-  plugins,
+  plugins: plugins.concat([
+    new ForkTsCheckerWebpackPlugin({
+      typescript: {
+        build: true,
+        configFile: 'src/renderer/tsconfig.json'
+      }
+    }),
+  ]),
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+    plugins: [new TsconfigPathsPlugin({})]
   },
 };
