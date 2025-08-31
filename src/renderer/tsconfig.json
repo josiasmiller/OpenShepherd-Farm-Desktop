@@ -11,7 +11,7 @@
     "outDir": "build"
   },
   "include": ["./**/*.ts", "./**/*.tsx"],
-  "exclude": ["./build/*", "./**/*.test.ts", "./**/*.test.tsx"],
+  "exclude": ["./build/*", "./**/jest.*" ,"./**/*.test.ts", "./**/*.test.tsx"],
   "references": [
     { "path": "../packages/appBuild" },
     { "path": "../packages/api" },
