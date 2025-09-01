@@ -1,5 +1,5 @@
-import type { PedigreeNode, Species, RegistryRow, ValidationResult } from 'packages/api';
-import { checkHasFederalId } from './rules/checkHasFederalId';
+import type { Species, RegistryRow, ValidationResult } from 'packages/api';
+import { checkHasOfficialId } from './rules/checkHasOfficialId';
 
 
 /**
@@ -18,7 +18,7 @@ export async function validateTransferRows(sections: Record<string, RegistryRow[
     const errors: string[] = [];
 
     // Run all relevant checks
-    const federalCheck = await checkHasFederalId(row);
+    const federalCheck = await checkHasOfficialId(row);
     errors.push(...federalCheck.errors);
 
     results.push({
