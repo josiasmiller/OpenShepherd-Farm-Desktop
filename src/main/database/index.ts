@@ -40,8 +40,10 @@ export { getLastRegisteredValue } from "./repositories/read/registry/registratio
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam";
 export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate";
 export { getOwner } from "./repositories/read/owners/getOwner";
+export { getOwnerById } from "./repositories/read/owners/getOwnerById";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
+export { getRegistrationTypeIdByRegNum } from "./repositories/read/registry/registrations/getRegistrationtypeIdByRegNum";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons";
 export { getScrapieFlockInfo } from "./repositories/read/scrapie/getScrapieFlockInfo";

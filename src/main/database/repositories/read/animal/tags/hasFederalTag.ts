@@ -2,9 +2,9 @@ import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 
 /**
- * Checks if the given animal has an active official tag.
+ * Checks if the given animal has an active federal tag.
  * 
- * An official tag is considered active if:
+ * An federal tag is considered active if:
  * - id_scrapieflockid != NULL
  * - id_date_off IS NULL
  * - id_time_off IS NULL
@@ -28,7 +28,7 @@ export async function animalHasActiveFederalTag(
   `;
 
   try {
-    const hasOfficialTag = await new Promise<boolean>((resolve, reject) => {
+    const hasFederalTag = await new Promise<boolean>((resolve, reject) => {
       db.get(query, [animalId], (err, row) => {
         if (err) {
           reject(err);
@@ -38,7 +38,7 @@ export async function animalHasActiveFederalTag(
       });
     });
 
-    return new Success(hasOfficialTag);
+    return new Success(hasFederalTag);
   } catch (err: any) {
     return new Failure(`Failed to check official tag: ${err.message}`);
   }
