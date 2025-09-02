@@ -81,6 +81,7 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
+
     return writeRegistration(animals, registrationType, signatureFilePath);
   });
 
