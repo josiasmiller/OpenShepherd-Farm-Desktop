@@ -19,14 +19,14 @@ const Sidebar: React.FC = () => {
 
   // Check if database is already loaded (on mount and after file selection)
   const checkDbStatus = async () => {
-    const loaded: boolean = await window.electronAPI.isDatabaseLoaded();
+    const loaded: boolean = await window.systemAPI.isDatabaseLoaded();
     setIsDbLoaded(loaded);
   };
 
   useEffect(() => {
     const loadPreviousDefault = async () => {
       try {
-        const saved : DefaultSettingsResults | null = await window.electronAPI.getStoreSelectedDefault();
+        const saved : DefaultSettingsResults | null = await window.storeAPI.getSelectedDefault();
 
         if (
           saved &&
@@ -50,7 +50,7 @@ const Sidebar: React.FC = () => {
     if (newSelected) {
       setSelectedDefault(newSelected.name);
       try {
-        await window.electronAPI.setStoreSelectedDefault(newSelected);
+        await window.storeAPI.setSelectedDefault(newSelected);
       } catch (error) {
         console.error("Failed to persist selected default:", error);
       }
@@ -64,20 +64,20 @@ const Sidebar: React.FC = () => {
 
   const handleSelectDatabase = async () => {
     try {
-      const filePath: string | null = await window.electronAPI.selectDatabase();
+      const filePath: string | null = await window.systemAPI.selectDatabase();
       if (!filePath) return;
 
       setDbFileName(filePath);
 
       // Fetch defaults from DB
-      const defaults = await window.electronAPI.getExistingDefaults();
+      const defaults = await window.defaultsAPI.getExisting();
 
       handleResult(defaults, {
         success: async (data: DefaultSettingsResults[]) => {
           setDefaultList(data);
 
           try {
-            const saved = await window.electronAPI.getStoreSelectedDefault();
+            const saved = await window.storeAPI.getSelectedDefault();
 
             // If saved default exists in the new DB's defaults
             const match = saved && data.find((def) => def.id === saved.id);
@@ -122,7 +122,7 @@ const Sidebar: React.FC = () => {
 
   const openAnimalTrakkerPage = async () => {
     const url = "https://animaltrakker.com";
-    await window.electronAPI.openExternalURL(url);
+    await window.systemAPI.openExternalURL(url);
     return;
   }
 

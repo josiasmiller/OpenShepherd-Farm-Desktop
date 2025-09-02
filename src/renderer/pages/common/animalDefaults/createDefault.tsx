@@ -224,28 +224,28 @@ const CreateDefaults: React.FC = () => {
         weightUnitsResult,
         currencyUnitsResult,
       ] = await Promise.all([
-        window.electronAPI.getExistingDefaults(),
-        window.electronAPI.getContactInfo(),
-        window.electronAPI.getCompanyInfo(false),
-        window.electronAPI.getCompanyInfo(true),
-        window.electronAPI.getPremiseInfo(),
-        window.electronAPI.getStates(),
-        window.electronAPI.getCounties(),
-        window.electronAPI.getRemoveReasons(),
-        window.electronAPI.getDeathReasons(),
-        window.electronAPI.getSpecies(),
-        window.electronAPI.getSexes(),
-        window.electronAPI.getLocations(),
-        window.electronAPI.getFlockPrefixes(),
-        window.electronAPI.getTagTypes(),
-        window.electronAPI.getTissueSampleContainerTypes(),
-        window.electronAPI.getTissueSampleTypes(),
-        window.electronAPI.getTissueTests(),
-        window.electronAPI.getTransferReasons(),
-        window.electronAPI.getBirthTypes(),
-        window.electronAPI.getColors(),
-        window.electronAPI.getUnits(weightReq),
-        window.electronAPI.getUnits(currencyReq),
+        window.defaultsAPI.getExisting(),
+        window.lookupAPI.getContactInfo(),
+        window.lookupAPI.getCompanyInfo(false),
+        window.lookupAPI.getCompanyInfo(true),
+        window.lookupAPI.getPremiseInfo(),
+        window.lookupAPI.getStates(),
+        window.lookupAPI.getCounties(),
+        window.lookupAPI.getRemoveReasons(),
+        window.lookupAPI.getDeathReasons(),
+        window.lookupAPI.getSpecies(),
+        window.lookupAPI.getSexes(),
+        window.lookupAPI.getLocations(),
+        window.lookupAPI.getFlockPrefixes(),
+        window.lookupAPI.getTagTypes(),
+        window.lookupAPI.getTissueSampleContainerTypes(),
+        window.lookupAPI.getTissueSampleTypes(),
+        window.lookupAPI.getTissueTests(),
+        window.lookupAPI.getTransferReasons(),
+        window.lookupAPI.getBirthTypes(),
+        window.lookupAPI.getColors(),
+        window.lookupAPI.getUnits(weightReq),
+        window.lookupAPI.getUnits(currencyReq),
       ]);
 
       handleResult(existingDefaultsResult, {
@@ -647,7 +647,7 @@ const CreateDefaults: React.FC = () => {
         species_id: speciesId,
       };
 
-      const result = await window.electronAPI.getBreeds(queryParams);
+      const result = await window.lookupAPI.getBreeds(queryParams);
 
       handleResult(result, {
         success: (breedInfo: Breed[]) => {
@@ -856,7 +856,7 @@ const CreateDefaults: React.FC = () => {
     const formData: NewDefaultSettingsParameters = result.data;
   
     try {
-      const success: boolean = await window.electronAPI.writeNewDefaultSettings(formData);
+      const success: boolean = await window.defaultsAPI.writeNew(formData);
 
       if (success) {
         Swal.fire({
@@ -891,7 +891,7 @@ const CreateDefaults: React.FC = () => {
 
     const formData: NewDefaultSettingsParameters = result.data;
   
-    const success: boolean = await window.electronAPI.editExistingDefaultSettings(formData);
+    const success: boolean = await window.defaultsAPI.editExisting(formData);
   
     if (success) {
       Swal.fire({

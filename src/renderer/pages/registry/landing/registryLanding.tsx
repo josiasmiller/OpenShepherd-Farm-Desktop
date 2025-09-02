@@ -97,7 +97,7 @@ const RegistryLanding: React.FC = () => {
     const found : Species | null = species.find((s) => s.id === selectedId) || null;
     if (found != null) {
       setSelectedSpecies(found);
-      await window.electronAPI.setStoreSelectedSpecies(found);
+      await window.storeAPI.setSelectedSpecies(found);
     }
   }
 
@@ -108,8 +108,8 @@ const RegistryLanding: React.FC = () => {
         speciesResult,
         storedSpecies,
       ] = await Promise.all([
-        window.electronAPI.getSpecies(),
-        window.electronAPI.getStoreSelectedSpecies()
+        window.lookupAPI.getSpecies(),
+        window.storeAPI.getSelectedSpecies()
       ]);
 
       handleResult(speciesResult, {

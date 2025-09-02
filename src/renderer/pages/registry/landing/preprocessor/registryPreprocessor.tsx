@@ -159,7 +159,7 @@ export const PreprocessorPage: React.FC = () => {
    * parses births and then populates the table with the parsed data
    */
   const handleBirths = async () => {
-    const parseResult: ParseResult<BirthParseResponse> = await window.electronAPI.registryParseBirths();
+    const parseResult: ParseResult<BirthParseResponse> = await window.registryAPI.parseBirths();
     const parsedBirths: BirthParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
@@ -234,7 +234,7 @@ export const PreprocessorPage: React.FC = () => {
    * Parses registrations and then populates the table with the parsed data
    */
   const handleRegistrations = async () => {
-    const parseResult: ParseResult<RegistrationParseResponse> = await window.electronAPI.registryParseRegistrations();
+    const parseResult: ParseResult<RegistrationParseResponse> = await window.registryAPI.parseRegistrations();
     const parsedRegistrations: RegistrationParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
@@ -294,7 +294,7 @@ export const PreprocessorPage: React.FC = () => {
    * parses deaths and then populates the table with the parsed data
    */
   const handleDeaths = async () => {
-    const parseResult: ParseResult<DeathParseResponse> = await window.electronAPI.registryParseDeaths();
+    const parseResult: ParseResult<DeathParseResponse> = await window.registryAPI.parseDeaths();
     const parsedDeaths: DeathParseRow[] = parseResult.data.rows;
 
     handleWarnings(parseResult.warnings);
@@ -327,7 +327,7 @@ export const PreprocessorPage: React.FC = () => {
 
 
   const handleTransfers = async () => {
-    const parseResult = await window.electronAPI.registryParseTransfers();
+    const parseResult = await window.registryAPI.parseTransfers();
     const { animals, seller, buyer } = parseResult.data;
 
     handleWarnings(parseResult.warnings);
@@ -455,7 +455,7 @@ export const PreprocessorPage: React.FC = () => {
         }, {}),
       };
 
-      const result: ProcessingResult = await window.electronAPI.registryProcess(args);
+      const result: ProcessingResult = await window.registryAPI.process(args);
 
       if (!result.success) {
         let errorHtml = "<ul><li>Unknown error occurred.</li></ul>";
@@ -496,7 +496,7 @@ export const PreprocessorPage: React.FC = () => {
    * Submits the parsed & altered data to be validated & processed
    */
   const handlePreCheck = async () => {
-    const response: DatabaseStateCheckResponse = await window.electronAPI.databaseStateCheck();
+    const response: DatabaseStateCheckResponse = await window.systemAPI.databaseStateCheck();
 
     const failedChecks = [];
     if (!response.blackVerified) failedChecks.push("Black registration numbers");
@@ -534,7 +534,7 @@ export const PreprocessorPage: React.FC = () => {
 
     if (result.isConfirmed) {
       try {
-        const resolveResult: Result<boolean, string> = await window.electronAPI.resolveDatabaseIssues(response);
+        const resolveResult: Result<boolean, string> = await window.systemAPI.resolveDatabaseIssues(response);
 
         let wasSuccessful = false;
 
@@ -598,7 +598,7 @@ export const PreprocessorPage: React.FC = () => {
           return row;
         }
 
-        const isCompanyResult = await window.electronAPI.isOwnerCompany(breederId);
+        const isCompanyResult = await window.lookupAPI.isOwnerCompany(breederId);
         let isCompany: boolean = false;
 
         await handleResult(isCompanyResult, {
@@ -612,7 +612,7 @@ export const PreprocessorPage: React.FC = () => {
         });
 
         if (fedType === "federal scrapie") {
-          const scrapieResult = await window.electronAPI.getScrapieFlockInfo(breederId, isCompany);
+          const scrapieResult = await window.lookupAPI.getScrapieFlockInfo(breederId, isCompany);
 
           await handleResult(scrapieResult, {
             success: (data: ScrapieFlockInfo | null) => {
@@ -626,7 +626,7 @@ export const PreprocessorPage: React.FC = () => {
             },
           });
         } else if (fedType === "electronic") {
-          const countryPrefixResult = await window.electronAPI.getCountryPrefixForOwner(breederId, isCompany);
+          const countryPrefixResult = await window.lookupAPI.getCountryPrefixForOwner(breederId, isCompany);
 
           await handleResult(countryPrefixResult, {
             success: (data: string) => {
