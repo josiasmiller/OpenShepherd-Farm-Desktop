@@ -13,8 +13,12 @@
     "start:farm": "cross-env APP_VARIANT=farm NODE_ENV=development DEBUG=electron-forge:* electron-forge start",
     "start:registry": "cross-env APP_VARIANT=registry NODE_ENV=development DEBUG=electron-forge:* electron-forge start",
     "make": "npm run make:farm && npm run make:registry",
-    "make:farm": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge make",
-    "make:registry": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge make",
+    "make:farm": "run-script-os",
+    "make:farm:win32:linux": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge make",
+    "make:farm:darwin": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge make --arch=universal",
+    "make:registry": "run-script-os",
+    "make:registry:win32:linux": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge make",
+    "make:registry:darwin": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge make --arch=universal",
     "test": "jest"
   },
   "keywords": [],
@@ -78,6 +82,7 @@
     "uuid": "11.1.0"
   },
   "optionalDependencies": {
+    "@electron/universal": "3.0.1",
     "appdmg": "0.6.6"
   }
 }
