@@ -7,6 +7,11 @@ const { Database } = pkg;
 let dbInstance: InstanceType<typeof Database> | null = null;
 
 export const openDb = async (dbPath: string): Promise<InstanceType<typeof Database>> => {
+
+  if (dbInstance) {
+    dbInstance.close();
+  }
+
   dbInstance = new Database(dbPath)
     .exec('PRAGMA journal_mode=DELETE');
   console.log("Database connection established:", dbPath);
