@@ -7,27 +7,20 @@ let dbInstance: InstanceType<typeof Database> | null = null;
 
 export const openDb = async (dbPath: string): Promise<InstanceType<typeof Database>> => {
   if (dbInstance) {
-    await new Promise<void>((resolve) => {
-      dbInstance!.close((err?: Error | null) => {
-        if (err) {
-          log.error("Failed to close previous database connection:", err);
-        }
-        resolve();
-      });
+    // Close old connection safely
+    dbInstance.close((err?: Error | null) => {
+      if (err) {
+        log.error("Failed to close previous database connection:", err);
+      }
     });
   }
 
   dbInstance = new Database(dbPath);
 
-  await new Promise<void>((resolve, reject) => {
-    dbInstance!.exec("PRAGMA journal_mode=DELETE", (err?: Error | null) => {
-      if (err) {
-        log.error("Failed to set PRAGMA journal_mode:", err);
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
+  dbInstance.exec("PRAGMA journal_mode=DELETE", (err?: Error | null) => {
+    if (err) {
+      log.error("Failed to set PRAGMA journal_mode:", err);
+    }
   });
 
   log.info("Database connection established:", dbPath);
