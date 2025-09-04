@@ -1,100 +1,139 @@
 import {
-    AnimalIdentification,
-    AnimalSearchRequest,
-    AnimalSearchResult,
-    BirthType,
-    Breed,
-    BreedRequest,
-    Color,
-    Company,
-    Contact,
-    Country,
-    County,
-    DeathReason,
-    DefaultSettingsResults,
-    FlockPrefix,
-    Premise,
-    RemoveReason,
-    Sex,
-    Species,
-    State,
-    TagLocation,
-    TagType,
-    TissueSampleContainerType,
-    TissueSampleType,
-    TissueTest,
-    Unit,
-    UnitRequest,
-    UnitType,
-    NewDefaultSettingsParameters,
-    PedigreeNode,
-    ScrapieFlockInfo
+  AnimalIdentification,
+  AnimalSearchRequest,
+  AnimalSearchResult,
+  BirthType,
+  Breed,
+  BreedRequest,
+  Color,
+  Company,
+  Contact,
+  Country,
+  County,
+  DeathReason,
+  DefaultSettingsResults,
+  FlockPrefix,
+  Premise,
+  RemoveReason,
+  Sex,
+  Species,
+  State,
+  TagLocation,
+  TagType,
+  TissueSampleContainerType,
+  TissueSampleType,
+  TissueTest,
+  Unit,
+  UnitRequest,
+  UnitType,
+  NewDefaultSettingsParameters,
+  PedigreeNode,
+  ScrapieFlockInfo,
+  RegistryProcessRequest,
+  DatabaseStateCheckResponse,
+  ParseResult,
+  ProcessingResult,
+  BirthParseResponse,
+  RegistrationWriteResponse,
+  RegistrationParseResponse,
+  TransferParseResponse,
+  DeathParseResponse,
 } from "./dtos";
 
 import { Result } from "packages/core";
-import { ParseResult, ProcessingResult, RegistryProcessRequest } from "./dtos";
 
-import { BirthParseResponse } from "./dtos";
-import { RegistrationWriteResponse } from "./dtos";
-import { RegistrationParseResponse } from "./dtos";
-import { TransferParseResponse } from "./dtos";
-import { DeathParseResponse } from "./dtos";
-import { DatabaseStateCheckResponse } from "./dtos";
+// -------------------- Animal --------------------
+export interface AnimalAPI {
+  search: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
+  getIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
+  getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
+}
 
+// -------------------- Export --------------------
+export interface ExportAPI {
+  notesCsv: (animalIds: string[]) => Promise<boolean>;
+  drugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
+  tissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
+  registration: (
+    animalIds: string[],
+    registrationType: "black" | "white" | "chocolate",
+    signatureFilePath: string | null
+  ) => Promise<RegistrationWriteResponse>;
+}
+
+// -------------------- Defaults --------------------
+export interface DefaultsAPI {
+  editExisting: (params: NewDefaultSettingsParameters) => Promise<boolean>;
+  writeNew: (params: NewDefaultSettingsParameters) => Promise<boolean>;
+  getExisting: () => Promise<Result<DefaultSettingsResults[], string>>;
+}
+
+// -------------------- Lookup --------------------
+export interface LookupAPI {
+  getBirthTypes: () => Promise<Result<BirthType[], string>>;
+  getBreeds: (params: BreedRequest) => Promise<Result<Breed[], string>>;
+  getColors: () => Promise<Result<Color[], string>>;
+  getCountries: () => Promise<Result<Country[], string>>;
+  getCountryPrefixForOwner: (ownerId: string, isCompany: boolean) => Promise<Result<string, string>>;
+  getCounties: () => Promise<Result<County[], string>>;
+  getDeathReasons: () => Promise<Result<DeathReason[], string>>;
+  getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
+  getLocations: () => Promise<Result<TagLocation[], string>>;
+  getPremiseInfo: () => Promise<Result<Premise[], string>>;
+  getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
+  getSexes: () => Promise<Result<Sex[], string>>;
+  getSpecies: () => Promise<Result<Species[], string>>;
+  getStates: () => Promise<Result<State[], string>>;
+  getTagTypes: () => Promise<Result<TagType[], string>>;
+  getTissueSampleTypes: () => Promise<Result<TissueSampleType[], string>>;
+  getTissueSampleContainerTypes: () => Promise<Result<TissueSampleContainerType[], string>>;
+  getTissueTests: () => Promise<Result<TissueTest[], string>>;
+  getTransferReasons: () => Promise<Result<Unit[], string>>;
+  getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
+  getUnitTypes: () => Promise<Result<UnitType[], string>>;
+  getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
+  getContactInfo: () => Promise<Result<Contact[], string>>;
+  getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => Promise<Result<ScrapieFlockInfo | null, string>>;
+  isOwnerCompany: (ownerId: string) => Promise<Result<boolean, string>>;
+}
+
+// -------------------- Registry --------------------
+export interface RegistryAPI {
+  parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
+  parseDeaths: () => Promise<ParseResult<DeathParseResponse>>;
+  parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
+  parseTransfers: () => Promise<ParseResult<TransferParseResponse>>;
+  process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
+}
+
+// -------------------- Store --------------------
+export interface StoreAPI {
+  getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
+  getSelectedSpecies: () => Promise<Species | null>;
+  getSelectedSignatureFilePath: () => Promise<string>;
+  setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
+  setSelectedSpecies: (species: Species) => Promise<void>;
+  setSelectedSignatureFilePath: (filePath: string) => Promise<void>;
+}
+
+// -------------------- System --------------------
+export interface SystemAPI {
+  databaseStateCheck: () => Promise<DatabaseStateCheckResponse>;
+  resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => Promise<Result<boolean, string>>;
+  isDatabaseLoaded: () => Promise<boolean>;
+  openDirectory: (path: string) => Promise<void>;
+  openExternalURL: (url: string) => Promise<void>;
+  selectDatabase: () => Promise<string>;
+  selectPngFile: () => Promise<string>;
+}
+
+// -------------------- Global IPC wrapper --------------------
 export interface AnimalTrakkerIPC {
-    electronAPI: {
-        animalSearch: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
-        databaseStateCheck: () => Promise<DatabaseStateCheckResponse>;
-        resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => Promise<Result<boolean, string>>;
-        getAnimalIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
-        editExistingDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
-        exportAnimalNotesCsv: (animalIds: string[]) => Promise<boolean>;
-        exportDrugHistoryCsv: (animalIds: string[]) => Promise<boolean>;
-        exportTissueTestResultsCsv: (animalIds: string[]) => Promise<boolean>;
-        exportRegistration: (animalIds: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => Promise<RegistrationWriteResponse>;
-        getCompanyInfo: (isRegistryCompany: boolean) => Promise<Result<Company[], string>>;
-        getContactInfo: () => Promise<Result<Contact[], string>>;
-        getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
-        getPremiseInfo: () => Promise<Result<Premise[], string>>;
-        getBirthTypes: () => Promise<Result<BirthType[], string>>;
-        getBreeds: (params: BreedRequest) => Promise<Result<Breed[], string>>;
-        getColors: () => Promise<Result<Color[], string>>;
-        getCountries: () => Promise<Result<Country[], string>>;
-        getCountryPrefixForOwner: (ownerId : string, isCompany: boolean) => Promise<Result<string, string>>;
-        getCounties: () => Promise<Result<County[], string>>;
-        getDeathReasons: () => Promise<Result<DeathReason[], string>>;
-        getExistingDefaults: () => Promise<Result<DefaultSettingsResults[], string>>;
-        getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
-        getLocations: () => Promise<Result<TagLocation[], string>>;
-        getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
-        getScrapieFlockInfo: (ownerId: string, isCompany: boolean) => Promise<Result<ScrapieFlockInfo | null, string>>;
-        getStoreSelectedDefault: () => Promise<DefaultSettingsResults | null>;
-        getStoreSelectedSpecies: () => Promise<Species | null>;
-        getStoreSelectedSignatureFilePath: () => Promise<string>;
-        getSexes: () => Promise<Result<Sex[], string>>;
-        getSpecies: () => Promise<Result<Species[], string>>;
-        getStates: () => Promise<Result<State[], string>>;
-        getTagTypes: () => Promise<Result<TagType[], string>>;
-        getTissueSampleTypes: () => Promise<Result<TissueSampleType[], string>>;
-        getTissueSampleContainerTypes: () => Promise<Result<TissueSampleContainerType[], string>>;
-        getTissueTests: () => Promise<Result<TissueTest[], string>>;
-        getTransferReasons: () => Promise<Result<Unit[], string>>;
-        getUnits: (params: UnitRequest) => Promise<Result<Unit[], string>>;
-        getUnitTypes: () => Promise<Result<UnitType[], string>>;
-        isOwnerCompany: (ownerId: string) => Promise<Result<boolean, string>>;
-        isDatabaseLoaded: () => Promise<boolean>;
-        openDirectory: (path: string) => Promise<void>;
-        openExternalURL: (url: string) => Promise<void>;
-        registryParseBirths: () => Promise<ParseResult<BirthParseResponse>>;
-        registryParseDeaths: () => Promise<ParseResult<DeathParseResponse>>;
-        registryParseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
-        registryParseTransfers: () => Promise<ParseResult<TransferParseResponse>>;
-        registryProcess: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
-        setStoreSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
-        setStoreSelectedSpecies: (species: Species) => Promise<void>;
-        setStoreSelectedSignatureFilePath: (filePath: string) => Promise<void>;
-        selectDatabase: () => Promise<string>;
-        selectPngFile: () => Promise<string>;
-        writeNewDefaultSettings: (params: NewDefaultSettingsParameters) => Promise<boolean>;
-    },
+  animalAPI: AnimalAPI;
+  exportAPI: ExportAPI;
+  defaultsAPI: DefaultsAPI;
+  lookupAPI: LookupAPI;
+  registryAPI: RegistryAPI;
+  storeAPI: StoreAPI;
+  systemAPI: SystemAPI;
 }

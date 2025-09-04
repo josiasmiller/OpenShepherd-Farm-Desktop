@@ -166,7 +166,7 @@ const AnimalSearch: React.FC = () => {
         animalRequest.isAlreadyPrinted = searchParams.isAlreadyPrinted;
       }
 
-      const animals: AnimalSearchResult[] = await window.electronAPI.animalSearch(animalRequest);
+      const animals: AnimalSearchResult[] = await window.animalAPI.search(animalRequest);
 
       if (animals.length === 0) {
         setMessage("No animals found.");

@@ -20,7 +20,7 @@ const LandingPage = () => {
   useEffect(() => {
     const loadData = async () => {
 
-      const signatureFp = await window.electronAPI.getStoreSelectedSignatureFilePath();
+      const signatureFp = await window.storeAPI.getSelectedSignatureFilePath();
 
       if (signatureFp) {
         setSignaturePath(signatureFp);
@@ -51,7 +51,7 @@ const LandingPage = () => {
     setLoadingStr("Saving Drug History...");
     setIsLoading(true);
     const animalIds: string[] = getAnimalIds();  
-    const success = await window.electronAPI.exportDrugHistoryCsv(animalIds);
+    const success = await window.exportAPI.drugHistoryCsv(animalIds);
 
     if (success) {
       Swal.fire({
@@ -82,7 +82,7 @@ const LandingPage = () => {
     setIsLoading(true);
 
     const animalIds: string[] = getAnimalIds();
-    const success = await window.electronAPI.exportAnimalNotesCsv(animalIds);
+    const success = await window.exportAPI.notesCsv(animalIds);
   
     if (success) {
       Swal.fire({
@@ -113,7 +113,7 @@ const LandingPage = () => {
     setIsLoading(true);
 
     const animalIds: string[] = getAnimalIds();
-    const success = await window.electronAPI.exportTissueTestResultsCsv(animalIds);
+    const success = await window.exportAPI.tissueTestResultsCsv(animalIds);
   
     if (success) {
       Swal.fire({
@@ -144,7 +144,7 @@ const LandingPage = () => {
 
     const animalIds: string[] = getAnimalIds();
 
-    const response = await window.electronAPI.exportRegistration(
+    const response = await window.exportAPI.registration(
       animalIds, 
       registrationType, 
       signaturePath ?? null,
@@ -174,7 +174,7 @@ const LandingPage = () => {
         reverseButtons: true,
       }).then((result) => {
         if (result.isConfirmed) {
-          window.electronAPI.openDirectory(response.resultingDirectory);
+          window.systemAPI.openDirectory(response.resultingDirectory);
         }
       });
 
@@ -196,11 +196,11 @@ const LandingPage = () => {
   };
 
   const handleChooseSignature = async () => {
-    const fp : string = await window.electronAPI.selectPngFile();
+    const fp : string = await window.systemAPI.selectPngFile();
     
     if (fp) {
       setSignaturePath(fp);
-      await window.electronAPI.setStoreSelectedSignatureFilePath(fp);
+      await window.storeAPI.setSelectedSignatureFilePath(fp);
     }
   };
 
