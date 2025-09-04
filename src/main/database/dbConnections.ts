@@ -1,22 +1,33 @@
 import pkg from 'sqlite3';
+import log from 'electron-log';
 
-// Destructure the Database class as a value
 const { Database } = pkg;
 
-// Declare the type as `typeof Database`
 let dbInstance: InstanceType<typeof Database> | null = null;
 
 export const openDb = async (dbPath: string): Promise<InstanceType<typeof Database>> => {
-  if (!dbInstance) {
-    dbInstance = new Database(dbPath)
-        .exec('PRAGMA journal_mode=DELETE');
-    console.log("Database connection established:", dbPath);
-  } 
+  if (dbInstance) {
+    // Close old connection safely
+    dbInstance.close((err?: Error | null) => {
+      if (err) {
+        log.error("Failed to close previous database connection:", err);
+      }
+    });
+  }
+
+  dbInstance = new Database(dbPath);
+
+  dbInstance.exec("PRAGMA journal_mode=DELETE", (err?: Error | null) => {
+    if (err) {
+      log.error("Failed to set PRAGMA journal_mode:", err);
+    }
+  });
+
+  log.info("Database connection established:", dbPath);
   return dbInstance;
 };
 
-// Function to get the existing database instance
+
 export const getDatabase = (): InstanceType<typeof Database> | null => {
   return dbInstance;
 };
-
