@@ -1,4 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
+import { getCurrentDateTime } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -33,8 +34,10 @@ export async function insertGeneticCoatRow(
       genetic_characteristic_time,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, ?, "00:00:00", datetime('now'), datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?, ?, "00:00:00", ?, ?)
   `;
+
+  const todayDt : String = getCurrentDateTime();
 
   return new Promise<string>((resolve, reject) => {
     db.run(
@@ -46,6 +49,8 @@ export async function insertGeneticCoatRow(
         coatColorId,
         calculationMethodId,
         dateObserved,
+        todayDt,
+        todayDt,
       ],
       function (err: Error | null) {
         if (err) {

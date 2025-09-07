@@ -1,4 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
+import { getCurrentDateTime } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -24,8 +25,10 @@ export async function insertAnimalFlockTableRow(
       id_flockprefixid,
       created,
       modified
-    ) VALUES (?, ?, ?, datetime('now'), datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?)
   `;
+
+  const todayDt : String = getCurrentDateTime();  
 
   return new Promise<string>((resolve, reject) => {
     db.run(
@@ -34,6 +37,8 @@ export async function insertAnimalFlockTableRow(
         idAnimalFlockprefixid,
         idAnimalId,
         idFlockprefixId,
+        todayDt,
+        todayDt,
       ],
       function (err: Error | null) {
         if (err) {

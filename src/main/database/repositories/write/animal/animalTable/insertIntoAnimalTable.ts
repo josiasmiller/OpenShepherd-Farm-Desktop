@@ -1,6 +1,7 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput';
+import { getCurrentDateTime } from '../../../../dbUtils';
 
 /**
  * uploads an animal into the `animal_table`
@@ -42,8 +43,10 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
         created,
         modified
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now')
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       );`
+
+    const todayDt : String = getCurrentDateTime();
 
     // handle cases where only the weight units are provided, but not the brith weight
     var birthWeight : number | null = null;
@@ -75,6 +78,8 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
       input.surrogateDamId ?? null, // surrogate_dam_id
       input.handReared ?? false,    // hand_reared
       null, // id_managemangegroupdid
+      todayDt, // creafted
+      todayDt, //modified
     ];
 
     db.run(query, values, function (err) {

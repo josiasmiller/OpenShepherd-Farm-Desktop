@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from 'packages/core';
 import { AnimalIdInfoInput } from 'packages/api'
+import { getCurrentDateTime } from "../../../../dbUtils";
 
 /**
  * Inserts a row into the animal_id_info_table.
@@ -37,8 +38,10 @@ export async function insertAnimalIdInfoRow(
       id_idremovereasonid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL, datetime('now'), datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL, ?, ?)
   `;
+  
+  const todayDt : String = getCurrentDateTime();
 
   const values = [
     id,
@@ -52,6 +55,8 @@ export async function insertAnimalIdInfoRow(
     input.idValue,
     input.idScrapieFlock ?? null,
     input.isOfficial ? 1 : 0,
+    todayDt,
+    todayDt,
   ];
 
   try {

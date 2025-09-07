@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
+import { getCurrentDateTime } from "../../../../dbUtils";
 import { Result, Success, Failure, handleResult } from "packages/core";
 import { 
   REGISTRATION_CHOCOLATE_WELSH,
@@ -11,6 +12,7 @@ import {
 } from "../../../../dbConstants";
 import { getCoatColorForAnimal } from "../../../read/animal/coatColor/getCoatColor";
 import { CoatColor } from 'packages/api';
+
 
 /**
  * Inserts a row into the registry_certificate_print_table for an animal
@@ -80,8 +82,10 @@ export async function markRegistryCertificateNotPrinted(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
+  
+  const todayDt : String = getCurrentDateTime();
 
   const values = [
     id,
@@ -89,6 +93,8 @@ export async function markRegistryCertificateNotPrinted(
     animalId,
     registrationTypeId,
     0, // when initially inserting, the papers are NOT printed.
+    todayDt,
+    todayDt,
   ];
 
   try {

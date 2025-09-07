@@ -1,9 +1,11 @@
 import { getDatabase } from "../../../../dbConnections";
-import { v4 as uuidv4 } from "uuid";
+import { getCurrentDateTime } from "../../../../dbUtils";
+import { NATURAL_ADDITION } from "../../../../dbConstants";
 import { Result, Success, Failure } from "packages/core";
 import { Owner } from "packages/api";
 import { OwnerType } from "packages/api";
-import { NATURAL_ADDITION } from "../../../../dbConstants";
+import { v4 as uuidv4 } from "uuid";
+
 
 /**
  * Inserts a birth ownership record for an animal.
@@ -38,8 +40,10 @@ export async function insertBirthOwnershipRecord(
       created,
       modified
     )
-    VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, NULL, NULL, datetime('now'), datetime('now'))
+    VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, NULL, NULL, ?, ?)
   `;
+  
+  const todayDt : String = getCurrentDateTime();
 
   const toContactId = owner.type === OwnerType.CONTACT ? owner.contact.id : null;
   const toCompanyId = owner.type === OwnerType.COMPANY ? owner.company.id : null;
@@ -55,6 +59,8 @@ export async function insertBirthOwnershipRecord(
           toContactId,
           toCompanyId,
           NATURAL_ADDITION,
+          todayDt,
+          todayDt,
         ],
         (err: Error | null) => {
           if (err) reject(err);
