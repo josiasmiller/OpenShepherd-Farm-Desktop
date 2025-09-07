@@ -54,16 +54,6 @@ import {
   OwnerType
 } from 'packages/api';
 
-function getTodayString(): string {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // getMonth() is 0-based
-  const day = String(today.getDate()).padStart(2, '0');
-
-  const formattedDate = `${year}-${month}-${day}`;
-  return formattedDate;
-}
 
 export async function processBirthRows(sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
   try {
@@ -348,7 +338,6 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
           newAnimalId,
           animalTableInput.name,
           newRegistrationNumber,
-          getTodayString(),
           regCompanyId,
           flockBookId,
           regTypeUUID,
