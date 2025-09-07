@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { Owner, OwnerType } from "packages/api";
+import { getTodayDate, getCurrentDateTime } from "../../../dbUtils";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,
@@ -68,8 +69,11 @@ export async function insertAnimalRegistrationRow(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), NULL, ?, ?, datetime('now'), datetime('now'))
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
   `;
+
+  const today : String = getTodayDate();
+  const todayDt : String = getCurrentDateTime();
 
   const values = [
     id,
@@ -79,8 +83,11 @@ export async function insertAnimalRegistrationRow(
     registrationCompanyId,
     registrationTypeId,
     flockBookId,
+    today,
     breeder.type === OwnerType.CONTACT ? breeder.contact.id : null,
     breeder.type === OwnerType.COMPANY ? breeder.company.id : null,
+    todayDt,
+    todayDt,
   ];
 
   try {
