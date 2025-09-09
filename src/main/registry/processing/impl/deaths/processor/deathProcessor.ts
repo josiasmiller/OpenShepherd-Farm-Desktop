@@ -37,7 +37,7 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
         const animalId : string = row.animalId;
         const deathReasonId : string = row.reasonKey;
         const deathDate : string = row.deathDate;
-        const animalNote : string | null = row.notes ?? null;
+        const animalNote: string | null = row.notes?.trim() ? row.notes : null; // only gets a string if not null & not empty str
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // update death record of animal
