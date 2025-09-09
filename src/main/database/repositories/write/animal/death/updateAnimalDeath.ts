@@ -1,4 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 
 /**
@@ -22,13 +23,15 @@ export async function updateAnimalDeath(
     SET
       death_date = ?,
       id_deathreasonid = ?,
-      modified = datetime('now')
+      modified = ?
     WHERE id_animalid = ?
   `;
 
+  const todayDt : String = dateTimeAsString();
+
   try {
     await new Promise<void>((resolve, reject) => {
-      db.run(query, [deathDate, deathReasonId, animalId], function (err) {
+      db.run(query, [deathDate, deathReasonId, todayDt, animalId], function (err) {
         if (err) reject(err);
         else resolve();
       });

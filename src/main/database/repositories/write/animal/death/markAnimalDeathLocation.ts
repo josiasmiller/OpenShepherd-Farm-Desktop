@@ -1,6 +1,7 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+import { dateTimeAsString } from '../../../../dbUtils';
 
 
 type LastLocationQueryRow = { 
@@ -54,6 +55,9 @@ export async function markAnimalDeathLocation(
 
     // Step 2: Insert a new movement from last known location to NULL (death)
     await new Promise<void>((resolve, reject) => {
+
+      const todayDt : String = dateTimeAsString();
+
       db.run(
         `
         INSERT INTO animal_location_history_table (
@@ -64,9 +68,9 @@ export async function markAnimalDeathLocation(
           to_id_premiseid,
           created,
           modified
-        ) VALUES (?, ?, ?, ?, NULL, datetime('now'), datetime('now'))
+        ) VALUES (?, ?, ?, ?, NULL, ?, ?)
         `,
-        [newId, animalId, deathDate, fromPremiseId, ],
+        [newId, animalId, deathDate, fromPremiseId, todayDt, todayDt],
         (err) => {
           if (err) reject(err);
           else resolve();

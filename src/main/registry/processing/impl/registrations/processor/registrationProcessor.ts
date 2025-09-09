@@ -164,7 +164,6 @@ export async function processRegistrationRows(sections: Record<string, RegistryR
           animalId,
           animalName,
           newRegNum,
-          birthDateString,
           regCompanyId,
           flockBookId,
           registrationTypeId,

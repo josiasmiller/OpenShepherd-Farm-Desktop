@@ -1,6 +1,7 @@
 import { getDatabase } from "../../../../dbConnections";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "packages/core";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 /**
  * Inserts a new location history row for an animal at birth (from null → to premise).
@@ -30,8 +31,10 @@ export async function insertAnimalGoesToLocation(
       to_id_premiseid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
+  
+  const todayDt : String = dateTimeAsString();
 
   try {
     await new Promise<void>((resolve, reject) => {
@@ -43,6 +46,8 @@ export async function insertAnimalGoesToLocation(
           movementDate,
           fromPremiseId,
           toPremiseId,
+          todayDt,
+          todayDt,
         ],
         (err: Error | null) => {
           if (err) reject(err);

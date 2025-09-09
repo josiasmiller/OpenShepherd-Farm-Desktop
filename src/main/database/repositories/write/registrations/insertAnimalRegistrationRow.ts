@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { Owner, OwnerType } from "packages/api";
+import { dateAsString, dateTimeAsString } from "../../../dbUtils";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,
@@ -10,7 +11,6 @@ import { Owner, OwnerType } from "packages/api";
  * @param animalId UUID of animal
  * @param animalName string name of animal
  * @param registrationNumber registration number of animal
- * @param registrationDate string representing the date in which the animal is registered
  * @param registrationCompanyId which company UUID to mark in `id_registry_company_id`
  * @param flockBookId the flock book UUID to mark in the database
  * @param registrationTypeId the UUID of the registration type
@@ -20,7 +20,6 @@ export async function insertAnimalRegistrationRow(
   animalId: string,
   animalName: string,
   registrationNumber: string,
-  registrationDate: string,
   registrationCompanyId: string,
   flockBookId: string,
   registrationTypeId: string,
@@ -70,8 +69,11 @@ export async function insertAnimalRegistrationRow(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, datetime('now'), datetime('now'))
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
   `;
+
+  const today : String = dateAsString();
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,
@@ -81,9 +83,11 @@ export async function insertAnimalRegistrationRow(
     registrationCompanyId,
     registrationTypeId,
     flockBookId,
-    registrationDate,
+    today,
     breeder.type === OwnerType.CONTACT ? breeder.contact.id : null,
     breeder.type === OwnerType.COMPANY ? breeder.company.id : null,
+    todayDt,
+    todayDt,
   ];
 
   try {

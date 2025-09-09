@@ -1,4 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -19,11 +20,13 @@ export async function updateAnimalName(
   const query = `
     UPDATE animal_table
     SET animal_name = ?,
-        modified = datetime('now')
+        modified = ?
     WHERE id_animalid = ?
   `;
 
-  const values = [newName, animalId];
+  const todayDt : String = dateTimeAsString();
+
+  const values = [newName, todayDt, animalId];
 
   try {
     const changes = await new Promise<number>((resolve, reject) => {

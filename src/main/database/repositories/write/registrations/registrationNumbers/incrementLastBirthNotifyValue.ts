@@ -1,6 +1,7 @@
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 
 function incrementStringId(id: string): string {
@@ -47,10 +48,12 @@ export async function incrementLastBirthNotifyValue(): Promise<Result<string, st
 
     const newNumber = incrementStringId(row.last_registration_number);
 
+    const todayDt : string = dateTimeAsString();
+
     await new Promise<void>((resolve, reject) => {
       db.run(
-        `UPDATE registration_type_table SET last_registration_number = ?, modified = datetime('now') WHERE id_registrationtypeid = ?`,
-        [newNumber, REGISTRATION_BIRTH_NOTIFY],
+        `UPDATE registration_type_table SET last_registration_number = ?, modified = ? WHERE id_registrationtypeid = ?`,
+        [newNumber, todayDt, REGISTRATION_BIRTH_NOTIFY],
         (err) => {
           if (err) reject(err);
           else resolve();

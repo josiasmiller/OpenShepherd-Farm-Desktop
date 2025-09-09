@@ -1,6 +1,8 @@
 import { getDatabase } from '../../../../dbConnections';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput';
+
 
 /**
  * inserts a row into the `animal_evaluation_table`
@@ -30,9 +32,11 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
       created,
       modified
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now')
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     );
   `;
+
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,
@@ -43,6 +47,8 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
     input.evalDate,
     input.evalTime,
     input.ageInDays,
+    todayDt,
+    todayDt,
   ];
 
   return new Promise((resolve, reject) => {

@@ -1,4 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -17,13 +18,15 @@ export async function markRegistryCertificateAsPrinted(
   const query = `
     UPDATE registry_certificate_print_table
     SET printed = 1,
-        modified = datetime('now')
+        modified = ?
     WHERE id_animalid = ?
   `;
 
+  const todayDt : String = dateTimeAsString();
+
   try {
     await new Promise<void>((resolve, reject) => {
-      db.run(query, [animalId], function (err) {
+      db.run(query, [todayDt, animalId], function (err) {
         if (err) {
           reject(err);
         } else if (this.changes === 0) {

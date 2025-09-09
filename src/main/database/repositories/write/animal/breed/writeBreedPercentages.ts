@@ -1,4 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 interface BreedPercentageRow {
@@ -86,9 +87,12 @@ export async function writeAnimalBreedPercentages(
           breed_percentage,
           created,
           modified
-        ) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `;
-      const values = [uuidv4(), animalId, breedId, percentage];
+
+      const todayDt : String = dateTimeAsString();
+
+      const values = [uuidv4(), animalId, breedId, percentage, todayDt, todayDt];
       db.run(query, values, function (err) {
         if (err) reject(err);
         else resolve();

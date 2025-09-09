@@ -1,6 +1,8 @@
 import { getDatabase } from '../../../../dbConnections';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+
 
 /**
  * Inserts a note into the animal_note_table for the given animal.
@@ -30,13 +32,15 @@ export async function insertAnimalNote(
       id_predefinednotesid,
       created,
       modified
-    ) VALUES (?, ?, ?, ?, "00:00:00", NULL, datetime('now'), datetime('now'))
+    ) VALUES (?, ?, ?, ?, "00:00:00", NULL, ?, ?)
   `;
+
+  const todayDt : String = dateTimeAsString();
 
   return new Promise<Result<string, string>>((resolve, reject) => {
     db.run(
       query,
-      [id, animalId, noteText, noteDate],
+      [id, animalId, noteText, noteDate, todayDt, todayDt,],
       (err: Error | null) => {
         if (err) {
           resolve(new Failure(`Failed to insert death note: ${err.message}`));
