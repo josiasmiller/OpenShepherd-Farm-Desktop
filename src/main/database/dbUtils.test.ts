@@ -3,8 +3,8 @@
  */
 
 import {
-  getStringDate,
-  getCurrentDateTime,
+  dateAsString,
+  dateTimeAsString,
   escapeLikeString,
   getDbDate,
 } from "./dbUtils";
@@ -13,15 +13,15 @@ describe("dbUtils", () => {
   // -------------------
   // getStringDate tests
   // -------------------
-  describe("getStringDate", () => {
+  describe("dateAsString", () => {
     it("should return the correct string format for a given date", () => {
       const date = new Date("2023-05-15T12:34:56");
-      expect(getStringDate(date)).toBe("2023-05-15");
+      expect(dateAsString(date)).toBe("2023-05-15");
     });
 
     it("should pad single digit month and day with leading zeros", () => {
       const date = new Date("2023-01-05T00:00:00");
-      expect(getStringDate(date)).toBe("2023-01-05");
+      expect(dateAsString(date)).toBe("2023-01-05");
     });
 
     it("should default to today’s date if no argument is passed", () => {
@@ -29,33 +29,33 @@ describe("dbUtils", () => {
       const expected = `${today.getFullYear()}-${String(
         today.getMonth() + 1
       ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-      expect(getStringDate()).toBe(expected);
+      expect(dateAsString()).toBe(expected);
     });
   });
 
-  // -----------------------
+  // ------------------------
   // getCurrentDateTime tests
-  // -----------------------
-  describe("getCurrentDateTime", () => {
+  // ------------------------
+  describe("dateTimeAsString", () => {
     it("should return correct datetime format for a given date", () => {
       const date = new Date("2023-05-15T08:09:07");
-      expect(getCurrentDateTime(date)).toBe("2023-05-15 08:09:07");
+      expect(dateTimeAsString(date)).toBe("2023-05-15 08:09:07");
     });
 
     it("should pad hours, minutes, and seconds with leading zeros", () => {
       const date = new Date("2023-12-31T01:02:03");
-      expect(getCurrentDateTime(date)).toBe("2023-12-31 01:02:03");
+      expect(dateTimeAsString(date)).toBe("2023-12-31 01:02:03");
     });
 
     it("should default to current datetime if no argument is passed", () => {
-      const result = getCurrentDateTime();
+      const result = dateTimeAsString();
       expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
     });
   });
 
-  // --------------------
+  // ----------------------
   // escapeLikeString tests
-  // --------------------
+  // ----------------------
   describe("escapeLikeString", () => {
     it("should escape % characters", () => {
       expect(escapeLikeString("100%")).toBe("100\\%");
@@ -74,9 +74,9 @@ describe("dbUtils", () => {
     });
   });
 
-  // -----------------
+  // ---------------
   // getDbDate tests
-  // -----------------
+  // ---------------
   describe("getDbDate", () => {
     it("should parse a valid date string", () => {
       const result = getDbDate("2023-05-15");

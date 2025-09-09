@@ -1,5 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput';
 
@@ -36,7 +36,7 @@ export async function insertWeightRecord(input: InsertWeightRecordInput): Promis
     );
   `;
 
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,

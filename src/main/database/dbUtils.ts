@@ -35,7 +35,7 @@ export function getDbDate(input: string): Date | null {
  * @param date 
  * @returns 
  */
-export function getStringDate(date: Date = new Date()): string {
+export function dateAsString(date: Date = new Date()): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
   const day = String(date.getDate()).padStart(2, "0");
@@ -44,7 +44,7 @@ export function getStringDate(date: Date = new Date()): string {
 }
 
 // Returns a date + time in YYYY-MM-DD HH:MM:SS
-export function getCurrentDateTime(date: Date = new Date()): string {
+export function dateTimeAsString(date: Date = new Date()): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");

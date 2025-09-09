@@ -1,5 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
-import { getCurrentDateTime } from "../../../../dbUtils";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -24,7 +24,7 @@ export async function updateAnimalName(
     WHERE id_animalid = ?
   `;
 
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   const values = [newName, todayDt, animalId];
 

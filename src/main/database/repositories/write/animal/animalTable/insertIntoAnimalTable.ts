@@ -1,7 +1,7 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 
 /**
  * uploads an animal into the `animal_table`
@@ -46,7 +46,7 @@ export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Prom
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       );`
 
-    const todayDt : String = getCurrentDateTime();
+    const todayDt : String = dateTimeAsString();
 
     // handle cases where only the weight units are provided, but not the brith weight
     var birthWeight : number | null = null;

@@ -1,5 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 interface BreedPercentageRow {
@@ -90,7 +90,7 @@ export async function writeAnimalBreedPercentages(
         ) VALUES (?, ?, ?, ?, ?, ?)
       `;
 
-      const todayDt : String = getCurrentDateTime();
+      const todayDt : String = dateTimeAsString();
 
       const values = [uuidv4(), animalId, breedId, percentage, todayDt, todayDt];
       db.run(query, values, function (err) {

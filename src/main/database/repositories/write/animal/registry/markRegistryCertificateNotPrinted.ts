@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
-import { getCurrentDateTime } from "../../../../dbUtils";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure, handleResult } from "packages/core";
 import { 
   REGISTRATION_CHOCOLATE_WELSH,
@@ -85,7 +85,7 @@ export async function markRegistryCertificateNotPrinted(
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
   
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,

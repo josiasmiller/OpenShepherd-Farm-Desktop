@@ -1,5 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
-import { getCurrentDateTime } from "../../../../dbUtils";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { NATURAL_ADDITION } from "../../../../dbConstants";
 import { Result, Success, Failure } from "packages/core";
 import { Owner } from "packages/api";
@@ -43,7 +43,7 @@ export async function insertBirthOwnershipRecord(
     VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, NULL, NULL, ?, ?)
   `;
   
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   const toContactId = owner.type === OwnerType.CONTACT ? owner.contact.id : null;
   const toCompanyId = owner.type === OwnerType.COMPANY ? owner.company.id : null;

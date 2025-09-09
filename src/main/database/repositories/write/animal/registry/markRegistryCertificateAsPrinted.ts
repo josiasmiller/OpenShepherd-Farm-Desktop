@@ -1,5 +1,5 @@
 import { getDatabase } from "../../../../dbConnections";
-import { getCurrentDateTime } from "../../../../dbUtils";
+import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -22,7 +22,7 @@ export async function markRegistryCertificateAsPrinted(
     WHERE id_animalid = ?
   `;
 
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   try {
     await new Promise<void>((resolve, reject) => {

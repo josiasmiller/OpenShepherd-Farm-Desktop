@@ -1,5 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 
@@ -35,7 +35,7 @@ export async function insertAnimalNote(
     ) VALUES (?, ?, ?, ?, "00:00:00", NULL, ?, ?)
   `;
 
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   return new Promise<Result<string, string>>((resolve, reject) => {
     db.run(

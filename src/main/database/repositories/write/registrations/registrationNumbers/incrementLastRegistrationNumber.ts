@@ -1,6 +1,7 @@
 import {getDatabase} from "../../../../dbConnections";
 import {Failure, Result, Success} from "packages/core";
 import {REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_REGISTERED, REGISTRATION_WHITE_WELSH} from "../../../../dbConstants";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 
 function incrementRegisteredValue(originalRegNum: string): string {
@@ -62,10 +63,12 @@ export async function incrementLastRegistrationNumber(registrationTypeId : strin
       return new Failure(`Failed to increment registration number: unhandled registration type with UUID=\'${registrationTypeId}\'`);
     }
 
+    const todayDt : string = dateTimeAsString();
+
     await new Promise<void>((resolve, reject) => {
       db.run(
-        `UPDATE registration_type_table SET last_registration_number = ?, modified = datetime('now') WHERE id_registrationtypeid = ?`,
-        [newNumber, registrationTypeId],
+        `UPDATE registration_type_table SET last_registration_number = ?, modified = ? WHERE id_registrationtypeid = ?`,
+        [newNumber, todayDt, registrationTypeId],
         (err) => {
           if (err) reject(err);
           else resolve();

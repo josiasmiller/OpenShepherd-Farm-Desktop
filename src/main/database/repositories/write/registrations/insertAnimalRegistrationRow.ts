@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { Owner, OwnerType } from "packages/api";
-import { getStringDate, getCurrentDateTime } from "../../../dbUtils";
+import { dateAsString, dateTimeAsString } from "../../../dbUtils";
 
 /**
  * Inserts a row into animal_registration_table for a registered animal,
@@ -72,8 +72,8 @@ export async function insertAnimalRegistrationRow(
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
   `;
 
-  const today : String = getStringDate();
-  const todayDt : String = getCurrentDateTime();
+  const today : String = dateAsString();
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,

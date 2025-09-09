@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from 'packages/core';
 import { AnimalIdInfoInput } from 'packages/api'
-import { getCurrentDateTime } from "../../../../dbUtils";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 /**
  * Inserts a row into the animal_id_info_table.
@@ -41,7 +41,7 @@ export async function insertAnimalIdInfoRow(
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, NULL, ?, ?)
   `;
   
-  const todayDt : String = getCurrentDateTime();
+  const todayDt : String = dateTimeAsString();
 
   const values = [
     id,

@@ -1,7 +1,7 @@
 import { getDatabase } from '../../../../dbConnections';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 
 
 type LastLocationQueryRow = { 
@@ -56,7 +56,7 @@ export async function markAnimalDeathLocation(
     // Step 2: Insert a new movement from last known location to NULL (death)
     await new Promise<void>((resolve, reject) => {
 
-      const todayDt : String = getCurrentDateTime();
+      const todayDt : String = dateTimeAsString();
 
       db.run(
         `

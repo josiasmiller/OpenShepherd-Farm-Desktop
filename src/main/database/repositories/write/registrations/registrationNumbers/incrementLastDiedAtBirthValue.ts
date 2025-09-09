@@ -1,6 +1,7 @@
 import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { REGISTRATION_DIED_AT_BIRTH } from "../../../../dbConstants";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 /**
  * Increments a registration string like "D000480" to "D000481".
@@ -50,11 +51,12 @@ export async function incrementLastDiedAtBirthValue(): Promise<Result<string, st
     }
 
     const newNumber = incrementStringId(row.last_registration_number);
+    const todayDt : string = dateTimeAsString();
 
     await new Promise<void>((resolve, reject) => {
       db.run(
-        `UPDATE registration_type_table SET last_registration_number = ?, modified = datetime('now') WHERE id_registrationtypeid = ?`,
-        [newNumber, REGISTRATION_DIED_AT_BIRTH],
+        `UPDATE registration_type_table SET last_registration_number = ?, modified = ? WHERE id_registrationtypeid = ?`,
+        [newNumber, todayDt, REGISTRATION_DIED_AT_BIRTH],
         (err) => {
           if (err) reject(err);
           else resolve();

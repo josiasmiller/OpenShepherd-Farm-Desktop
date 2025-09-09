@@ -1,5 +1,5 @@
 import { getDatabase } from '../../../../dbConnections';
-import { getCurrentDateTime } from '../../../../dbUtils';
+import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -28,7 +28,7 @@ export async function insertAnimalFlockTableRow(
     ) VALUES (?, ?, ?, ?, ?)
   `;
 
-  const todayDt : String = getCurrentDateTime();  
+  const todayDt : String = dateTimeAsString();  
 
   return new Promise<string>((resolve, reject) => {
     db.run(
