@@ -17,6 +17,10 @@ export async function insertAnimalNote(
   noteText: string,
   noteDate: string
 ): Promise<Result<string, string>> {
+  if (noteText == null || noteText == "") {
+    return new Failure("Invalid noteText: it must be non-null and NOT an empty string.")
+  }
+
   const db = getDatabase();
   if (!db) return new Failure('DB instance is null');
 
