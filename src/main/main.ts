@@ -31,7 +31,12 @@ try {
     });
 
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.webContents.openDevTools();
+
+    //Only automatically open the dev tools if
+    //in develop mode.
+    if (!app.isPackaged) {
+      mainWindow.webContents.openDevTools();
+    }
 
     registerIpcHandlers(mainWindow);
     console.log("main finished");
