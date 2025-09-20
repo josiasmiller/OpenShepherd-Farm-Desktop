@@ -36,6 +36,12 @@ function Show-Usage {
     Write-Host
     Write-Host "Arguments:"
     Write-Host "  <semver>   Semantic version string (e.g. 1.2.3, 1.2.3-alpha, 1.2.3+build)"
+    Write-Host
+    Write-Host 
+    Write-Host "** Note: that you may need to specify specific execution policies to be able to run this script."
+    Write-Host "         An example command that allows the script to run looks like:"
+    Write-Host
+    Write-Host "    powershell -ExecutionPolicy Bypass -File .\version.ps1 <semver>"
     exit 0
 }
 
