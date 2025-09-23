@@ -1,13 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
-import "../../styles/styles.css";
-import transparentLogo from "../../assets/images/AnimalTrakker.png";
 
 import { handleResult } from "packages/core";
 import { DefaultSettingsResults } from "packages/api";
 import { isRegistryDesktop } from "packages/appBuild";
+import {
+  Box,
+  Button,
+  Typography,
+  Drawer,
+  drawerClasses,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  ListItemButton,
+  Select,
+  MenuItem,
+  useTheme,
+  Divider,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import SidebarHeader from './SidebarHeader'
+import {styled} from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home.js";
+import SearchIcon from "@mui/icons-material/Search.js";
+import LocationCityIcon from "@mui/icons-material/LocationCity.js";
+import EditIcon from "@mui/icons-material/Edit.js";
+import InventoryIcon from "@mui/icons-material/Inventory.js";
+
+const drawerWidth = 240
+
+const SideDrawer = styled(Drawer)({
+  width: drawerWidth,
+  flexShrink: 0,
+  boxSizing: "border-box",
+  mt: 10,
+  [`& .${drawerClasses.paper}`]: {
+    width: drawerWidth,
+    boxSizing: 'border-box'
+  }
+})
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +51,6 @@ const Sidebar: React.FC = () => {
   const [isDbLoaded, setIsDbLoaded] = useState(false);
   const [defaultList, setDefaultList] = useState<DefaultSettingsResults[]>([]);
   const [selectedDefault, setSelectedDefault] = useState<string>("");
-
 
   // Check if database is already loaded (on mount and after file selection)
   const checkDbStatus = async () => {
@@ -44,8 +79,7 @@ const Sidebar: React.FC = () => {
     }
   }, [isDbLoaded, defaultList]);
 
-  const handleDefaultChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedName = e.target.value;
+  const handleDefaultChange = async (selectedName: string) => {
     const newSelected = defaultList.find((def) => def.name === selectedName);
     if (newSelected) {
       setSelectedDefault(newSelected.name);
@@ -60,7 +94,6 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     checkDbStatus();
   }, []);
-
 
   const handleSelectDatabase = async () => {
     try {
@@ -120,79 +153,90 @@ const Sidebar: React.FC = () => {
     opacity: enabled ? 1 : 0.5,
   });
 
-  const openAnimalTrakkerPage = async () => {
-    const url = "https://animaltrakker.com";
-    await window.systemAPI.openExternalURL(url);
-    return;
-  }
+  const navigationOptions = [
+    { text: 'Home', icon: <HomeIcon/>, navRoute: '/', allowed: true },
+    { text: 'Animal Search', icon: <SearchIcon />, navRoute: '/animal-search', allowed: true },
+    { text: 'Edit Defaults', icon: <EditIcon/>, navRoute: '/create-default', allowed: true },
+    { text: 'Registry', icon: <InventoryIcon />, navRoute: '/registry', allowed: isRegistryDesktop() },
+  ]
+
+  const theme = useTheme()
 
   return (
-    <div className="sidebar bg-gray-100 p-4">
-      <div 
-        className="logoBox"
-        onClick={openAnimalTrakkerPage}
-      >
-        <img 
-          src={transparentLogo}
-          alt="App Icon"
-          className="logoImage"
-        />
-        <h2 className="logoTitle">
-          {isRegistryDesktop() ? 'Registry Desktop' : 'Farm Desktop'}
-        </h2>
-
-      </div>
-
-      <ul>
-        <li onClick={() => handleNavClick("/")}>Home</li>
-        <li
-          onClick={() => handleNavClick("/animal-search")}
-          style={getLinkStyle(isDbLoaded)}
-        >
-          Animal Search
-        </li>
-
-        <li
-          onClick={() => handleNavClick("/create-default")}
-          style={getLinkStyle(isDbLoaded)}
-        >
-          Edit Defaults
-        </li>
-
-        {isRegistryDesktop() && (
-        <li
-          onClick={() => handleNavClick("/registry")}
-          style={getLinkStyle(isDbLoaded)}
-        >
-          Registry Features
-        </li>)}
-      </ul>
-
-      <div className="database-selector">
-        <button onClick={handleSelectDatabase}>Select Database</button>
-        <p>{dbFileName}</p>
-
-        {isDbLoaded && (
-          <>
-            <hr className="db-divider" />
-            <label htmlFor="defaultSelector" className="text-sm mt-2">Choose Default:</label>
-            <select
-              id="defaultSelector"
-              className="defaultSelector"
-              value={selectedDefault}
-              onChange={(e) => handleDefaultChange(e)}
-            >
-              {defaultList.map((def) => (
-                <option key={def.name} value={def.name}>{def.name}</option>
-              ))}
-            </select>
-
-          </>
-        )}
-      </div>
-    </div>
+    <SideDrawer
+      anchor='left'
+      variant='permanent'
+      sx={{
+        width: "240px",
+        height: "100vh",
+      }}
+    >
+      <SidebarHeader/>
+      <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
+        <List>
+          {navigationOptions.filter((option => option.allowed))
+            .map(( option, index) => (
+            <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton onClick={() => { handleNavClick(option.navRoute) }}>
+                <ListItemIcon>{option.icon}</ListItemIcon>
+                <ListItemText primary={option.text}/>
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Stack>
+      <Stack sx={{ flexGrow: 1, justifyContent: 'space-between' }}>
+        <Box sx={{
+          mx: 1,
+          mt: 'auto',
+          p: 2,
+          textAlign: 'center',
+          width: `calc(100% - ${theme.spacing(2)})`
+        }}>
+          <Button
+            variant='contained'
+            onClick={handleSelectDatabase}
+            sx={{
+              p: 1,
+              width: '100%'
+            }}
+          >
+            Select Database
+          </Button>
+          <Typography
+            variant='body1'
+            sx={{
+              padding: '8px 8px',
+              wordWrap: 'break-word',
+              whiteSpace: 'normal',
+              maxWidth: '100%'
+            }}
+          >
+            {dbFileName}
+          </Typography>
+          {isDbLoaded && (
+            <>
+              <Divider orientation='horizontal' sx={{ mt: 1, mb: 2 }}/>
+              <FormControl fullWidth>
+                <InputLabel id='lbl-select-default-settings'>Choose Defaults</InputLabel>
+                <Select
+                  id='select-default-settings'
+                  labelId='lbl-select-default-settings'
+                  label='Choose Defaults'
+                  value={selectedDefault}
+                  onChange={(event) => handleDefaultChange(event.target.value)}
+                >
+                  {defaultList.map((def) => (
+                    <MenuItem key={def.name} value={def.name}>{def.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </>
+          )}
+        </Box>
+      </Stack>
+    </SideDrawer>
   );
-
 };
 
 export default Sidebar;

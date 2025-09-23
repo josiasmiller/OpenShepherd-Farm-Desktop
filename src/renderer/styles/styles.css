@@ -37,15 +37,20 @@
   box-sizing: border-box;
 }
 
+/* App Container */
+#app-container {
+  display: flex;
+}
+
 /* Main content area */
 .main-content {
-  margin-left: 220px; /* Adjust margin to match sidebar width + padding */
   height: 100vh;
   overflow-y: auto; /* Allows scrolling if content overflows */
   transition: margin-left 0.3s ease;
   background-color: var(--md-sys-color-surface); /* Ensures visibility */
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 /* Content sections (initially hidden) */
