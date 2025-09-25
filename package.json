@@ -1,7 +1,7 @@
 {
   "type": "commonjs",
   "main": ".webpack/main",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "author": "AnimalTrakker",
   "scripts": {
     "clean": "run-script-os",
@@ -56,6 +56,7 @@
     "node-loader": "2.1.0",
     "npm-check-updates": "18.0.2",
     "run-script-os": "1.1.6",
+    "semver": "7.7.2",
     "style-loader": "3.3.4",
     "ts-jest": "29.4.1",
     "ts-loader": "9.5.2",

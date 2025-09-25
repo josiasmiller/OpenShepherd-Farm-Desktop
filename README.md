@@ -40,7 +40,7 @@ Any additional dependencies added through the course of development should be ad
 This can be achieved by adding the `--save-exact` command line argument like so:
 
 ```sh
-npm install <package-name>@<verison|latest> --save-exect
+npm install <package-name>@<verison|latest> --save-exact
 ```
 Example:
 ```sh
@@ -100,6 +100,8 @@ Here’s a summary of the key npm scripts:
 | `npm run make:farm`        | Creates installers for Farm Desktop            |
 | `npm run make:registry`    | Creates installers for Registry Desktop        |
 | `npm run make`             | Creates installers for all app variants        |
+| `npm run clean`            | Removes build info files, .webpack, and out folders |
+
 
 ---
 
@@ -114,6 +116,34 @@ Here’s a summary of the key npm scripts:
 ├── packaging/       # Assets associated with application packaging and installers
 ├── package.json     # Project metadata and scripts
 └── README.md        # This file
+```
+
+---
+## Versioning
+
+### How we approach Versioning
+
+- This project follows semantic versioning. https://semver.org/
+- The \<version\> tag in package.json is a placeholder and should remain 0.0.0.
+- Electron Forge is configured to rewrite the \<version\> tag in an in memory copy during builds. See forge.config.ts for details.
+- App Variant specific versions are stored in `version.<app_variant>` files in the root project directory.
+- `version.<app_variant>` files should be checked into source control, committed, and pushed whenever versions change.
+
+### Updating Versions
+
+The scripts folder contains `version` and `version.bat` scripts that for easily updating the
+version of either app variant, or both if they share the same version.
+
+```shell
+#Providing a single semantic version sets both variants to use that version.
+scripts/version 1.2.3-beta.3 
+
+#Providing a single semantic version and specifying a variant sets only that variants to use that version.
+scripts/version --farm 1.2.3-beta.3
+scripts/verison --registry 1.2.4-beta.1
+
+#Differing versions can be set simultaneously for each variant as follows
+scripts/version --farm 1.2.5-rc.1 --registry 1.2.5-rc.2 
 ```
 
 ---

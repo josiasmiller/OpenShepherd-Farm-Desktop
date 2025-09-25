@@ -5,12 +5,16 @@ import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
-//LEAVE IMPORT AS RELATIVE PATH. DO NOT CONVERT TO ALIAS.
-import { appVariantFromEnv } from "./buildSrc/appVariantFromEnv";
 import { fromBuildIdentifier } from "@electron-forge/core/dist/util/forge-config";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 import path from "path";
+
+//LEAVE IMPORT AS RELATIVE PATH. DO NOT CONVERT TO ALIAS.
+import { appVariantFromEnv } from "./buildSrc/appVariantFromEnv";
+
+//LEAVE IMPORT AS RELATIVE PATH. DO NOT CONVERT TO ALIAS.
+import { readAndValidateSemver } from "./buildSrc/readSemVer";
 
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
@@ -29,6 +33,7 @@ const buildIdentifier = appVariantFromEnv()
 
 const launchIconPath = path.resolve(__dirname, 'packaging', buildIdentifier, 'icons', 'ic_launcher');
 const buildPackageName = `animaltrakker-${buildIdentifier}-desktop`
+const buildAppVersion = readAndValidateSemver(`version.${buildIdentifier}`)
 
 const buildDisplayName = fromBuildIdentifier({
     farm: 'AnimalTrakker Farm',
@@ -57,10 +62,7 @@ const config: ForgeConfig = {
             farm: 'com.animaltrakker.farmdesktop',
             registry: 'com.animaltrakker.registrydesktop'
         }).map[buildIdentifier],
-        appVersion: fromBuildIdentifier({
-            farm: '0.0.1',
-            registry: '0.0.1'
-        }).map[buildIdentifier],
+        appVersion: buildAppVersion,
         appCategoryType: 'public.app-category.utilities', // mac specific categorization
     },
     hooks: {
@@ -75,6 +77,7 @@ const config: ForgeConfig = {
             packageJson.productName = buildDisplayName
             packageJson.description = buildDescription
             packageJson.author = 'AnimalTrakker'
+            packageJson.version = buildAppVersion
             return packageJson
         },
     },
