@@ -57,6 +57,7 @@ import { RegistryProcessRequest, Species } from "packages/api";
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
+import {promiseFrom} from "packages/core";
 
 export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   
@@ -222,20 +223,19 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     return resolveDatabaseIssues(dbscr);
   });
 
-  ipcMain.on('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
-    setStoreSelectedDefault(value);
+  ipcMain.handle('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
+    return promiseFrom(() => setStoreSelectedDefault(value));
   });
 
-  ipcMain.on('set-store-selected-species', (_event, value: Species) => {
-    setStoreSelectedSpecies(value);
+  ipcMain.handle('set-store-selected-species', (_event, value: Species) => {
+    return promiseFrom(() => setStoreSelectedSpecies(value));
   });
 
-  ipcMain.on('set-store-selected-signature-file-path', (_event, value: string) => {
-    setStoreSelectedFilepath(value);
+  ipcMain.handle('set-store-selected-signature-file-path', (_event, value: string) => {
+    return promiseFrom(() => setStoreSelectedFilepath(value));
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
     return writeNewDefaultSettings(queryParams);
   });
 };
-
