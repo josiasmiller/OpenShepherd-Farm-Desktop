@@ -118,6 +118,72 @@ Here’s a summary of the key npm scripts:
 └── README.md        # This file
 ```
 
+##Material UI (MUI)
+
+This project makes use of Material UI's React Component library.  Familiarize yourself with 
+the library here:
+
+- Components: https://mui.com/material-ui/getting-started/
+- System/Styling: https://mui.com/system/getting-started/
+
+### Material UI Isolation
+
+Because MUI makes extensive use of dynamic CSS, it does not play nicely with the
+existing CSS we have setup in the project.  Since it would be a massive undertaking
+to revamp the entire project to use MUI in one go, a React Component called IsolatedMUIScope
+has been created to separate MUI implementations from existing implementations until
+such time as the entire application is updated to use MUI.
+
+Isolate implementations as follows:
+
+```typescript jsx
+import IsolatedMuiScope from "./IsolatedMuiScope";
+
+<SomeExistingParentComponent>
+  <SomeExistingComponent/>
+  <IsolatedMuiScope>
+    <SomeNewComponentUsingMUI/>
+  </IsolatedMuiScope>
+</SomeExistingParentComponent>
+```
+
+IsolatedMUIScope wraps children in MUI's ScopedCSSBaseline (see [CSSBaseline](https://mui.com/material-ui/react-css-baseline/)) component along with
+the AnimalTrakker MUI theme component so that only specific sections of the application
+are interacting with MUI's CSS environment.
+
+### Import Considerations
+
+MUI is a dual package, which means it support commonJS and ECMAScript, because Electron
+applications execute their UI in a browser context, ECMAScript is referenced in the renderer
+bundling by Webpack.  However, because of some interesting export design choices in MUI,
+there are some scenarios in which module file extensions are required.
+
+If you are attempting to import something from the module through its index, you typically do
+not need to specify a file extension (or the name of the index file for that matter).
+
+However, if you are importing from a non-index module, you will have to provide an extension.
+
+### Material Icons
+
+MUI provides a package of React Components that represent a full suite of Material Icons.
+
+https://mui.com/material-ui/material-icons/
+
+When electing to use an icon in the application, attempt to find a representative in the 
+Material Icon catalog before rolling a custom icon.
+
+Material Icon imports are subject to some of the import issues described above.  For performance
+reasons, MUI recommends that they be imported from their individual module files rather
+than with a barrel import.
+
+```typescript
+//DO
+import HomeIcon from '@mui/icons-material/Home.js'
+
+//DON'T
+import { Home as HomeIcon } from '@mui/icons-material' 
+```
+
 ---
 ## Versioning
 

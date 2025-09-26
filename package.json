@@ -65,6 +65,11 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/icons-material": "7.3.2",
+    "@mui/material": "7.3.2",
+    "@mui/system": "7.3.2",
     "electron-log": "5.4.2",
     "electron-squirrel-startup": "1.0.1",
     "electron-store": "10.1.0",

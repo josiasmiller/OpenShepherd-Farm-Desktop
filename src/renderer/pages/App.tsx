@@ -8,13 +8,15 @@ import LandingPage from "./common/animalSearch/landingPage";
 import RegistryLanding from "./registry/landing/registryLanding";
 import { PreprocessorPage } from "./registry/landing/preprocessor/registryPreprocessor";
 import "../styles/styles.css";
+import IsolatedMuiScope from "../theme/IsolatedMuiScope";
 
 const App: React.FC = () => {
   return (
     <Router>
       <div id="app-container">
-        <Sidebar />
-
+        <IsolatedMuiScope>
+          <Sidebar />
+        </IsolatedMuiScope>
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
