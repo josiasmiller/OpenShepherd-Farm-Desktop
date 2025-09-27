@@ -21,7 +21,7 @@ import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, Sy
  */
 function bindIpcCallback<T>(channel: string, callback: (arg: T) => void): () => void {
   const ipcCallback =
-    (event: Electron.IpcRendererEvent, args: any[]) => { callback(args[0]) }
+    (event: Electron.IpcRendererEvent, eventData: T) => { callback(eventData) }
   ipcRenderer.on(channel, ipcCallback)
   return () => { ipcRenderer.off(channel, ipcCallback) }
 }
