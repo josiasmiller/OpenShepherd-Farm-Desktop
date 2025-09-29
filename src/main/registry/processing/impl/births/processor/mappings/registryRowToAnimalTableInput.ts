@@ -41,7 +41,7 @@ export function mapRegistryRowToInsertAnimalInput(row: RegistryRow): InsertAnima
     sexId: row.sexKey,
     birthdate: row.birthdate,
     birthTime: "00:00:00", // for now, set at midnight
-    birthTypeId: row.birthTypeKey,
+    birthType: null, // this is set in the birth processor (where this function is consumed)
     birthWeight: birthWeight,
     birthWeightUnitsId: birthWeightUnitsId,
     birthOrder: 1,

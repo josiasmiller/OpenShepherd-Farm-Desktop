@@ -64,12 +64,24 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
       throw new Error("No Default Setting is Set");
     }
 
+    let rows : RegistryRow[] = sections.birth_records;
+    
+    ///////////////////////////////////////////////////////////////
+    // determine how many non-stillborn animals there are
+    let numStillborn : number = 0;
+
+    for (const row of rows) {
+      if (row.isStillborn) {
+        numStillborn += 1;
+      }
+    }
+
+    let numNotStillborn : number = rows.length - numStillborn;
+
     ///////////////////////////////////////////////////////////////
     // determine the rear type of the living animals
-    var rows : RegistryRow[] = sections.birth_records;
-
-    var rearType : BirthType | null = null;
-    var rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(rows.length); // rear type is how man animals are being processed
+    let rearType : BirthType | null = null;
+    let rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(numNotStillborn); // rear type is how man animals are being processed
     
     await handleResult(rearTypeResult, {
       success: (data: BirthType) => {
@@ -82,13 +94,29 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
     });
 
     rearType = rearType!;
+
+
+    ///////////////////////////////////////////////////////////////
+    // determine the birth type of all animals, regardless of being stillborn or not
+    var birthType : BirthType | null = null;
+    var birthTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(rows.length); // rear type is how man animals are being processed
+    
+    await handleResult(birthTypeResult, {
+      success: (data: BirthType) => {
+        birthType = data;
+      },
+      error: (err: string) => {
+        console.error("Failed to fetch Birth Type:", err);
+        throw new Error(err);  // convert string to Error
+      },
+    });
+
+    birthType = birthType!;
     
     // end finding rear type of animal
     ///////////////////////////////////////////////////////////////
 
     let stillbornIteration : number = 0;
-    // extract rows to be processed from the `sections` input
-    var rows : RegistryRow[] = sections.birth_records;
 
     for (const row of rows) {
       try {
@@ -110,10 +138,12 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
           animalTableInput.name = stillbornName;
           animalTableInput.deathReasonId = DIED_STILLBORN;
           animalTableInput.deathDate = birthDateString; // death date us the same as brith date for stillborns
+          animalTableInput.rearType = null; // stillborn --> rear type should be NULL in the DB
         } else {
-          animalTableInput.rearType = rearType; // not stillborn-- so add rear type
+          animalTableInput.rearType = rearType; // not stillborn --> the reartype is what is determined from above
         }
 
+        animalTableInput.birthType = birthType; // all animals have the same birth type regardless of being stillborn or not 
        
         let newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
 
@@ -221,7 +251,6 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert row into animal location history table
-
         await insertAnimalGoesToLocation(
           newAnimalId,
           null,
@@ -230,13 +259,13 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
         );
 
         if (row.isStillborn) {
-
           // stillborn animals need to go from the premise they were born at to `null`
           await insertAnimalGoesToLocation(
             newAnimalId,
             owner.premise.id,
             null,
             birthDateString,
+            true, // isOneHourHead --> TRUE to make sure that the timing of the created/modified lines up with what we expect
           );
         }
 
