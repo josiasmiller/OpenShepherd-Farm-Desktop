@@ -132,7 +132,10 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert weight row into animal_evaluations_table
         let weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
-        await insertWeightRecord(weightInput);
+
+        if (weightInput.weight > 0.0) {
+          await insertWeightRecord(weightInput);
+        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert into breed table
