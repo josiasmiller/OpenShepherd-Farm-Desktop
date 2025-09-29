@@ -66,35 +66,23 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
     ///////////////////////////////////////////////////////////////
     // determine the rear type of the living animals
-    let numStillborn : number = 0
-
     var rows : RegistryRow[] = sections.birth_records;
 
-    for (const row of rows) {
-      if (row.isStillborn) {
-        numStillborn += 1;
-      }
-    }
-
-    let numNotStillborn : number = rows.length - numStillborn;
     var rearType : BirthType | null = null;
+    var rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(rows.length); // rear type is how man animals are being processed
+    
+    await handleResult(rearTypeResult, {
+      success: (data: BirthType) => {
+        rearType = data;
+      },
+      error: (err: string) => {
+        console.error("Failed to fetch Rear Type:", err);
+        throw new Error(err);  // convert string to Error
+      },
+    });
 
-    if (numNotStillborn > 0) {
-      var rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(numNotStillborn);
-      
-      await handleResult(rearTypeResult, {
-        success: (data: BirthType) => {
-          rearType = data;
-        },
-        error: (err: string) => {
-          console.error("Failed to fetch Rear Type:", err);
-          throw new Error(err);  // convert string to Error
-        },
-      });
-
-      rearType = rearType!;
-    }
-
+    rearType = rearType!;
+    
     // end finding rear type of animal
     ///////////////////////////////////////////////////////////////
 
