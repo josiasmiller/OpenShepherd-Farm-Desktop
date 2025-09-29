@@ -116,7 +116,7 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
     // end finding rear type of animal
     ///////////////////////////////////////////////////////////////
 
-    let stillbornIteration : number = 0;
+    let stillbornIteration : number = 0; // this gets incremented by 1 at the start of any stillborn handling
 
     for (const row of rows) {
       try {
@@ -483,10 +483,7 @@ async function craftStillbornName(row: RegistryRow, iteration: number): Promise<
   const sexInitial : string = stillbornSex.name.charAt(0).toUpperCase();
 
   // formula --> `YYYY-flock prefix Dam_name-Stillborn-sex_abbrev-number`
-  let ret = `${birthYear}-${flockPrefix.name} ${damIdentification.name}-Stillborn-${sexInitial}`;
-  if (iteration != 0) {
-    ret += `-${iteration}`;
-  }
+  let ret = `${birthYear}-${flockPrefix.name} ${damIdentification.name}-Stillborn-${sexInitial}-${iteration}`;
   return ret;
 }
   
