@@ -3,6 +3,7 @@ import { checkSireAlive } from './rules/checkSireAlive';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge';
 import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring';
+import { checkHasValidFedTag } from './rules/checkHasValidFedTag';
 import { checkTagValid } from './rules/checkTagValid';
 
 export async function validateBirthRows(sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
@@ -15,8 +16,11 @@ export async function validateBirthRows(sections: Record<string, RegistryRow[]>,
     const errors: string[] = [];
 
     // Run all relevant checks
-    const tagCheck = await checkTagValid(row, species);
+    const tagCheck = await checkTagValid(row);
     errors.push(...tagCheck.errors);
+
+    const fedTagCheck = await checkHasValidFedTag(row);
+    errors.push(...fedTagCheck.errors)
 
     const sireCheck = await checkSireAlive(row, species);
     errors.push(...sireCheck.errors);

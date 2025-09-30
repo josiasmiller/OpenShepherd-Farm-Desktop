@@ -1,7 +1,8 @@
+import { validate, version } from "uuid";
 
-export function isUUIDv4(input: string): boolean {
-  const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidV4Regex.test(input);
+
+export function isUUIDv4(str: string): boolean {
+  return validate(str) && version(str) === 4;
 }
 
 /**
@@ -32,5 +33,4 @@ export function incrementRegisteredValue(originalRegNum: string): string {
   const incremented = (parseInt(originalRegNum, 10) + 1).toString().padStart(length, "0");
   return incremented;
 }
-
 

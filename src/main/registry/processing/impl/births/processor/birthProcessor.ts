@@ -2,6 +2,8 @@ import { handleResult, Result } from 'packages/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from 'packages/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
 
+import {validate, version} from "uuid";
+
 // DB actions
 import {
   beginTransaction,
@@ -398,8 +400,14 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
           let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
           await insertAnimalIdInfoRow(fedTagInput);
 
-          let farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
-          await insertAnimalIdInfoRow(farmTagInput);
+          if (hasFarmTagInfo(row)) {
+            console.log("ADDING FARM TAG INFO FOR ANIMAL_ID=", newAnimalId);
+            let farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
+            await insertAnimalIdInfoRow(farmTagInput);
+          } else {
+            console.log("NOT ADDING FARM TAG INFO FOR ANIMAL_ID=", newAnimalId);
+          }
+          
         }
 
       } catch (innerError) {
@@ -407,7 +415,7 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
       }
     }
 
-    await commitTransaction();
+    // await commitTransaction();
     return {
       success: true,
       insertedRowCount: rows.length
@@ -486,4 +494,37 @@ async function craftStillbornName(row: RegistryRow, iteration: number): Promise<
   let ret = `${birthYear}-${flockPrefix.name} ${damIdentification.name}-Stillborn-${sexInitial}-${iteration}`;
   return ret;
 }
+
+/**
+ * checks if a registry row has all necessary data to write a farm tag
+ * 
+ * @param row the RegistryRow being processed
+ * @returns boolean indicating if all necessary data is present
+ */
+function hasFarmTagInfo(row : RegistryRow): boolean {
   
+  // check that these exist:
+  const { farmTypeKey, farmColorKey, farmLocKey, farmNum } = row;
+
+  console.log(farmTypeKey);
+  console.log(farmColorKey);
+  console.log(farmLocKey);
+  console.log(farmNum);
+
+  // verify all are valid strings
+  if (
+    farmTypeKey == null ||
+    farmColorKey == null  ||
+    farmLocKey == null || 
+    farmNum == null
+  ) return false;
+
+  if (!validate(farmTypeKey) || version(farmTypeKey) !== 4) return false;
+  if (!validate(farmColorKey) || version(farmColorKey) !== 4) return false;
+  if (!validate(farmLocKey) || version(farmLocKey) !== 4) return false;
+
+  // TODO --> at some point we will want to verify that the farmNum is a valid term
+
+  return true;
+}
+ 
