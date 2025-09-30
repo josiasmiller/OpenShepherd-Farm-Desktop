@@ -397,17 +397,18 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
         // stillborn animals do not get tags stored in the DB
         if (!row.isStillborn) {
-          let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
-          await insertAnimalIdInfoRow(fedTagInput);
+          if (hasFedTagInfo(row)) {
+            let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
+            await insertAnimalIdInfoRow(fedTagInput);
+            console.log("GOOD FED INPUT");
+          }
 
           if (hasFarmTagInfo(row)) {
-            console.log("ADDING FARM TAG INFO FOR ANIMAL_ID=", newAnimalId);
             let farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
             await insertAnimalIdInfoRow(farmTagInput);
-          } else {
-            console.log("NOT ADDING FARM TAG INFO FOR ANIMAL_ID=", newAnimalId);
+            console.log("GOOD FARM INPUT");
           }
-          
+          console.log("======================"); 
         }
 
       } catch (innerError) {
@@ -495,31 +496,35 @@ async function craftStillbornName(row: RegistryRow, iteration: number): Promise<
   return ret;
 }
 
-/**
- * checks if a registry row has all necessary data to write a farm tag
- * 
- * @param row the RegistryRow being processed
- * @returns boolean indicating if all necessary data is present
- */
-function hasFarmTagInfo(row : RegistryRow): boolean {
-  
-  // check that these exist:
-  const { farmTypeKey, farmColorKey, farmLocKey, farmNum } = row;
+// -----------------------------------------------------
+// tag functions
 
-  // verify all are valid strings
-  if (
-    farmTypeKey == null ||
-    farmColorKey == null  ||
-    farmLocKey == null || 
-    farmNum == null
-  ) return false;
+function hasTagInfo(
+  typeKey?: string | null,
+  colorKey?: string | null,
+  locKey?: string | null,
+  num?: string | null
+): boolean {
+  if (!typeKey || !colorKey || !locKey || !num) {
+    return false;
+  }
 
-  if (!validate(farmTypeKey) || version(farmTypeKey) !== 4) return false;
-  if (!validate(farmColorKey) || version(farmColorKey) !== 4) return false;
-  if (!validate(farmLocKey) || version(farmLocKey) !== 4) return false;
+  const isValidUUIDv4 = (key: string) => validate(key) && version(key) === 4;
 
-  // farm number verification should be already handled in the `validation` step. 
+  if (!isValidUUIDv4(typeKey)) return false;
+  if (!isValidUUIDv4(colorKey)) return false;
+  if (!isValidUUIDv4(locKey)) return false;
 
+  // number verification handled elsewhere
   return true;
+}
+
+// Semantic wrappers for readability
+export function hasFarmTagInfo(row: RegistryRow): boolean {
+  return hasTagInfo(row.farmTypeKey, row.farmColorKey, row.farmLocKey, row.farmNum);
+}
+
+export function hasFedTagInfo(row: RegistryRow): boolean {
+  return hasTagInfo(row.fedTypeKey, row.fedColorKey, row.fedLocKey, row.fedNum);
 }
  
