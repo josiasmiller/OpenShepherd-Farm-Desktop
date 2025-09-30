@@ -267,7 +267,7 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
             owner.premise.id,
             null,
             birthDateString,
-            true, // isOneHourHead --> TRUE to make sure that the timing of the created/modified lines up with what we expect
+            true,
           );
         }
 
@@ -400,15 +400,12 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
           if (hasFedTagInfo(row)) {
             let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
             await insertAnimalIdInfoRow(fedTagInput);
-            console.log("GOOD FED INPUT");
           }
 
           if (hasFarmTagInfo(row)) {
             let farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
             await insertAnimalIdInfoRow(farmTagInput);
-            console.log("GOOD FARM INPUT");
           }
-          console.log("======================"); 
         }
 
       } catch (innerError) {
@@ -416,7 +413,7 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
       }
     }
 
-    // await commitTransaction();
+    await commitTransaction();
     return {
       success: true,
       insertedRowCount: rows.length

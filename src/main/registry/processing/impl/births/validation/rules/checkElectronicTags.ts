@@ -36,14 +36,26 @@ export async function checkElectronicTags(row: RegistryRow): Promise<ValidationR
 
   // Check federal tag if it’s an electronic tag
   if (fedTypeKey === electronicTagUUID) {
+
+    // 1) check that it meets the refex criteria
     if (!electronicTagRegex.test(fedNum ?? "")) {
       errors.push(
         "fedNum: Electronic tag must have 3 digits, an underscore, then 12 alphanumeric characters."
       );
-    }
+    } 
 
-    // if it is official, make sure that the first 3 characters line up with an existing country code
+    // NOTE FOR DEVS --> 
+    // We currently do not check on birth notifies if the tags the users provide are official or not, so these checks 
+    // that are commented out below cannot yet be run until that information is present. 
+    // This same concept will apply to farm tags.
 
+    // // 2) if official, then the initial 3 characters should match a country code (if not official, then it should NOT be in there!)
+    // const fedCountryTag: string = (fedNum ?? "").substring(0, 3);
+    // if (!allCountryTags.includes(fedCountryTag)) {
+    //   errors.push(
+    //     `fedNum: Invalid country code '${fedCountryTag}'. Must match one of the known country prefixes.`
+    //   );
+    // }
   }
 
   // Check farm tag if it’s an electronic tag
