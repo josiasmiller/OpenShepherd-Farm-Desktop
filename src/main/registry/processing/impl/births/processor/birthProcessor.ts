@@ -506,11 +506,6 @@ function hasFarmTagInfo(row : RegistryRow): boolean {
   // check that these exist:
   const { farmTypeKey, farmColorKey, farmLocKey, farmNum } = row;
 
-  console.log(farmTypeKey);
-  console.log(farmColorKey);
-  console.log(farmLocKey);
-  console.log(farmNum);
-
   // verify all are valid strings
   if (
     farmTypeKey == null ||
@@ -523,7 +518,7 @@ function hasFarmTagInfo(row : RegistryRow): boolean {
   if (!validate(farmColorKey) || version(farmColorKey) !== 4) return false;
   if (!validate(farmLocKey) || version(farmLocKey) !== 4) return false;
 
-  // TODO --> at some point we will want to verify that the farmNum is a valid term
+  // farm number verification should be already handled in the `validation` step. 
 
   return true;
 }
