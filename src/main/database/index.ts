@@ -8,6 +8,7 @@ export { animalSearch } from "./repositories/read/animal/animalSearch/animalSear
 export { animalHasActiveFederalTag } from "./repositories/read/animal/tags/hasFederalTag";
 export { animalHasActiveOfficialTag } from "./repositories/read/animal/tags/hasOfficialTag";
 export { getActiveScrapieFlockNumberId } from "./repositories/read/owners/getActiveScrapieFlockNumberId";
+export { getAllCountryTagPrefixes } from "./repositories/read/tags/getAllCountryPrefixes";
 export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnimalBirthDate";
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes";
