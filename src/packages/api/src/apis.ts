@@ -37,7 +37,7 @@ import {
   RegistrationWriteResponse,
   RegistrationParseResponse,
   TransferParseResponse,
-  DeathParseResponse,
+  DeathParseResponse, DatabaseSessionInfo,
 } from "./dtos";
 
 import { Result } from "packages/core";
@@ -70,6 +70,11 @@ export interface DefaultsAPI {
   editExisting: (params: NewDefaultSettingsParameters) => Promise<boolean>;
   writeNew: (params: NewDefaultSettingsParameters) => Promise<boolean>;
   getExisting: () => Promise<Result<DefaultSettingsResults[], string>>;
+  onDefaultSettingsListChanged: ApiEventRegistrarFunc<DefaultSettingsResults[]>
+  selectActiveDefaultSettings: (params: DefaultSettingsResults) => Promise<void>
+  queryActiveDefaultSettings: () => Promise<DefaultSettingsResults>
+  onActiveDefaultSettingsChanged: ApiEventRegistrarFunc<DefaultSettingsResults>
+  onActiveDefaultSettingsNotFound: ApiEventRegistrarFunc<string>
 }
 
 // -------------------- Lookup --------------------
@@ -127,8 +132,11 @@ export interface SystemAPI {
   isDatabaseLoaded: () => Promise<boolean>;
   openDirectory: (path: string) => Promise<void>;
   openExternalURL: (url: string) => Promise<void>;
-  selectDatabase: () => Promise<string>;
+  openDatabase: () => Promise<string>;
+  closeDatabase: () => Promise<void>;
   selectPngFile: () => Promise<string>;
+  databaseSessionInfo: () => Promise<DatabaseSessionInfo | null>,
+  onDatabaseSessionChanged: ApiEventRegistrarFunc<DatabaseSessionInfo | null>
 }
 
 // -------------------- Global IPC wrapper --------------------

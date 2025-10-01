@@ -37,7 +37,7 @@ import {
 
 import { pngFileDialog } from "./selectPng";
 import { selectNewDb } from "./dbSelect";
-import { getDatabase } from "./database/dbConnections";
+import {closeDb, DatabaseSession, databaseSession$, getDatabase, getDatabaseSession} from "./database/dbConnections";
 import { writeAnimalNotesCsv } from "./writers/csv/writeAnimalNotes";
 import { writeDrugHistoryCsv } from "./writers/csv/writeDrugEvents";
 import { writeTissueTestResults } from "./writers/csv/writeTissueTestResults";
@@ -66,7 +66,10 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle("edit-existing-default", async (_, queryParams) => {
-    return editExistingDefaultSettings(queryParams);
+    return editExistingDefaultSettings(queryParams)
+      .then(() => {
+        mainWindow.webContents.send('default-settings-list-changed')
+      });
   });
 
   ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
@@ -86,8 +89,12 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     return writeRegistration(animals, registrationType, signatureFilePath);
   });
 
-  ipcMain.handle("select-database", async (_, ) => {
+  ipcMain.handle("open-database", async (_, ) => {
     return selectNewDb(mainWindow);
+  });
+
+  ipcMain.handle('close-database', async (_, ) => {
+    return closeDb();
   });
 
   ipcMain.handle("select-png-file", async (_, ) => {
@@ -223,8 +230,9 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     return resolveDatabaseIssues(dbscr);
   });
 
-  ipcMain.handle('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
-    return promiseFrom(() => setStoreSelectedDefault(value));
+  ipcMain.handle('set-store-selected-default', async (_event, value: DefaultSettingsResults) => {
+    setStoreSelectedDefault(value)
+    mainWindow.webContents.send('active-default-settings-changed')
   });
 
   ipcMain.handle('set-store-selected-species', (_event, value: Species) => {
@@ -236,6 +244,17 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
-    return writeNewDefaultSettings(queryParams);
+    return writeNewDefaultSettings(queryParams)
+      .then(() => {
+        mainWindow.webContents.send('default-settings-list-changed')
+      });
   });
+
+  ipcMain.handle('query-database-session-info', (_event) => {
+    return promiseFrom(() => getDatabaseSession())
+  })
+
+  databaseSession$.subscribe((dbSession: DatabaseSession | null) => {
+    mainWindow.webContents.send('database-session-changed', dbSession && { path: dbSession.path }, false)
+  })
 };

@@ -1,38 +1,54 @@
-import React from "react";
-import { HashRouter  as Router, Routes, Route } from "react-router-dom";
-import Home from "./common/home"
-import AnimalSearch from "./common/animalSearch/animalSearch"
-import CreateDefault from "./common/animalDefaults/createDefault"
-import Sidebar from "../components/sidebar/sidebar";
-import LandingPage from "./common/animalSearch/landingPage";
-import RegistryLanding from "./registry/landing/registryLanding";
-import { PreprocessorPage } from "./registry/landing/preprocessor/registryPreprocessor";
+import React, {useContext, useEffect, useState} from "react";
 import "../styles/styles.css";
+import SessionPage from "./session/SessionPage";
+import {SystemService, SystemServiceContext} from "../services/system/systemService";
+import LandingPage from "./landing/LandingPage";
+import {map} from "rxjs";
 import IsolatedMuiScope from "../theme/IsolatedMuiScope";
+import {Fade} from "@mui/material";
 
 const App: React.FC = () => {
+
+  const systemService = useContext<SystemService>(SystemServiceContext)
+  //Is initializing prevents display of landing page while app page is reloading
+  //with an open session in place since show session defaults to false.
+  const [isInitializing, setIsInitializing] = useState<boolean>(true)
+  const [showSession, setShowSession] = useState<boolean>(false)
+
+  useEffect(() => {
+    systemService.databaseSessionInfo$().pipe(
+      map((item) => {
+        const databasePath = item?.path
+        const hasSession = databasePath != null
+        console.log(
+          (hasSession)
+            ? `Showing session page for db @: ${databasePath}`
+            : 'Showing landing page'
+        )
+        return hasSession
+      })
+    ).subscribe((hasSession) => {
+      setIsInitializing(false)
+      setShowSession(hasSession)
+    })
+  }, []);
+
   return (
-    <Router>
-      <div id="app-container">
-        <IsolatedMuiScope>
-          <Sidebar />
-        </IsolatedMuiScope>
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/animal-search" element={<AnimalSearch />} />
-            <Route path="/create-default" element={<CreateDefault />} />
-            <Route path="/registry" element={<RegistryLanding />} />
-
-            {/* Routes that do NOT show up on the side bar: */}
-            
-            <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
-
-            <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <>
+      <main>
+      {
+        !isInitializing && (
+          showSession ? (
+            <SessionPage/>
+          ) : (
+            <IsolatedMuiScope>
+              <LandingPage/>
+            </IsolatedMuiScope>
+          )
+        )
+      }
+      </main>
+    </>
   );
 };
 

@@ -11,6 +11,7 @@ import {
 } from "packages/api";
 
 import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from "packages/api/src/apis";
+import { DatabaseSessionInfo } from "packages/api/src/dtos";
 
 /**
  * Provides ipcRenderer.on registration and returns
@@ -19,7 +20,7 @@ import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, Sy
  * @param channel Name of the ipc channel to bind to.
  * @param callback Callback function to invoke when the ipc channel emits
  */
-function bindIpcCallback<T>(channel: string, callback: (arg: T) => void): () => void {
+function bindIpcCallback<T>(channel: string, callback: (eventData: T) => void): () => void {
   const ipcCallback =
     (event: Electron.IpcRendererEvent, eventData: T) => { callback(eventData) }
   ipcRenderer.on(channel, ipcCallback)
@@ -47,6 +48,17 @@ const defaultsAPI : DefaultsAPI = {
   editExisting: (params: NewDefaultSettingsParameters) => ipcRenderer.invoke("edit-existing-default", params),
   writeNew: (params: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", params),
   getExisting: () => ipcRenderer.invoke("get-existing-defaults"),
+  onDefaultSettingsListChanged: (callback) => {
+    return bindIpcCallback("default-settings-list-changed", callback)
+  },
+  selectActiveDefaultSettings: (val: DefaultSettingsResults) => ipcRenderer.invoke("set-store-selected-default", val),
+  queryActiveDefaultSettings: () => ipcRenderer.invoke('get-store-selected-default'),
+  onActiveDefaultSettingsChanged: (callback) => {
+    return bindIpcCallback('active-default-settings-changed', callback)
+  },
+  onActiveDefaultSettingsNotFound: (callback) => {
+    return bindIpcCallback('active-default-settings-not-found', callback)
+  }
 }
 
 // -------------------- Lookup --------------------
@@ -104,9 +116,14 @@ const systemAPI : SystemAPI = {
   databaseStateCheck: () => ipcRenderer.invoke("database-state-check"),
   resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => ipcRenderer.invoke("resolve-database-issues", dbscr),
   isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
+  databaseSessionInfo: () => ipcRenderer.invoke('query-database-session-info'),
+  onDatabaseSessionChanged: (callback: (dbSessionInfo: DatabaseSessionInfo | null) => void) => {
+    return bindIpcCallback('database-session-changed', callback)
+  },
   openDirectory: (path: string) => ipcRenderer.invoke("open-directory", path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
-  selectDatabase: () => ipcRenderer.invoke("select-database"),
+  openDatabase: () => ipcRenderer.invoke('open-database'),
+  closeDatabase: () => ipcRenderer.invoke('close-database'),
   selectPngFile: () => ipcRenderer.invoke("select-png-file"),
 }
 

@@ -724,3 +724,7 @@ export type AnimalIdInfoInput = {
     idScrapieFlock: string | null;
     isOfficial: boolean;
 };
+
+export type DatabaseSessionInfo = {
+  path: string
+}
