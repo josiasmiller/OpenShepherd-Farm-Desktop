@@ -1,0 +1,64 @@
+import React, {useContext} from 'react';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  styled,
+  Typography
+} from "@mui/material";
+import transparentLogo from "../../assets/images/AnimalTrakker.png";
+import {isRegistryDesktop} from "packages/appBuild/src";
+import { SystemService, SystemServiceContext } from '../../services/system/systemService';
+
+const OpenSessionCard = styled(Card)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignSelf: 'center',
+  width: '100%',
+  padding: theme.spacing(4),
+  gap: theme.spacing(2),
+  margin: 'auto',
+  maxWidth: '450px',
+}));
+
+export const LandingPage = React.forwardRef((props, ref) => {
+  const systemService = useContext<SystemService>(SystemServiceContext)
+  const openDatabase = async () => {
+    try {
+      await systemService.openDatabase()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  return (
+    <Box {...props} ref={ref} component='div' sx={{ width: '100vw', height: '100vh', display: 'grid', placeContent: 'center' }}>
+      <OpenSessionCard elevation={4}>
+        <img
+          src={transparentLogo}
+          alt="App Icon"
+          draggable={false}
+          style={{
+            display: 'block',
+            width: "100%",
+            height: "auto",
+            margin: "0 auto",
+            userSelect: "none",
+          }}/>
+        <Typography variant='h3' textAlign='center' sx={{ userSelect: 'none' }}>
+          {isRegistryDesktop() ? 'Registry Desktop' : 'Farm Desktop'}
+        </Typography>
+        <Divider />
+        <Button
+          variant="contained"
+          size='large'
+          onClick={ async () => { await openDatabase() }}
+        >
+          Open Database
+        </Button>
+      </OpenSessionCard>
+    </Box>
+  );
+})
+
+export default LandingPage;
