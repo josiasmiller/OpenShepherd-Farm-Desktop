@@ -41,6 +41,10 @@ import {
 } from "./dtos";
 
 import { Result } from "packages/core";
+import {Observable} from "rxjs";
+
+export type ApiEventRegistrarFunc<T> = (listener: (data: T) => void) => ApiEventRegistrationCleanupFunc
+export type ApiEventRegistrationCleanupFunc = () => void
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
