@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @param companyId UUID of the company
  * @param registrationTypeId UUID of the registration type
  */
-export async function markRegistryCertificateAsPrinted(
+export async function insertNewRegistryCertificateRow(
   animalId: string,
   companyId: string,
   registrationTypeId: string,
@@ -32,7 +32,6 @@ export async function markRegistryCertificateAsPrinted(
     ) VALUES (
       ?, ?, ?, ?, 1, ?, ?
     );
-    
   `;
 
   const todayDt : string = dateTimeAsString();

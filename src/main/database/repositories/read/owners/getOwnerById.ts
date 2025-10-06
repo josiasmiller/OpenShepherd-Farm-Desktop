@@ -92,26 +92,34 @@ export const getOwnerById = async (
 
   // If not a contact, try to find as a company
   const companyQuery = `
+    WITH first_phone AS (
+      SELECT
+        cp.id_companyid,
+        cp.company_phone,
+        ROW_NUMBER() OVER (
+          PARTITION BY cp.id_companyid
+          ORDER BY cp.created ASC
+        ) AS rn
+      FROM company_phone_table cp
+    )
     SELECT 
       co.id_companyid,
       co.company AS company_name,
       r.id_registry_id_companyid AS registry_id,
       o.membership_number,
-      (
-        SELECT cp.company_phone
-        FROM company_phone_table cp
-        WHERE cp.id_companyid = co.id_companyid
-        ORDER BY cp.created ASC
-        LIMIT 1
-      ) AS company_phone
+      fp.company_phone
     FROM company_table co
     LEFT JOIN owner_registration_table o
       ON o.id_companyid = co.id_companyid
     LEFT JOIN animal_registration_table r
       ON r.id_registry_id_companyid = co.id_companyid
+    LEFT JOIN first_phone fp
+      ON fp.id_companyid = co.id_companyid
+      AND fp.rn = 1
     WHERE co.id_companyid = ?
-    LIMIT 1
+    LIMIT 1;
   `;
+
 
   const companyRow: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
     db.get(companyQuery, [ownerId], (err, row) => {
