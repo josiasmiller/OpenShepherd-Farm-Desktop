@@ -84,6 +84,7 @@ export { insertAnimalRegistrationRow } from "./repositories/write/registrations/
 export { insertBirthOwnershipRecord } from "./repositories/write/animal/ownership/insertBirthOwnershipRecord";
 export { insertGeneticCoatRow } from "./repositories/write/animal/characteristics/insertGeneticCoatRow";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable";
+export { insertNewRegistryCertificateRow } from "./repositories/write/animal/registry/insertNewRegistryCertificateRow";
 export { insertTransferOfOwnershipRecord } from "./repositories/write/animal/ownership/insertTransferOfOwnershipRecord";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation";
 export { markAnimalDeathLocation } from "./repositories/write/animal/death/markAnimalDeathLocation";

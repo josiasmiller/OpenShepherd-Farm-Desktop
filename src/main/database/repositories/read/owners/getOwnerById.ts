@@ -32,23 +32,30 @@ export const getOwnerById = async (
 
   // First, try to find the owner as a contact
   const contactQuery = `
+    WITH first_phone AS (
+      SELECT
+        cp.id_contactid,
+        cp.contact_phone,
+        ROW_NUMBER() OVER (
+          PARTITION BY cp.id_contactid
+          ORDER BY cp.created ASC
+        ) AS rn
+      FROM contact_phone_table cp
+    )
     SELECT 
       c.id_contactid,
       c.contact_first_name,
       c.contact_last_name,
       o.membership_number,
-      (
-        SELECT cp.contact_phone
-        FROM contact_phone_table cp
-        WHERE cp.id_contactid = c.id_contactid
-        ORDER BY cp.created ASC
-        LIMIT 1
-      ) AS contact_phone
+      fp.contact_phone
     FROM contact_table c
     LEFT JOIN owner_registration_table o
       ON o.id_contactid = c.id_contactid
+    LEFT JOIN first_phone fp
+      ON fp.id_contactid = c.id_contactid
+      AND fp.rn = 1
     WHERE c.id_contactid = ?
-    LIMIT 1
+    LIMIT 1;
   `;
 
   const contactRow: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {

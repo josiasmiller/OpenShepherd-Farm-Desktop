@@ -1,13 +1,12 @@
 import { handleResult } from 'packages/core';
 import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor } from 'packages/api';
 
-
-// DB actions
 import {
   beginTransaction,
   commitTransaction,
   rollbackTransaction
 } from '../../../../../database/dbUtils';
+
 import { 
   deleteAnimalForSaleEntry,
   getBreeder,
@@ -17,6 +16,7 @@ import {
   getRegistrationTypeIdByRegNum,
   insertAnimalGoesToLocation,
   insertAnimalRegistrationRow,
+  insertNewRegistryCertificateRow,
   insertTransferOfOwnershipRecord,
   TRANSFERRED_BREEDING,
 } from '../../../../../database';
@@ -43,16 +43,19 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
   try {
     await beginTransaction();
 
-    var rows : RegistryRow[] = [];
-
     for (const animalInfo of transferResponse.animals) {
+
       try {
-        await insertAnimalGoesToLocation(
+        let locationResult = await insertAnimalGoesToLocation(
           animalInfo.animalId,
           seller.premiseId,
           buyer.premiseId,
           seller.movedAt,
         );
+
+        if (locationResult.tag == "error") {
+          throw new Error(locationResult.error);
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get the seller Owner from the DB
@@ -100,13 +103,17 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
         buyerOwner = buyerOwner!;
 
-        await insertTransferOfOwnershipRecord(
+        let transferOfOwnershipResult = await insertTransferOfOwnershipRecord(
           animalInfo.animalId,
           sellerOwner,
           buyerOwner,
           seller.movedAt,
           TRANSFERRED_BREEDING,
         );
+
+        if (transferOfOwnershipResult.tag == "error") {
+          throw new Error(transferOfOwnershipResult.error);
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         // remove any for sale records from DB for given animal
@@ -172,7 +179,6 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         flockBookId = flockBookId!;
 
         // get registration type ID
-
         const regTypeReuslt = await getRegistrationTypeIdByRegNum(animalInfo.registrationNumber);
         let regType : string = null;
 
@@ -188,16 +194,16 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
         regType = regType!;
 
-        await insertAnimalRegistrationRow(
-          breeder,
+
+        let certificateResult = await insertNewRegistryCertificateRow(
           animalInfo.animalId,
-          animalInfo.name,
-          animalInfo.registrationNumber,
-          seller.movedAt,
-          regCompanyId,
-          flockBookId,
+          // TODO --> how to get registry company ID?
+          null, //companyID
           regType,
         );
+        if (certificateResult.tag == "error") {
+          throw new Error(certificateResult.error);
+        }
 
       } catch (innerError) {
         throw new Error(`Failed processing row with animal name "${animalInfo.name}": ${(innerError as Error).message}`);
@@ -207,7 +213,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
     await commitTransaction();
     return {
       success: true,
-      insertedRowCount: rows.length
+      insertedRowCount: transferResponse.animals.length,
     };
 
   } catch (error) {
