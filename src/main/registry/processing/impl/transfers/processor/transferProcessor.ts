@@ -59,12 +59,28 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get the seller Owner from the DB
 
-        const sellerId = seller.contactId ?? seller.companyId;
-        if (!sellerId) {
+        let isSellerCompany : boolean;
+        let sellerId : string;
+
+        if (seller.contactId && seller.companyId) {
+          throw new Error("SellerInfo has both a contact and company ID");
+        }
+
+        if (seller.contactId) {
+          sellerId = seller.contactId;
+          isSellerCompany = false;
+        } else if (seller.companyId) {
+          sellerId = seller.companyId;
+          isSellerCompany = true;
+        } else {
           throw new Error("Seller must have either contactId or companyId");
         }
 
-        const sellerOwnerResult = await getOwnerById(sellerId);
+        const sellerOwnerResult = await getOwnerById(
+          sellerId,
+          isSellerCompany,
+        );
+
         let sellerOwner : Owner = null;
 
         await handleResult(sellerOwnerResult, {
@@ -82,12 +98,28 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get the buyer Owner from the DB
 
-        const buyerId = buyer.contactId ?? buyer.companyId;
-        if (!buyerId) {
+        let isBuyerCompany : boolean;
+        let buyerId : string;
+
+        if (buyer.contactId && buyer.companyId) {
+          throw new Error("ExistingMemberBuyer has both a contact and company ID");
+        }
+
+        if (buyer.contactId) {
+          buyerId = buyer.contactId;
+          isBuyerCompany = false;
+        } else if (buyer.companyId) {
+          sellerId = buyer.companyId;
+          isBuyerCompany = true;
+        } else {
           throw new Error("Buyer must have either contactId or companyId");
         }
 
-        const buyerOwnerResult = await getOwnerById(buyerId);
+        const buyerOwnerResult = await getOwnerById(
+          buyerId,
+          isBuyerCompany,
+        );
+
         let buyerOwner : Owner = null;
 
         await handleResult(buyerOwnerResult, {
