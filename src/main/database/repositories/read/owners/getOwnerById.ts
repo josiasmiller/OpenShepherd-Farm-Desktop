@@ -2,7 +2,6 @@ import { getDatabase } from "../../../dbConnections";
 import { getContactPremise } from "../premises/getContactPremise";
 import { getCompanyPremise } from "../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
-
 import { Owner, OwnerType, Contact, Company } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
@@ -19,18 +18,30 @@ type OwnerByIdRow = {
 };
 
 /**
- * Gets an owner directly by their UUID (contact or company).
- * @param ownerId UUID of the owner (either a contactId or companyId)
+ * Public API
+ * Gets an owner by their UUID, knowing if it's a company or contact.
  */
 export const getOwnerById = async (
-  ownerId: string
+  ownerId: string,
+  isCompany: boolean
 ): Promise<Result<Owner, string>> => {
   const db = getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
   }
 
-  // First, try to find the owner as a contact
+  return isCompany
+    ? _getCompanyOwnerById(db, ownerId)
+    : _getContactOwnerById(db, ownerId);
+};
+
+/**
+ * Private helper: Fetches a contact owner
+ */
+const _getContactOwnerById = async (
+  db: any,
+  ownerId: string
+): Promise<Result<Owner, string>> => {
   const contactQuery = `
     WITH first_phone AS (
       SELECT
@@ -58,39 +69,51 @@ export const getOwnerById = async (
     LIMIT 1;
   `;
 
-  const contactRow: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
-    db.get(contactQuery, [ownerId], (err, row) => {
+  const row: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
+    db.get(contactQuery, [ownerId], (err, result) => {
       if (err) reject(err);
-      else resolve(row);
+      else resolve(result);
     });
   }).catch(err => {
     return new Failure(`Database query failed: ${err.message}`);
   });
 
-  if (contactRow && contactRow.id_contactid) {
-    const contact: Contact = {
-      id: contactRow.id_contactid,
-      firstName: contactRow.contact_first_name ?? "",
-      lastName: contactRow.contact_last_name ?? "",
-    };
+  if (row instanceof Failure) return row;
 
-    const premiseResult = await getContactPremise(contact.id);
-    if (premiseResult.tag === "error") return premiseResult;
-
-    const scrapieResult = await getScrapieFlockInfo(contact.id, false);
-    if (scrapieResult.tag === "error") return scrapieResult;
-
-    return new Success({
-      type: OwnerType.CONTACT,
-      contact,
-      premise: premiseResult.data,
-      scrapieId: scrapieResult.data,
-      phoneNumber: contactRow.contact_phone ?? "",
-      flockId: contactRow.membership_number ?? "",
-    });
+  if (!row || !row.id_contactid) {
+    return new Failure(`No contact record found for ID: ${ownerId}`);
   }
 
-  // If not a contact, try to find as a company
+  const contact: Contact = {
+    id: row.id_contactid,
+    firstName: row.contact_first_name ?? "",
+    lastName: row.contact_last_name ?? "",
+  };
+
+  const premiseResult = await getContactPremise(contact.id);
+  if (premiseResult.tag === "error") return premiseResult;
+
+  const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+  if (scrapieResult.tag === "error") return scrapieResult;
+
+  return new Success({
+    type: OwnerType.CONTACT,
+    contact,
+    premise: premiseResult.data,
+    scrapieId: scrapieResult.data,
+    phoneNumber: row.contact_phone ?? "",
+    flockId: row.membership_number ?? "",
+  });
+};
+
+
+/**
+ * Private helper: Fetches a company owner
+ */
+const _getCompanyOwnerById = async (
+  db: any,
+  ownerId: string
+): Promise<Result<Owner, string>> => {
   const companyQuery = `
     WITH first_phone AS (
       SELECT
@@ -120,38 +143,39 @@ export const getOwnerById = async (
     LIMIT 1;
   `;
 
-
-  const companyRow: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
-    db.get(companyQuery, [ownerId], (err, row) => {
+  const row: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
+    db.get(companyQuery, [ownerId], (err, result) => {
       if (err) reject(err);
-      else resolve(row);
+      else resolve(result);
     });
   }).catch(err => {
     return new Failure(`Database query failed: ${err.message}`);
   });
 
-  if (companyRow && companyRow.id_companyid) {
-    const company: Company = {
-      id: companyRow.id_companyid,
-      name: companyRow.company_name ?? "",
-      registry_id: companyRow.registry_id ?? undefined,
-    };
-
-    const premiseResult = await getCompanyPremise(company.id);
-    if (premiseResult.tag === "error") return premiseResult;
-
-    const scrapieResult = await getScrapieFlockInfo(company.id, true);
-    if (scrapieResult.tag === "error") return scrapieResult;
-
-    return new Success({
-      type: OwnerType.COMPANY,
-      company,
-      premise: premiseResult.data,
-      scrapieId: scrapieResult.data,
-      phoneNumber: companyRow.company_phone ?? "",
-      flockId: companyRow.membership_number ?? "",
-    });
+  if (row instanceof Failure) return row;
+  
+  if (!row || !row.id_companyid) {
+    return new Failure(`No company record found for ID: ${ownerId}`);
   }
 
-  return new Failure(`No owner record found for given ID: ${ownerId}`);
+  const company: Company = {
+    id: row.id_companyid,
+    name: row.company_name ?? "",
+    registry_id: row.registry_id ?? undefined,
+  };
+
+  const premiseResult = await getCompanyPremise(company.id);
+  if (premiseResult.tag === "error") return premiseResult;
+
+  const scrapieResult = await getScrapieFlockInfo(company.id, true);
+  if (scrapieResult.tag === "error") return scrapieResult;
+
+  return new Success({
+    type: OwnerType.COMPANY,
+    company,
+    premise: premiseResult.data,
+    scrapieId: scrapieResult.data,
+    phoneNumber: row.company_phone ?? "",
+    flockId: row.membership_number ?? "",
+  });
 };
