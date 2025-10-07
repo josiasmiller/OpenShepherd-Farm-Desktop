@@ -30,7 +30,7 @@ export async function insertNewRegistryCertificateRow(
       created,
       modified
     ) VALUES (
-      ?, ?, ?, ?, 1, ?, ?
+      ?, ?, ?, ?, 0, ?, ?
     );
   `;
 

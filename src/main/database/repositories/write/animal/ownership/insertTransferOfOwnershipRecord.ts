@@ -2,6 +2,7 @@ import { Owner, OwnerType } from "packages/api";
 import { getDatabase } from "../../../../dbConnections";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "packages/core";
+import { dateTimeAsString } from "../../../../dbUtils";
 
 
 /**
@@ -40,8 +41,10 @@ export async function insertTransferOfOwnershipRecord(
       created,
       modified
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, datetime('now'), datetime('now'))
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?)
   `;
+
+  const todayDt : string = dateTimeAsString();
 
   const fromContactId = fromOwner.type === OwnerType.CONTACT ? fromOwner.contact.id : null;
   const fromCompanyId = fromOwner.type === OwnerType.COMPANY ? fromOwner.company.id : null;
@@ -62,6 +65,8 @@ export async function insertTransferOfOwnershipRecord(
           toContactId,
           toCompanyId,
           transferReasonId,
+          todayDt,
+          todayDt,
         ],
         (err: Error | null) => {
           if (err) reject(err);

@@ -15,10 +15,9 @@ import {
   getOwnerById,
   getRegistrationTypeIdByRegNum,
   insertAnimalGoesToLocation,
-  insertAnimalRegistrationRow,
   insertNewRegistryCertificateRow,
   insertTransferOfOwnershipRecord,
-  TRANSFERRED_BREEDING,
+  ID_TRANSFER_REASON_TRANSFERRED_BREEDING,
 } from '../../../../../database';
 
 /**
@@ -108,7 +107,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
           sellerOwner,
           buyerOwner,
           seller.movedAt,
-          TRANSFERRED_BREEDING,
+          ID_TRANSFER_REASON_TRANSFERRED_BREEDING,
         );
 
         if (transferOfOwnershipResult.tag == "error") {
@@ -197,8 +196,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
         let certificateResult = await insertNewRegistryCertificateRow(
           animalInfo.animalId,
-          // TODO --> how to get registry company ID?
-          null, //companyID
+          regCompanyId,
           regType,
         );
         if (certificateResult.tag == "error") {
