@@ -44,8 +44,6 @@ const CreateDefaults: React.FC = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [registryCompanies, setRegistryCompanies] = useState<Company[]>([]);
   const [premises, setPremises] = useState<Premise[]>([]);
-  const [states, setStates] = useState<State[]>([]);
-  const [counties, setCounties] = useState<County[]>([]);
   const [removeReasons, setRemoveReasons] = useState<RemoveReason[]>([]);
   const [deathReasons, setDeathReasons] = useState<DeathReason[]>([]);
   const [species, setSpecies] = useState<Species[]>([]);
@@ -206,8 +204,6 @@ const CreateDefaults: React.FC = () => {
         standardCompanyResult,
         registryCompanyResult,
         premiseResult,
-        stateResult,
-        countyResult,
         removeReasonResult,
         deathReasonResult,
         speciesResult,
@@ -229,8 +225,6 @@ const CreateDefaults: React.FC = () => {
         window.lookupAPI.getCompanyInfo(false),
         window.lookupAPI.getCompanyInfo(true),
         window.lookupAPI.getPremiseInfo(),
-        window.lookupAPI.getStates(),
-        window.lookupAPI.getCounties(),
         window.lookupAPI.getRemoveReasons(),
         window.lookupAPI.getDeathReasons(),
         window.lookupAPI.getSpecies(),
@@ -290,24 +284,6 @@ const CreateDefaults: React.FC = () => {
         },
         error: (err) => {
           console.error("Failed to fetch premises:", err);
-        },
-      });
-
-      handleResult(stateResult, {
-        success: (data: State[]) => {
-          setStates(data);
-        },
-        error: (err) => {
-          console.error("Failed to fetch states:", err);
-        },
-      });
-
-      handleResult(countyResult, {
-        success: (data: County[]) => {
-          setCounties(data);
-        },
-        error: (err) => {
-          console.error("Failed to fetch counties:", err);
         },
       });
 
@@ -487,7 +463,6 @@ const CreateDefaults: React.FC = () => {
     ))
   ), [registryCompanies]);
   
-
   const colorOptions = useMemo(() => (
     colors.map((color) => (
       <option key={color.id} value={color.id}>
@@ -495,22 +470,6 @@ const CreateDefaults: React.FC = () => {
       </option>
     ))
   ), [premises]);
-
-  const stateOptions = useMemo(() => (
-    states.map((state) => (
-      <option key={state.id} value={state.id}>
-        {state.name}
-      </option>
-    ))
-  ), [states]);
-  
-  const countyOptions = useMemo(() => (
-    counties.map((county) => (
-      <option key={county.id} value={county.id}>
-        {county.name}
-      </option>
-    ))
-  ), [counties]);
 
   const tagTypeOptions = useMemo(() => (
     tagTypes.map((tagType) => (
@@ -1072,26 +1031,6 @@ const CreateDefaults: React.FC = () => {
       });
       return false;
     }
-
-    // Location
-    // if (!isFieldValid(stateId)) {
-    //   Swal.fire({
-    //     title: "Missing State",
-    //     text: "Please select a state.",
-    //     icon: "info",
-    //     confirmButtonText: "OK",
-    //   });
-    //   return false;
-    // }
-    // if (!isFieldValid(countyId)) {
-    //   Swal.fire({
-    //     title: "Missing County",
-    //     text: "Please select a county.",
-    //     icon: "info",
-    //     confirmButtonText: "OK",
-    //   });
-    //   return false;
-    // }
 
     // ID Types
     if (!isFieldValid(primaryIdTypeId)) {
