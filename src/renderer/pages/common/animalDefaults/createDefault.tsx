@@ -1074,24 +1074,24 @@ const CreateDefaults: React.FC = () => {
     }
 
     // Location
-    if (!isFieldValid(stateId)) {
-      Swal.fire({
-        title: "Missing State",
-        text: "Please select a state.",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
-      return false;
-    }
-    if (!isFieldValid(countyId)) {
-      Swal.fire({
-        title: "Missing County",
-        text: "Please select a county.",
-        icon: "info",
-        confirmButtonText: "OK",
-      });
-      return false;
-    }
+    // if (!isFieldValid(stateId)) {
+    //   Swal.fire({
+    //     title: "Missing State",
+    //     text: "Please select a state.",
+    //     icon: "info",
+    //     confirmButtonText: "OK",
+    //   });
+    //   return false;
+    // }
+    // if (!isFieldValid(countyId)) {
+    //   Swal.fire({
+    //     title: "Missing County",
+    //     text: "Please select a county.",
+    //     icon: "info",
+    //     confirmButtonText: "OK",
+    //   });
+    //   return false;
+    // }
 
     // ID Types
     if (!isFieldValid(primaryIdTypeId)) {
@@ -2045,7 +2045,7 @@ const CreateDefaults: React.FC = () => {
           <h2>Locations</h2>
           <hr />
 
-          <div className="section-break"></div>
+          {/* <div className="section-break"></div>
           <div className="form-group">
             <label htmlFor="id_stateid">State:</label>
             <select
@@ -2068,7 +2068,7 @@ const CreateDefaults: React.FC = () => {
               <option value="">Select a county...</option>
               {countyOptions}
             </select>
-          </div>
+          </div> */}
 
           <div className="section-break"></div>
           <h2>Tag Information</h2>
