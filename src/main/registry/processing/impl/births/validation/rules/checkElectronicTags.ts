@@ -33,12 +33,10 @@ export async function checkElectronicTags(row: RegistryRow): Promise<ValidationR
     };
   }
 
-
-  // Check federal tag if it’s an electronic tag
   if (fedTypeKey === electronicTagUUID) {
 
-    // 1) check that it meets the refex criteria
-    if (!electronicTagRegex.test(fedNum ?? "")) {
+    // 1) check that it meets the regex criteria
+    if (!electronicTagRegex.test(fedNum)) {
       errors.push(
         "fedNum: Electronic tag must have 3 digits, an underscore, then 12 alphanumeric characters."
       );
