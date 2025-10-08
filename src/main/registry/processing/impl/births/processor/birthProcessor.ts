@@ -100,7 +100,7 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert animal into animalTable
-        let animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row);
+        let animalTableInput: InsertAnimalTableInput = mapRegistryRowToInsertAnimalInput(row, birthType);
 
         if (row.isStillborn) {
           stillbornIteration++;
@@ -116,8 +116,6 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
         } else {
           animalTableInput.rearType = rearType; // not stillborn --> the reartype is what is determined from above
         }
-
-        animalTableInput.birthType = birthType; // all animals have the same birth type regardless of being stillborn or not 
        
         let newAnimalId : string = await insertIntoAnimalTable(animalTableInput);
 
