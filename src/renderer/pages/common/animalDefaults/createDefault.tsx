@@ -1981,35 +1981,6 @@ const CreateDefaults: React.FC = () => {
           </div>
 
           <div className="section-break"></div>
-          <h2>Locations</h2>
-          <hr />
-
-          {/* <div className="section-break"></div>
-          <div className="form-group">
-            <label htmlFor="id_stateid">State:</label>
-            <select
-              id="id_stateid"
-              name="id_stateid"
-              value={stateId}
-              onChange={(e) => setStateId(e.target.value || '')}
-            >
-              <option value="">Select a state...</option>
-              {stateOptions}
-            </select>
-
-            <label htmlFor="id_countyid">County:</label>
-            <select
-              id="id_countyid"
-              name="id_countyid"
-              value={countyId}
-              onChange={(e) => setCountyId(e.target.value || '')}
-            >
-              <option value="">Select a county...</option>
-              {countyOptions}
-            </select>
-          </div> */}
-
-          <div className="section-break"></div>
           <h2>Tag Information</h2>
           <hr />
 
