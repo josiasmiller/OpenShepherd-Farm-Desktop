@@ -9,7 +9,6 @@ import { dateTimeAsString } from "../../../../dbUtils";
  * @param fromPremiseId - The premise ID from where the animal comes
  * @param toPremiseId - The destination premise ID
  * @param movementDate - The date the movement occurred (YYYY-MM-DD)
- * @param isOneMinuteAhead - bool determining if the created/modified rows should skip 1 minute ahead
  * @returns Result containing the new row's UUID or an error message
  */
 export async function insertAnimalGoesToLocation(
@@ -17,7 +16,6 @@ export async function insertAnimalGoesToLocation(
   fromPremiseId: string | null,
   toPremiseId: string | null,
   movementDate: string,
-  isOneMinuteAhead: boolean = false,
 ): Promise<Result<string, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
@@ -36,14 +34,7 @@ export async function insertAnimalGoesToLocation(
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
   
-  let todayDt : string;
-
-  if (isOneMinuteAhead) {
-    todayDt = dateTimeAsString();
-  } else {
-    const oneMinuteLater = new Date(Date.now() + 60 * 1000);
-    todayDt = dateTimeAsString(oneMinuteLater);
-  }
+  let todayDt : string = dateTimeAsString();
 
   try {
     await new Promise<void>((resolve, reject) => {

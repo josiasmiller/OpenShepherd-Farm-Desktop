@@ -35,6 +35,14 @@ export async function handleResult<T, E, R>(
     }
 }
 
+export async function unwrapOrThrow<T, E extends string>(
+  promise: Promise<Result<T, E>>
+): Promise<T> {
+  const result = await promise;
+  if (result.tag === "success") return result.data;
+  throw new Error(result.error);
+}
+
 //TODO: Move this to a less general location.  It does not need to be common.
 export const unwrapOrFailWithAnimal = async <T>(
   result: Result<T, string>,

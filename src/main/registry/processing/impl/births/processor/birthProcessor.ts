@@ -1,4 +1,4 @@
-import { handleResult, Result } from 'packages/core';
+import { handleResult, Result, unwrapOrThrow } from 'packages/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from 'packages/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
 
@@ -55,6 +55,7 @@ import {
   Owner,
   OwnerType
 } from 'packages/api';
+// import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 
 
 export async function processBirthRows(sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
@@ -82,41 +83,12 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
     ///////////////////////////////////////////////////////////////
     // determine the rear type of the living animals
-    let rearType : BirthType | null = null;
-    let rearTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(numNotStillborn); // rear type is how man animals are being processed
-    
-    await handleResult(rearTypeResult, {
-      success: (data: BirthType) => {
-        rearType = data;
-      },
-      error: (err: string) => {
-        console.error("Failed to fetch Rear Type:", err);
-        throw new Error(err);  // convert string to Error
-      },
-    });
-
-    rearType = rearType!;
-
+    const rearType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(numNotStillborn));
 
     ///////////////////////////////////////////////////////////////
     // determine the birth type of all animals, regardless of being stillborn or not
-    var birthType : BirthType | null = null;
-    var birthTypeResult : Result<BirthType, string> = await getBirthTypeByDisplayOrder(rows.length); // rear type is how man animals are being processed
-    
-    await handleResult(birthTypeResult, {
-      success: (data: BirthType) => {
-        birthType = data;
-      },
-      error: (err: string) => {
-        console.error("Failed to fetch Birth Type:", err);
-        throw new Error(err);  // convert string to Error
-      },
-    });
-
-    birthType = birthType!;
-    
-    // end finding rear type of animal
-    ///////////////////////////////////////////////////////////////
+    // rear type is how many animals are being processed
+    const birthType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(rows.length));
 
     let stillbornIteration : number = 0; // this gets incremented by 1 at the start of any stillborn handling
 
@@ -169,45 +141,20 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get breeder
-        let breederResult = await getBreederFromOwnershipHistory(
-          damId,
-          species.id,
-          birthDate,
+
+        const breeder : Owner = await unwrapOrThrow(
+          getBreederFromOwnershipHistory(
+            damId,
+            species.id,
+            birthDate,
+          )
         );
-
-        let breeder : Owner;
-
-        await handleResult(breederResult, {
-          success: (data: Owner) => {
-            breeder = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch Breeder:", err);
-            throw new Error(err);
-          },
-        });
-
-        // we are certain breeder is not null/undefined at this point
-        breeder = breeder!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Flock Prefix Id
-
-        let fpResult = await getFlockPrefixIdByMembershipNumber(breeder.flockId); // note flockId == membershipNumber
-        let flockPrefixId : string;
-
-        await handleResult(fpResult, {
-          success: (data: string) => {
-            flockPrefixId = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch flockPrefixId:", err);
-            throw new Error(err);
-          },
-        });
-
-        // certain at this point that flock prefix has been set due to the above handleResult
-        flockPrefixId = flockPrefixId!;
+        const flockPrefixId : string = await unwrapOrThrow(
+          getFlockPrefixIdByMembershipNumber(breeder.flockId)
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add to flock table
@@ -231,25 +178,12 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get owner at birth of child
 
-        let ownerResult = await getOwnerAtBirth(
-          damId,
-          birthDate,
+        const owner : Owner = await unwrapOrThrow(
+          getOwnerAtBirth(
+            damId,
+            birthDate,
+          )
         );
-
-        let owner : Owner;
-
-        await handleResult(ownerResult, {
-          success: (data: Owner) => {
-            owner = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch owner: ", err);
-            throw new Error(err);
-          },
-        });
-
-        // passed check, convert owner to not be possibly undefined
-        owner = owner!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert row into animal location history table
@@ -267,7 +201,6 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
             owner.premise.id,
             null,
             birthDateString,
-            true,
           );
         }
 
@@ -285,70 +218,32 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
 
         let newRegistrationNumber : string;
 
-        let regNumResult : Result<string, string>;
-
         if (row.isStillborn) {
-          regNumResult = await incrementLastDiedAtBirthValue();
+
+          newRegistrationNumber = await unwrapOrThrow(
+            incrementLastDiedAtBirthValue()
+          );
+
         } else {
-          regNumResult = await incrementLastBirthNotifyValue();
+
+          newRegistrationNumber = await unwrapOrThrow(
+            incrementLastBirthNotifyValue()
+          );
+
         }
-
-        await handleResult(regNumResult, {
-          success: (data: string | null) => {
-
-            if (data == null) {
-              throw new Error("No recent registration number retrieved. Did the schema or queries change?");
-            }
-
-            newRegistrationNumber = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch most recent registration number value: ", err);
-            throw new Error(err);
-          },
-        });
-
-        newRegistrationNumber = newRegistrationNumber!;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID
-
-        let regCompanyIdResult = await getRegistryCompanyIdForMembershipNumber(owner.flockId);
-
-        let regCompanyId : string;
-
-        await handleResult(regCompanyIdResult, {
-          success: (data: string) => {
-            regCompanyId = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch registry company id: ", err);
-            throw new Error(err);
-          },
-        });
-
-        // passed check, convert regCompanyId to not be possibly undefined
-        regCompanyId = regCompanyId!;
+        let regCompanyId : string = await unwrapOrThrow(
+          getRegistryCompanyIdForMembershipNumber(owner.flockId)
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get flock book ID
 
-        let flockBookResult = await getDefaultFlockBookId(regCompanyId);
-
-        let flockBookId : string
-
-        await handleResult(flockBookResult, {
-          success: (data: string) => {
-            flockBookId = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch flock book id: ", err);
-            throw new Error(err);
-          },
-        });
-
-        // passed check, convert flockBookId to not be possibly undefined
-        flockBookId = flockBookId!;
+        let flockBookId : string = await unwrapOrThrow(
+          getDefaultFlockBookId(regCompanyId)
+        );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add animal to animal_registration_table
@@ -374,28 +269,15 @@ export async function processBirthRows(sections: Record<string, RegistryRow[]>, 
           ownerId = owner.contact.id;
         } else if (owner.type == OwnerType.COMPANY) {
           ownerId = owner.company.id;
+        } else {
+          throw new Error("Invalid OwnerType in birthProcessor");
         }
 
-        ownerId = ownerId!;
+        
+        let scrapieId : string | null = await unwrapOrThrow(
+          getActiveScrapieFlockNumberId(ownerId)
+        );
 
-        let scrapieResult = await getActiveScrapieFlockNumberId(ownerId);
-
-        let scrapieId : string | null = null;
-
-        await handleResult(scrapieResult, {
-          success: (data: string | null) => {
-            scrapieId = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to fetch scrapie id: ", err);
-            throw new Error(err);
-          },
-        });
-
-        // passed check, convert scrapieId to not be possibly undefined
-        scrapieId = scrapieId!;
-
-        // stillborn animals do not get tags stored in the DB
         if (!row.isStillborn) {
           if (hasFedTagInfo(row)) {
             let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
@@ -517,11 +399,11 @@ function hasTagInfo(
 }
 
 // Semantic wrappers for readability
-export function hasFarmTagInfo(row: RegistryRow): boolean {
+function hasFarmTagInfo(row: RegistryRow): boolean {
   return hasTagInfo(row.farmTypeKey, row.farmColorKey, row.farmLocKey, row.farmNum);
 }
 
-export function hasFedTagInfo(row: RegistryRow): boolean {
+function hasFedTagInfo(row: RegistryRow): boolean {
   return hasTagInfo(row.fedTypeKey, row.fedColorKey, row.fedLocKey, row.fedNum);
 }
  
