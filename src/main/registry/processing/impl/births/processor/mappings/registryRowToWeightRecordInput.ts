@@ -1,6 +1,6 @@
 import { RegistryRow } from 'packages/api';
 import { InsertWeightRecordInput } from '../../../../../../database';
-import { isUUIDv4 } from "../../../../helpers/registryHelpers";
+import { isUUIDv4 } from 'packages/core/src';
 
 export function mapRegistryRowToWeightRecordInput(row: RegistryRow, animalId: string): InsertWeightRecordInput {
 
