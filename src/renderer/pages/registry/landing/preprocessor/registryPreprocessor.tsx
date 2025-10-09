@@ -185,11 +185,6 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'conceptionType', label: 'Conception Type', editable: true },
       { key: 'birthTypeKey', label: 'Birth Type', editable: true },
 
-      // Appearance
-      { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
-      { key: 'coatColor', label: 'Coat Color', editable: true },
-      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: true },
-
       // Federal tag
       { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
       { key: 'fedColor', label: 'Federal Tag Color', editable: true },
@@ -214,6 +209,9 @@ export const PreprocessorPage: React.FC = () => {
       { key: 'weightUnits', label: 'Weight Units', editable: true },
 
       // Misc
+      { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
+      { key: 'coatColor', label: 'Coat Color', editable: true },
+      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: true },
       { key: 'birthNotes', label: 'Notes', editable: true },
     ];
 

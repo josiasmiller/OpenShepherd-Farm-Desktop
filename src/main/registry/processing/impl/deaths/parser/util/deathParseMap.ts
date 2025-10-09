@@ -1,7 +1,7 @@
 import { DeathParseRow } from 'packages/api';
 
 export const deathParseMap: Record<string, keyof DeathParseRow> = {
-  "DEATH DATE": 'deathDate', // not ideal for keys but since this is how the CSV stores it.. it must be this way for now
+  DEATH_DATE: 'deathDate',
   ID_ANIMALID: 'animalId',
   PREFIX_KEY: 'prefixKey',
   PREFIX: 'prefix',
