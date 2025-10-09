@@ -1,5 +1,5 @@
 //LEAVE THIS IMPORT UNSHORTENED
-import { optAppVariantFromString, DEFAULT_APP_VARIANT } from '../src/packages/appVariant/src/index';
+import { optAppVariantFromString, DEFAULT_APP_VARIANT } from '../src/packages/app/variant/src/index';
 
 /**
  * Reads the application variant from the process environment

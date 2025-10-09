@@ -1,6 +1,6 @@
 import { Database } from "sqlite3";
-import { UnitRequest, Unit } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { UnitRequest, Unit } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all units for a given type of unit. When no parameters are given to this function, it retrieves all units

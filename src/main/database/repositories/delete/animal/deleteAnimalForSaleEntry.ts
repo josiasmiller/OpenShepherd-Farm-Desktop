@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+import { Result, Success, Failure } from '@common/core';
 
 /**
  * Deletes an animal's record(s) from animal_for_sale_table.

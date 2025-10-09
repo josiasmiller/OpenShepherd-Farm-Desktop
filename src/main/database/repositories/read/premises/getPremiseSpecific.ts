@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Premise, State } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Premise, State } from '@app/api';
 
 // Updated row type to include full state fields
 type PremiseRow = {

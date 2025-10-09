@@ -13,9 +13,10 @@
   "include": ["./**/*.ts", "./**/*.tsx"],
   "exclude": ["./build/*", "./**/jest.*" ,"./**/*.test.ts", "./**/*.test.tsx"],
   "references": [
-    { "path": "../packages/appBuild" },
-    { "path": "../packages/api" },
-    { "path": "../packages/core" },
-    { "path": "../packages/time"}
+    { "path": "../packages/app/buildVariant" },
+    { "path": "../packages/app/api" },
+    { "path": "../packages/common/core" },
+    { "path": "../packages/common/time" },
+    { "path": "../packages/ipc/api" }
   ]
 }

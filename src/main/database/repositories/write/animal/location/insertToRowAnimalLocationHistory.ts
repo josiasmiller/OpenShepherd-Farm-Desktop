@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 import { dateTimeAsString } from "../../../../dbUtils";
 
 /**

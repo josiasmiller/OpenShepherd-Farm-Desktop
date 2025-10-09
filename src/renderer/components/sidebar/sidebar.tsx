@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
-import { DefaultSettingsResults } from "packages/api";
-import { isRegistryDesktop } from "packages/appBuild";
+import { DefaultSettingsResults } from '@app/api';
+import { isRegistryDesktop } from '@app/buildVariant';
 import {
   Box,
   Drawer,

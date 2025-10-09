@@ -1,6 +1,6 @@
-import { Result, Success, Failure } from "packages/core";
-import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
 import {Database} from "sqlite3";
+import { Result, Success, Failure } from "@common/core";
+import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
 
 type LastRegistrationRow = {
   last_registration_number: string | null;

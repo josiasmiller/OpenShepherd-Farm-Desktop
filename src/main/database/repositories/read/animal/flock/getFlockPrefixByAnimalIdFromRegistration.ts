@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
-import { OwnerType, FlockPrefix } from 'packages/api';
+import { Result, Success, Failure } from '@common/core';
+import { OwnerType, FlockPrefix } from '@app/api';
 
 /**
  * Gets the flock prefix for a given animalId by finding the registration record and matching breeder/registry in the flock_prefix_table.

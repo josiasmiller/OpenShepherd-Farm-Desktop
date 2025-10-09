@@ -1,9 +1,9 @@
 import fs from "fs";
 import { dialog } from "electron";
-import { AnimalIdentification, TissueTestResult } from 'packages/api'
+import { AnimalIdentification, TissueTestResult } from '@app/api'
 import { getAnimalIdentification, getTissueTestResults } from '../../database';
-import { handleResult, Result } from 'packages/core';
 import {Database} from "sqlite3";
+import { handleResult, Result } from '@common/core';
 
 export const writeTissueTestResults = async (db: Database, animalIds: string[]): Promise<boolean> => {
 

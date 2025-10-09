@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { UnitType } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { UnitType } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all unit types from the DB

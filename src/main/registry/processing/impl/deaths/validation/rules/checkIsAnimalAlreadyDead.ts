@@ -1,5 +1,5 @@
-import { handleResult } from 'packages/core';
-import { RegistryRow, ValidationResponse } from 'packages/api';
+import { handleResult } from '@common/core';
+import { RegistryRow, ValidationResponse } from '@app/api';
 import { AnimalDeathDate, getAnimalDeathDate } from '../../../../../../database';
 import {Database} from "sqlite3";
 

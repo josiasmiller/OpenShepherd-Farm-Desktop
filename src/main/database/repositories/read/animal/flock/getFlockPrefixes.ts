@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { OwnerType, FlockPrefix } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { OwnerType, FlockPrefix } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all FlockPrefixes from the DB

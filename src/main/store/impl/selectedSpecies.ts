@@ -1,4 +1,4 @@
-import type { Species } from 'packages/api';
+import type { Species } from '@app/api';
 import { getStoreItem, setStoreItem } from '../core';
 
 export function setStoreSelectedSpecies(value: Species) {

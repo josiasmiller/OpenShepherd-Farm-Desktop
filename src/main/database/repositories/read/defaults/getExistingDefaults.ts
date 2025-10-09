@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { OwnerType, DefaultSettingsResults } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { OwnerType, DefaultSettingsResults } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all default settings in the DB

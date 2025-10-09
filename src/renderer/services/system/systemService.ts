@@ -1,7 +1,6 @@
-import {DatabaseSessionInfo} from "packages/api/src/dtos";
+import {SystemAPI, DatabaseSessionInfo} from "@app/api";
 import {concat, from, merge, Observable, switchMap} from "rxjs";
-import {SystemAPI} from "packages/api/src/apis";
-import {observeApiEvent} from "../../ipc/api";
+import {observeApiEvent} from "@ipc/api/core";
 import {createContext} from "react";
 
 export interface SystemService {

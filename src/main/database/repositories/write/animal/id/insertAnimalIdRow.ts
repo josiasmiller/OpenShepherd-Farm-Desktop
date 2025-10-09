@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
-import { Result, Success, Failure } from 'packages/core';
-import { AnimalIdInfoInput } from 'packages/api'
+import { Result, Success, Failure } from '@common/core';
+import { AnimalIdInfoInput } from '@app/api'
 import { dateTimeAsString } from "../../../../dbUtils";
 
 /**

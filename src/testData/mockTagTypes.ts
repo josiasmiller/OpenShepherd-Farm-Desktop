@@ -1,5 +1,5 @@
-import type { TagType } from 'packages/api';
-import { Success } from 'packages/core';
+import type { TagType } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockTagTypes = new Success<TagType[]>([
   { id: '1', name: 'Visual', display_order: 1 },

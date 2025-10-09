@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "../../../../tsconfig.json",
   "include": ["./src/**/*.ts"],
   "exclude": ["./src/**/*.test.ts"],
   "compilerOptions": {
@@ -8,8 +8,5 @@
     "declarationMap": true,
     "rootDir": "src",
     "outDir": "./lib"
-  },
-  "references": [
-    { "path": "../appVariant" }
-  ]
+  }
 }

@@ -1,5 +1,5 @@
-import type { Color } from 'packages/api';
-import { Success } from 'packages/core';
+import type { Color } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockColors = new Success<Color[]>([
   { id: '1', name: 'Black', display_order: 1 },

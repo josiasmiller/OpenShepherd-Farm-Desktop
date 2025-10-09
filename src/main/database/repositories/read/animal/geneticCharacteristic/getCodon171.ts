@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Failure, Result, Success } from "packages/core";
-import { CodonResponse } from "packages/api";
+import { Failure, Result, Success } from "@common/core";
+import { CodonResponse } from '@app/api';
 
 type RawCodonRow = {
   codon171alleles: string;

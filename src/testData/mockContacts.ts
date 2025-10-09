@@ -1,5 +1,5 @@
-import type { Contact } from 'packages/api';
-import { Success } from 'packages/core';
+import type { Contact } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockContacts = new Success<Contact[]>([
   { id: "1", firstName: "John", lastName: "Doe" },

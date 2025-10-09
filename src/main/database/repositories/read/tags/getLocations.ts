@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { TagLocation } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { TagLocation } from '@app/api';
 
 /**
  * gets all ID tag locations

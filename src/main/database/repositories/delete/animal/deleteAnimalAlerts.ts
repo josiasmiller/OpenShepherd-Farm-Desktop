@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+import { Result, Success, Failure } from '@common/core';
 
 /**
  * Deletes all entries from the animal_alert_table for the given animal.

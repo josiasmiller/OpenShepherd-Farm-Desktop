@@ -1,8 +1,7 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
-
 
 function incrementStringId(id: string): string {
   const match = id.match(/^([A-Za-z]+)(\d+)$/);

@@ -1,4 +1,4 @@
-import { DeathParseRow } from 'packages/api';
+import { DeathParseRow } from '@app/api';
 
 export const deathParseMap: Record<string, keyof DeathParseRow> = {
   DEATH_DATE: 'deathDate',

@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * Retrieves the current_id_flockbookid from registry_default_settings_table

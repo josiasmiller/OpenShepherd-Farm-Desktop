@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 
 function extractNumericSuffix(regNum: string): number | null {
   const match = regNum.match(/(\d+)$/);

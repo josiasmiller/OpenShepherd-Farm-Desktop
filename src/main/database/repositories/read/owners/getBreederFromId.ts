@@ -1,10 +1,10 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Owner, OwnerType, Contact, Company, Premise, ScrapieFlockInfo } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Owner, OwnerType, Contact, Company, Premise, ScrapieFlockInfo } from '@app/api';
 import { getContactPremise } from "../premises/getContactPremise";
 import { getCompanyPremise } from "../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
-import { handleResult } from "packages/core";
+import { handleResult } from "@common/core";
 
 export async function getBreederById(
   db: Database,

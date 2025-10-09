@@ -8,7 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import transparentLogo from "../../assets/images/AnimalTrakker.png";
-import {isRegistryDesktop} from "packages/appBuild/src";
+import {isRegistryDesktop} from '@app/buildVariant';
 import { SystemService, SystemServiceContext } from '../../services/system/systemService';
 
 const OpenSessionCard = styled(Card)(({ theme }) => ({

@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { DeathReason } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { DeathReason } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all death reasons from the DB

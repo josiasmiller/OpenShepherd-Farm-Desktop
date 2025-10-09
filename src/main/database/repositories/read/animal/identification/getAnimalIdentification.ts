@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
-import { Result, Success, Failure } from "packages/core";
-import { AnimalIdentification } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { AnimalIdentification } from '@app/api';
 
 export const getAnimalIdentification = async (db: Database, animalId : string): Promise<Result<AnimalIdentification, string>> => {
 

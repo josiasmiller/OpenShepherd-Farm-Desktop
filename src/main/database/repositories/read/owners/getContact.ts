@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Contact } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Contact } from '@app/api';
 
 /**
  * gets all contacts from the DB

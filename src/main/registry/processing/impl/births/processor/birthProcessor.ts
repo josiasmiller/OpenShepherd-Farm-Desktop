@@ -1,8 +1,9 @@
-import { handleResult, Result, unwrapOrThrow } from 'packages/core';
-import { RegistryRow, Sex, Species, ProcessingResult } from 'packages/api';
+import {Database} from "sqlite3";
+import { handleResult, Result, unwrapOrThrow } from '@common/core';
+import { RegistryRow, Sex, Species, ProcessingResult } from '@app/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
 
-import { isUUIDv4 } from 'packages/core';
+import { isUUIDv4 } from '@common/core';
 
 
 // DB actions
@@ -55,8 +56,7 @@ import {
   FlockPrefix,
   Owner,
   OwnerType
-} from 'packages/api';
-import {Database} from "sqlite3";
+} from '@app/api';
 // import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 
 
@@ -413,4 +413,3 @@ function hasFarmTagInfo(row: RegistryRow): boolean {
 function hasFedTagInfo(row: RegistryRow): boolean {
   return hasTagInfo(row.fedTypeKey, row.fedColorKey, row.fedLocKey, row.fedNum);
 }
- 

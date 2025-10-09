@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 import { escapeLikeString } from "../../../../dbUtils";
-import { AnimalSearchRequest, AnimalSearchResult } from "packages/api";
+import { AnimalSearchRequest, AnimalSearchResult } from '@app/api';
 
 /**
  * performs a search for all animals based on the input parameters

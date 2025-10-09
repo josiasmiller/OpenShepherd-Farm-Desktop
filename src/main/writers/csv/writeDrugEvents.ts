@@ -1,8 +1,8 @@
 import fs from "fs";
 import { dialog } from "electron";
 import {Database} from "sqlite3";
-import { handleResult, Result } from "packages/core";
-import { AnimalIdentification, DrugEvent } from 'packages/api'
+import { handleResult, Result } from "@common/core";
+import { AnimalIdentification, DrugEvent } from '@app/api'
 import { getAnimalIdentification, getDrugHistory } from '../../database';
 
 export const writeDrugHistoryCsv = async (db: Database, animalIds: string[]): Promise<boolean> => {

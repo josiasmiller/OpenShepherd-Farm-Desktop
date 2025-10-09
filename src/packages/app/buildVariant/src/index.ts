@@ -1,4 +1,4 @@
-import { AppVariant, appVariantFromString } from "packages/appVariant";
+import { AppVariant, appVariantFromString } from "@app/variant";
 
 declare const __APP_VARIANT__: string
 

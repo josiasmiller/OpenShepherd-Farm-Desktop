@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
-import { Sex } from 'packages/api';
+import { Result, Success, Failure } from '@common/core';
+import { Sex } from '@app/api';
 
 /**
  * Retrieves a Sex object by its UUID.

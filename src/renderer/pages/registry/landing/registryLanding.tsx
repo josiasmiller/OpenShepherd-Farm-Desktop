@@ -6,8 +6,8 @@ import { BackButton } from "../../../components/backButton/backButton";
 
 import { useState } from "react";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
-import { handleResult } from "packages/core";
-import { Species } from "packages/api";
+import { handleResult } from '@common/core';
+import { Species } from '@app/api';
 import Swal from "sweetalert2";
 
 const RegistryLanding: React.FC = () => {

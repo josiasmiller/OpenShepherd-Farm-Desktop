@@ -21,6 +21,7 @@ export {
   Contact,
   Country,
   County,
+  DatabaseSessionInfo,
   DatabaseStateCheckResponse,
   DeathReason,
   DeathParseResponse,
@@ -72,8 +73,16 @@ export {
   ValidationResponse
 } from "./dtos";
 
-export { AnimalTrakkerIPC } from './apis'
-export { ApiEventRegistrarFunc } from './apis'
+export type {
+  AnimalTrakkerIPC,
+  SystemAPI,
+  AnimalAPI,
+  DefaultsAPI,
+  ExportAPI,
+  LookupAPI,
+  RegistryAPI,
+  StoreAPI
+} from "./apis"
 
 declare global {
   interface Window extends AnimalTrakkerIPC {}

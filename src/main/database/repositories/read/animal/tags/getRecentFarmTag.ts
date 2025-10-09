@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
-import { Result, Success, Failure } from "packages/core";
-import { idTag } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { idTag } from '@app/api';
 
 type TagQueryRow = {
   tagId: string;

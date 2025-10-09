@@ -37,14 +37,12 @@ import {
   RegistrationWriteResponse,
   RegistrationParseResponse,
   TransferParseResponse,
-  DeathParseResponse, DatabaseSessionInfo,
+  DeathParseResponse,
+  DatabaseSessionInfo,
 } from "./dtos";
 
-import { Result } from "packages/core";
-import {Observable} from "rxjs";
-
-export type ApiEventRegistrarFunc<T> = (listener: (data: T) => void) => ApiEventRegistrationCleanupFunc
-export type ApiEventRegistrationCleanupFunc = () => void
+import { Result } from "@common/core";
+import { type IpcEventRegistrarFunc } from "@ipc/api/core";
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
@@ -70,11 +68,11 @@ export interface DefaultsAPI {
   editExisting: (params: NewDefaultSettingsParameters) => Promise<boolean>;
   writeNew: (params: NewDefaultSettingsParameters) => Promise<boolean>;
   getExisting: () => Promise<Result<DefaultSettingsResults[], string>>;
-  onDefaultSettingsListChanged: ApiEventRegistrarFunc<DefaultSettingsResults[]>
+  onDefaultSettingsListChanged: IpcEventRegistrarFunc<DefaultSettingsResults[]>
   selectActiveDefaultSettings: (params: DefaultSettingsResults) => Promise<void>
   queryActiveDefaultSettings: () => Promise<DefaultSettingsResults>
-  onActiveDefaultSettingsChanged: ApiEventRegistrarFunc<DefaultSettingsResults>
-  onActiveDefaultSettingsNotFound: ApiEventRegistrarFunc<string>
+  onActiveDefaultSettingsChanged: IpcEventRegistrarFunc<DefaultSettingsResults>
+  onActiveDefaultSettingsNotFound: IpcEventRegistrarFunc<string>
 }
 
 // -------------------- Lookup --------------------
@@ -136,7 +134,7 @@ export interface SystemAPI {
   closeDatabase: () => Promise<void>;
   selectPngFile: () => Promise<string>;
   databaseSessionInfo: () => Promise<DatabaseSessionInfo | null>,
-  onDatabaseSessionChanged: ApiEventRegistrarFunc<DatabaseSessionInfo | null>
+  onDatabaseSessionChanged: IpcEventRegistrarFunc<DatabaseSessionInfo | null>
 }
 
 // -------------------- Global IPC wrapper --------------------

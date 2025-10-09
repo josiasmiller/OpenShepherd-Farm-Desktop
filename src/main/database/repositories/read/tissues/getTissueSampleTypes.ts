@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { TissueSampleType } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { TissueSampleType } from '@app/api';
 
 /**
  * gets all tissue sample types from the DB 

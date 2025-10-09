@@ -1,5 +1,5 @@
-import type { Country } from 'packages/api';
-import { Success } from 'packages/core';
+import type { Country } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockCountries = new Success<Country[]>([
   { id: '1', name: 'United States',  abbreviation: 'US', display_order: 1 },

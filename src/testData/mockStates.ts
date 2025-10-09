@@ -1,5 +1,5 @@
-import type { State } from 'packages/api';
-import { Success } from 'packages/core';
+import type { State } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockStates = new Success<State[]>([
   { 

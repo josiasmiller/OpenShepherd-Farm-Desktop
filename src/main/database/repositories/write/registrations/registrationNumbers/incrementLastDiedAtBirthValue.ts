@@ -1,7 +1,7 @@
-import { Result, Success, Failure } from "packages/core";
+import {Database} from "sqlite3";
+import { Result, Success, Failure } from "@common/core";
 import { REGISTRATION_DIED_AT_BIRTH } from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
-import {Database} from "sqlite3";
 
 /**
  * Increments a registration string like "D000480" to "D000481".

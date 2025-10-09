@@ -2,8 +2,8 @@ import {Database} from "sqlite3";
 import { getContactPremise } from "../premises/getContactPremise";
 import { getCompanyPremise } from "../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
-import { Owner, OwnerType, Contact, Company } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { Owner, OwnerType, Contact, Company } from "@app/api";
+import { Result, Success, Failure } from "@common/core";
 
 type OwnerByIdRow = {
   id_contactid?: string | null;

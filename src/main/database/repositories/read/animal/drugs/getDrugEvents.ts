@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { DrugEvent } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { DrugEvent } from '@app/api';
 
 /**
  * gets the drug history of a given animal

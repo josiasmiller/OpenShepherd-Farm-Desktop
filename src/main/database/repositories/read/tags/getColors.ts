@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Color } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Color } from '@app/api';
 
 /**
  * gets all tag colors from the DB

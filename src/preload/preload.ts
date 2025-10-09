@@ -8,24 +8,13 @@ import {
   Species,
   RegistryProcessRequest,
   DatabaseStateCheckResponse,
-} from "packages/api";
+} from '@app/api';
 
-import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from "packages/api/src/apis";
-import { DatabaseSessionInfo } from "packages/api/src/dtos";
-
-/**
- * Provides ipcRenderer.on registration and returns
- * a cleanup function to unregister with ipcRenderer.off.
- *
- * @param channel Name of the ipc channel to bind to.
- * @param callback Callback function to invoke when the ipc channel emits
- */
-function bindIpcCallback<T>(channel: string, callback: (eventData: T) => void): () => void {
-  const ipcCallback =
-    (event: Electron.IpcRendererEvent, eventData: T) => { callback(eventData) }
-  ipcRenderer.on(channel, ipcCallback)
-  return () => { ipcRenderer.off(channel, ipcCallback) }
-}
+import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
+import { DatabaseSessionInfo } from "@app/api";
+import { bindIpcCallback } from "@ipc/preload/core";
+import {sessionManagementIpcProxy} from "@ipc/preload/sessionManagement";
+import { SessionManagement } from "@ipc/api/sessionManagement";
 
 // -------------------- Animal --------------------
 const animalAPI : AnimalAPI = {
@@ -135,5 +124,7 @@ contextBridge.exposeInMainWorld("lookupAPI", lookupAPI);
 contextBridge.exposeInMainWorld("registryAPI", registryAPI);
 contextBridge.exposeInMainWorld("storeAPI", storeAPI);
 contextBridge.exposeInMainWorld("systemAPI", systemAPI);
+
+contextBridge.exposeInMainWorld(SessionManagement.IPC_API_NAME, sessionManagementIpcProxy())
 
 console.log("✅ Preload script loaded!");

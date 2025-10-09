@@ -1,4 +1,4 @@
-import { Species, RegistryRow, ValidationResult } from 'packages/api';
+import { Species, RegistryRow, ValidationResult } from '@app/api';
 import { checkHasOfficialId } from './rules/checkHasOfficialId';
 import {Database} from "sqlite3";
 

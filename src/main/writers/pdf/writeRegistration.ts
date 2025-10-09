@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import {Database} from "sqlite3";
 import {PDFDocument} from "pdf-lib";
-import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } from "packages/api"
+import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } from '@app/api'
 
 import {
     getAnimalRegistrationInfo,
@@ -10,9 +10,9 @@ import {
 
 } from '../../database'
 
-import {Failure, handleResult, Result, Success} from "packages/core";
+import {Failure, handleResult, Result, Success} from "@common/core";
 import {dialog} from "electron";
-import { idTag, PedigreeNode } from "packages/api";
+import { idTag, PedigreeNode } from '@app/api';
 
 const templatePathBlack = path.join(__dirname, 'assets', 'documents', 'ABWMSA_registration_template_V3_black.pdf')
 const pdfBytesBlack = fs.readFileSync(templatePathBlack);

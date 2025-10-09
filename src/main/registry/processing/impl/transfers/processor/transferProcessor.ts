@@ -1,5 +1,5 @@
-import { handleResult } from 'packages/core';
-import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType } from 'packages/api';
+import { handleResult } from '@common/core';
+import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType } from '@app/api';
 
 import {
   beginTransaction,

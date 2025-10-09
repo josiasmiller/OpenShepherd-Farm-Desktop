@@ -24,12 +24,12 @@ import {
   Unit,
   UnitRequest,
   NewDefaultSettingsParameters,
-} from "packages/api";
+} from '@app/api';
 
 import Swal from "sweetalert2";
 import React, { useEffect, useMemo, useState } from "react";
-import { handleResult } from "packages/core";
-import { getCurrentFormattedTimestamp } from "packages/time/src/times";
+import { handleResult } from '@common/core';
+import { getCurrentFormattedTimestamp } from '@common/time';
 import { BackButton } from "../../../components/backButton/backButton";
 
 const CreateDefaults: React.FC = () => {

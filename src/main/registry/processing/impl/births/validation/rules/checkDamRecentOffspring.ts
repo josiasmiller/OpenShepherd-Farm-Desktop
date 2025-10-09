@@ -1,5 +1,5 @@
-import { unwrapOrFailWithAnimal } from 'packages/core';
-import { RegistryRow, Species, ValidationResponse } from 'packages/api';
+import { unwrapOrFailWithAnimal } from '@common/core';
+import { RegistryRow, Species, ValidationResponse } from '@app/api';
 import {
   getGestationPeriod,
   getOffspringOfDam,

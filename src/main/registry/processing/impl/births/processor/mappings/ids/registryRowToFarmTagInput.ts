@@ -1,5 +1,5 @@
-import { AnimalIdInfoInput, RegistryRow } from 'packages/api';
-import { isUUIDv4 } from 'packages/core';
+import { AnimalIdInfoInput, RegistryRow } from '@app/api';
+import { isUUIDv4 } from '@common/core';
 
 export function mapRegistryRowToFarmTagInput(row: RegistryRow, animalId : string): AnimalIdInfoInput {
 

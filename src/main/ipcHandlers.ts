@@ -49,15 +49,15 @@ import { deathParser } from "./registry/processing/impl/deaths/parser/deathParse
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults} from "packages/api";
+import {DatabaseStateCheckResponse, DefaultSettingsResults} from '@app/api';
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
-import { RegistryProcessRequest, Species } from "packages/api";
+import { RegistryProcessRequest, Species } from '@app/api';
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
-import {promiseFrom} from "packages/core";
+import {promiseFrom} from "@common/core";
 
 export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   
@@ -292,10 +292,6 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle('query-database-session-info', (_event) => {
-    return promiseFrom(() => getDatabaseSession())
-  })
-
-  databaseSession$.subscribe((dbSession: DatabaseSession | null) => {
-    mainWindow.webContents.send('database-session-changed', dbSession && { path: dbSession.path }, false)
+    return promiseFrom(() => Promise.resolve({ path: 'place_holder_db_path' })) //TODO: Expose session info if required
   })
 };

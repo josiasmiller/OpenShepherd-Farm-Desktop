@@ -1,5 +1,5 @@
-import type { BirthType } from 'packages/api';
-import { Success } from 'packages/core';
+import type { BirthType } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockBirthTypes = new Success<BirthType[]>([
   { id: "live", name: "Live Birth", abbreviation: "LB", display_order: 1 },

@@ -1,5 +1,5 @@
-import { OwnerType, FlockPrefix } from 'packages/api';
-import { Success } from 'packages/core';
+import { OwnerType, FlockPrefix } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockFlockPrefixes = new Success<FlockPrefix[]>([
   { 

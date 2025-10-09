@@ -1,0 +1,13 @@
+{
+  "name": "ipc-preload",
+  "version": "1.0.0",
+  "description": "IPC api preload support",
+  "directories": {
+    "lib": "lib"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    "./core" : "./lib/core.js",
+    "./sessionManagement" : "./lib/sessionManagement.js"
+  }
+}

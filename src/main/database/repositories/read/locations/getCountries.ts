@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Country } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { Country } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all countries from the DB

@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
-import { Result, Success, Failure } from "packages/core";
-import { PedigreeNode } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { PedigreeNode } from '@app/api';
 
 type PedigreeRow = {
   animalId: string;

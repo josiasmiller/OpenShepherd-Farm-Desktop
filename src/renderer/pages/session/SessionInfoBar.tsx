@@ -12,7 +12,7 @@ import {
 
 import {FolderOpenIcon, XIcon} from "lucide-react";
 import { SystemService, SystemServiceContext } from '../../services/system/systemService';
-import {DatabaseSessionInfo} from "packages/api/lib/dtos";
+import {DatabaseSessionInfo} from '@app/api';
 
 const SessionInfoBar = () => {
 

@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { getPremiseSpecific } from "./getPremiseSpecific"; // Adjust import if path differs
-import { Result, Failure } from "packages/core";
-import { Premise } from "packages/api";
+import { Result, Failure } from "@common/core";
+import { Premise } from '@app/api';
 
 /**
  * gets the premise for a given contact

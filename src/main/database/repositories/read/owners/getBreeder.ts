@@ -1,9 +1,9 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure, unwrapOrFailWithAnimal } from "packages/core";
-import { OwnerType } from "packages/api";
-import { Owner } from "packages/api";
-import { Company } from "packages/api";
-import { Contact } from "packages/api";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "@common/core";
+import { OwnerType } from '@app/api';
+import { Owner } from '@app/api';
+import { Company } from '@app/api';
+import { Contact } from '@app/api';
 
 import {
   REGISTRY_CHOCOLATE_WMSA,
