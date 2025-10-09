@@ -1,5 +1,5 @@
 import { handleResult } from 'packages/core';
-import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor } from 'packages/api';
+import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType } from 'packages/api';
 
 import {
   beginTransaction,
@@ -59,7 +59,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get the seller Owner from the DB
 
-        let isSellerCompany : boolean;
+        let sellerType : OwnerType;
         let sellerId : string;
 
         if (seller.contactId && seller.companyId) {
@@ -68,17 +68,17 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
         if (seller.contactId) {
           sellerId = seller.contactId;
-          isSellerCompany = false;
+          sellerType = OwnerType.CONTACT;
         } else if (seller.companyId) {
           sellerId = seller.companyId;
-          isSellerCompany = true;
+          sellerType = OwnerType.COMPANY;
         } else {
           throw new Error("Seller must have either contactId or companyId");
         }
 
         const sellerOwnerResult = await getOwnerById(
           sellerId,
-          isSellerCompany,
+          sellerType,
         );
 
         let sellerOwner : Owner = null;
@@ -98,7 +98,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get the buyer Owner from the DB
 
-        let isBuyerCompany : boolean;
+        let buyerType : OwnerType;
         let buyerId : string;
 
         if (buyer.contactId && buyer.companyId) {
@@ -107,17 +107,17 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
         if (buyer.contactId) {
           buyerId = buyer.contactId;
-          isBuyerCompany = false;
+          buyerType = OwnerType.CONTACT;
         } else if (buyer.companyId) {
           sellerId = buyer.companyId;
-          isBuyerCompany = true;
+          buyerType = OwnerType.COMPANY;
         } else {
           throw new Error("Buyer must have either contactId or companyId");
         }
 
         const buyerOwnerResult = await getOwnerById(
           buyerId,
-          isBuyerCompany,
+          buyerType,
         );
 
         let buyerOwner : Owner = null;

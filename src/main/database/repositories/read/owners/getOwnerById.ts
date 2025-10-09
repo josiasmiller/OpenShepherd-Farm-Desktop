@@ -18,21 +18,30 @@ type OwnerByIdRow = {
 };
 
 /**
- * Public API
  * Gets an owner by their UUID, knowing if it's a company or contact.
+ * @param ownerId UUID of said owner
+ * @param ownerType The type of owner being sought
+ * @returns A `Result` containing an `Owner` object on success, 
+ *          or a string error message on failure.
  */
 export const getOwnerById = async (
   ownerId: string,
-  isCompany: boolean
+  ownerType: OwnerType,
 ): Promise<Result<Owner, string>> => {
   const db = getDatabase();
   if (!db) {
     return new Failure("DB instance is null");
   }
 
-  return isCompany
-    ? _getCompanyOwnerById(db, ownerId)
-    : _getContactOwnerById(db, ownerId);
+  if (ownerType == OwnerType.COMPANY) {
+    return _getCompanyOwnerById(db, ownerId);
+  }
+
+  if (ownerType == OwnerType.CONTACT) {
+    return _getContactOwnerById(db, ownerId);
+  }
+
+  throw new Error("Unhandled ownerType: ", ownerType);
 };
 
 /**
