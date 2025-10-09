@@ -3,7 +3,7 @@ import { InsertAnimalTableInput } from '../../../../../../database';
 import { isUUIDv4 } from 'packages/core/src';
 
 
-export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, bt: BirthType): InsertAnimalTableInput {
+export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, birthType: BirthType): InsertAnimalTableInput {
 
   if (!isUUIDv4(row.sexKey)) {
     throw new Error("sexKey is not a UUIDv4 key: " + row.sexKey);
@@ -42,7 +42,7 @@ export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, bt: BirthTyp
     sexId: row.sexKey,
     birthdate: row.birthdate,
     birthTime: "00:00:00", // for now, set at midnight
-    birthType: bt,
+    birthType: birthType,
     birthWeight: birthWeight,
     birthWeightUnitsId: birthWeightUnitsId,
     birthOrder: 1,
