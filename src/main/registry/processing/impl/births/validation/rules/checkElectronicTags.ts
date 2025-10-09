@@ -5,7 +5,11 @@ import { handleResult } from 'packages/core/src';
 
 export async function checkElectronicTags(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
-  const { fedTypeKey, fedNum, farmTypeKey, farmNum } = row;
+
+  const identificationOneKey : string = row.fedTypeKey;
+  const identificationOneTagNumber : string = row.fedNum;
+  const identificationTwoKey : string = row.farmTypeKey;
+  const identificationTwoTagNumber : string = row.farmNum;
 
   // Hard-coded UUID for electronic tag
   const electronicTagUUID = "50f1c64f-e56e-420e-8150-9347fe51c0c1";
@@ -33,10 +37,10 @@ export async function checkElectronicTags(row: RegistryRow): Promise<ValidationR
     };
   }
 
-  if (fedTypeKey === electronicTagUUID) {
+  if (identificationOneKey === electronicTagUUID) {
 
     // 1) check that it meets the regex criteria
-    if (!electronicTagRegex.test(fedNum)) {
+    if (!electronicTagRegex.test(identificationOneTagNumber)) {
       errors.push(
         "fedNum: Electronic tag must have 3 digits, an underscore, then 12 alphanumeric characters."
       );
@@ -57,8 +61,8 @@ export async function checkElectronicTags(row: RegistryRow): Promise<ValidationR
   }
 
   // Check farm tag if it’s an electronic tag
-  if (farmTypeKey === electronicTagUUID) {
-    if (!electronicTagRegex.test(farmNum ?? "")) {
+  if (identificationTwoKey === electronicTagUUID) {
+    if (!electronicTagRegex.test(identificationTwoTagNumber)) {
       errors.push(
         "farmNum: Electronic tag must have 3 digits, an underscore, then 12 alphanumeric characters."
       );

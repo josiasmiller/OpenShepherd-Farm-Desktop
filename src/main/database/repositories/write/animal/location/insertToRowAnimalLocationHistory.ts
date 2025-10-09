@@ -9,6 +9,7 @@ import { dateTimeAsString } from "../../../../dbUtils";
  * @param fromPremiseId - The premise ID from where the animal comes
  * @param toPremiseId - The destination premise ID
  * @param movementDate - The date the movement occurred (YYYY-MM-DD)
+ * @param timestamp - Optional timestamp for created/modified fields. Defaults to now.
  * @returns Result containing the new row's UUID or an error message
  */
 export async function insertAnimalGoesToLocation(
@@ -16,6 +17,7 @@ export async function insertAnimalGoesToLocation(
   fromPremiseId: string | null,
   toPremiseId: string | null,
   movementDate: string,
+  timestamp: string = dateTimeAsString()
 ): Promise<Result<string, string>> {
   const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
@@ -33,8 +35,6 @@ export async function insertAnimalGoesToLocation(
       modified
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
-  
-  let todayDt : string = dateTimeAsString();
 
   try {
     await new Promise<void>((resolve, reject) => {
@@ -46,8 +46,8 @@ export async function insertAnimalGoesToLocation(
           movementDate,
           fromPremiseId,
           toPremiseId,
-          todayDt,
-          todayDt,
+          timestamp,
+          timestamp,
         ],
         (err: Error | null) => {
           if (err) reject(err);
