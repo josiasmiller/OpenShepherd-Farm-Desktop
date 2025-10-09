@@ -1,6 +1,6 @@
 import { RegistryRow, ValidationResponse } from 'packages/api';
 import { getAllCountryTagPrefixes } from '../../../../../../database';
-import { handleResult } from 'packages/core/src';
+import { handleResult } from 'packages/core';
 
 
 export async function checkElectronicTags(row: RegistryRow): Promise<ValidationResponse> {

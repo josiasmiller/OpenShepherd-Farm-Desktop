@@ -1,5 +1,5 @@
 import { RegistryRow, ValidationResponse } from 'packages/api';
-import { isUUIDv4 } from 'packages/core/src';
+import { isUUIDv4 } from 'packages/core';
 
 export async function checkHasAtLeastOneValidTag(
   row: RegistryRow

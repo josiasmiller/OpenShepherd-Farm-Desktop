@@ -2,7 +2,8 @@ import { handleResult, Result, unwrapOrThrow } from 'packages/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from 'packages/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
 
-import {validate, version} from "uuid";
+import { isUUIDv4 } from 'packages/core';
+
 
 // DB actions
 import {
@@ -386,11 +387,9 @@ function hasTagInfo(
     return false;
   }
 
-  const isValidUUIDv4 = (key: string) => validate(key) && version(key) === 4;
-
-  if (!isValidUUIDv4(typeKey)) return false;
-  if (!isValidUUIDv4(colorKey)) return false;
-  if (!isValidUUIDv4(locKey)) return false;
+  if (!isUUIDv4(typeKey)) return false;
+  if (!isUUIDv4(colorKey)) return false;
+  if (!isUUIDv4(locKey)) return false;
 
   // number verification handled elsewhere
   return true;
