@@ -1,6 +1,6 @@
 import { BirthType, RegistryRow } from 'packages/api';
 import { InsertAnimalTableInput } from '../../../../../../database';
-import { isUUIDv4 } from 'packages/core/src';
+import { isUUIDv4 } from 'packages/core';
 
 
 export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, birthType: BirthType): InsertAnimalTableInput {
