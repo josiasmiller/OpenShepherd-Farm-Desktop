@@ -1,5 +1,5 @@
 import { RegistryRow, ValidationResponse } from 'packages/api';
-import { animalHasActiveFederalTag } from '../../../../../../database';
+import { animalHasActiveOfficialTag  } from '../../../../../../database';
 import { handleResult } from 'packages/core';
 
 /**
@@ -7,10 +7,10 @@ import { handleResult } from 'packages/core';
  * @param row verifies that the given animal has any active official ID
  * @returns ValidationResponse indicating if the check passed or failed
  */
-export async function checkHasFederalId(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
-  var tagResult = await animalHasActiveFederalTag(row.animalId);
+  var tagResult = await animalHasActiveOfficialTag (row.animalId);
 
   await handleResult(tagResult, {
     success: (data: boolean) => {

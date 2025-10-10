@@ -33,7 +33,8 @@ export const REGISTRATION_BIRTH_NOTIFY = "7b5175d0-13bd-49b3-96d3-2dd9809e125a";
 export const REGISTRATION_DIED_AT_BIRTH = "28632033-cb77-4ca7-b7fb-8f24b369f013";
 
 // transfer_reason_table
-export const NATURAL_ADDITION = "58d08bf7-5d1f-4dda-80a7-009bbfe7084f";
+export const ID_TRANSFER_REASON_NATURAL_ADDITION = "58d08bf7-5d1f-4dda-80a7-009bbfe7084f";
+export const ID_TRANSFER_REASON_TRANSFERRED_BREEDING = "2d3e0aed-84c9-48e8-b11f-00fad83288c6";
 
 // death_reason_table
 export const DIED_STILLBORN = "9de9f67c-afc4-4d16-83d3-20c4337f4344";

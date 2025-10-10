@@ -1,10 +1,5 @@
-import type { PedigreeNode, Species, RegistryRow, ValidationResult } from 'packages/api';
-import { checkHasFederalId } from './rules/checkHasFederalId';
-
-import { getPedigree } from '../../../../../database';
-import { verifyCoatColorAccuracy } from './rules/coatColorSanityCheck';
-
-import { handleResult } from "packages/core";
+import type { Species, RegistryRow, ValidationResult } from 'packages/api';
+import { checkHasOfficialId } from './rules/checkHasOfficialId';
 
 
 /**
@@ -22,33 +17,9 @@ export async function validateTransferRows(sections: Record<string, RegistryRow[
     const row = rows[index];
     const errors: string[] = [];
 
-    const animalId : string = row.animalId;
-    let pedigreeResult = await getPedigree(animalId, 1);
-    let baseNode : PedigreeNode
-    await handleResult(pedigreeResult, {
-      success: (pn: PedigreeNode) => {
-        baseNode = pn;
-      },
-      error: (err) => {
-        throw new Error(`Failed to get pedigreeNode for animalId=${animalId}: ${err}`);
-      },
-    });
-
-    baseNode = baseNode!;
-    
-    const sireId : string = baseNode.sirePedigree.animalId;
-    const damId : string = baseNode.damPedigree.animalId;
-
     // Run all relevant checks
-    const federalCheck = await checkHasFederalId(row);
+    const federalCheck = await checkHasOfficialId(row);
     errors.push(...federalCheck.errors);
-
-    const coatColorCheck = await verifyCoatColorAccuracy(
-      sireId,
-      damId,
-      animalId,
-    );
-    errors.push(...coatColorCheck.errors);
 
     results.push({
       rowIndex: index,

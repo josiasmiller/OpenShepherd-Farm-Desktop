@@ -40,8 +40,10 @@ export { getLastRegisteredValue } from "./repositories/read/registry/registratio
 export { getOffspringOfDam } from "./repositories/read/animal/births/getOffspringOfDam";
 export { getOwnerAtBirth } from "./repositories/read/owners/fromDam/getOwnerBasedOnBirthdate";
 export { getOwner } from "./repositories/read/owners/getOwner";
+export { getOwnerById } from "./repositories/read/owners/getOwnerById";
 export { getPedigree } from "./repositories/read/animal/pedigree/getPedigree"
 export { getPremises } from "./repositories/read/premises/getPremises";
+export { getRegistrationTypeIdByRegNum } from "./repositories/read/registry/registrations/getRegistrationtypeIdByRegNum";
 export { getRegistryCompanyIdForMembershipNumber } from "./repositories/read/registry/registrations/getRegistryCompanyIdFromMembershipNumber";
 export { getRemoveReasons } from "./repositories/read/tags/getRemoveReasons";
 export { getScrapieFlockInfo } from "./repositories/read/scrapie/getScrapieFlockInfo";
@@ -82,6 +84,8 @@ export { insertAnimalRegistrationRow } from "./repositories/write/registrations/
 export { insertBirthOwnershipRecord } from "./repositories/write/animal/ownership/insertBirthOwnershipRecord";
 export { insertGeneticCoatRow } from "./repositories/write/animal/characteristics/insertGeneticCoatRow";
 export { insertIntoAnimalTable } from "./repositories/write/animal/animalTable/insertIntoAnimalTable";
+export { insertNewRegistryCertificateRow } from "./repositories/write/animal/registry/insertNewRegistryCertificateRow";
+export { insertTransferOfOwnershipRecord } from "./repositories/write/animal/ownership/insertTransferOfOwnershipRecord";
 export { insertWeightRecord } from "./repositories/write/animal/weightEvaluation/insertWeightEvaluation";
 export { markAnimalDeathLocation } from "./repositories/write/animal/death/markAnimalDeathLocation";
 export { markRegistryCertificateAsPrinted } from "./repositories/write/animal/registry/markRegistryCertificateAsPrinted";
@@ -126,6 +130,7 @@ export {
     REGISTRATION_CHOCOLATE_WELSH,
     REGISTRATION_WHITE_WELSH,
     REGISTRATION_REGISTERED,
+    ID_TRANSFER_REASON_TRANSFERRED_BREEDING,
 } from "./dbConstants";
 
 export { }
