@@ -1,6 +1,6 @@
 import { getDatabase } from "../../../../dbConnections";
 import { dateTimeAsString } from "../../../../dbUtils";
-import { NATURAL_ADDITION } from "../../../../dbConstants";
+import { ID_TRANSFER_REASON_NATURAL_ADDITION } from "../../../../dbConstants";
 import { Result, Success, Failure } from "packages/core";
 import { Owner } from "packages/api";
 import { OwnerType } from "packages/api";
@@ -58,7 +58,7 @@ export async function insertBirthOwnershipRecord(
           transferDate,
           toContactId,
           toCompanyId,
-          NATURAL_ADDITION,
+          ID_TRANSFER_REASON_NATURAL_ADDITION,
           todayDt,
           todayDt,
         ],
