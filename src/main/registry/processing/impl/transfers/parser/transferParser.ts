@@ -107,9 +107,6 @@ export const transferParser = async (
   const sellerData = parseCsvSection<SellerInfo>(sellerSection);
   const seller = sellerData.length > 0 ? sellerData[0] : null;
 
-  console.log("SELLER DATA:");
-  console.log(seller);
-
   let buyer: ExistingMemberBuyer | NewBuyer | null = null;
   if (buyerIsNew) {
     const parsed = parseCsvSection<NewBuyer>(buyerSection);
