@@ -1,19 +1,21 @@
-import fs from 'fs/promises';
-import Papa from 'papaparse';
-import { BrowserWindow, dialog } from 'electron';
-import { ParseResult } from 'packages/api';
+import fs from "fs/promises";
+import Papa from "papaparse";
+import { BrowserWindow, dialog } from "electron";
+import { ParseResult } from "packages/api";
 import {
   TransferParseResponse,
   AnimalRow,
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
-} from 'packages/api';
+} from "packages/api";
 
 /**
  * Parses a transfer CSV with multiple sections (animals, seller, buyer)
  */
-export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseResult<TransferParseResponse>> => {
+export const transferParser = async (
+  mainWindow: BrowserWindow
+): Promise<ParseResult<TransferParseResponse>> => {
   const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
     title: "Select Transfer CSV File",
     properties: ["openFile"],
@@ -29,36 +31,60 @@ export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseRe
   }
 
   const selectedFile = filePaths[0];
-  const fileContent = await fs.readFile(selectedFile, 'utf-8');
+  const fileContent = await fs.readFile(selectedFile, "utf-8");
 
-  // Keep raw CSV lines (only filter out empty lines)
-  const lines = fileContent.split(/\r?\n/).filter(line => line.trim().length > 0);
+  // Split and normalize lines
+  const lines = fileContent
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
   const warnings: string[] = [];
 
+  // Helper for case-insensitive header lookup
+  const findHeaderIndex = (header: string) =>
+    lines.findIndex((l) => l.toUpperCase() === header.toUpperCase());
+
   // Locate section headers
-  const sellerHeaderIndex = lines.findIndex(line => line.startsWith("Seller ContactID"));
-  const existingMemberIndex = lines.findIndex(line => line.startsWith("Existing Member:"));
-  const newBuyerIndex = lines.findIndex(line => line.startsWith("NEW BUYER:"));
+  const sellerHeaderIndex = findHeaderIndex("SELLER");
+  const existingMemberIndex = findHeaderIndex("EXISTING_BUYER");
+  const newBuyerIndex = findHeaderIndex("NEW_BUYER");
 
   if (sellerHeaderIndex === -1) {
-    warnings.push("Missing 'Seller ContactID' section.");
+    warnings.push("Missing 'SELLER' section header.");
   }
 
   const buyerSectionStart = existingMemberIndex !== -1 ? existingMemberIndex : newBuyerIndex;
   const buyerIsNew = newBuyerIndex !== -1;
 
-  // Get raw sections
-  const animalSection = sellerHeaderIndex !== -1
-    ? lines.slice(0, sellerHeaderIndex)
-    : [];
-  const sellerSection = sellerHeaderIndex !== -1
-    ? lines.slice(sellerHeaderIndex, buyerSectionStart !== -1 ? buyerSectionStart : undefined)
-    : [];
-  const buyerSection = buyerSectionStart !== -1
-    ? lines.slice(buyerSectionStart + 1)
-    : [];
+  // ---- SECTION EXTRACTION ----
+  // Animals: everything from top until just before SELLER or BUYER
+  const animalSection = (() => {
+    const end =
+      sellerHeaderIndex !== -1
+        ? sellerHeaderIndex
+        : buyerSectionStart !== -1
+        ? buyerSectionStart
+        : lines.length;
+    // Start from very top
+    const section = lines.slice(0, end);
+    return section.filter((l) => l.includes(","));
+  })();
 
-  // Parse helper
+  const sellerSection = (() => {
+    if (sellerHeaderIndex === -1) return [];
+    const start = sellerHeaderIndex + 1;
+    const end = buyerSectionStart !== -1 ? buyerSectionStart : lines.length;
+    return lines.slice(start, end).filter((l) => l.includes(","));
+  })();
+
+  const buyerSection = (() => {
+    if (buyerSectionStart === -1) return [];
+    const start = buyerSectionStart + 1;
+    return lines.slice(start).filter((l) => l.includes(","));
+  })();
+
+  // ---- PARSING HELPERS ----
   const parseCsvSection = <T>(csvLines: string[]): T[] => {
     if (csvLines.length === 0) return [];
     const csvText = csvLines.join("\n");
@@ -66,20 +92,24 @@ export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseRe
       header: true,
       skipEmptyLines: true,
       dynamicTyping: false,
+      newline: "\n",
     });
-    if (result.errors.length) {
-      result.errors.forEach(e => warnings.push(`Parse error: ${e.message}`));
+    if (result.errors && result.errors.length > 0) {
+      result.errors.forEach((e: { message: any; }) =>
+        warnings.push(`Parse error: ${e.message}`)
+      );
     }
-    return result.data;
+    return result.data as T[];
   };
-  // Parse animal rows
-  const animals = parseCsvSection<AnimalRow>(animalSection);
 
-  // Parse seller row
+  // ---- PARSE EACH SECTION ----
+  const animals = parseCsvSection<AnimalRow>(animalSection);
   const sellerData = parseCsvSection<SellerInfo>(sellerSection);
   const seller = sellerData.length > 0 ? sellerData[0] : null;
 
-  // Parse buyer
+  console.log("SELLER DATA:");
+  console.log(seller);
+
   let buyer: ExistingMemberBuyer | NewBuyer | null = null;
   if (buyerIsNew) {
     const parsed = parseCsvSection<NewBuyer>(buyerSection);
@@ -88,7 +118,9 @@ export const transferParser = async (mainWindow: BrowserWindow): Promise<ParseRe
     const parsed = parseCsvSection<ExistingMemberBuyer>(buyerSection);
     if (parsed.length > 0) buyer = parsed[0];
   } else {
-    warnings.push("Missing buyer section (either 'Existing Member:' or 'NEW BUYER:').");
+    warnings.push(
+      "Missing buyer section (no 'EXISTING_BUYER' or 'NEW_BUYER' header found)."
+    );
   }
 
   return {
