@@ -37,8 +37,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
   // using this until new buyers are implemented
   let buyer : ExistingMemberBuyer = transferResponse.buyer;
   let seller : SellerInfo = transferResponse.seller;
-
-
+  
   try {
     await beginTransaction();
 
@@ -272,12 +271,13 @@ function parseTransferSections(sections: Record<string, RegistryRow[]>): Transfe
   if (!rawSeller) {
     throw new Error("Missing seller_info section");
   }
+
   const seller: SellerInfo = {
-    contactId: normalizeId(rawSeller['Seller ContactID']),
-    companyId: normalizeId(rawSeller['Seller CompanyID']),
-    premiseId: rawSeller['Seller Premise ID'],
-    soldAt: rawSeller[' Sold At'],
-    movedAt: rawSeller['Moved At'],
+    contactId: normalizeId(rawSeller['CONTACT_ID']),
+    companyId: normalizeId(rawSeller['COMPANY_ID']),
+    premiseId: rawSeller['PREMISE_ID'],
+    soldAt: rawSeller['SOLD_AT'],
+    movedAt: rawSeller['MOVED_AT'],
   };
 
   // buyer
@@ -288,28 +288,28 @@ function parseTransferSections(sections: Record<string, RegistryRow[]>): Transfe
 
   let buyer: ExistingMemberBuyer | NewBuyer;
 
-  if ('Membership Number' in rawBuyer) {
+  if ('MEMBERSHIP_NUMBER' in rawBuyer) {
     // Existing member
     buyer = {
-      membershipNumber: rawBuyer['Membership Number'],
-      contactId: normalizeId(rawBuyer['Buyer Contact ID']),
-      companyId: normalizeId(rawBuyer[' Buyer Company ID']),
-      premiseId: rawBuyer[' Buyer Premise ID'],
-      firstName: rawBuyer[' First Name'],
-      lastName: rawBuyer['Last Name'],
-      region: rawBuyer['Region'],
+      membershipNumber: rawBuyer['MEMBERSHIP_NUMBER'],
+      contactId: normalizeId(rawBuyer['CONTACT_ID']),
+      companyId: normalizeId(rawBuyer['COMPANY_ID']),
+      premiseId: rawBuyer['PREMISE_ID'],
+      firstName: rawBuyer['FIRST_NAME'],
+      lastName: rawBuyer['LAST_NAME'],
+      region: rawBuyer['REGION'],
     };
   } else if (' Address 1' in rawBuyer) {
     // New buyer
     buyer = {
       firstName: rawBuyer['First Name'],
-      lastName: rawBuyer[' Last Name'],
-      company: rawBuyer[' Company'],
-      address1: rawBuyer[' Address 1'],
-      address2: rawBuyer[' Address 2'],
-      city: rawBuyer[' City'],
-      stateKey: rawBuyer[' State Key'],
-      state: rawBuyer[' State'],
+      lastName: rawBuyer['Last Name'],
+      company: rawBuyer['Company'],
+      address1: rawBuyer['Address 1'],
+      address2: rawBuyer['Address 2'],
+      city: rawBuyer['City'],
+      stateKey: rawBuyer['State Key'],
+      state: rawBuyer['State'],
       postCode: rawBuyer['Post Code'],
       federalScrapieId: rawBuyer['Federal Scrapie ID (US)'],
       federalPremiseId: rawBuyer['Federal Premise ID'],

@@ -332,15 +332,16 @@ export const PreprocessorPage: React.FC = () => {
 
     const tables: EditableTableData[] = [];
 
+    // ANIMAL_ID,REGISTRATION_NUMBER,PREFIX,NAME,BIRTH_DATE,BIRTH_TYPE,SEX,COAT_COLOR
     const headerMap: Record<string, string> = {
-      "Animal ID": "animalId",
-      "Registration Number": "registrationNumber",
-      "Prefix": "prefix",
-      "Name": "name",
-      "Birth Date": "birthDate",
-      "Birth Type": "birthType",
-      "Sex": "sex",
-      "Coat Color": "coatColor",
+      "ANIMAL_ID": "animalId",
+      "REGISTRATION_NUMBER": "registrationNumber",
+      "PREFIX": "prefix",
+      "NAME": "name",
+      "BIRTH_DATE": "birthDate",
+      "BIRTH_TYPE": "birthType",
+      "SEX": "sex",
+      "COAT_COLOR": "coatColor",
     };
 
     const normalizedAnimals = animals.map(a => {
