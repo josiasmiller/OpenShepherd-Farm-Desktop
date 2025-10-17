@@ -223,7 +223,7 @@ export const getAnimalRegistrationInfo = async (
       let breederCompanies : Company[] = [];
 
       if (breeder.type === OwnerType.CONTACT) {
-        const breederOwner = owner as OwnerContact;
+        const breederOwner = breeder as OwnerContact;
         const breederCompanyResult = await getCompaniesForContact(breederOwner.contact.id);
 
         await handleResult(breederCompanyResult, {
