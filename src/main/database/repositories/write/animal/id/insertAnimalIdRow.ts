@@ -1,22 +1,22 @@
+import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from 'packages/core';
 import { AnimalIdInfoInput } from 'packages/api'
 import { dateTimeAsString } from "../../../../dbUtils";
 
 /**
  * Inserts a row into the animal_id_info_table.
- * This indicates that an animal has a ID tag
- * 
+ * This indicates that an animal has an ID tag
+ *
+ * @param db The Database to act on
  * @param input all pertinent data for a given ID tag
  * @returns A `Result` containing `null` on success, 
  *          or a string error message on failure.
  */
 export async function insertAnimalIdInfoRow(
+  db: Database,
   input: AnimalIdInfoInput
 ): Promise<Result<null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const id = uuidv4();
 

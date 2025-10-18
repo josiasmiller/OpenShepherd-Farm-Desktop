@@ -1,21 +1,17 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { InsertWeightRecordInput } from '../../../../models/write/animal/weightEvaluation/animalEvaluationWeightInput';
 
-
 /**
  * inserts a row into the `animal_evaluation_table`
- * 
+ *
+ * @param db The Database to act on
  * @param input pertinent weight record data
  * @returns A `Result` containing the UUID of the inserted row on success, 
  *          or a string error message on failure.
  */
-export async function insertWeightRecord(input: InsertWeightRecordInput): Promise<string> {
-  const db = getDatabase();
-  if (db == null) {
-    throw new TypeError("DB instance is null");
-  }
+export async function insertWeightRecord(db: Database, input: InsertWeightRecordInput): Promise<string> {
 
   const id = uuidv4();
 

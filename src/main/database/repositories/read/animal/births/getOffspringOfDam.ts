@@ -1,19 +1,17 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { OffspringInfo } from "../../../../models/read/animal/births/offspringInfo";
 
 /**
  * Fetch all animals where the given animalId is the genetic dam.
+ * @param db The Database to act on
+ * @param damId The Id of the Dam for which to query offspring
  * @returns A `Result` containing an array of `OffspringInfo` objects on success, 
  *          or a string error message on failure.
  */
 export const getOffspringOfDam = async (
-  damId: string
+  db: Database, damId: string
 ): Promise<Result<OffspringInfo[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
 
   const query = `
     SELECT

@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { OwnerType, DefaultSettingsResults } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * gets all default settings in the DB
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `DefaultSettingsResults` objects on success, 
  *          or a string error message on failure.
  */
-export const getExistingDefaults = async (): Promise<Result<DefaultSettingsResults[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getExistingDefaults = async (db: Database): Promise<Result<DefaultSettingsResults[], string>> => {
 
   let defaultsQuery = `
     SELECT 

@@ -1,6 +1,5 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
-import { REGISTRATION_REGISTERED } from "../../../../dbConstants";
 import { Result, Success, Failure } from "packages/core";
 import { PedigreeNode } from "packages/api";
 
@@ -19,23 +18,20 @@ type PedigreeRow = {
 
 /**
  * recursively retrieves the pedigree information of an animal.
- * 
+ * @param db The Database to act on
  * @param animalId UUID of animal being sought
  * @param depth how deep in the search this iteration is
  * @returns A `Result` containing a `PedigreeNode` object or `null` on success, 
  *          or a string error message on failure.
  */
 export const getPedigree = async (
+  db: Database,
   animalId: string,
   depth: number
 ): Promise<Result<PedigreeNode | null, string>> => {
+
   if (depth < 0) {
     return new Success(null); // Base case: stop recursion
-  }
-
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB Instance is null");
   }
 
   const query = `
@@ -80,7 +76,7 @@ export const getPedigree = async (
       }
 
       const resolvePedigreeBranch = async (parentId: string | null): Promise<Result<PedigreeNode | null, string>> => {
-        return parentId ? getPedigree(parentId, depth - 1) : new Success(null);
+        return parentId ? getPedigree(db, parentId, depth - 1) : new Success(null);
       };
 
       const [sireResult, damResult] = await Promise.all([

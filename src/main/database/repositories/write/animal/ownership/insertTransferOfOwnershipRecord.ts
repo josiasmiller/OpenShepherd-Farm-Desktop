@@ -1,13 +1,13 @@
+import {Database} from "sqlite3";
 import { Owner, OwnerType } from "packages/api";
-import { getDatabase } from "../../../../dbConnections";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "packages/core";
 import { dateTimeAsString } from "../../../../dbUtils";
 
-
 /**
  * Inserts a birth ownership record for an animal.
- * 
+ *
+ * @param db           - The Database to act on
  * @param animalId     - The animal's UUID
  * @param fromOwner    - The owner who sells the animal (contact or company)
  * @param toOwner      - The owner who recieves the animal (contact or company)
@@ -15,14 +15,13 @@ import { dateTimeAsString } from "../../../../dbUtils";
  * @returns Result with inserted ownership record ID or error message
  */
 export async function insertTransferOfOwnershipRecord(
+  db: Database,
   animalId: string,
   fromOwner: Owner,
   toOwner: Owner,
   transferDate: string,
   transferReasonId: string,
 ): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const idAnimalOwnershipHistoryId = uuidv4();
 

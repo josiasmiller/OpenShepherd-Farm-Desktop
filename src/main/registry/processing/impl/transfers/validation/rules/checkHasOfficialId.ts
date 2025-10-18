@@ -1,16 +1,17 @@
 import { RegistryRow, ValidationResponse } from 'packages/api';
 import { animalHasActiveOfficialTag  } from '../../../../../../database';
 import { handleResult } from 'packages/core';
+import {Database} from "sqlite3";
 
 /**
- * 
+ * @param db The Database to act on
  * @param row verifies that the given animal has any active official ID
  * @returns ValidationResponse indicating if the check passed or failed
  */
-export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkHasOfficialId(db: Database, row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
-  var tagResult = await animalHasActiveOfficialTag (row.animalId);
+  var tagResult = await animalHasActiveOfficialTag(db, row.animalId);
 
   await handleResult(tagResult, {
     success: (data: boolean) => {

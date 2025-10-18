@@ -1,5 +1,5 @@
+import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase } from "../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { Owner, OwnerType } from "packages/api";
 import { dateAsString, dateTimeAsString } from "../../../dbUtils";
@@ -7,6 +7,7 @@ import { dateAsString, dateTimeAsString } from "../../../dbUtils";
 /**
  * Inserts a row into animal_registration_table for a registered animal,
  * but only if an identical registration doesn't already exist.
+ * @param db The Database to act on
  * @param breeder breeder of the animal
  * @param animalId UUID of animal
  * @param animalName string name of animal
@@ -16,6 +17,7 @@ import { dateAsString, dateTimeAsString } from "../../../dbUtils";
  * @param registrationTypeId the UUID of the registration type
  */
 export async function insertAnimalRegistrationRow(
+  db: Database,
   breeder: Owner,
   animalId: string,
   animalName: string,
@@ -24,8 +26,6 @@ export async function insertAnimalRegistrationRow(
   flockBookId: string,
   registrationTypeId: string,
 ): Promise<Result<null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   // First check: does a matching registration already exist?
   const existingRow = await new Promise<any>((resolve, reject) => {

@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { TissueSampleType } from "packages/api";
 
 /**
  * gets all tissue sample types from the DB 
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `TissueSampleType` objects on success, 
  *          or a string error message on failure.
  */
-export const getTissueSampleTypes = async (): Promise<Result<TissueSampleType[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getTissueSampleTypes = async (db: Database): Promise<Result<TissueSampleType[], string>> => {
 
   let tstQuery = `
     SELECT 

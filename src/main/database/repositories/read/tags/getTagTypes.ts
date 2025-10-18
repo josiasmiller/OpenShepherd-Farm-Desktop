@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { TagType } from "packages/api";
 
 /**
  * Gets all possible Tag Types from the DB
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `TagType` objects on success, 
  *          or a string error message on failure.
  */
-export const getTagTypes = async (): Promise<Result<TagType[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getTagTypes = async (db: Database): Promise<Result<TagType[], string>> => {
 
   let tagTypeQuery = `
     SELECT 

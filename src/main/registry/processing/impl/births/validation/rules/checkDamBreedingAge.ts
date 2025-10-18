@@ -1,8 +1,9 @@
 import { Species, RegistryRow, ValidationResponse } from 'packages/api';
 import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../../database';
 import { unwrapOrFailWithAnimal } from 'packages/core';
+import {Database} from "sqlite3";
 
-export async function checkDamBreedingAge(row: RegistryRow, species: Species): Promise<ValidationResponse> {
+export async function checkDamBreedingAge(db: Database, row: RegistryRow, species: Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
   const { damId, birthdate } = row;
@@ -17,7 +18,7 @@ export async function checkDamBreedingAge(row: RegistryRow, species: Species): P
 
   // Get gestation period
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species.id),
+    await getGestationPeriod(db, species.id),
     "gestation period",
     damId
   );
@@ -32,7 +33,7 @@ export async function checkDamBreedingAge(row: RegistryRow, species: Species): P
 
   // Get dam birthdate
   const damBirthResult = await unwrapOrFailWithAnimal(
-    await getAnimalBirthDate(damId),
+    await getAnimalBirthDate(db, damId),
     "dam birth date",
     damId
   );
@@ -46,7 +47,7 @@ export async function checkDamBreedingAge(row: RegistryRow, species: Species): P
 
   // Get species-specific breeding ages
   const breedingAgesResult = await unwrapOrFailWithAnimal(
-    await getBreedingAges(species.id),
+    await getBreedingAges(db, species.id),
     "breeding ages",
     damId
   );

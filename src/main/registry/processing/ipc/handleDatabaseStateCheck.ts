@@ -1,3 +1,4 @@
+import {Database} from "sqlite3";
 import { handleResult } from "packages/core";
 
 import { 
@@ -17,11 +18,11 @@ export type DatabaseStateCheckResponse = {
  * 
  * @returns checks the state of hte database to make sure certain data is prepared
  */
-export async function handleDatabaseStateCheck(): Promise<DatabaseStateCheckResponse> {
+export async function handleDatabaseStateCheck(db: Database): Promise<DatabaseStateCheckResponse> {
   
-  const blackVerified : boolean = await verifyLatestRegistrationValues(REGISTRATION_REGISTERED);
-  const chocolateVerified : boolean = await verifyLatestRegistrationValues(REGISTRATION_CHOCOLATE_WELSH);
-  const whiteVerified : boolean = await verifyLatestRegistrationValues(REGISTRATION_WHITE_WELSH);
+  const blackVerified : boolean = await verifyLatestRegistrationValues(db, REGISTRATION_REGISTERED);
+  const chocolateVerified : boolean = await verifyLatestRegistrationValues(db, REGISTRATION_CHOCOLATE_WELSH);
+  const whiteVerified : boolean = await verifyLatestRegistrationValues(db, REGISTRATION_WHITE_WELSH);
 
   return {
     blackVerified     : blackVerified,
@@ -30,8 +31,8 @@ export async function handleDatabaseStateCheck(): Promise<DatabaseStateCheckResp
   };
 }
 
-async function verifyLatestRegistrationValues(regType : string): Promise<boolean> {
-  const verificationResult = await verifyLastRegistrationNumberIsUpToDate(regType);
+async function verifyLatestRegistrationValues(db: Database, regType : string): Promise<boolean> {
+  const verificationResult = await verifyLastRegistrationNumberIsUpToDate(db, regType);
   let ret : boolean = false;
 
   await handleResult(verificationResult, {

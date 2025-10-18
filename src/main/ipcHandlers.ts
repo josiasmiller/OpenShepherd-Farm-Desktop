@@ -37,7 +37,7 @@ import {
 
 import { pngFileDialog } from "./selectPng";
 import { selectNewDb } from "./dbSelect";
-import { getDatabase } from "./database/dbConnections";
+import {getDatabase, isDatabaseInitialized} from "./database/dbConnections";
 import { writeAnimalNotesCsv } from "./writers/csv/writeAnimalNotes";
 import { writeDrugHistoryCsv } from "./writers/csv/writeDrugEvents";
 import { writeTissueTestResults } from "./writers/csv/writeTissueTestResults";
@@ -62,28 +62,27 @@ import {promiseFrom} from "packages/core";
 export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   
   ipcMain.handle("animal-search", async (_, queryParams) => {
-    return animalSearch(queryParams);
+    return animalSearch(getDatabase(), queryParams);
   });
 
   ipcMain.handle("edit-existing-default", async (_, queryParams) => {
-    return editExistingDefaultSettings(queryParams);
+    return editExistingDefaultSettings(getDatabase(), queryParams);
   });
 
   ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
-    return writeAnimalNotesCsv(animals);
+    return writeAnimalNotesCsv(getDatabase(), animals);
   });
 
   ipcMain.handle("export-drug-history-csv", async (_, animals: string[]) => {
-    return writeDrugHistoryCsv(animals);
+    return writeDrugHistoryCsv(getDatabase(), animals);
   });
 
   ipcMain.handle("export-tissue-test-results-csv", async (_, animals: string[]) => {
-    return writeTissueTestResults(animals);
+    return writeTissueTestResults(getDatabase(), animals);
   });
 
   ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
-
-    return writeRegistration(animals, registrationType, signatureFilePath);
+    return writeRegistration(getDatabase(), animals, registrationType, signatureFilePath);
   });
 
   ipcMain.handle("select-database", async (_, ) => {
@@ -95,49 +94,71 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
-    return getAnimalIdentification(animalId);
+    return getAnimalIdentification(getDatabase(), animalId);
   });
 
-  ipcMain.handle("get-birth-types", getBirthTypes);
+  ipcMain.handle("get-birth-types", async (_) => {
+    return getBirthTypes(getDatabase())
+  });
 
   ipcMain.handle("get-breeds", async (_, queryParams) => {
-    return getBreeds(queryParams);
+    return getBreeds(getDatabase(), queryParams);
   });
 
-  ipcMain.handle("get-colors", getColors);
+  ipcMain.handle("get-colors", (_) => {
+    getColors(getDatabase())
+  });
 
   ipcMain.handle("get-company-info", async (_, onlyGetRegistryCompanies) => {
-    return getCompanies(onlyGetRegistryCompanies);
+    return getCompanies(getDatabase(), onlyGetRegistryCompanies);
   });
 
-  ipcMain.handle("get-contact-info", getContacts);
+  ipcMain.handle("get-contact-info", async (_) => {
+    return getContacts(getDatabase())
+  });
 
-  ipcMain.handle("get-counties", getCounties);
+  ipcMain.handle("get-counties", async (_) => {
+    return getCounties(getDatabase())
+  });
 
-  ipcMain.handle("get-countries", getCountries);
+  ipcMain.handle("get-countries", async (_) => {
+    return getCountries(getDatabase());
+  });
 
   ipcMain.handle("get-country-prefix-for-owner", async (_, ownerId: string, isCompany: boolean) => {
-    return getCountryPrefixForOwner(ownerId, isCompany);
+    return getCountryPrefixForOwner(getDatabase(), ownerId, isCompany);
   });
 
-  ipcMain.handle("get-death-reasons", getDeathReasons);
+  ipcMain.handle("get-death-reasons", async (_) => {
+    return getDeathReasons(getDatabase());
+  });
 
-  ipcMain.handle("get-existing-defaults", getExistingDefaults);
+  ipcMain.handle("get-existing-defaults", async (_) => {
+    return getExistingDefaults(getDatabase());
+  });
 
-  ipcMain.handle("get-flock-prefixes", getFlockPrefixes);
+  ipcMain.handle("get-flock-prefixes", async (_) => {
+    return getFlockPrefixes(getDatabase());
+  });
 
-  ipcMain.handle("get-locations", getTagLocations);
+  ipcMain.handle("get-locations", async (_) => {
+    return getTagLocations(getDatabase());
+  });
 
   ipcMain.handle("get-pedigree", async (_, animalId) => {
-    return getPedigree(animalId, 4); // TODO --> what depth to use?
+    return getPedigree(getDatabase(), animalId, 4); // TODO --> what depth to use?
   });
 
-  ipcMain.handle("get-premise-info", getPremises);
+  ipcMain.handle("get-premise-info", async (_) => {
+    return getPremises(getDatabase());
+  });
 
-  ipcMain.handle("get-remove-reasons", getRemoveReasons);
+  ipcMain.handle("get-remove-reasons", async (_) => {
+    return getRemoveReasons(getDatabase());
+  });
 
   ipcMain.handle("get-scrapie-flock-info", async (_, ownerId: string, isCompany: boolean) => {
-    return getScrapieFlockInfo(ownerId, isCompany);
+    return getScrapieFlockInfo(getDatabase(), ownerId, isCompany);
   });
 
   ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
@@ -152,34 +173,52 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     return getStoreSelectedFilepath();
   });
 
-  ipcMain.handle("get-sexes", getSexes);
-
-  ipcMain.handle("get-species", getSpecies);
-
-  ipcMain.handle("get-states", getStates);
-
-  ipcMain.handle("get-tag-types", getTagTypes);
-
-  ipcMain.handle("get-tissue-sample-types", getTissueSampleTypes);
-
-  ipcMain.handle("get-tissue-sample-container-types", getTissueSampleContainerTypes);
-
-  ipcMain.handle("get-tissue-tests", getTissueTests);
-
-  ipcMain.handle("get-transfer-reasons", getTransferReasons);
-
-  ipcMain.handle("get-units", async (_, queryParams) => {
-    return getUnits(queryParams);
+  ipcMain.handle("get-sexes", async (_) => {
+    return getSexes(getDatabase());
   });
 
-  ipcMain.handle("get-unit-types", getUnitTypes);
+  ipcMain.handle("get-species", async (_) => {
+    return getSpecies(getDatabase());
+  });
+
+  ipcMain.handle("get-states", async (_) => {
+    return getStates(getDatabase());
+  });
+
+  ipcMain.handle("get-tag-types", async (_) => {
+    return getTagTypes(getDatabase());
+  });
+
+  ipcMain.handle("get-tissue-sample-types", async (_) => {
+    return getTissueSampleTypes(getDatabase());
+  });
+
+  ipcMain.handle("get-tissue-sample-container-types", async (_) => {
+    return getTissueSampleContainerTypes(getDatabase());
+  });
+
+  ipcMain.handle("get-tissue-tests", async (_) => {
+    return getTissueTests(getDatabase());
+  });
+
+  ipcMain.handle("get-transfer-reasons", async (_) => {
+    return getTransferReasons(getDatabase());
+  });
+
+  ipcMain.handle("get-units", async (_, queryParams) => {
+    return getUnits(getDatabase(), queryParams);
+  });
+
+  ipcMain.handle("get-unit-types", async (_) => {
+    return getUnitTypes(getDatabase());
+  });
 
   ipcMain.handle("is-owner-company", async (_, ownerId) => {
-    return isOwnerCompany(ownerId);
+    return isOwnerCompany(getDatabase(), ownerId);
   });
 
   ipcMain.handle("is-database-loaded", () => {
-    return getDatabase() !== null;
+    return isDatabaseInitialized();
   });
 
   ipcMain.handle('open-directory', async (_event, path) => {
@@ -213,14 +252,16 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     "registry-process",
     async (_event, args: RegistryProcessRequest) => {
       const { processType, species, sections } = args;
-      return handleRegistryProcess(processType, species, sections);
+      return handleRegistryProcess(getDatabase(), processType, species, sections);
     }
   );
 
-  ipcMain.handle("database-state-check", handleDatabaseStateCheck);
+  ipcMain.handle("database-state-check", async (_) => {
+    return handleDatabaseStateCheck(getDatabase());
+  });
 
   ipcMain.handle("resolve-database-issues",(_event, dbscr: DatabaseStateCheckResponse) => {
-    return resolveDatabaseIssues(dbscr);
+    return resolveDatabaseIssues(getDatabase(), dbscr);
   });
 
   ipcMain.handle('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
@@ -236,6 +277,6 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
-    return writeNewDefaultSettings(queryParams);
+    return writeNewDefaultSettings(getDatabase(), queryParams);
   });
 };

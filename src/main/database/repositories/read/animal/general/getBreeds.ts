@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure, handleResult } from "packages/core";
 import { Breed, BreedRequest } from "packages/api";
 
 /**
  * gets all breeds from the DB, or just breeds of a given species when requested
+ * @param db The Database to act on
  * @param queryParams parameters for the breed search
  * @returns A `Result` containing an array of `Breed` objects on success, 
  *          or a string error message on failure.
  */
-export const getBreeds = async (queryParams: BreedRequest): Promise<Result<Breed[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure<string>("DB Instance is null"); // Return Failure with a string error message if DB instance is null
-  }
+export const getBreeds = async (db: Database, queryParams: BreedRequest): Promise<Result<Breed[], string>> => {
 
   try {
     let breeds: Breed[];

@@ -1,5 +1,5 @@
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
-import { getDatabase } from "../../dbConnections";
 
 export type GestationPeriod = {
   earlyDays: number;
@@ -7,12 +7,8 @@ export type GestationPeriod = {
 }
 
 export const getGestationPeriod = async (
-  speciesId: string
+  db: Database, speciesId: string
 ): Promise<Result<GestationPeriod, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB Instance is null");
-  }
 
   const query = `
     SELECT early_gestation_length_days AS earlyDays,

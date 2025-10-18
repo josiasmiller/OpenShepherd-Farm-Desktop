@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { RemoveReason } from "packages/api";
 
 /**
  * gets all DI remove reasons from the DB
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `RemoveReason` objects on success, 
  *          or a string error message on failure.
  */
-export const getRemoveReasons = async (): Promise<Result<RemoveReason[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getRemoveReasons = async (db: Database): Promise<Result<RemoveReason[], string>> => {
 
   const removeReasonQuery = `
     SELECT 

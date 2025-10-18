@@ -1,20 +1,17 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * Checks if the given owner UUID belongs to a company.
  * Fails if the owner ID does not exist in either company_table or contact_table.
- * 
+ *
+ * @param db The Database to act on
  * @param ownerId UUID of the owner (either company ID or contact ID)
  * @returns Success(true) if company, Success(false) if contact, Failure if not found
  */
 export const isOwnerCompany = async (
-  ownerId: string
+  db: Database, ownerId: string
 ): Promise<Result<boolean, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB instance is null");
-  }
 
   const companyQuery = `
     SELECT 1

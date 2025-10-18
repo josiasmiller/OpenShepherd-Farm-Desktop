@@ -1,22 +1,22 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 
 /**
  * Updates the death date and death reason for a given animal.
  *
+ * @param db The Database to act on
  * @param animalId - The ID of the animal.
  * @param deathDate - The date the animal died (YYYY-MM-DD).
  * @param deathReasonId - The UUID of the death reason.
  * @returns Result<void, string> - Success if update succeeds, Failure with error message otherwise.
  */
 export async function updateAnimalDeath(
+  db: Database,
   animalId: string,
   deathDate: string,
   deathReasonId: string
 ): Promise<Result<void, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
 
   const query = `
     UPDATE animal_table

@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { TransferReason } from "packages/api";
 
 /**
  * gets all transfer reasons from the DB
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `TransferReason` objects on success, 
  *          or a string error message on failure.
  */
-export const getTransferReasons = async (): Promise<Result<TransferReason[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getTransferReasons = async (db: Database): Promise<Result<TransferReason[], string>> => {
 
   let trQuery = `
     SELECT 

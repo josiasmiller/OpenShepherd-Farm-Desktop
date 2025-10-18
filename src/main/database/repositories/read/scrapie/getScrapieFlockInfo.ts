@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { ScrapieFlockInfo } from "packages/api";
 
@@ -8,13 +8,10 @@ type RawScrapieRow = {
 };
 
 export const getScrapieFlockInfo = async (
+  db: Database,
   ownerId: string,
   isCompany: boolean
 ): Promise<Result<ScrapieFlockInfo | null, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB instance is null");
-  }
 
   const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
 

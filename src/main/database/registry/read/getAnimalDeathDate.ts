@@ -1,4 +1,4 @@
-import { getDatabase } from "../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 export type AnimalDeathDate = {
@@ -11,12 +11,8 @@ type AnimalDeathDateRow = {
 }
 
 export const getAnimalDeathDate = async (
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<AnimalDeathDate, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB Instance is null");
-  }
 
   const query = `
     SELECT death_date

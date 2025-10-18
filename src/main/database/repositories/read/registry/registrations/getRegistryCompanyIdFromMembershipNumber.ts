@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -6,10 +6,8 @@ import { Result, Success, Failure } from "packages/core";
  * based on the given membership_number.
  */
 export async function getRegistryCompanyIdForMembershipNumber(
-  membershipNumber: string
+  db: Database, membershipNumber: string
 ): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT id_registry_id_companyid

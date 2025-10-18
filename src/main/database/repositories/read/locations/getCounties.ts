@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { County } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * gets all counties from the DB
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `County` objects on success, 
  *          or a string error message on failure.
  */
-export const getCounties = async (): Promise<Result<County[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getCounties = async (db: Database): Promise<Result<County[], string>> => {
 
   let countyQuery = `
     SELECT 

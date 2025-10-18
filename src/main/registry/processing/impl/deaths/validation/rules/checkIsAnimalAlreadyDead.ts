@@ -1,13 +1,14 @@
 import { handleResult } from 'packages/core';
 import { RegistryRow, ValidationResponse } from 'packages/api';
 import { AnimalDeathDate, getAnimalDeathDate } from '../../../../../../database';
+import {Database} from "sqlite3";
 
-export async function checkIsAnimalAlreadyDead(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkIsAnimalAlreadyDead(db: Database, row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
   const animalId = row.animalId;
   const animalName = row.name;
 
-  var ddResult = await getAnimalDeathDate(animalId);
+  var ddResult = await getAnimalDeathDate(db, animalId);
 
   var animalDd : AnimalDeathDate;
 

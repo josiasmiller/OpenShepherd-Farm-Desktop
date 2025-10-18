@@ -1,13 +1,16 @@
 import { Species, RegistryRow, ValidationResult } from 'packages/api';
 import { checkHasOfficialId } from './rules/checkHasOfficialId';
+import {Database} from "sqlite3";
 
 /**
  * validates the data extracted from a registration CSV
+ *
+ * @param db The Database to act on
  * @param rows rows to be processed
  * @param _ here only to satisfy interface
  * @returns ValidationResult indicating if the validation was successful or not
  */
-export async function validateRegistrationRows(sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
+export async function validateRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   var rows : RegistryRow[] = sections.registration_records;
@@ -17,7 +20,7 @@ export async function validateRegistrationRows(sections: Record<string, Registry
     const errors: string[] = [];
 
     // Run all relevant checks
-    const officialCheck = await checkHasOfficialId(row);
+    const officialCheck = await checkHasOfficialId(db, row);
     errors.push(...officialCheck.errors);
 
     results.push({

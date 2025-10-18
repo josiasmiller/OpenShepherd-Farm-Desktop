@@ -1,7 +1,8 @@
 import { RegistryRow, Species, ValidationResult } from 'packages/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
+import {Database} from "sqlite3";
 
-export async function validateDeathRows(sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
+export async function validateDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   var rows : RegistryRow[] = sections.death_records;
@@ -10,7 +11,7 @@ export async function validateDeathRows(sections: Record<string, RegistryRow[]>,
     const row = rows[index];
     const errors: string[] = [];
 
-    var isDeadCheck = await checkIsAnimalAlreadyDead(row);
+    var isDeadCheck = await checkIsAnimalAlreadyDead(db, row);
     errors.push(...isDeadCheck.errors);
 
     results.push({

@@ -1,20 +1,20 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Inserts a new row into animal_flock_prefix_table linking an animal to a flock prefix.
- * 
+ *
+ * @param db The Database to act on
  * @param idAnimalId - The ID of the animal (string)
  * @param idFlockprefixId - The ID of the flock prefix (string)
  * @returns The newly inserted animal_flockprefixid (string)
  */
 export async function insertAnimalFlockTableRow(
+  db: Database,
   idAnimalId: string,
   idFlockprefixId: string
 ): Promise<string> {
-  const db = getDatabase();
-  if (!db) throw new Error("DB instance is null");
 
   const idAnimalFlockprefixid = uuidv4();
 

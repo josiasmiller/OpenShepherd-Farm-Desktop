@@ -1,13 +1,14 @@
 import { handleResult } from 'packages/core';
 import { RegistryRow, ValidationResponse } from 'packages/api';
 import { animalHasActiveOfficialTag } from '../../../../../../database';
+import {Database} from "sqlite3";
 
 /**
- * 
+ * @param db The Database to act on
  * @param row verifies that the given animal has any active official ID
  * @returns ValidationResponse indicating if the check passed or failed
  */
-export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkHasOfficialId(db: Database, row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
   // if the user provides a federal tag in the uploaded data, we need not perform a check on the DB
@@ -15,7 +16,7 @@ export async function checkHasOfficialId(row: RegistryRow): Promise<ValidationRe
     return { checkName: "checkHasOfficialId", errors, passed: errors.length === 0 };
   }
 
-  var tagResult = await animalHasActiveOfficialTag(row.animalId);
+  var tagResult = await animalHasActiveOfficialTag(db, row.animalId);
 
   await handleResult(tagResult, {
     success: (data: boolean) => {

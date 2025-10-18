@@ -1,21 +1,21 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * Updates the animal_name and modified timestamp for a given animal ID.
  *
+ * @param db The Database to act on
  * @param animalId UUID of the animal
  * @param newName New name to assign to the animal
  * @returns A `Result` containing `null` on success, 
  *          or a string error message on failure.
  */
 export async function updateAnimalName(
+  db: Database,
   animalId: string,
   newName: string
 ): Promise<Result<null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     UPDATE animal_table

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 import { idTag } from "packages/api";
@@ -26,17 +26,14 @@ type TagQueryRow = {
 
 /**
  * gets the most recent farm tag (or any tag that is not official) of a given animal
+ * @param db The Database to act on
  * @param animalId UUID of animal being sought
  * @returns A `Result` containing a `idTag` object or `null` on success, 
  *          or a string error message on failure.
  */
 export const getMostRecentUnofficialTag = async (
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<idTag | null, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB instance is null");
-  }
 
   const query = `
     SELECT

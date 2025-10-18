@@ -19,14 +19,16 @@ import {
   insertTransferOfOwnershipRecord,
   ID_TRANSFER_REASON_TRANSFERRED_BREEDING,
 } from '../../../../../database';
+import {Database} from "sqlite3";
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
+ * @param db The Database to act on
  * @param rows RegistryRows to be processed
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processTransferRows(sections: Record<string, RegistryRow[]>, _: Species): Promise<ProcessingResult> {
+export async function processTransferRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ProcessingResult> {
 
   let transferResponse : TransferParseResponse = parseTransferSections(sections);
 
@@ -39,12 +41,13 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
   let seller : SellerInfo = transferResponse.seller;
   
   try {
-    await beginTransaction();
+    await beginTransaction(db);
 
     for (const animalInfo of transferResponse.animals) {
 
       try {
         let locationResult = await insertAnimalGoesToLocation(
+          db,
           animalInfo.animalId,
           seller.premiseId,
           buyer.premiseId,
@@ -76,6 +79,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         }
 
         const sellerOwnerResult = await getOwnerById(
+          db,
           sellerId,
           sellerType,
         );
@@ -115,6 +119,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         }
 
         const buyerOwnerResult = await getOwnerById(
+          db,
           buyerId,
           buyerType,
         );
@@ -134,6 +139,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         buyerOwner = buyerOwner!;
 
         let transferOfOwnershipResult = await insertTransferOfOwnershipRecord(
+          db,
           animalInfo.animalId,
           sellerOwner,
           buyerOwner,
@@ -148,11 +154,11 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         ///////////////////////////////////////////////////////////////////////////////////////////
         // remove any for sale records from DB for given animal
 
-        await deleteAnimalForSaleEntry(animalInfo.animalId);
+        await deleteAnimalForSaleEntry(db, animalInfo.animalId);
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get breeder for insertion into animal registration row
-        const breederResult = await getBreeder(animalInfo.animalId);
+        const breederResult = await getBreeder(db, animalInfo.animalId);
         let breeder : Owner = null;
 
         await handleResult(breederResult, {
@@ -170,7 +176,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID for a given animal via the animal's coat color
 
-        var coatColorResult = await getCoatColorForAnimal(animalInfo.animalId);
+        var coatColorResult = await getCoatColorForAnimal(db, animalInfo.animalId);
         let coatColor : CoatColor
         let regCompanyId : string;
 
@@ -191,7 +197,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get flock book ID
 
-        var flockBookResult = await getDefaultFlockBookId(regCompanyId);
+        var flockBookResult = await getDefaultFlockBookId(db, regCompanyId);
 
         var flockBookId : string
 
@@ -209,7 +215,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
         flockBookId = flockBookId!;
 
         // get registration type ID
-        const regTypeReuslt = await getRegistrationTypeIdByRegNum(animalInfo.registrationNumber);
+        const regTypeReuslt = await getRegistrationTypeIdByRegNum(db, animalInfo.registrationNumber);
         let regType : string = null;
 
         await handleResult(regTypeReuslt, {
@@ -226,6 +232,7 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
 
 
         let certificateResult = await insertNewRegistryCertificateRow(
+          db,
           animalInfo.animalId,
           regCompanyId,
           regType,
@@ -239,14 +246,14 @@ export async function processTransferRows(sections: Record<string, RegistryRow[]
       }
     }
 
-    await commitTransaction();
+    await commitTransaction(db);
     return {
       success: true,
       insertedRowCount: transferResponse.animals.length,
     };
 
   } catch (error) {
-    await rollbackTransaction();
+    await rollbackTransaction(db);
     return {
       success: false,
       errors: [(error as Error).message]

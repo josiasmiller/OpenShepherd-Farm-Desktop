@@ -1,10 +1,11 @@
 import fs from 'fs';
 import { dialog } from 'electron';
+import {Database} from "sqlite3";
 import { handleResult, Result } from 'packages/core';
 import { AnimalIdentification, AnimalNote } from 'packages/api'
 import { getAnimalIdentification, getAnimalNotes } from '../../database';
 
-export const writeAnimalNotesCsv = async (animalIds: string[]): Promise<boolean> => {
+export const writeAnimalNotesCsv = async (db: Database, animalIds: string[]): Promise<boolean> => {
 
   const { filePath, canceled } = await dialog.showSaveDialog({
     title: "Save Animal Note CSV",
@@ -18,7 +19,7 @@ export const writeAnimalNotesCsv = async (animalIds: string[]): Promise<boolean>
   }  
 
   try {
-    const csvData = await generateNotesCsvFromAnimalIds(animalIds);
+    const csvData = await generateNotesCsvFromAnimalIds(db, animalIds);
     fs.writeFileSync(filePath, csvData, { encoding: "utf8" });
     console.log(`CSV successfully written to ${filePath}`);
     return true;
@@ -29,7 +30,7 @@ export const writeAnimalNotesCsv = async (animalIds: string[]): Promise<boolean>
 };
   
 
-export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promise<string> => {
+export const generateNotesCsvFromAnimalIds = async (db: Database, animalIds: string[]): Promise<string> => {
   let csvRows: string[] = [];
 
   // Headers
@@ -46,7 +47,7 @@ export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promis
   for (const animalId of animalIds) {
     try {
       // get the naimal Notes
-      const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(animalId);
+      const animalNoteResult: Result<AnimalNote[], string> = await getAnimalNotes(db, animalId);
 
       var animalNotes: AnimalNote[] = [];
       var animalNoteSuccessed: boolean = false;
@@ -66,7 +67,7 @@ export const generateNotesCsvFromAnimalIds = async (animalIds: string[]): Promis
       }
 
       // get all pertinent animal Identifications
-      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(animalId);
+      const animalIdentificationResult: Result<AnimalIdentification, string> = await getAnimalIdentification(db, animalId);
       var animalIdentification : AnimalIdentification | null = null;
       var animalIdentificationSucceeded: boolean = false;
 

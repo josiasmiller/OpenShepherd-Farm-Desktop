@@ -1,8 +1,7 @@
-import {getDatabase} from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import {Failure, Result, Success} from "packages/core";
 import {REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_REGISTERED, REGISTRATION_WHITE_WELSH} from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
-
 
 function incrementRegisteredValue(originalRegNum: string): string {
   const length = originalRegNum.length;
@@ -26,14 +25,13 @@ function incrementWhiteRegistryValue(originalRegNum: string): string {
 
 /**
  * increments a given reistration value and returns the new, non-used value
- * 
+ *
+ * @param db The Database to act on
  * @param registrationTypeId UUID of the registration type being incremented. This should always relate to the black, chocolate, or white registries.
  * @returns A `Result` containing the new registration number on success, 
  *          or a string error message on failure.
  */
-export async function incrementLastRegistrationNumber(registrationTypeId : string): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
+export async function incrementLastRegistrationNumber(db: Database, registrationTypeId : string): Promise<Result<string, string>> {
 
   try {
     const row = await new Promise<{ last_registration_number: string } | undefined>((resolve, reject) => {

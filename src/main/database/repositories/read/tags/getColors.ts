@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Color } from "packages/api";
 
 /**
  * gets all tag colors from the DB
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `Color` objects on success, 
  *          or a string error message on failure.
  */
-export const getColors = async (): Promise<Result<Color[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getColors = async (db: Database): Promise<Result<Color[], string>> => {
 
   let colorQuery = `
     SELECT 

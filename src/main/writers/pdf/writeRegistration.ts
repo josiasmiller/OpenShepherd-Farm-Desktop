@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import {Database} from "sqlite3";
 import {PDFDocument} from "pdf-lib";
 import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } from "packages/api"
 
@@ -28,6 +29,7 @@ const signatureWidth : number = 90;
 const signatureHeight : number = 45;
 
 export const writeRegistration = async (
+  db: Database,
   animalIds: string[],
   registrationType: "black" | "white" | "chocolate",
   signatureFilePath: string | null, 
@@ -56,13 +58,13 @@ export const writeRegistration = async (
   const directoryPath = filePaths[0];
 
   try {
-    const registrationResults = await getAnimalRegistrationInfo(animalIds);
+    const registrationResults = await getAnimalRegistrationInfo(db, animalIds);
 
     let success = false;
 
     await handleResult(registrationResults, {
       success: async (data : AnimalRegistrationResult[]) => {
-        const result = await _handleRegistrationWrite(data, directoryPath, registrationType, signatureFilePath);
+        const result = await _handleRegistrationWrite(db, data, directoryPath, registrationType, signatureFilePath);
         
         if (result instanceof Success) {
           // extract warnings if there are any
@@ -101,6 +103,7 @@ export const writeRegistration = async (
 
 
 const _handleRegistrationWrite = async (
+  db: Database,
   data: AnimalRegistrationResult[],
   directoryPath: string,
   registrationType: "black" | "white" | "chocolate",
@@ -386,7 +389,7 @@ const _handleRegistrationWrite = async (
     if (regResult.animalIdentification) {
       const animalId : string = regResult.animalIdentification?.id;
 
-      var certResult = await markRegistryCertificateAsPrinted(animalId);
+      var certResult = await markRegistryCertificateAsPrinted(db, animalId);
 
       await handleResult(certResult, {
         success: async (_ : null) => {

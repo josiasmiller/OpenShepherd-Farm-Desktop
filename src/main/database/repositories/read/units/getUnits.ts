@@ -1,23 +1,18 @@
 import { Database } from "sqlite3";
-import { getDatabase } from "../../../dbConnections";
 import { UnitRequest, Unit } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
-
 
 /**
  * gets all units for a given type of unit. When no parameters are given to this function, it retrieves all units
  * regardless of their type.
- * 
+ *
+ * @param db The Database to act on
  * @param queryParams 
  * @returns A `Result` containing an array of `Unit` objects on success, 
  *          or a string error message on failure.
  */
-export const getUnits = async (queryParams: UnitRequest): Promise<Result<Unit[], string>> => {
+export const getUnits = async (db: Database, queryParams: UnitRequest): Promise<Result<Unit[], string>> => {
   try {
-    const db = getDatabase();
-    if (db == null) {
-      return new Failure<string>("DB Instance is null"); // Return Failure if DB instance is null
-    }
 
     if (queryParams.unit_type_id != null) {
       const dbResponse : Unit[] = await getUnitsByUnitTypeId(db, queryParams.unit_type_id);

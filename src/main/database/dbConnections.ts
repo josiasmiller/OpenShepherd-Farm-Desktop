@@ -27,7 +27,11 @@ export const openDb = async (dbPath: string): Promise<InstanceType<typeof Databa
   return dbInstance;
 };
 
+export const isDatabaseInitialized = (): Boolean => {
+  return dbInstance !== null
+}
 
 export const getDatabase = (): InstanceType<typeof Database> | null => {
+  if (!dbInstance) throw new Error("Database not initialized");
   return dbInstance;
 };

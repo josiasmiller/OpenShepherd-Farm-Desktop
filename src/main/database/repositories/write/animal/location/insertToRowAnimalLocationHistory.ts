@@ -1,10 +1,11 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
 import { Result, Success, Failure } from "packages/core";
 import { dateTimeAsString } from "../../../../dbUtils";
 
 /**
  * Inserts a new location history row for an animal at birth (from null → to premise).
+ * @param db The Database to act on
  * @param animalId - The animal's ID
  * @param fromPremiseId - The premise ID from where the animal comes
  * @param toPremiseId - The destination premise ID
@@ -13,14 +14,13 @@ import { dateTimeAsString } from "../../../../dbUtils";
  * @returns Result containing the new row's UUID or an error message
  */
 export async function insertAnimalGoesToLocation(
+  db: Database,
   animalId: string,
   fromPremiseId: string | null,
   toPremiseId: string | null,
   movementDate: string,
   timestamp: string = dateTimeAsString()
 ): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const idAnimalLocationHistoryId = uuidv4();
 

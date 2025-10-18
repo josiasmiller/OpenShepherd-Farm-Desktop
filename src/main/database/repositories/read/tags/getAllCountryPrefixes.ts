@@ -1,18 +1,14 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
-
 
 /**
  * gets all tag country EID prefixes from the DB
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of strings on success, 
  *          or a string error message on failure.
  */
-export const getAllCountryTagPrefixes = async (): Promise<Result<string[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getAllCountryTagPrefixes = async (db: Database): Promise<Result<string[], string>> => {
 
   let tagQuery = `
     SELECT 

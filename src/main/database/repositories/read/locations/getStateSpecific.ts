@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { State } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
@@ -13,15 +13,12 @@ type StateRow = {
 
 /**
  * gets a specific state from the DB
+ * @param db The Database to act on
  * @param stateId specific UUID of state to retrieve
  * @returns A `Result` containing a `State` object on success, 
  *          or a string error message on failure.
  */
-export const getStateSpecific = async (stateId: string): Promise<Result<State, string>> => {
-  const db = await getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getStateSpecific = async (db: Database, stateId: string): Promise<Result<State, string>> => {
 
   const stateQuery = `
     SELECT 

@@ -9,15 +9,17 @@ import { registryProcessorFactory } from "../core/registryProcessorFactory";
 import {
   RegistryProcessor,
 } from "../core/types";
+import {Database} from "sqlite3";
 
 export async function handleRegistryProcess(
+  db: Database,
   processType: RegistryProcessType,
   species: Species,
   sections: Record<string, RegistryRow[]>,
 ): Promise<ProcessingResult> {
 
   const processor : RegistryProcessor = registryProcessorFactory(processType);
-  const validationResults : ValidationResult[] = await processor.validateRegistryRows(sections, species);
+  const validationResults : ValidationResult[] = await processor.validateRegistryRows(db, sections, species);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {
@@ -31,5 +33,5 @@ export async function handleRegistryProcess(
     };
   }
 
-  return processor.processRegistryRows(sections, species);
+  return processor.processRegistryRows(db, sections, species);
 }

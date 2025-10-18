@@ -1,17 +1,16 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * Retrieves the most recent active scrapie flock number ID for the given owner.
+ * @param db The Database to act on
  * @param ownerId UUID of the owner (can be contact or company)
- * @returns A `Result` containing a string on success, 
+ * @returns A `Result` containing a string on success,
  *          or a string error message on failure.
  */
 export async function getActiveScrapieFlockNumberId(
-  ownerId: string
+  db: Database, ownerId: string
 ): Promise<Result<string | null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT id_scrapieflocknumberid

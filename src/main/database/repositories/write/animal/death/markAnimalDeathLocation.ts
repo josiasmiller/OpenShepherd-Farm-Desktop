@@ -1,4 +1,4 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 import { dateTimeAsString } from '../../../../dbUtils';
@@ -13,16 +13,16 @@ type LastLocationQueryRow = {
  * Records a location move from the animal's current location to NULL on the date of death.
  * This indicates the animal has left its last known location due to death.
  *
+ * @param db The Database to act on
  * @param animalId - The ID of the deceased animal.
  * @param deathDate - The date of death (used as movement_date).
  * @returns Result<void, string>
  */
 export async function markAnimalDeathLocation(
+  db: Database,
   animalId: string,
   deathDate: string
 ): Promise<Result<void, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
 
   const newId = uuidv4();
 

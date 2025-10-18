@@ -1,19 +1,17 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { getPremiseSpecific } from "./getPremiseSpecific"; // Adjust import if path differs
 import { Result, Failure } from "packages/core";
 import { Premise } from "packages/api";
 
 /**
  * gets the premise for a given contact
+ *
+ * @param db The Database to act on
  * @param contactId UUID of the company being sought
  * @returns A `Result` containing a `Premise` object on success, 
  *          or a string error message on failure.
  */
-export const getContactPremise = async (contactId: string): Promise<Result<Premise, string>> => {
-  const db = await getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getContactPremise = async (db: Database, contactId: string): Promise<Result<Premise, string>> => {
 
   const contactPremiseQuery = `
     SELECT 
@@ -34,7 +32,7 @@ export const getContactPremise = async (contactId: string): Promise<Result<Premi
         resolve(new Failure(`No premise found for contact ID: ${contactId}`));
       } else {
         
-        const result = await getPremiseSpecific(row.id_premiseid);
+        const result = await getPremiseSpecific(db, row.id_premiseid);
         resolve(result);
       }
     });

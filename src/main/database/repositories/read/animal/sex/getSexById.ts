@@ -1,16 +1,14 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 import { Sex } from 'packages/api';
 
 /**
  * Retrieves a Sex object by its UUID.
- *
+ * @param db The Database to act on
  * @param sexId - The UUID of the sex record.
  * @returns Result<Sex, string> - Success with the Sex object if found, or Failure with an error message.
  */
-export async function getSexById(sexId: string): Promise<Result<Sex, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
+export async function getSexById(db: Database, sexId: string): Promise<Result<Sex, string>> {
 
   const query = `
     SELECT

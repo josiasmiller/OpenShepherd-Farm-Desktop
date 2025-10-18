@@ -1,17 +1,16 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * Retrieves the current_id_flockbookid from registry_default_settings_table
  * based on the given registry company ID.
- * 
+ *
+ * @param db The Database to act on
  * @param companyId : the registry company ID to search for
  */
 export async function getDefaultFlockBookId(
-  companyId: string
+  db: Database, companyId: string
 ): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT current_id_flockbookid

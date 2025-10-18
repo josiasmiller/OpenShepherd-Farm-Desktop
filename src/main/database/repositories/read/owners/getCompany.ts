@@ -1,18 +1,16 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Company } from "packages/api";
 
 /**
  * gets companies from the DB, either all companies or just the registry companies
+ *
+ * @param db The Database to act on
  * @param onlyGetRegistryCompanies bool indicating if the function should only get the registry companies
  * @returns A `Result` containing an array of `Company` objects on success, 
  *          or a string error message on failure.
  */
-export const getCompanies = async (onlyGetRegistryCompanies: boolean): Promise<Result<Company[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getCompanies = async (db: Database, onlyGetRegistryCompanies: boolean): Promise<Result<Company[], string>> => {
 
   let companyQuery: string;
 

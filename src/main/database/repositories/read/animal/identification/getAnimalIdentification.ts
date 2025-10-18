@@ -1,13 +1,9 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 import { AnimalIdentification } from "packages/api";
 
-export const getAnimalIdentification = async (animalId : string): Promise<Result<AnimalIdentification, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getAnimalIdentification = async (db: Database, animalId : string): Promise<Result<AnimalIdentification, string>> => {
 
   let identificationQuery = `
     SELECT

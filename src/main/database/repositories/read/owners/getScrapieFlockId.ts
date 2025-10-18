@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 type ScrapieRow = {
@@ -6,6 +6,7 @@ type ScrapieRow = {
 };
 
 export const getScrapieFlockId = async (
+  db: Database,
   contactId: string | null,
   companyId: string | null
 ): Promise<Result<string, string>> => {
