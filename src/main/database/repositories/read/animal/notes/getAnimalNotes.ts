@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { AnimalNote } from "packages/api";
 
 /**
  * gets all animal notes for a given animal
+ * @param db The Database to act on
  * @param animalId UUID of animal being sought
  * @returns A `Result` containing an array of `AnimalNote` objects on success, 
  *          or a string error message on failure.
  */
-export const getAnimalNotes = async (animalId : string): Promise<Result<AnimalNote[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getAnimalNotes = async (db: Database, animalId : string): Promise<Result<AnimalNote[], string>> => {
 
   let noteQuery = `
     SELECT

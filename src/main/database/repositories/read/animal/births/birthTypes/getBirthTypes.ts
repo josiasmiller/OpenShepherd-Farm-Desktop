@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { BirthType } from "packages/api";
 
 /**
  * Retrieves all birth types from the database.
  *
+ * @param db The Database to act on.
  * @returns A `Result` containing an array of `BirthType` objects on success, 
  *          or a string error message on failure.
  */
-export const getBirthTypes = async (): Promise<Result<BirthType[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getBirthTypes = async (db: Database): Promise<Result<BirthType[], string>> => {
 
   const birthTypeQuery = `
     SELECT 

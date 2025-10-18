@@ -1,9 +1,10 @@
 import { RegistryRow, ValidationResponse } from 'packages/api';
 import { getAllCountryTagPrefixes } from '../../../../../../database';
 import { handleResult } from 'packages/core';
+import {Database} from "sqlite3";
 
 
-export async function checkElectronicTags(row: RegistryRow): Promise<ValidationResponse> {
+export async function checkElectronicTags(db: Database, row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];
 
   const identificationOneKey : string = row.fedTypeKey;
@@ -15,7 +16,7 @@ export async function checkElectronicTags(row: RegistryRow): Promise<ValidationR
   const electronicTagUUID = "50f1c64f-e56e-420e-8150-9347fe51c0c1";
   const electronicTagRegex = /^[0-9]{3}_[A-Za-z0-9]{12}$/;
 
-  let allCountryTagsResult = await getAllCountryTagPrefixes();
+  let allCountryTagsResult = await getAllCountryTagPrefixes(db);
   let allCountryTags : string[] = [];
   let allCountryTagSuccess : boolean = true;
 

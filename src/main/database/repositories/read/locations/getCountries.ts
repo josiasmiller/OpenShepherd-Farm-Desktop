@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Country } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * gets all countries from the DB
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `Country` objects on success, 
  *          or a string error message on failure.
  */
-export const getCountries = async (): Promise<Result<Country[], string>> => {
-  const db = await getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getCountries = async (db: Database): Promise<Result<Country[], string>> => {
 
   let countryQuery = `
     SELECT 

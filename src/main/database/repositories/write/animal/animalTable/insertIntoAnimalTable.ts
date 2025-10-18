@@ -1,19 +1,16 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { v4 as uuidv4 } from 'uuid';
 import { InsertAnimalTableInput } from '../../../../models/write/animal/animalTable/animalTableInput';
 import { dateTimeAsString } from '../../../../dbUtils';
 
 /**
  * uploads an animal into the `animal_table`
- * 
+ *
+ * @param db The Database to act on
  * @param input all pertinent data for uploading to the `animal_table`
  * @returns the generated UUID of the animal inserted
  */
-export async function insertIntoAnimalTable(input: InsertAnimalTableInput): Promise<string> {
-  const db = getDatabase();
-  if (db == null) {
-    throw new TypeError("DB Instance is null");
-  }
+export async function insertIntoAnimalTable(db: Database, input: InsertAnimalTableInput): Promise<string> {
 
   const id = uuidv4();
 

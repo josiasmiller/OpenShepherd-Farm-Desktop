@@ -1,17 +1,15 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
-
 
 /**
  * Get the registration type ID for a given registration number.
+ * @param db The Database to act on
  * @param registrationNumber The registration number to look up
  * @returns A Result containing the registration type ID string on success, or an error message
  */
 export const getRegistrationTypeIdByRegNum = async (
-  registrationNumber: string
+  db: Database, registrationNumber: string
 ): Promise<Result<string, string>> => {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT id_animalregistrationtypeid

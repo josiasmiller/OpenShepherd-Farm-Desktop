@@ -1,7 +1,7 @@
-import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { REGISTRATION_DIED_AT_BIRTH } from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
+import {Database} from "sqlite3";
 
 /**
  * Increments a registration string like "D000480" to "D000481".
@@ -26,13 +26,12 @@ function incrementStringId(id: string): string {
  * Increments the last "Died at Birth" registration number and returns the new value.
  *
  * Format is expected to be like "D000480".
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing the new registration value on success, 
  *          or a string error message on failure.
  */
-export async function incrementLastDiedAtBirthValue(): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
+export async function incrementLastDiedAtBirthValue(db: Database): Promise<Result<string, string>> {
 
   try {
     const row = await new Promise<{ last_registration_number: string } | undefined>((resolve, reject) => {

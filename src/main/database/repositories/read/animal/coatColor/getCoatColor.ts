@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants";
 import { Result, Success, Failure } from "packages/core";
 import { CoatColor } from "packages/api";
@@ -10,18 +10,16 @@ interface CoatColorRow {
   registryCompanyId: string;
 }
 
-
 /**
  * Retrieves the coat color of a specific animal.
+ * @param db The Database to act on
  * @param animalId UUID of the animal being searched for
  * @returns A `Result` containing a `CoatColor` object on success, 
  *          or a string error message on failure.
  */
 export async function getCoatColorForAnimal(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<CoatColor, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT

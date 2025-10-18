@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "packages/core";
 
@@ -6,14 +6,13 @@ import { Result, Success, Failure } from "packages/core";
  * Updates the registry_certificate_print_table to set printed = 1
  * and updates the modified timestamp for the given animalId.
  * Returns Failure if no row was updated.
- * 
+ *
+ * @param db The Database to act on
  * @param animalId UUID of the animal
  */
 export async function markRegistryCertificateAsPrinted(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     UPDATE registry_certificate_print_table

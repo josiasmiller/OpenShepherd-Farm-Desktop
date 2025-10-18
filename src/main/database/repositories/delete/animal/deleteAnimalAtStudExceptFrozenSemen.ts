@@ -1,18 +1,17 @@
-import { getDatabase } from '../../../dbConnections';
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 
 /**
  * Deletes all entries from animal_at_stud_table for the given animal
  * where frozen_semen is not available (i.e., frozen_semen != 1).
  *
+ * @param db - The Database to act on.
  * @param animalId - The ID of the animal.
  * @returns Result<null, string> indicating success or failure.
  */
 export async function deleteAnimalAtStudEntriesWithoutFrozenSemen(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
 
   const query = `
     DELETE FROM animal_at_stud_table

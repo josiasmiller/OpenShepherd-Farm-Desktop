@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 export type Company = {
@@ -10,13 +10,12 @@ export type Company = {
 /**
  * Gets all companies linked to a given contact.
  *
+ * @param db The Database to act on
  * @param contactId UUID of the contact
  */
 export async function getCompaniesForContact(
-  contactId: string
+  db: Database, contactId: string
 ): Promise<Result<Company[], string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT c.id_companyid AS id,

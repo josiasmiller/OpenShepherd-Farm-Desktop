@@ -1,22 +1,22 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Inserts a coat color record into the animal_genetic_characteristic_table.
  *
+ * @param db The Database to act on
  * @param animalId - The ID of the animal.
  * @param coatColorId - The ID representing the coat color value.
  * @param dateObserved - The date the coat color was observed (format: YYYY-MM-DD).
  * @returns The ID of the newly inserted animal genetic characteristic record.
  */
 export async function insertGeneticCoatRow(
+  db: Database,
   animalId: string,
   coatColorId: string,
   dateObserved: string
 ): Promise<string> {
-  const db = getDatabase();
-  if (!db) throw new Error('DB instance is null');
 
   const id = uuidv4();
 

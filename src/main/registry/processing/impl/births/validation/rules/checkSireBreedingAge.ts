@@ -1,8 +1,9 @@
 import { unwrapOrFailWithAnimal } from 'packages/core';
 import { Species, RegistryRow, ValidationResponse } from 'packages/api';
 import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../../database';
+import {Database} from "sqlite3";
 
-export async function checkSireBreedingAge(row: RegistryRow, species : Species): Promise<ValidationResponse> {
+export async function checkSireBreedingAge(db: Database, row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
   const { sireId, birthdate } = row;
@@ -16,7 +17,7 @@ export async function checkSireBreedingAge(row: RegistryRow, species : Species):
 
   // Get gestation period
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species.id),
+    await getGestationPeriod(db, species.id),
     "gestation period",
     sireId
   );
@@ -31,7 +32,7 @@ export async function checkSireBreedingAge(row: RegistryRow, species : Species):
 
   // Get sire birthdate
   const sireBdayResult = await unwrapOrFailWithAnimal(
-    await getAnimalBirthDate(sireId),
+    await getAnimalBirthDate(db, sireId),
     "sire animal identification",
     sireId
   );
@@ -45,7 +46,7 @@ export async function checkSireBreedingAge(row: RegistryRow, species : Species):
 
   // Get species-specific breeding ages
   const breedingAgesResult = await unwrapOrFailWithAnimal(
-    await getBreedingAges(species.id),
+    await getBreedingAges(db, species.id),
     "breeding ages",
     sireId
   );

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { BirthType } from "packages/api";
 
@@ -10,16 +10,13 @@ interface BirthTypeRow {
 }
 
 /**
- * gets a specific `BirthType` from the DB 
+ * gets a specific `BirthType` from the DB
+ * @param db The Database to act on
  * @param id UUID of rge birthtype being sought
  * @returns A `Result` containing a `BirthType` object on success, 
  *          or a string error message on failure.
  */
-export const getSpecificBirthType = async (id: string): Promise<Result<BirthType, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getSpecificBirthType = async (db: Database, id: string): Promise<Result<BirthType, string>> => {
 
   const query = `
     SELECT 

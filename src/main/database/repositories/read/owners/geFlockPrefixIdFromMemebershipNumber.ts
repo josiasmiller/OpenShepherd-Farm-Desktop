@@ -1,17 +1,17 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * gets the UUID of the flock prefix of a given owner
+ *
+ * @param db The Database to act on
  * @param membershipNumber membership number of the owner
  * @returns A `Result` containing a string on success, 
  *          or a string error message on failure.
  */
 export async function getFlockPrefixIdByMembershipNumber(
-  membershipNumber: string
+  db: Database, membershipNumber: string
 ): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT id_flockprefixid

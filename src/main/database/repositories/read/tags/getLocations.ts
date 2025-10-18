@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { TagLocation } from "packages/api";
 
 /**
  * gets all ID tag locations
- * 
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `TagLocation` objects on success, 
  *          or a string error message on failure.
  */
-export const getTagLocations = async (): Promise<Result<TagLocation[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getTagLocations = async (db: Database): Promise<Result<TagLocation[], string>> => {
 
   let locationQuery = `
     SELECT 

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Failure, Result, Success } from "packages/core";
 import { CodonResponse } from "packages/api";
 
@@ -8,15 +8,14 @@ type RawCodonRow = {
 
 /**
  * gets the Codon 171 data for a given animal
+ * @param db The Database to act on
  * @param animalId UUID of animal being sought
  * @returns A `Result` containing a`CodonResponse` or `null` object on success, 
  *          or a string error message on failure.
  */
 export const getCodon171ForAnimal = async (
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<CodonResponse | null, string>> => {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT c171.codon171_alleles AS codon171alleles

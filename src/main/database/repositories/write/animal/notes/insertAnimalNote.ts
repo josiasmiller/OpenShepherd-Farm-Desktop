@@ -1,18 +1,19 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 
-
 /**
  * Inserts a note into the animal_note_table for the given animal.
  *
+ * @param db The Database to act on
  * @param animalId - The ID of the animal.
  * @param noteText - The text of the note to be inserted.
  * @param noteDate - The date of the note.
  * @returns Result<string, string> - The ID of the newly inserted note or a failure message.
  */
 export async function insertAnimalNote(
+  db: Database,
   animalId: string,
   noteText: string,
   noteDate: string
@@ -20,9 +21,6 @@ export async function insertAnimalNote(
   if (noteText == null || noteText == "") {
     return new Failure("Invalid noteText: it must be non-null and NOT an empty string.")
   }
-
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
 
   const id = uuidv4();
 

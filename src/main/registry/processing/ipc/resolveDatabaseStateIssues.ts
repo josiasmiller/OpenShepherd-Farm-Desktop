@@ -1,3 +1,4 @@
+import {Database} from "sqlite3";
 import { correctLatestRegistrationNumber } from "../../../database/registry/write/correctLatestRegistrationNumber";
 import { Result, Success, Failure } from "packages/core";
 import { DatabaseStateCheckResponse } from "./handleDatabaseStateCheck";
@@ -23,6 +24,7 @@ const registrationTypeIds = {
  * fix any issues by updating last_registration_number accordingly.
  */
 export async function resolveDatabaseIssues(
+  db: Database,
   stateCheck: DatabaseStateCheckResponse
 ): Promise<Result<boolean, string>> {
   try {
@@ -30,13 +32,13 @@ export async function resolveDatabaseIssues(
     const fixes: Promise<Result<boolean, string>>[] = [];
 
     if (!stateCheck.blackVerified) {
-      fixes.push(correctLatestRegistrationNumber(registrationTypeIds.black));
+      fixes.push(correctLatestRegistrationNumber(db, registrationTypeIds.black));
     }
     if (!stateCheck.chocolateVerified) {
-      fixes.push(correctLatestRegistrationNumber(registrationTypeIds.chocolate));
+      fixes.push(correctLatestRegistrationNumber(db, registrationTypeIds.chocolate));
     }
     if (!stateCheck.whiteVerified) {
-      fixes.push(correctLatestRegistrationNumber(registrationTypeIds.white));
+      fixes.push(correctLatestRegistrationNumber(db, registrationTypeIds.white));
     }
 
     // If nothing to fix

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Premise, State } from "packages/api";
 
@@ -18,15 +18,13 @@ type PremiseRow = {
 
 /**
  * gets a specific premise from the DB
+ *
+ * @param db The Database to act on
  * @param premiseId UUID of the premise being sought
  * @returns A `Result` containing a `Premise` object on success, 
  *          or a string error message on failure.
  */
-export const getPremiseSpecific = async (premiseId: string): Promise<Result<Premise, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getPremiseSpecific = async (db: Database, premiseId: string): Promise<Result<Premise, string>> => {
 
   const premiseQuery = `
     SELECT 

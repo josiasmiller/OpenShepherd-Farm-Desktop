@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 type TagQueryResponse = {
@@ -14,13 +14,12 @@ type TagQueryResponse = {
  * 1) has a non-null id_scrapieflockid AND has the flag official_id = 1 AND is the current active tag (not removed)
  * 2) Electronic tags that start with an approved 3-digit country code AND has the flag official_id = 1 AND is a current active tag (not removed)
  *
+ * @param db The Database to act on
  * @param animalId UUID of the animal
  */
 export async function animalHasActiveOfficialTag(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<boolean, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   // Query active tags for this animal
   const tagQuery = `

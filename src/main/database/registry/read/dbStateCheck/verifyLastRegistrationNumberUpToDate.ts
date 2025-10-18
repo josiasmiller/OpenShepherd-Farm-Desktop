@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 function extractNumericSuffix(regNum: string): number | null {
@@ -8,9 +8,8 @@ function extractNumericSuffix(regNum: string): number | null {
 }
 
 export async function verifyLastRegistrationNumberIsUpToDate(
-  id_registrationtypeid: string
+  db: Database, id_registrationtypeid: string
 ): Promise<Result<boolean, string>> {
-  const db = getDatabase();
   if (!db) return new Failure("DB instance is null");
 
   try {

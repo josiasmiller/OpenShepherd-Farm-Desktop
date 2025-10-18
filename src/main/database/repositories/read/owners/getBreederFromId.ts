@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Owner, OwnerType, Contact, Company, Premise, ScrapieFlockInfo } from "packages/api";
 import { getContactPremise } from "../premises/getContactPremise";
@@ -7,11 +7,10 @@ import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
 import { handleResult } from "packages/core";
 
 export async function getBreederById(
+  db: Database,
   breederId: string,
   isCompany: boolean
 ): Promise<Result<Owner, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   try {
     if (isCompany) {
@@ -45,7 +44,7 @@ export async function getBreederById(
         name: row.company_name ?? "",
       };
 
-      const premiseResult = await getCompanyPremise(company.id);
+      const premiseResult = await getCompanyPremise(db, company.id);
       let premise: Premise;
       const premiseHandled = await handleResult(premiseResult, {
         success: (data : Premise) => {
@@ -56,7 +55,7 @@ export async function getBreederById(
       });
       if (premiseHandled instanceof Failure) return premiseHandled;
 
-      const scrapieResult = await getScrapieFlockInfo(company.id, true);
+      const scrapieResult = await getScrapieFlockInfo(db, company.id, true);
       let scrapieId: ScrapieFlockInfo | null;
       const scrapieHandled = await handleResult(scrapieResult, {
         success: (data : ScrapieFlockInfo | null) => {
@@ -112,7 +111,7 @@ export async function getBreederById(
         lastName: row.contact_last_name ?? "",
       };
 
-      const premiseResult = await getContactPremise(contact.id);
+      const premiseResult = await getContactPremise(db, contact.id);
       let premise: Premise;
       const premiseHandled = await handleResult(premiseResult, {
         success: (data : Premise) => {
@@ -123,7 +122,7 @@ export async function getBreederById(
       });
       if (premiseHandled instanceof Failure) return premiseHandled;
 
-      const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+      const scrapieResult = await getScrapieFlockInfo(db, contact.id, false);
       let scrapieId: ScrapieFlockInfo | null;
       const scrapieHandled = await handleResult(scrapieResult, {
         success: (data : ScrapieFlockInfo | null) => {

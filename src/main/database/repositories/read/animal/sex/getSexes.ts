@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Sex } from "packages/api";
 
 /**
  * gets all sexes from the DB
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `Sex` objects on success, 
  *          or a string error message on failure.
  */
-export const getSexes = async (): Promise<Result<Sex[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getSexes = async (db: Database): Promise<Result<Sex[], string>> => {
 
   let sexQuery = `
     SELECT 

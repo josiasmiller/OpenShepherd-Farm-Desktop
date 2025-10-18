@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { BirthInfo, BirthType } from "packages/api";
 
@@ -12,17 +12,14 @@ type BirthInfoRow = {
 
 /**
  * gets the birth information of a given animal
+ * @param db The Database to act on
  * @param animalId UUID of animal being searched
  * @returns A `Result` containing a `BirthInfo` object on success, 
  *          or a string error message on failure.
  */
 export const getBirthInfo = async (
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<BirthInfo, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB instance is null");
-  }
 
   const query = `
     SELECT 

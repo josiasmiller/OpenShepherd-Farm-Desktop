@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { OwnerType, FlockPrefix } from "packages/api";
 import { Result, Success, Failure } from "packages/core";
 
@@ -7,11 +7,7 @@ import { Result, Success, Failure } from "packages/core";
  * @returns A `Result` containing an array of `FlockPrefix` objects on success, 
  *          or a string error message on failure.
  */
-export const getFlockPrefixes = async (): Promise<Result<FlockPrefix[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getFlockPrefixes = async (db: Database): Promise<Result<FlockPrefix[], string>> => {
 
   let flockPrefixQuery = `
     SELECT 

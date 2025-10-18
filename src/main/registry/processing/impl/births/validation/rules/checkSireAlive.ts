@@ -1,8 +1,9 @@
 import { unwrapOrFailWithAnimal } from 'packages/core';
 import { Species, RegistryRow, ValidationResponse } from 'packages/api';
 import { getAnimalDeathDate, getGestationPeriod } from '../../../../../../database';
+import {Database} from "sqlite3";
 
-export async function checkSireAlive(row: RegistryRow, species : Species): Promise<ValidationResponse> {
+export async function checkSireAlive(db: Database, row: RegistryRow, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay : number = 86400000;
   const errors: string[] = [];
   const { sireId, birthdate } = row;
@@ -15,7 +16,7 @@ export async function checkSireAlive(row: RegistryRow, species : Species): Promi
   }
 
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species.id),
+    await getGestationPeriod(db, species.id),
     "gestation period",
     sireId
   );
@@ -29,7 +30,7 @@ export async function checkSireAlive(row: RegistryRow, species : Species): Promi
   const earliestBreedingDate = new Date(birthDate.getTime() - earlyDays * millisecondsInDay);
 
   const deathDateResult = await unwrapOrFailWithAnimal(
-    await getAnimalDeathDate(sireId),
+    await getAnimalDeathDate(db, sireId),
     "sire death date",
     sireId
   );

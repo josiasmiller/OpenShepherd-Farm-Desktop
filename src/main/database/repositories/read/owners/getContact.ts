@@ -1,17 +1,15 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Contact } from "packages/api";
 
 /**
  * gets all contacts from the DB
+ *
+ * @param db The Database to act on
  * @returns A `Result` containing an array of `Contact` objects on success, 
  *          or a string error message on failure.
  */
-export const getContacts = async (): Promise<Result<Contact[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getContacts = async (db: Database): Promise<Result<Contact[], string>> => {
 
   let ownerQuery = `
     SELECT 

@@ -1,14 +1,10 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { NewDefaultSettingsParameters } from "packages/api";
 import { animalDefaultColumns, getAnimalDefaultValues } from "./defaultParser";
 
 export const editExistingDefaultSettings = async (
-  queryParams: NewDefaultSettingsParameters
+  db: Database, queryParams: NewDefaultSettingsParameters
 ): Promise<boolean> => {
-  const db = await getDatabase();
-  if (db == null) {
-    throw new TypeError("DB Instance is null");
-  }
 
   if (!queryParams.id) {
     console.error("Missing id for update.");

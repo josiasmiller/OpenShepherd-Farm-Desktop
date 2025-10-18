@@ -18,16 +18,18 @@ import {
   markAnimalDeathLocation,
   updateAnimalDeath,
 } from '../../../../../database';
+import {Database} from "sqlite3";
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
+ * @param db The Database to act on
  * @param rows RegistryRows to be processed
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeathRows(sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
+export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
   try {
-    await beginTransaction();
+    await beginTransaction(db);
 
     var rows : RegistryRow[] = sections.death_records;
 
@@ -43,6 +45,7 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
         // update death record of animal
 
         var animalDeathResult = await updateAnimalDeath(
+          db,
           animalId,
           deathDate,
           deathReasonId,
@@ -62,6 +65,7 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
         // update last location of animal
 
         var deathLocationResult = await markAnimalDeathLocation(
+          db,
           animalId,
           deathDate,
         );
@@ -80,12 +84,12 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
         // add animal note if it there is one
 
         if (animalNote != null) {
-          await _writeAnimalNote(animalId, animalNote, deathDate);
+          await _writeAnimalNote(db, animalId, animalNote, deathDate);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // delete any pertinent data that needs to be on animal death
-        var deleteAnimalAlertResult = await deleteAnimalAlerts(animalId);
+        var deleteAnimalAlertResult = await deleteAnimalAlerts(db, animalId);
 
         await handleResult(deleteAnimalAlertResult, {
           success: (_: null) => {
@@ -99,7 +103,7 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        var deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(animalId);
+        var deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(db, animalId);
 
         await handleResult(deleteAnimalAtStudResult, {
           success: (_: null) => {
@@ -113,7 +117,7 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        var deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(animalId);
+        var deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(db, animalId);
 
         await handleResult(deleteAnimalForSaleResult, {
           success: (_: null) => {
@@ -130,14 +134,14 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
       }
     }
 
-    await commitTransaction();
+    await commitTransaction(db);
     return {
       success: true,
       insertedRowCount: rows.length
     };
 
   } catch (error) {
-    await rollbackTransaction();
+    await rollbackTransaction(db);
     return {
       success: false,
       errors: [(error as Error).message]
@@ -145,8 +149,9 @@ export async function processDeathRows(sections: Record<string, RegistryRow[]>, 
   }
 }
 
-async function _writeAnimalNote(animalId : string, animalNote: string, noteDate: string) {
+async function _writeAnimalNote(db: Database, animalId : string, animalNote: string, noteDate: string) {
   var noteResult = await insertAnimalNote(
+    db,
     animalId,
     animalNote,
     noteDate,

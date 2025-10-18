@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { DrugEvent } from "packages/api";
 
 /**
  * gets the drug history of a given animal
+ * @param db The Database to act on
  * @param animalId UUID of the animal being sought
  * @returns A `Result` containing an array of `DrugEvent` objects on success, 
  *          or a string error message on failure.
  */
-export const getDrugHistory = async (animalId : string): Promise<Result<DrugEvent[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getDrugHistory = async (db: Database, animalId : string): Promise<Result<DrugEvent[], string>> => {
 
   let drugEventsQuery = `
     SELECT

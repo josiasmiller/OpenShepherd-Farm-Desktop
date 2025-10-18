@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { getContactPremise } from "../premises/getContactPremise";
 import { getCompanyPremise } from "../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../scrapie/getScrapieFlockInfo";
@@ -19,19 +19,18 @@ type OwnerByIdRow = {
 
 /**
  * Gets an owner by their UUID, knowing if it's a company or contact.
+ *
+ * @param db The Database to act on
  * @param ownerId UUID of said owner
  * @param ownerType The type of owner being sought
  * @returns A `Result` containing an `Owner` object on success, 
  *          or a string error message on failure.
  */
 export const getOwnerById = async (
+  db: Database,
   ownerId: string,
   ownerType: OwnerType,
 ): Promise<Result<Owner, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB instance is null");
-  }
 
   if (ownerType == OwnerType.COMPANY) {
     return _getCompanyOwnerById(db, ownerId);
@@ -99,10 +98,10 @@ const _getContactOwnerById = async (
     lastName: row.contact_last_name ?? "",
   };
 
-  const premiseResult = await getContactPremise(contact.id);
+  const premiseResult = await getContactPremise(db, contact.id);
   if (premiseResult.tag === "error") return premiseResult;
 
-  const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+  const scrapieResult = await getScrapieFlockInfo(db, contact.id, false);
   if (scrapieResult.tag === "error") return scrapieResult;
 
   return new Success({
@@ -173,10 +172,10 @@ const _getCompanyOwnerById = async (
     registry_id: row.registry_id ?? undefined,
   };
 
-  const premiseResult = await getCompanyPremise(company.id);
+  const premiseResult = await getCompanyPremise(db, company.id);
   if (premiseResult.tag === "error") return premiseResult;
 
-  const scrapieResult = await getScrapieFlockInfo(company.id, true);
+  const scrapieResult = await getScrapieFlockInfo(db, company.id, true);
   if (scrapieResult.tag === "error") return scrapieResult;
 
   return new Success({

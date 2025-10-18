@@ -5,12 +5,14 @@ import {
   getOffspringOfDam,
   OffspringInfo
 } from '../../../../../../database';
+import {Database} from "sqlite3";
 
 /**
  * Validates that the dam has not had another offspring born too recently,
  * based on the species' minimum gestation period.
  */
 export async function checkDamRecentOffspring(
+  db: Database,
   row: RegistryRow,
   species: Species
 ): Promise<ValidationResponse> {
@@ -33,7 +35,7 @@ export async function checkDamRecentOffspring(
 
   // 1. Get minimum gestation period for the species
   const gestationResult = await unwrapOrFailWithAnimal(
-    await getGestationPeriod(species.id),
+    await getGestationPeriod(db, species.id),
     "gestation period",
     damId
   );
@@ -51,7 +53,7 @@ export async function checkDamRecentOffspring(
 
   // 2. Get all previous offspring of the dam
   const offspringResult = await unwrapOrFailWithAnimal(
-    await getOffspringOfDam(damId),
+    await getOffspringOfDam(db, damId),
     "dam offspring",
     damId
   );

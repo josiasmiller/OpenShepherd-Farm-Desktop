@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure, unwrapOrFailWithAnimal } from "packages/core";
 import { Owner, OwnerType, Contact, Company } from "packages/api";
 import { getContactPremise } from "../../premises/getContactPremise";
@@ -18,18 +18,18 @@ type OwnershipQueryRow = {
 
 /**
  * gets the owner of a given animal at the birthdate 
- * 
+ *
+ * @param db The Database to act on
  * @param damId UUID of the animal's Dam
  * @param birthDate birthdate of the given animal as a `Date` object  
  * @returns A `Result` containing an `Owner` object on success, 
  *          or a string error message on failure.
  */
 export async function getOwnerAtBirth(
+  db: Database,
   damId: string,
   birthDate: Date
 ): Promise<Result<Owner, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT
@@ -98,11 +98,11 @@ export async function getOwnerAtBirth(
       lastName: row.contact_last_name ?? "",
     };
 
-    const premiseResult = await getContactPremise(contact.id);
+    const premiseResult = await getContactPremise(db, contact.id);
     const premise = await unwrapOrFailWithAnimal(premiseResult, "owner premise", damId);
     if (premise.tag === "error") return premise;
 
-    const scrapieResult = await getScrapieFlockInfo(contact.id, false);
+    const scrapieResult = await getScrapieFlockInfo(db, contact.id, false);
     const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "scrapie ID", damId);
     if (scrapieId.tag === "error") return scrapieId;
 
@@ -122,11 +122,11 @@ export async function getOwnerAtBirth(
       name: row.company_name ?? "",
     };
 
-    const premiseResult = await getCompanyPremise(company.id);
+    const premiseResult = await getCompanyPremise(db, company.id);
     const premise = await unwrapOrFailWithAnimal(premiseResult, "owner premise", damId);
     if (premise.tag === "error") return premise;
 
-    const scrapieResult = await getScrapieFlockInfo(company.id, true);
+    const scrapieResult = await getScrapieFlockInfo(db, company.id, true);
     const scrapieId = await unwrapOrFailWithAnimal(scrapieResult, "scrapie ID", damId);
     if (scrapieId.tag === "error") return scrapieId;
 

@@ -1,17 +1,14 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { escapeLikeString } from "../../../../dbUtils";
 import { AnimalSearchRequest, AnimalSearchResult } from "packages/api";
 
 /**
  * performs a search for all animals based on the input parameters
+ * @param db Database to act on
  * @param queryParams search parameters
  * @returns array of search results
  */
-export const animalSearch = async (queryParams: AnimalSearchRequest = {}): Promise<AnimalSearchResult[]> => {
-  const db = getDatabase();
-  if (db == null) {
-    throw new TypeError("DB Instance is null");
-  }
+export const animalSearch = async (db: Database, queryParams: AnimalSearchRequest = {}): Promise<AnimalSearchResult[]> => {
 
   // Base query
   let animalQuery = `

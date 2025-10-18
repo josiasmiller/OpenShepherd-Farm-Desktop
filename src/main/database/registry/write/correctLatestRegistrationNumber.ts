@@ -1,4 +1,4 @@
-import { getDatabase } from "../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -7,10 +7,8 @@ import { Result, Success, Failure } from "packages/core";
  * for the given registrationTypeId.
  */
 export async function correctLatestRegistrationNumber(
-  id_registrationtypeid: string
+  db: Database, id_registrationtypeid: string
 ): Promise<Result<boolean, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   // Helper to extract numeric suffix
   function extractNumericSuffix(regNum: string): number | null {

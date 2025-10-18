@@ -1,6 +1,6 @@
+import {Database} from "sqlite3";
 import { Failure, handleResult, Result, Success, unwrapOrFailWithAnimal } from "packages/core";
 import { BirthInfo, Sex } from 'packages/api'
-import { getDatabase } from "../../../../dbConnections";
 import { CodonResponse } from "packages/api";
 import { AnimalIdentification } from "packages/api";
 import { PedigreeNode } from "packages/api";
@@ -22,18 +22,15 @@ import { getCompaniesForContact } from "../../owners/getCompaniesForContact";
 
 /**
  * Gets the registration information for all animals in the input array
- * 
+ *
+ * @param db The Database to act on
  * @param animalIds UUID of animal(s) being sought
  * @returns A `Result` containing an array of `AnimalRegistrationResult` objects on success, 
  *          or a string error message on failure.
  */
 export const getAnimalRegistrationInfo = async (
-  animalIds: string[]
+  db: Database, animalIds: string[]
 ): Promise<Result<AnimalRegistrationResult[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    throw new TypeError("DB Instance is null");
-  }
 
   try {
     const results: AnimalRegistrationResult[] = [];
@@ -53,17 +50,17 @@ export const getAnimalRegistrationInfo = async (
         codon171Result,
         fiftyDayWeightResult,
       ] = await Promise.all([
-        getPedigree(animalId, 4),
-        getAnimalIdentification(animalId),
-        getBreeder(animalId),
-        getOwner(animalId),
-        getMostRecentOfficialTag(animalId),
-        getMostRecentUnofficialTag(animalId),
-        getBirthInfo(animalId),
-        getSexFromAnimalId(animalId),
-        getCodon136ForAnimal(animalId),
-        getCodon171ForAnimal(animalId),
-        estimateFiftyDayWeight(animalId),
+        getPedigree(db, animalId, 4),
+        getAnimalIdentification(db, animalId),
+        getBreeder(db, animalId),
+        getOwner(db, animalId),
+        getMostRecentOfficialTag(db, animalId),
+        getMostRecentUnofficialTag(db, animalId),
+        getBirthInfo(db, animalId),
+        getSexFromAnimalId(db, animalId),
+        getCodon136ForAnimal(db, animalId),
+        getCodon171ForAnimal(db, animalId),
+        estimateFiftyDayWeight(db, animalId),
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +201,7 @@ export const getAnimalRegistrationInfo = async (
 
       if (owner.type === OwnerType.CONTACT) {
         const contactOwner = owner as OwnerContact;
-        const contactCompanyResult = await getCompaniesForContact(contactOwner.contact.id);
+        const contactCompanyResult = await getCompaniesForContact(db, contactOwner.contact.id);
 
         await handleResult(contactCompanyResult, {
           success: (data: Company[]) => {
@@ -224,7 +221,7 @@ export const getAnimalRegistrationInfo = async (
 
       if (breeder.type === OwnerType.CONTACT) {
         const breederOwner = breeder as OwnerContact;
-        const breederCompanyResult = await getCompaniesForContact(breederOwner.contact.id);
+        const breederCompanyResult = await getCompaniesForContact(db, breederOwner.contact.id);
 
         await handleResult(breederCompanyResult, {
           success: (data: Company[]) => {

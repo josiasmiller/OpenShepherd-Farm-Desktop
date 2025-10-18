@@ -1,4 +1,4 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -37,19 +37,19 @@ function combineBreedPercentages(
 
 /**
  * writes the breed percentages to the DB of a given animal
- * 
+ *
+ * @param db The Database to act on
  * @param animalId UUID of animal whose percentages must be written
  * @param sireId UUID of the animal's father
  * @param damId UUID of the animal's mother
  * @returns void
  */
 export async function writeAnimalBreedPercentages(
+  db: Database,
   animalId: string,
   sireId: string,
   damId: string,
 ): Promise<void> {
-  const db = getDatabase();
-  if (!db) throw new TypeError("DB Instance is null");
 
   const fetchBreeds = (parentId: string): Promise<BreedPercentageRow[]> => {
     return new Promise((resolve, reject) => {

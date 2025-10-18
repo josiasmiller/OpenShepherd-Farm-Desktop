@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { REGISTRATION_BIRTH_NOTIFY } from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
@@ -26,9 +26,7 @@ function incrementStringId(id: string): string {
  * @returns A `Result` containing the new BN value on success, 
  *          or a string error message on failure.
  */
-export async function incrementLastBirthNotifyValue(): Promise<Result<string, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
+export async function incrementLastBirthNotifyValue(db: Database): Promise<Result<string, string>> {
 
   try {
     const row = await new Promise<{ last_registration_number: string } | undefined>((resolve, reject) => {

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
@@ -8,14 +8,13 @@ import { Result, Success, Failure } from "packages/core";
  * - id_scrapieflockid != NULL
  * - id_date_off IS NULL
  * - id_time_off IS NULL
- * 
+ *
+ * @param db The Database to act on
  * @param animalId UUID of the animal
  */
 export async function animalHasActiveFederalTag(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<boolean, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
 
   const query = `
     SELECT 1

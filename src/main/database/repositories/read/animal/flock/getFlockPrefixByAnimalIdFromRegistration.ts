@@ -1,18 +1,16 @@
-import { getDatabase } from '../../../../dbConnections';
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from 'packages/core/src/resultTypes';
 import { OwnerType, FlockPrefix } from 'packages/api';
 
 /**
  * Gets the flock prefix for a given animalId by finding the registration record and matching breeder/registry in the flock_prefix_table.
- *
+ * @param db The Database to act on.
  * @param animalId - The ID of the animal.
  * @returns Result<FlockPrefix, string> - Success with FlockPrefix if found, or Failure with error message.
  */
 export async function getFlockPrefixByAnimalIdFromRegistration(
-  animalId: string
+  db: Database, animalId: string
 ): Promise<Result<FlockPrefix, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure('DB instance is null');
 
   const query = `
     SELECT

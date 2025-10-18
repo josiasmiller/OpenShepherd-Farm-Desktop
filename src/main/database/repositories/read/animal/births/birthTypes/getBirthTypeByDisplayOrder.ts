@@ -1,6 +1,6 @@
-import { getDatabase } from "../../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
 import { BirthType } from "packages/api";
+import {Database} from "sqlite3";
 
 interface BirthTypeRow {
   id: string;
@@ -11,15 +11,12 @@ interface BirthTypeRow {
 
 /**
  * gets a specific `BirthType` from the DB using the display order value
+ * @param db The Database to act on.
  * @param displayOrder The integer `birth_type_display_order` to search for
  * @returns A `Result` containing a `BirthType` object on success, 
  *          or a string error message on failure.
  */
-export const getBirthTypeByDisplayOrder = async (displayOrder: number): Promise<Result<BirthType, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getBirthTypeByDisplayOrder = async (db: Database, displayOrder: number): Promise<Result<BirthType, string>> => {
 
   const query = `
     SELECT 

@@ -1,18 +1,15 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { getDbDate } from "../../../../dbUtils";
 
 /**
  * gets the birthdate of an animal
+ * @param db Database to act on
  * @param animalId UUID of animal 
  * @returns A `Result` containing a `Date` object on success, 
  *          or a string error message on failure.
  */
-export const getAnimalBirthDate = async (animalId: string): Promise<Result<Date, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB instance is null");
-  }
+export const getAnimalBirthDate = async (db: Database, animalId: string): Promise<Result<Date, string>> => {
 
   const query = `
     SELECT a.birth_date

@@ -1,4 +1,4 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { Species } from "packages/api";
 
@@ -7,11 +7,7 @@ import { Species } from "packages/api";
  * @returns A `Result` containing an array of `Species` objects on success, 
  *          or a string error message on failure.
  */
-export const getSpecies = async (): Promise<Result<Species[], string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
+export const getSpecies = async (db: Database): Promise<Result<Species[], string>> => {
 
   let speciesQuery = `
     SELECT 

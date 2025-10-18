@@ -1,20 +1,17 @@
-import { getDatabase } from "../../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 import { BreedingAgesResult } from "../../../../models/read/animal/breeding/breedingAges";
 
 /**
  * gets the breeding ages of a given species
+ * @param db The Database to act on
  * @param speciesId UUID of the species being sought
  * @returns A `Result` containing a `BreedingAgesResult` object on success, 
  *          or a string error message on failure.
  */
 export const getBreedingAges = async (
-  speciesId: string
+  db: Database, speciesId: string
 ): Promise<Result<BreedingAgesResult, string>> => {
-  const db = getDatabase();
-  if (db == null) {
-    return new Failure("DB Instance is null");
-  }
 
   const query = `
     SELECT

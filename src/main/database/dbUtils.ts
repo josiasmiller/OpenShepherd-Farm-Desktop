@@ -1,4 +1,4 @@
-import { getDatabase } from './dbConnections';
+import {Database} from "sqlite3";
 
 export function escapeLikeString(str: string): string {
   return str.replace(/[%_]/g, '\\$&');
@@ -62,9 +62,7 @@ export function dateTimeAsString(date: Date = new Date()): string {
 // | TRANSACTION HELPERS |
 // =======================
 
-function runAsync(sql: string): Promise<void> {
-  const db = getDatabase();
-  if (!db) throw new Error("Database not initialized");
+function runAsync(db: Database, sql: string): Promise<void> {
   return new Promise((resolve, reject) => {
     db.run(sql, (err: Error | null) => {
       if (err) reject(err);
@@ -73,14 +71,14 @@ function runAsync(sql: string): Promise<void> {
   });
 }
 
-export async function beginTransaction(): Promise<void> {
-  await runAsync('BEGIN TRANSACTION');
+export async function beginTransaction(db: Database): Promise<void> {
+  await runAsync(db, 'BEGIN TRANSACTION');
 }
 
-export async function commitTransaction(): Promise<void> {
-  await runAsync('COMMIT');
+export async function commitTransaction(db: Database): Promise<void> {
+  await runAsync(db, 'COMMIT');
 }
 
-export async function rollbackTransaction(): Promise<void> {
-  await runAsync('ROLLBACK');
+export async function rollbackTransaction(db: Database): Promise<void> {
+  await runAsync(db, 'ROLLBACK');
 }

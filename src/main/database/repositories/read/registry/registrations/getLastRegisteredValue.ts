@@ -1,5 +1,5 @@
-import { getDatabase } from "../../../../dbConnections";
 import { Result, Success, Failure } from "packages/core";
+import {Database} from "sqlite3";
 
 type LastRegistrationRow = {
   last_registration_number: string | null;
@@ -7,10 +7,11 @@ type LastRegistrationRow = {
 
 /**
  * Retrieves the last_registration_number for the hardcoded registration type ID.
+ *
+ * @param db The Database to act on
+ * @param registrationType The type of registration for the value to retrieve
  */
-export async function getLastRegisteredValue(registrationType : string): Promise<Result<string | null, string>> {
-  const db = getDatabase();
-  if (!db) return new Failure("DB instance is null");
+export async function getLastRegisteredValue(db: Database, registrationType : string): Promise<Result<string | null, string>> {
 
   const query = `
     SELECT last_registration_number

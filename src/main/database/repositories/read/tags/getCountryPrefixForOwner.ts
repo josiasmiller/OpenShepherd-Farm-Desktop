@@ -1,21 +1,19 @@
-import { getDatabase } from "../../../dbConnections";
+import {Database} from "sqlite3";
 import { Result, Success, Failure } from "packages/core";
 
 /**
  * Get the 3-digit country prefix for a given owner.
- * 
+ *
+ * @param db The Database to act on
  * @param ownerId UUID of the owner
  * @param isCompany boolean - true if owner is a company, false if contact
  * @returns Success(country_eid_prefix) or Failure if not found
  */
 export const getCountryPrefixForOwner = async (
+  db: Database,
   ownerId: string,
   isCompany: boolean
 ): Promise<Result<string, string>> => {
-  const db = getDatabase();
-  if (!db) {
-    return new Failure("DB instance is null");
-  }
 
   // Choose the correct join table
   const premiseJoinTable = isCompany ? "company_premise_table" : "contact_premise_table";
