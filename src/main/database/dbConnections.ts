@@ -1,37 +1,32 @@
-import pkg from 'sqlite3';
+import {Database} from 'packages/database';
 import log from 'electron-log';
 
-const { Database } = pkg;
+let dbInstance: Database | null = null;
 
-let dbInstance: InstanceType<typeof Database> | null = null;
-
-export const openDb = async (dbPath: string): Promise<InstanceType<typeof Database>> => {
+export const openDb = async (dbPath: string): Promise<Database> => {
   if (dbInstance) {
     // Close old connection safely
-    dbInstance.close((err?: Error | null) => {
-      if (err) {
-        log.error("Failed to close previous database connection:", err);
-      }
-    });
+    await dbInstance.close().catch((err: Error) => {
+      log.error("Failed to close previous database connection:", err)
+    })
+    dbInstance = null
   }
 
-  dbInstance = new Database(dbPath);
+  dbInstance = await Database.open(dbPath)
 
-  dbInstance.exec("PRAGMA journal_mode=DELETE", (err?: Error | null) => {
-    if (err) {
-      log.error("Failed to set PRAGMA journal_mode:", err);
-    }
-  });
+  await dbInstance.exec("PRAGMA journal_mode=DELETE").catch((err: Error) => {
+    log.error("Failed to set PRAGMA journal_mode:", err)
+  })
 
-  log.info("Database connection established:", dbPath);
-  return dbInstance;
+  log.info("Database connection established:", dbPath)
+  return dbInstance
 };
 
 export const isDatabaseInitialized = (): Boolean => {
   return dbInstance !== null
 }
 
-export const getDatabase = (): InstanceType<typeof Database> | null => {
-  if (!dbInstance) throw new Error("Database not initialized");
-  return dbInstance;
+export const getDatabase = (): Database | null => {
+  if (!dbInstance) throw new Error("Database not initialized")
+  return dbInstance
 };
