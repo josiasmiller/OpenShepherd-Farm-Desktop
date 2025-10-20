@@ -1,0 +1,9 @@
+{
+  "name": "database-promises",
+  "version": "1.0.0",
+  "description": "Wraps node-sqlite3 database in a promise based api.",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}
