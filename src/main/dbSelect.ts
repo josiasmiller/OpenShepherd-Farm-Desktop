@@ -12,7 +12,7 @@ export const selectNewDb = async (parentWindow: BrowserWindow) => {
   if (filePaths.length > 0) {
     const databasePath = filePaths[0]; // Save the selected file path
 
-    openDb(databasePath); // Open the database in dbConnection
+    await openDb(databasePath); // Open the database in dbConnection
 
     return databasePath;
   }
