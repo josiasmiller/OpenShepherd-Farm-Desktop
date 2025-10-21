@@ -13,6 +13,7 @@
   "exclude": ["./build/*", "./**/*.test.ts"],
   "references": [
     { "path": "../packages/appBuild" },
+    { "path": "../packages/database" },
     { "path": "../packages/api" },
     { "path": "../packages/core" },
     { "path": "../packages/time" }
