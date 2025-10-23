@@ -95,6 +95,8 @@ test('Database#get resolves to the expected row type when a qualifying row exist
     .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.get(`SELECT * FROM test_table WHERE column_two = 2`))
     .resolves.toEqual(expect.objectContaining({ column_one: 1, column_two: 2}))
+  await expect(database.get(`SELECT * FROM test_table WHERE column_two = 3`))
+    .resolves.toEqual(expect.objectContaining({ column_one: 2, column_two: 3}))
 })
 
 /**
