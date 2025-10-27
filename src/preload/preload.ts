@@ -104,15 +104,9 @@ const storeAPI : StoreAPI = {
 const systemAPI : SystemAPI = {
   databaseStateCheck: () => ipcRenderer.invoke("database-state-check"),
   resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => ipcRenderer.invoke("resolve-database-issues", dbscr),
-  isDatabaseLoaded: () => ipcRenderer.invoke("is-database-loaded"),
-  databaseSessionInfo: () => ipcRenderer.invoke('query-database-session-info'),
-  onDatabaseSessionChanged: (callback: (dbSessionInfo: DatabaseSessionInfo | null) => void) => {
-    return bindIpcCallback('database-session-changed', callback)
-  },
   openDirectory: (path: string) => ipcRenderer.invoke("open-directory", path),
   openExternalURL: (url: string) => ipcRenderer.invoke("open-external-url", url),
   openDatabase: () => ipcRenderer.invoke('open-database'),
-  closeDatabase: () => ipcRenderer.invoke('close-database'),
   selectPngFile: () => ipcRenderer.invoke("select-png-file"),
 }
 

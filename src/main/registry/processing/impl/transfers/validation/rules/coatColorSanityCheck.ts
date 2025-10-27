@@ -1,6 +1,7 @@
 import { handleResult } from "@common/core";
 import { CoatColor, ValidationResponse } from '@app/api';
 import { getCoatColorForAnimal } from "../../../../../../database";
+import {Database} from "sqlite3";
 
 const allowedColorCombinations: Record<string, string[]> = {
 
@@ -20,6 +21,7 @@ function canProduce(sireColor: string, damColor: string, offspringColor: string)
 }
 
 export const verifyCoatColorAccuracy = async (
+  db: Database,
   sireId: string,
   damId: string,
   offspringId: string
@@ -32,7 +34,7 @@ export const verifyCoatColorAccuracy = async (
   let offspringColor: string | null = null;
 
   try {
-    const sireResult = await getCoatColorForAnimal(sireId);
+    const sireResult = await getCoatColorForAnimal(db, sireId);
     await handleResult(sireResult, {
       success: (color: CoatColor) => {
         if (!color || !color.name) throw new Error(`No coat color found for sire id=${sireId}`);
@@ -43,7 +45,7 @@ export const verifyCoatColorAccuracy = async (
       },
     });
 
-    const damResult = await getCoatColorForAnimal(damId);
+    const damResult = await getCoatColorForAnimal(db, damId);
     await handleResult(damResult, {
       success: (color: CoatColor) => {
         if (!color || !color.name) throw new Error(`No coat color found for dam id=${damId}`);
@@ -54,7 +56,7 @@ export const verifyCoatColorAccuracy = async (
       },
     });
 
-    const offspringResult = await getCoatColorForAnimal(offspringId);
+    const offspringResult = await getCoatColorForAnimal(db, offspringId);
     await handleResult(offspringResult, {
       success: (color: CoatColor) => {
         if (!color || !color.name) throw new Error(`No coat color found for offspring id=${offspringId}`);

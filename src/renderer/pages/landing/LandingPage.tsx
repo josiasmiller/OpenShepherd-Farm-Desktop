@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import transparentLogo from "../../assets/images/AnimalTrakker.png";
 import {isRegistryDesktop} from '@app/buildVariant';
-import { SystemService, SystemServiceContext } from '../../services/system/systemService';
+import { SessionManagementService, SessionManagementServiceContext } from '../../services/session/management/sessionManagementService';
 
 const OpenSessionCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -23,10 +23,10 @@ const OpenSessionCard = styled(Card)(({ theme }) => ({
 }));
 
 export const LandingPage = React.forwardRef((props, ref) => {
-  const systemService = useContext<SystemService>(SystemServiceContext)
+  const sessionManagementService = useContext<SessionManagementService>(SessionManagementServiceContext)
   const openDatabase = async () => {
     try {
-      await systemService.openDatabase()
+      await sessionManagementService.openSession()
     } catch (error) {
       console.log(error)
     }

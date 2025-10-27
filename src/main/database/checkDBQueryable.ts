@@ -1,4 +1,4 @@
-import {Database} from "packages/database";
+import {Database} from "@database/async";
 
 export const DB_QUERY_CHECK_PASSED = 'db_query_check_passed'
 export const DB_QUERY_CHECK_FAILED_SETTINGS = 'db_query_check_failed_settings'

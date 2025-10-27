@@ -38,7 +38,6 @@ import {
   RegistrationParseResponse,
   TransferParseResponse,
   DeathParseResponse,
-  DatabaseSessionInfo,
 } from "./dtos";
 
 import { Result } from "@common/core";
@@ -127,14 +126,10 @@ export interface StoreAPI {
 export interface SystemAPI {
   databaseStateCheck: () => Promise<DatabaseStateCheckResponse>;
   resolveDatabaseIssues: (dbscr: DatabaseStateCheckResponse) => Promise<Result<boolean, string>>;
-  isDatabaseLoaded: () => Promise<boolean>;
   openDirectory: (path: string) => Promise<void>;
   openExternalURL: (url: string) => Promise<void>;
   openDatabase: () => Promise<string>;
-  closeDatabase: () => Promise<void>;
   selectPngFile: () => Promise<string>;
-  databaseSessionInfo: () => Promise<DatabaseSessionInfo | null>,
-  onDatabaseSessionChanged: IpcEventRegistrarFunc<DatabaseSessionInfo | null>
 }
 
 // -------------------- Global IPC wrapper --------------------
