@@ -81,9 +81,9 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // add animal note if it there is one
+        // add animal note if it there is a valid one
 
-        if (animalNote != null) {
+        if (animalNote && animalNote.trim() !== "") {
           await _writeAnimalNote(db, animalId, animalNote, deathDate);
         }
 
