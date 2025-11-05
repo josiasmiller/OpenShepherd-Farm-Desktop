@@ -96,7 +96,7 @@ const processTypeButtons: Record<string, (ctx: {
       className: "wide-button"
     },
     {
-      label: loading ? "Loading..." : "Select Transfers CSV",
+      label: loading ? "Loading..." : "Select Transfers JSON",
       onClick: selectAndLoadFile,
       disabled: loading,
       className: "wide-button"
@@ -332,26 +332,6 @@ export const PreprocessorPage: React.FC = () => {
 
     const tables: EditableTableData[] = [];
 
-    // ANIMAL_ID,REGISTRATION_NUMBER,PREFIX,NAME,BIRTH_DATE,BIRTH_TYPE,SEX,COAT_COLOR
-    const headerMap: Record<string, string> = {
-      "ANIMAL_ID": "animalId",
-      "REGISTRATION_NUMBER": "registrationNumber",
-      "PREFIX": "prefix",
-      "NAME": "name",
-      "BIRTH_DATE": "birthDate",
-      "BIRTH_TYPE": "birthType",
-      "SEX": "sex",
-      "COAT_COLOR": "coatColor",
-    };
-
-    const normalizedAnimals = animals.map(a => {
-      const mapped: any = {};
-      for (const [csvKey, ourKey] of Object.entries(headerMap)) {
-        mapped[ourKey] = a[csvKey as keyof typeof a] ?? "";
-      }
-      return mapped;
-    });
-
     // Animals table
     tables.push({
       title: "Transferred Animals",
@@ -366,7 +346,7 @@ export const PreprocessorPage: React.FC = () => {
         { key: 'sex', label: 'Sex', editable: true },
         { key: 'coatColor', label: 'Coat Color', editable: true },
       ],
-      rows: normalizedAnimals,
+      rows: animals,
     });
 
     // Seller info
@@ -392,6 +372,7 @@ export const PreprocessorPage: React.FC = () => {
     setTables(tables);
     setHasSelectedFile(true);
   };
+
 
 
 
