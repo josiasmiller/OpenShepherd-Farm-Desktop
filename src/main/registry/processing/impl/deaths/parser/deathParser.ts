@@ -1,62 +1,57 @@
 import fs from 'fs/promises';
-import Papa from 'papaparse';
 import { DeathParseResponse, DeathParseRow, ParseResult } from 'packages/api';
-import { deathParseMap } from './util/deathParseMap';
 import { BrowserWindow, dialog } from 'electron';
 
-export const deathParser = async (mainWindow: BrowserWindow): Promise<ParseResult<DeathParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog( mainWindow, {
-    title: "Select Death CSV File",
-    properties: ["openFile"],
-    filters: [{ name: "CSV Files", extensions: ["csv"] }],
+export const deathParser = async (
+  mainWindow: BrowserWindow
+): Promise<ParseResult<DeathParseResponse>> => {
+  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
+    title: 'Select Death JSON File',
+    properties: ['openFile'],
+    filters: [{ name: 'JSON Files', extensions: ['json'] }],
   });
 
   if (canceled || filePaths.length === 0) {
-    console.log("User cancelled CSV file selection.");
-    return { 
-      data: {
-        rows : []
-      }, 
-      warnings: [] 
+    console.log('User cancelled JSON file selection.');
+    return {
+      data: { rows: [] },
+      warnings: [],
     };
   }
 
   const selectedFile = filePaths[0];
   const fileContent = await fs.readFile(selectedFile, 'utf-8');
 
-  return new Promise((resolve, reject) => {
-    Papa.parse(fileContent, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const warnings: string[] = [];
-        const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(deathParseMap);
+  try {
+    const parsed = JSON.parse(fileContent);
 
-        for (const header of expectedHeaders) {
-          if (!actualHeaders.includes(header)) {
-            warnings.push(`Missing expected column: "${header}"`);
-          }
-        }
+    if (!parsed.deaths || !Array.isArray(parsed.deaths)) {
+      throw new Error('Invalid JSON format: missing "deaths" array');
+    }
 
-        const parsedData: DeathParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<DeathParseRow> = {};
+    const rows: DeathParseRow[] = parsed.deaths.map((death: any) => ({
+      deathDate: death.DEATH_DATE ?? '',
+      animalId: death.ID_ANIMALID ?? '',
+      prefixKey: death.PREFIX_KEY ?? '',
+      prefix: death.PREFIX ?? '',
+      name: death.NAME ?? '',
+      registrationNumber: death.REGISTRATION_NUMBER ?? '',
+      reasonKey: death.REASON_KEY ?? '',
+      reason: death.REASON ?? '',
+      notes: death.NOTES ?? '',
+    }));
 
-          for (const [csvKey, fieldKey] of Object.entries(deathParseMap)) {
-            parsedRow[fieldKey as keyof DeathParseRow] = row[csvKey];
-          }
+    const result: ParseResult<DeathParseResponse> = {
+      data: { rows },
+      warnings: [],
+    };
 
-          return parsedRow as DeathParseRow;
-        });
-
-        resolve({ 
-          data: {
-            rows : parsedData
-          }, 
-          warnings: warnings 
-        });
-      },
-      error: (err: any) => reject(err),
-    });
-  });
+    return result;
+  } catch (error: any) {
+    console.error('Failed to parse JSON:', error);
+    return {
+      data: { rows: [] },
+      warnings: [`Failed to parse JSON: ${error.message}`],
+    };
+  }
 };

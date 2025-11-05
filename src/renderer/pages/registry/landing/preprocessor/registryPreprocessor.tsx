@@ -82,7 +82,7 @@ const processTypeButtons: Record<string, (ctx: {
       className: "wide-button"
     },
     {
-      label: loading ? "Loading..." : "Select Deaths CSV",
+      label: loading ? "Loading..." : "Select Deaths JSON",
       onClick: selectAndLoadFile,
       disabled: loading,
       className: "wide-button"
