@@ -7,7 +7,7 @@ import { checkHasAtLeastOneValidTag } from './rules/checkHasAtLeastOneValidTag';
 import { checkElectronicTags } from './rules/checkElectronicTags';
 import {Database} from "sqlite3";
 
-export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
+export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species, parseResult: ParseResult<any>,): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
   
   var rows : RegistryRow[] = sections.birth_records;

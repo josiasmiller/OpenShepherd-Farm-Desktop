@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { BackButton } from "../../../../components/backButton/backButton";
 
-import { RegistryFieldDef, RegistryRow } from '@app/api';
+import { RegistryFieldDef, RegistryRow, TransferParseResponse } from '@app/api';
 
 import { BirthParseResponse, BirthParseRow } from '@app/api';
 import { DeathParseResponse, DeathParseRow } from '@app/api';
@@ -127,6 +127,8 @@ export const PreprocessorPage: React.FC = () => {
   const [tables, setTables] = useState<EditableTableData[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
+
+  const [currentParseResult, setParseResult] = useState(null);
 
   const selectAndLoadFile = async () => {
     if (!processType) return;
@@ -325,8 +327,12 @@ export const PreprocessorPage: React.FC = () => {
 
 
   const handleTransfers = async () => {
-    const parseResult = await window.registryAPI.parseTransfers();
+    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
     const { animals, seller, buyer } = parseResult.data;
+
+    // TODO --> handle error case from `ParseResult`
+
+    setParseResult(parseResult); // save parseResult 
 
     handleWarnings(parseResult.warnings);
 
@@ -433,6 +439,7 @@ export const PreprocessorPage: React.FC = () => {
           acc[key] = table.rows;
           return acc;
         }, {}),
+        parseResult: currentParseResult,
       };
 
       const result: ProcessingResult = await window.registryAPI.process(args);

@@ -1,9 +1,7 @@
 import {Database} from "sqlite3";
-import { handleResult, Result, unwrapOrThrow } from '@common/core';
+import { handleResult, Result, unwrapOrThrow, isUUIDv4 } from '@common/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from '@app/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
-
-import { isUUIDv4 } from '@common/core';
 
 
 // DB actions
@@ -60,7 +58,7 @@ import {
 // import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 
 
-export async function processBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
+export async function processBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species : Species, parseResult: ParseResult<any>,): Promise<ProcessingResult> {
   try {
     await beginTransaction(db);
 

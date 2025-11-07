@@ -410,6 +410,7 @@ export type DatabaseStateCheckResponse = {
 export type ParseResult<T> = {
     data: T;
     warnings: string[];
+    errorCode?: string;
 };
 
 export interface ProcessingResult {
@@ -422,6 +423,7 @@ export interface RegistryProcessRequest {
     processType: RegistryProcessType;
     species: Species;
     sections: Record<string, RegistryRow[]>;
+    parseResult: ParseResult<any>;
 }
 
 export type RegistryProcessType = 'births' | 'registrations' | 'deaths' | 'transfers';

@@ -4,7 +4,9 @@ import {
   RegistryRow,
   ProcessingResult,
   ValidationResult,
+  ParseResult,
 } from '@app/api';
+
 import { registryProcessorFactory } from "../core/registryProcessorFactory";
 import {
   RegistryProcessor,
@@ -16,10 +18,11 @@ export async function handleRegistryProcess(
   processType: RegistryProcessType,
   species: Species,
   sections: Record<string, RegistryRow[]>,
+  parseResult: ParseResult<any>,
 ): Promise<ProcessingResult> {
 
   const processor : RegistryProcessor = registryProcessorFactory(processType);
-  const validationResults : ValidationResult[] = await processor.validateRegistryRows(db, sections, species);
+  const validationResults : ValidationResult[] = await processor.validateRegistryRows(db, sections, species, parseResult);
   const hasErrors = validationResults.some((r) => !r.isValid);
 
   if (hasErrors) {
@@ -33,5 +36,5 @@ export async function handleRegistryProcess(
     };
   }
 
-  return processor.processRegistryRows(db, sections, species);
+  return processor.processRegistryRows(db, sections, species, parseResult);
 }

@@ -1,5 +1,6 @@
 import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType } from '@app/api';
+import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType, ParseResult } from '@app/api';
+
 
 import {
   beginTransaction,
@@ -24,13 +25,13 @@ import {Database} from "sqlite3";
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param rows RegistryRows to be processed
+ * @param _sections RegistryRows to be processed // MITCH DEBUG --> this is deprecated now?
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processTransferRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ProcessingResult> {
+export async function processTransferRows(db: Database, _sections: Record<string, RegistryRow[]>, _: Species, parseResult: ParseResult<TransferParseResponse>): Promise<ProcessingResult> {
 
-  let transferResponse : TransferParseResponse = parseTransferSections(sections);
+  let transferResponse : TransferParseResponse = parseResult.data;
 
   if (isNewBuyer(transferResponse.buyer)) {
     throw new Error("New Buyers not yet supported");
@@ -44,7 +45,7 @@ export async function processTransferRows(db: Database, sections: Record<string,
     await beginTransaction(db);
 
     for (const animalInfo of transferResponse.animals) {
-
+      
       try {
         let locationResult = await insertAnimalGoesToLocation(
           db,
@@ -112,7 +113,7 @@ export async function processTransferRows(db: Database, sections: Record<string,
           buyerId = buyer.contactId;
           buyerType = OwnerType.CONTACT;
         } else if (buyer.companyId) {
-          sellerId = buyer.companyId;
+          buyerId = buyer.companyId;
           buyerType = OwnerType.COMPANY;
         } else {
           throw new Error("Buyer must have either contactId or companyId");

@@ -1,8 +1,13 @@
-import { RegistryRow, Species, ValidationResult } from '@app/api';
+import { RegistryRow, Species, ValidationResult, ParseResult } from '@app/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
 import {Database} from "sqlite3";
 
-export async function validateDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
+export async function validateDeathRows(
+  db: Database, 
+  sections: Record<string, RegistryRow[]>, 
+  _: Species, 
+  parseResult: ParseResult<any>,
+): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   var rows : RegistryRow[] = sections.death_records;

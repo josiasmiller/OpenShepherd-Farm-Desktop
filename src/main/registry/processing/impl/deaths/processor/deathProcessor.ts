@@ -1,5 +1,5 @@
 import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult } from '@app/api';
+import { Species, RegistryRow, ProcessingResult, ParseResult } from '@app/api';
 
 
 // DB actions
@@ -27,7 +27,7 @@ import {Database} from "sqlite3";
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
+export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species, parseResult: ParseResult<any>,): Promise<ProcessingResult> {
   try {
     await beginTransaction(db);
 
