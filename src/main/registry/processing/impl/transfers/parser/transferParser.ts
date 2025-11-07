@@ -1,7 +1,5 @@
-import fs from 'fs/promises';
-import Papa from 'papaparse';
-import { BrowserWindow, dialog } from 'electron';
-import { ParseResult } from '@app/api';
+import fs from "fs/promises";
+import { dialog } from "electron";
 
 import {
   TransferParseResponse,
@@ -9,27 +7,9 @@ import {
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
+  ParseResult,
 } from '@app/api';
 
-/**
- * Electron helper to select a transfer file (UI-only)
- */
-export const chooseTransferFile = async (
-  mainWindow: BrowserWindow
-): Promise<string | null> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
-    title: "Select Transfer JSON File",
-    properties: ["openFile"],
-    filters: [{ name: "JSON Files", extensions: ["json"] }],
-  });
-
-  if (canceled || filePaths.length === 0) {
-    console.log("User cancelled JSON file selection.");
-    return null;
-  }
-
-  return filePaths[0];
-};
 
 /**
  * Core JSON parser

@@ -328,13 +328,15 @@ export const PreprocessorPage: React.FC = () => {
 
   const handleTransfers = async () => {
     const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
-    const { animals, seller, buyer } = parseResult.data;
 
-    // TODO --> handle error case from `ParseResult`
+    if (parseResult.errorCode !== undefined) {
+      return;
+    }
 
     setParseResult(parseResult); // save parseResult 
-
     handleWarnings(parseResult.warnings);
+
+    const { animals, seller, buyer } = parseResult.data;
 
     const tables: EditableTableData[] = [];
 

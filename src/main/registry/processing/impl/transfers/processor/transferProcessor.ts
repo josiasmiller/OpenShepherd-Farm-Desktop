@@ -25,8 +25,9 @@ import {Database} from "sqlite3";
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param _sections RegistryRows to be processed // MITCH DEBUG --> this is deprecated now?
+ * @param _sections deprecated, remains to satisfy interface in the interim 
  * @param _ here only to satisfy interface
+ * @param parseResult the raw ParseResult that contains the pertinent information to this process
  * @returns ProcessingResult indicating if the process was successful or not
  */
 export async function processTransferRows(db: Database, _sections: Record<string, RegistryRow[]>, _: Species, parseResult: ParseResult<TransferParseResponse>): Promise<ProcessingResult> {
