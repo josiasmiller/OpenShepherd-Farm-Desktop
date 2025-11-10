@@ -143,7 +143,7 @@ export async function processTransferRows(db: Database, sections: Record<string,
           animalInfo.animalId,
           sellerOwner,
           buyerOwner,
-          seller.movedAt,
+          seller.soldAt,
           ID_TRANSFER_REASON_TRANSFERRED_BREEDING,
         );
 
