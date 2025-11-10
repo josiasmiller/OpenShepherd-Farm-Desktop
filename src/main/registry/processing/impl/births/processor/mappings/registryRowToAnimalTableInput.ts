@@ -27,14 +27,15 @@ export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, birthType: B
 
   var birthWeight : number | null = null;
   var birthWeightUnitsId : string | null = null;
+  
   // Assign birthWeight if row.weight is a number
   if (typeof row.weight === 'number') {
     birthWeight = row.weight;
   }
 
-  // Assign birthWeightUnitsId if row.weight_units_id is a string
-  if (typeof row.weight_units_id === 'string') {
-    birthWeightUnitsId = row.weight_units_id;
+  // Assign birthWeightUnitsId if row.weightUnitsKey is a string
+  if (typeof row.weightUnitsKey === 'string') {
+    birthWeightUnitsId = row.weightUnitsKey;
   }
 
   return {
