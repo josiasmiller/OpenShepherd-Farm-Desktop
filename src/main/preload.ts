@@ -8,6 +8,7 @@ import {
   Species,
   RegistryProcessRequest,
   DatabaseStateCheckResponse,
+  OwnerType,
 } from "packages/api";
 
 import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from "packages/api/src/apis";
@@ -62,6 +63,7 @@ const lookupAPI : LookupAPI = {
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),
   getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),
   getLocations: () => ipcRenderer.invoke("get-locations"),
+  getOwnerById: (ownerId: string, ownerType: OwnerType) => ipcRenderer.invoke("get-owner-by-id", ownerId, ownerType),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
   getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
   getSexes: () => ipcRenderer.invoke("get-sexes"),

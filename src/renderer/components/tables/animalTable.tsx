@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import log from 'electron-log';
+// import log from 'electron-log';
 import Swal from "sweetalert2";
 
 import { handleResult, Result } from "packages/core";
@@ -72,7 +72,8 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
         const unique = new Map(normalized.map((a) => [a.id, a]));
         setAnimalData(Array.from(unique.values()));
       } catch (err: any) {
-        log.error("Error fetching animal data:", err?.message);
+        // log.error("Error fetching animal data:", err?.message);
+        console.error("Error fetching animal data:", err?.message);
         await Swal.fire({
           icon: "error",
           title: "Failed to Load Animal Info",

@@ -17,6 +17,7 @@ import {
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
+  getOwnerById,
   getPedigree,
   getPremises,
   getRemoveReasons,
@@ -50,7 +51,7 @@ import { deathParser } from "./registry/processing/impl/deaths/parser/deathParse
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults} from "packages/api";
+import {DatabaseStateCheckResponse, DefaultSettingsResults, OwnerType} from "packages/api";
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
@@ -148,6 +149,10 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
 
   ipcMain.handle("get-locations", async (_) => {
     return getTagLocations(getDatabase().raw());
+  });
+
+  ipcMain.handle("get-owner-by-id", async (_, ownerId: string, ownerType: OwnerType) => {
+    return getOwnerById(getDatabase().raw(), ownerId, ownerType);
   });
 
   ipcMain.handle("get-pedigree", async (_, animalId) => {
