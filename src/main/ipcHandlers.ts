@@ -5,6 +5,7 @@ import {
   animalSearch,
   editExistingDefaultSettings,
   getAnimalIdentification,
+  getBasicAnimalInfo,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -189,6 +190,14 @@ export const registerIpcHandlers = () => {
       return getBirthTypes(session.db.raw())
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BIRTH_TYPES, event)
+  });
+
+  ipcMain.handle("get-basic-animal-info", async (event: IpcMainInvokeEvent, animalIds: string[]) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getBasicAnimalInfo(session.db.raw(), animalIds);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BREEDS, event)
   });
 
   ipcMain.handle(IPC_INVOKE_GET_BREEDS, async (event: IpcMainInvokeEvent, queryParams) => {
@@ -444,6 +453,31 @@ export const registerIpcHandlers = () => {
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, event)
   });
+
+  ipcMain.handle('registry-parse-births', async (_, ) => {
+    return birthParser(null);
+  });
+
+  ipcMain.handle('registry-parse-deaths', async (_, ) => {
+    return deathParser(null);
+  });
+
+  ipcMain.handle('registry-parse-registrations', async (_, ) => {
+    return registrationParser(null);
+  });
+
+  ipcMain.handle('registry-parse-transfers', async (_, ) => {
+    return transferParser(null); // FIXME 
+  });
+
+  ipcMain.handle(
+    "registry-process",
+    async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
+      const session = atrkkrSessionForEvent(event)
+      const { processType, species, sections, } = args;
+      return handleRegistryProcess(session.db.raw(), processType, species, sections);
+    },
+  );
 
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_DEATHS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
