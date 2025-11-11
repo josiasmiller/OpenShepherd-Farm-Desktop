@@ -30,6 +30,7 @@ function bindIpcCallback<T>(channel: string, callback: (arg: T) => void): () => 
 const animalAPI : AnimalAPI = {
   search: (params: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", params),
   getIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
+  getBasicAnimalInfo: (animalIds: string[]) => ipcRenderer.invoke("get-basic-animal-info", animalIds),
   getPedigree: (animalId: string) => ipcRenderer.invoke("get-pedigree", animalId),
 }
 

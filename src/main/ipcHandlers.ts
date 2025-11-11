@@ -5,6 +5,7 @@ import {
   animalSearch,
   editExistingDefaultSettings,
   getAnimalIdentification,
+  getBasicAnimalInfo,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -95,6 +96,10 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
 
   ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
     return getAnimalIdentification(getDatabase().raw(), animalId);
+  });
+
+  ipcMain.handle("get-basic-animal-info", async (_, animalIds: string[]) => {
+    return getBasicAnimalInfo(getDatabase().raw(), animalIds);
   });
 
   ipcMain.handle("get-birth-types", async (_) => {
@@ -245,13 +250,13 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
   });
 
   ipcMain.handle('registry-parse-transfers', async (_, ) => {
-    return transferParser(mainWindow);
+    return transferParser(null); // FIXME 
   });
 
   ipcMain.handle(
     "registry-process",
     async (_event, args: RegistryProcessRequest) => {
-      const { processType, species, sections } = args;
+      const { processType, species, sections, } = args;
       return handleRegistryProcess(getDatabase().raw(), processType, species, sections);
     }
   );

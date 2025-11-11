@@ -724,3 +724,12 @@ export type AnimalIdInfoInput = {
     idScrapieFlock: string | null;
     isOfficial: boolean;
 };
+
+export type AnimalBasicInfo = {
+  animalId: string;
+  flockPrefix: string;
+  name: string;
+  registrationNumber: string;
+  birthDate: string;
+  coatColor: string;
+}

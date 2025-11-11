@@ -1,4 +1,5 @@
 import {
+  AnimalBasicInfo,
   AnimalIdentification,
   AnimalSearchRequest,
   AnimalSearchResult,
@@ -50,6 +51,7 @@ export type ApiEventRegistrationCleanupFunc = () => void
 export interface AnimalAPI {
   search: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
   getIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
+  getBasicAnimalInfo: (animalIds: string[]) => Promise<Result<AnimalBasicInfo[], string>>;
   getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
 }
 
