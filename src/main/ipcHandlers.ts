@@ -17,6 +17,7 @@ import {
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
+  getOwnerById,
   getPedigree,
   getPremises,
   getRemoveReasons,
@@ -48,7 +49,7 @@ import { deathParser } from "./registry/processing/impl/deaths/parser/deathParse
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults} from '@app/api';
+import {DatabaseStateCheckResponse, DefaultSettingsResults, OwnerType} from '@app/api';
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
@@ -296,6 +297,14 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PEDIGREE, event)
   });
 
+  ipcMain.handle("get-owner-by-id", async (event: IpcMainInvokeEvent, ownerId: string, ownerType: OwnerType) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getOwnerById(session.db.raw(), ownerId, ownerType);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PREMISE_INFO, event)
+  });
+W
   ipcMain.handle(IPC_INVOKE_GET_PREMISE_INFO, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {

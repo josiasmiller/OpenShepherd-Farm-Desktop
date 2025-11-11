@@ -39,6 +39,8 @@ import {
   RegistrationParseResponse,
   TransferParseResponse,
   DeathParseResponse,
+  OwnerType,
+  Owner,
 } from "./dtos";
 
 import { Result } from "@common/core";
@@ -87,6 +89,7 @@ export interface LookupAPI {
   getDeathReasons: () => Promise<Result<DeathReason[], string>>;
   getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
   getLocations: () => Promise<Result<TagLocation[], string>>;
+  getOwnerById: (ownerId: string, OwnerType: OwnerType) => Promise<Result<Owner, string>>;
   getPremiseInfo: () => Promise<Result<Premise[], string>>;
   getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
   getSexes: () => Promise<Result<Sex[], string>>;
