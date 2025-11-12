@@ -92,9 +92,9 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
       <table className="results-table">
         <thead>
           <tr>
+            <th>Registration Number</th>
             <th>Flock Prefix</th>
             <th>Animal Name</th>
-            <th>Registration Number</th>
             <th>Birth Date</th>
             <th>Coat Color</th>
           </tr>
@@ -109,9 +109,9 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
           ) : animalData.length > 0 ? (
             animalData.map((animal) => (
               <tr key={animal.id}>
+                <td>{animal.registrationNumber}</td>
                 <td>{animal.flockPrefix}</td>
                 <td>{animal.name}</td>
-                <td>{animal.registrationNumber}</td>
                 <td>{animal.birthDate}</td>
                 <td>{animal.coatColor ?? "—"}</td>
               </tr>
