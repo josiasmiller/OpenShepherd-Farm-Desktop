@@ -25,7 +25,8 @@ type EditableTableData = {
 export const TransferPreprocessorPage: React.FC = () => {
   const [tables, setTables] = useState<EditableTableData[]>([]);
   const [animalIds, setAnimalIds] = useState<string[]>([]);
-  const [owners, setOwners] = useState<OwnerInformationTableProps["owners"]>([]);
+  const [buyers, setBuyers] = useState<OwnerInformationTableProps["owners"]>([]);
+  const [sellers, setSellers] = useState<OwnerInformationTableProps["owners"]>([]);
   const [hasLoadedFile, setHasLoadedFile] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -37,16 +38,6 @@ export const TransferPreprocessorPage: React.FC = () => {
       setLoading(true);
 
       const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
-
-      //if (parseResult.errorCode !== undefined) {
-      // if (false) { 
-      //   await Swal.fire({
-      //     icon: "error",
-      //     title: "Error Parsing File",
-      //     text: "An error occurred while reading the CSV file.",
-      //   });
-      //   return;
-      // }
 
       if (!parseResult.data) {
         await Swal.fire({
@@ -63,7 +54,6 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       let newAnimalIds : string[] = [];
 
-      // Use for...of since animals is an array
       for (const animalRow of animals) {
         let animalId: string = animalRow.animalId;
         newAnimalIds.push(animalId);
@@ -71,43 +61,60 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       setAnimalIds(newAnimalIds);
 
-      // --- Buyer Information ---
 
-      // for now, assume all buyers are existing members
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // --- Buyer Information ---
+      // For now, assume all buyers are existing members
       const existingMem: ExistingMemberBuyer = buyer as ExistingMemberBuyer;
 
-      const ownerList: OwnerInformationTableProps["owners"] = [];
+      const buyerList: OwnerInformationTableProps["owners"] = [];
 
-      // Add contact owner if contactId exists
-      if (existingMem.contactId) {
-        ownerList.push({
-          ownerId: existingMem.contactId,
+      const buyerContactId = existingMem.contactId ?? existingMem["CONTACT_ID"];
+      const buyerCompanyId = existingMem.companyId ?? existingMem["COMPANY_ID"];
+
+      if (buyerContactId) {
+        buyerList.push({
+          ownerId: buyerContactId,
           ownerType: OwnerType.CONTACT,
         });
       }
 
-      // Add company owner if companyId exists
-      if (existingMem.companyId) {
-        ownerList.push({
-          ownerId: existingMem.companyId,
+      if (buyerCompanyId) {
+        buyerList.push({
+          ownerId: buyerCompanyId,
           ownerType: OwnerType.COMPANY,
         });
       }
 
-      setOwners(ownerList);
-
-
+      setBuyers(buyerList);
+      // end buyer setup
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // --- Seller Information ---
-      newTables.push({
-        title: "Seller Information",
-        editable: false,
-        columns: Object.keys(seller || {}).map((k) => ({
-          key: k,
-          label: k,
-          editable: false,
-        })),
-        rows: [seller],
-      });
+
+      const sellerList: OwnerInformationTableProps["owners"] = [];
+
+      const sellerContactId = seller.contactId ?? seller["CONTACT_ID"];
+      const sellerCompanyId = seller.companyId ?? seller["COMPANY_ID"];
+
+      if (sellerContactId) {
+        sellerList.push({ 
+          ownerId: sellerContactId, 
+          ownerType: OwnerType.CONTACT
+        });
+      }
+
+      if (sellerCompanyId) {
+        sellerList.push({
+          ownerId: sellerCompanyId, 
+          ownerType: OwnerType.COMPANY 
+        });
+      }
+
+      setSellers(sellerList);
+
+      // end buyer setup
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
       // --- Sell Date ---
       newTables.push({
@@ -183,10 +190,18 @@ export const TransferPreprocessorPage: React.FC = () => {
             <div className="padded-horizontal-lg">
               <h2>Buyer</h2>
             </div>
-            <OwnerInformationTable owners={owners} />
+            <OwnerInformationTable owners={buyers} />
           </div>
 
-          {/* --- Other Info Tables (Buyer/Seller/Dates) --- */}
+          {/* --- Seller Table --- */}
+          <div style={{ marginBottom: "3em" }}>
+            <div className="padded-horizontal-lg">
+              <h2>Seller</h2>
+            </div>
+            <OwnerInformationTable owners={sellers} />
+          </div>
+
+          {/* --- Other Info Tables (Dates) --- */}
           {tables.map((table, idx) => (
             <div key={idx} style={{ marginBottom: "3em" }}>
               <div className="padded-horizontal-lg">
