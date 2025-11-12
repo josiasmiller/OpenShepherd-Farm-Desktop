@@ -94,11 +94,10 @@ export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
       <table className="results-table">
         <thead>
           <tr>
-            <th>Type</th>
             <th>Name</th>
-            <th>Flock ID</th>
+            <th>Membership Number</th>
             <th>Phone</th>
-            <th>Scrapie ID</th>
+            <th>Scrapie Flock ID</th>
             <th>Premise</th>
           </tr>
         </thead>
@@ -112,7 +111,6 @@ export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
           ) : ownerData.length > 0 ? (
             ownerData.map((owner) => (
               <tr key={owner.id}>
-                <td>{owner.type}</td>
                 <td>{owner.name}</td>
                 <td>{owner.flockId}</td>
                 <td>{owner.phoneNumber}</td>
