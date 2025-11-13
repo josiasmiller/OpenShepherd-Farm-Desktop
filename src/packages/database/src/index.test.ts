@@ -63,11 +63,12 @@ test('Database#exec rejects with an error when SQL statement fails', async () =>
  * Database#run returns objects with RunResult's footprint.
  */
 test('Database#run resolves with a RunResult when SQL statement runs successfully', async () => {
-  await testDatabase().exec(CREATE_TEST_TABLE)
+  const database = testDatabase()
+  await database.exec(CREATE_TEST_TABLE)
   //Insert some rows and make sure RowResults are returned properly
-  await expect(testDatabase().run(INSERT_TEST_TABLE_ROW_1))
+  await expect(database.run(INSERT_TEST_TABLE_ROW_1))
     .resolves.toEqual(expect.objectContaining({ lastID: 1, changes: 1}))
-  await expect(testDatabase().run(INSERT_TEST_TABLE_ROW_2))
+  await expect(database.run(INSERT_TEST_TABLE_ROW_2))
     .resolves.toEqual(expect.objectContaining({ lastID: 2, changes: 1}))
 })
 
@@ -76,11 +77,12 @@ test('Database#run resolves with a RunResult when SQL statement runs successfull
  * Database#run rejects with an error on the duplicate insertion.
  */
 test('Database#run rejects with an Error when SQL statement fails', async () => {
-  await testDatabase().exec(CREATE_TEST_TABLE)
+  const database = testDatabase()
+  await database.exec(CREATE_TEST_TABLE)
   //Insert duplicate rows and make sure rejects with an error.
-  await expect(testDatabase().run(INSERT_TEST_TABLE_ROW_1))
+  await expect(database.run(INSERT_TEST_TABLE_ROW_1))
     .resolves.toEqual(expect.objectContaining({ lastID: 1, changes: 1}))
-  await expect(testDatabase().run(INSERT_TEST_TABLE_ROW_1))
+  await expect(database.run(INSERT_TEST_TABLE_ROW_1))
     .rejects.toThrow()
 })
 
@@ -91,8 +93,8 @@ test('Database#run rejects with an Error when SQL statement fails', async () => 
 test('Database#get resolves to the expected row type when a qualifying row exists', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.get(`SELECT * FROM test_table WHERE column_two = 2`))
     .resolves.toEqual(expect.objectContaining({ column_one: 1, column_two: 2}))
   await expect(database.get(`SELECT * FROM test_table WHERE column_two = 3`))
@@ -107,8 +109,8 @@ test('Database#get resolves to the expected row type when a qualifying row exist
 test('Database#get resolves to undefined when a qualifying row does not exist', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.get(`SELECT * FROM test_table WHERE column_two = 1`))
     .resolves.toBeUndefined()
 })
@@ -120,8 +122,8 @@ test('Database#get resolves to undefined when a qualifying row does not exist', 
 test('Database#get rejects with an error when SQL statement fails', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.get(`SELECT * FROM test_table WHERE column_three = 1`))
     .rejects.toThrow()
 })
@@ -133,8 +135,8 @@ test('Database#get rejects with an error when SQL statement fails', async () => 
 test('Database#all resolves to the expected row type when qualifying rows exist', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.all(`SELECT * FROM test_table`))
     .resolves.toEqual([
       { column_one: 1, column_two: 2 },
@@ -150,8 +152,8 @@ test('Database#all resolves to the expected row type when qualifying rows exist'
 test('Database#all resolves to an empty array when no rows exist', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.all(`SELECT * FROM test_table WHERE column_two = 4`))
     .resolves.toEqual([])
 })
@@ -163,8 +165,8 @@ test('Database#all resolves to an empty array when no rows exist', async () => {
 test('Database#all rejects with an error when the query fails', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_1) })
-    .then(_ => { database.run(INSERT_TEST_TABLE_ROW_2) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_1) })
+    .then(_ => { return database.run(INSERT_TEST_TABLE_ROW_2) })
   await expect(database.all(`SELECT * FROM test_table WHERE column_three = 2`))
     .rejects.toThrow()
 })
