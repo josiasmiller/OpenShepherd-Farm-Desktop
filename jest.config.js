@@ -22,9 +22,10 @@ module.exports = {
             setupFiles: ['<rootDir>/jest.setup.ts'],
             setupFilesAfterEnv: ['<rootDir>/jest.setup-env.ts'],
             moduleNameMapper: {
-                "^packages/(.*)$": "<rootDir>/../packages/$1",
-                "\\.(png)$": "<rootDir>/../__mocks__/fileMock.js",
-                "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+              "^packages/(.*)$": "<rootDir>/../packages/$1",
+              "^sweetalert2$": "<rootDir>/../__mocks__/sweetalert2Mock.js",
+              "\\.(png)$": "<rootDir>/../__mocks__/fileMock.js",
+              "\\.(css|less|scss|sass)$": "identity-obj-proxy"
             }
         },
         {

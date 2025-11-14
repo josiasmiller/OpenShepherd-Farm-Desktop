@@ -4,15 +4,8 @@ import React from "react";
 import Swal from "sweetalert2";
 import { AnimalInformationTable } from "./animalTable";
 
-import { AnimalBasicInfo } from "../../../packages/api/src/dtos"; // TODO --> better import?
-import { handleResult } from "../../../packages/core/src/resultTypes"; // TODO --> better import?
-
-// import { handleResult } from "../../";
-// import { AnimalBasicInfo } from "packages/api";
-
-jest.mock("sweetalert2", () => ({
-  fire: jest.fn(),
-}));
+import { AnimalBasicInfo } from "packages/api"
+import { handleResult } from "packages/core"
 
 jest.mock("packages/core", () => ({
   handleResult: jest.fn(),
