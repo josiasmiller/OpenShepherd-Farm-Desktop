@@ -7,7 +7,8 @@
   "scripts": {
     "clean": "run-script-os",
     "clean:win32": "rmdir /s /q .webpack 2>nul & rmdir /s /q out 2>nul & del /s /q /f src\\*.tsbuildinfo 2>nul & for /d /r src %d in (build) do @if exist \"%d\" rmdir /s /q \"%d\" & for /d /r src %d in (lib) do @if exist \"%d\" rmdir /s /q \"%d\"",
-    "clean:darwin:linux": "rm -rf .webpack && rm -rf out && find src -name \"*.tsbuildinfo\" -type f -delete && find src -type d -regextype egrep -regex \".*/(lib|build)$\" -exec rm -rf {} \\;",
+    "clean:darwin": "rm -rf .webpack && rm -rf out && find src -name \"*.tsbuildinfo\" -type f -delete && find -E src -type d -regex \".*/(lib|build)$\" -exec rm -rf {} \\;",
+    "clean:linux": "rm -rf .webpack && rm -rf out && find src -name \"*.tsbuildinfo\" -type f -delete && find src -type d -regextype egrep -regex \".*/(lib|build)$\" -exec rm -rf {} \\;",
     "package": "npm run package:farm && npm run package:registry",
     "package:farm": "cross-env APP_VARIANT=farm DEBUG=electron-forge:* electron-forge package",
     "package:registry": "cross-env APP_VARIANT=registry DEBUG=electron-forge:* electron-forge package",
