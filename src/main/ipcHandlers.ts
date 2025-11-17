@@ -500,6 +500,7 @@ export const registerIpcHandlers = () => {
       //TODO: Update storage of to consider database path/identifier
       setStoreSelectedDefault(value)
       session.window.webContents.send('active-default-settings-changed')
+      return
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, event)
   });
