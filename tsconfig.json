@@ -16,7 +16,11 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"],
-      "packages/*": ["src/packages/*"]
+      "@app/*": ["src/packages/app/*"],
+      "@database/async": ["src/packages/database"],
+      "@ipc/api/*": ["src/packages/ipc/api/src/*.ts"],
+      "@ipc/preload/*": ["src/packages/ipc/preload/src/*.ts"],
+      "@common/*": ["src/packages/common/*"]
     }
   },
 }

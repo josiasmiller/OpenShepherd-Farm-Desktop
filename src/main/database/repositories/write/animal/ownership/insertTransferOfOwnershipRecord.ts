@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
-import { Owner, OwnerType } from "packages/api";
+import { Owner, OwnerType } from "@app/api";
 import { v4 as uuidv4 } from "uuid";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 import { dateTimeAsString } from "../../../../dbUtils";
 
 /**

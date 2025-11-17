@@ -4,11 +4,11 @@ import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { BackButton } from "../../../components/backButton/backButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimalSearchRequest, AnimalSearchResult } from "packages/api";
+import { AnimalSearchRequest, AnimalSearchResult } from '@app/api';
 
 import Swal from "sweetalert2";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
-import { isRegistryDesktop } from "packages/appBuild";
+import { isRegistryDesktop } from '@app/buildVariant';
 import { usePageState } from "../../../context/pageStateContext";
 
 const AnimalSearch: React.FC = () => {

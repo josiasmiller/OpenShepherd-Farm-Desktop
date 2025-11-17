@@ -1,6 +1,6 @@
-import { RegistryRow } from 'packages/api';
+import { RegistryRow } from '@app/api';
 import { AnimalIdInfoInput } from '../../../../../../../database';
-import { isUUIDv4 } from 'packages/core';
+import { isUUIDv4 } from '@common/core';
 
 export function mapRegistryRowToFedTagInput(row: RegistryRow, animalId : string, scrapieId : string | null): AnimalIdInfoInput {
 

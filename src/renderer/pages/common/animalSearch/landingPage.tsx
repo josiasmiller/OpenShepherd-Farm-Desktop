@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { AnimalSearchResult } from "packages/api";
+import { AnimalSearchResult } from '@app/api';
 import Swal from "sweetalert2";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
 import { BackButton } from "../../../components/backButton/backButton";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
-import { isRegistryDesktop } from "packages/appBuild";
+import { isRegistryDesktop } from '@app/buildVariant';
 
 const LandingPage = () => {
 

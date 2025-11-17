@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { BirthType } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { BirthType } from '@app/api';
 
 /**
  * Retrieves all birth types from the database.

@@ -28,7 +28,7 @@ function capitalize(str: string): string {
 }
 
 const isDevelopment = process.env.NODE_ENV?.trim() === "development";
-const rendererHtmlPath = isDevelopment ? './src/renderer/index.dev.html' : './src/renderer/index.html'
+const rendererHtmlPath = isDevelopment ? './src/renderer/root/index.dev.html' : './src/renderer/root/index.html'
 
 const buildIdentifier = appVariantFromEnv()
 
@@ -145,9 +145,17 @@ const config: ForgeConfig = {
                         js: './src/renderer/index.tsx',
                         name: 'main_window',
                         preload: {
-                            js: './src/main/preload.ts',
+                            js: './src/preload/preload.ts',
                         },
                     },
+                    {
+                        name: 'landing_window',
+                        html: rendererHtmlPath,
+                        js: './src/renderer/landing/index.tsx',
+                        preload: {
+                            js: './src/preload/preload.landing.ts'
+                        }
+                    }
                 ],
             },
         }),

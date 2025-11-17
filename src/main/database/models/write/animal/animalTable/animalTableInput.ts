@@ -1,4 +1,4 @@
-import { BirthType } from "packages/api";
+import { BirthType } from '@app/api';
 
 export type InsertAnimalTableInput = {
   name: string;

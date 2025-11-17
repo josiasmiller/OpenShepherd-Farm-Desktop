@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import {Failure, Result, Success} from "packages/core";
+import {Failure, Result, Success} from "@common/core";
 import {REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_REGISTERED, REGISTRATION_WHITE_WELSH} from "../../../../dbConstants";
 import { dateTimeAsString } from "../../../../dbUtils";
 

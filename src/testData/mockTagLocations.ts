@@ -1,5 +1,5 @@
-import type { TagLocation } from 'packages/api';
-import { Success } from 'packages/core';
+import type { TagLocation } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockLocations = new Success<TagLocation[]>([
   { 

@@ -4,16 +4,16 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { BackButton } from "../../../../components/backButton/backButton";
 
-import { RegistryFieldDef, RegistryRow } from 'packages/api';
+import { RegistryFieldDef, RegistryRow } from '@app/api';
 
-import { BirthParseResponse, BirthParseRow } from 'packages/api';
-import { DeathParseResponse, DeathParseRow } from 'packages/api';
-import { RegistrationParseResponse, RegistrationParseRow } from 'packages/api';
+import { BirthParseResponse, BirthParseRow } from '@app/api';
+import { DeathParseResponse, DeathParseRow } from '@app/api';
+import { RegistrationParseResponse, RegistrationParseRow } from '@app/api';
 
-import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from 'packages/api';
-import { ScrapieFlockInfo, Species } from 'packages/api';
-import { DatabaseStateCheckResponse } from 'packages/api';
-import { handleResult, Result } from 'packages/core/src/resultTypes';
+import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '@app/api';
+import { ScrapieFlockInfo, Species } from '@app/api';
+import { DatabaseStateCheckResponse } from '@app/api';
+import { handleResult, Result } from '@common/core';
 
 type EditableTableData = {
   title: string;

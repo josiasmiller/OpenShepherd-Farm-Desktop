@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure, handleResult } from "packages/core";
-import { Breed, BreedRequest } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Breed, BreedRequest } from '@app/api';
 
 /**
  * gets all breeds from the DB, or just breeds of a given species when requested

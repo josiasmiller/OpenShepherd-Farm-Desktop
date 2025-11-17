@@ -1,5 +1,5 @@
-import { Result, Success, Failure } from "packages/core";
 import {Database} from "sqlite3";
+import { Result, Success, Failure } from "@common/core";
 
 type LastRegistrationRow = {
   last_registration_number: string | null;

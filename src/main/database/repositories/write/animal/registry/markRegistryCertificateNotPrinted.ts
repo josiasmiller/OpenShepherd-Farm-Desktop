@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { v4 as uuidv4 } from "uuid";
 import { dateTimeAsString } from "../../../../dbUtils";
-import { Result, Success, Failure, handleResult } from "packages/core";
+import { Result, Success, Failure, handleResult } from "@common/core";
 import { 
   REGISTRATION_CHOCOLATE_WELSH,
   REGISTRATION_REGISTERED,
@@ -11,7 +11,7 @@ import {
   REGISTRY_WHITE_WMSA,
 } from "../../../../dbConstants";
 import { getCoatColorForAnimal } from "../../../read/animal/coatColor/getCoatColor";
-import { CoatColor } from 'packages/api';
+import { CoatColor } from '@app/api';
 
 
 /**

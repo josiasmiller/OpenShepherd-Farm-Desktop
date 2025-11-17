@@ -1,5 +1,5 @@
 
-import { BrowserWindow, ipcMain, shell } from "electron";
+import {ipcMain, IpcMainInvokeEvent, shell} from "electron";
 
 import { 
   animalSearch,
@@ -36,8 +36,6 @@ import {
 } from "./database";
 
 import { pngFileDialog } from "./selectPng";
-import { selectNewDb } from "./dbSelect";
-import {getDatabase, isDatabaseInitialized} from "./database/dbConnections";
 import { writeAnimalNotesCsv } from "./writers/csv/writeAnimalNotes";
 import { writeDrugHistoryCsv } from "./writers/csv/writeDrugEvents";
 import { writeTissueTestResults } from "./writers/csv/writeTissueTestResults";
@@ -49,179 +47,386 @@ import { deathParser } from "./registry/processing/impl/deaths/parser/deathParse
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults} from "packages/api";
+import {DatabaseStateCheckResponse, DefaultSettingsResults} from '@app/api';
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
-import { RegistryProcessRequest, Species } from "packages/api";
+import { RegistryProcessRequest, Species } from '@app/api';
 import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
 import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
-import {promiseFrom} from "packages/core";
+import { promiseFrom } from "@common/core";
+import {atrkkrSessionForEvent} from "./session/sessionManagement";
+import log from "electron-log";
 
-export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
-  
-  ipcMain.handle("animal-search", async (_, queryParams) => {
-    return animalSearch(getDatabase().raw(), queryParams);
+const IPC_INVOKE_ANIMAL_SEARCH = 'animal-search'
+const IPC_INVOKE_EDIT_EXISTING_DEFAULT = 'edit-existing-default'
+const IPC_INVOKE_EXPORT_ANIMAL_NOTES = 'export-animal-notes-csv'
+const IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV = 'export-drug-history-csv'
+const IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV = 'export-tissue-test-results-csv'
+const IPC_INVOKE_EXPORT_REGISTRATION = 'export-registration'
+const IPC_INVOKE_SELECT_PNG_FILE = 'select-png-file'
+const IPC_INVOKE_GET_ANIMAL_IDENTIFICATION = 'get-animal-identification'
+const IPC_INVOKE_GET_BIRTH_TYPES = 'get-birth-types'
+const IPC_INVOKE_GET_BREEDS = 'get-breeds'
+const IPC_INVOKE_GET_COLORS = 'get-colors'
+const IPC_INVOKE_GET_COMPANY_INFO = 'get-company-info'
+const IPC_INVOKE_GET_CONTACT_INFO = 'get-contact-info'
+const IPC_INVOKE_GET_COUNTIES = 'get-counties'
+const IPC_INVOKE_GET_COUNTRIES = 'get-countries'
+const IPC_INVOKE_GET_COUNTRY_PREFIX_FOR_OWNER = 'get-country-prefix-for-owner'
+const IPC_INVOKE_GET_DEATH_REASONS = 'get-death-reasons'
+const IPC_INVOKE_GET_EXISTING_DEFAULTS = 'get-existing-defaults'
+const IPC_INVOKE_GET_FLOCK_PREFIXES = 'get-flock-prefixes'
+const IPC_INVOKE_GET_LOCATIONS = 'get-locations'
+const IPC_INVOKE_GET_PEDIGREE = 'get-pedigree'
+const IPC_INVOKE_GET_PREMISE_INFO = 'get-premise-info'
+const IPC_INVOKE_GET_REMOVE_REASONS = 'get-remove-reasons'
+const IPC_INVOKE_GET_SCRAPIE_FLOCK_INFO = 'get-scrapie-flock-info'
+const IPC_INVOKE_GET_STORE_SELECTED_DEFAULT = 'get-store-selected-default'
+const IPC_INVOKE_GET_STORE_SELECTED_SPECIES = 'get-store-selected-species'
+const IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH = 'get-store-selected-signature-file-path'
+const IPC_INVOKE_GET_SEXES = 'get-sexes'
+const IPC_INVOKE_GET_SPECIES = 'get-species'
+const IPC_INVOKE_GET_STATES = 'get-states'
+const IPC_INVOKE_GET_TAG_TYPES = 'get-tag-types'
+const IPC_INVOKE_GET_TISSUE_SAMPLE_TYPES = 'get-tissue-sample-types'
+const IPC_INVOKE_GET_TISSUE_SAMPLE_CONTAINER_TYPES = 'get-tissue-sample-container-types'
+const IPC_INVOKE_GET_TISSUE_TESTS = 'get-tissue-tests'
+const IPC_INVOKE_GET_TRANSFER_REASONS = 'get-transfer-reasons'
+const IPC_INVOKE_GET_UNITS = 'get-units'
+const IPC_INVOKE_GET_UNIT_TYPES = 'get-unit-types'
+const IPC_INVOKE_IS_OWNER_COMPANY = 'is-owner-company'
+const IPC_INVOKE_REGISTRY_PARSE_BIRTHS = 'registry-parse-births'
+const IPC_INVOKE_REGISTRY_PARSE_DEATHS = 'registry-parse-deaths'
+const IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS = 'registry-parse-registrations'
+const IPC_INVOKE_REGISTRY_PARSE_TRANSFERS = 'registry-parse-transfers'
+const IPC_INVOKE_REGISTRY_PROCESS = 'registry-process'
+const IPC_INVOKE_DATABASE_STATE_CHECK = 'database-state-check'
+const IPC_INVOKE_RESOLVE_DATABASE_ISSUES = 'resolve-database-issues'
+const IPC_INVOKE_SET_STORE_SELECTED_DEFAULT = 'set-store-selected-default'
+const IPC_INVOKE_SET_STORE_SELECTED_SPECIES = 'set-store-selected-species'
+const IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH = 'set-store-selected-signature-file-path'
+const IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS = 'write-new-default-settings'
+
+const logAndThrowUnhandledIpcRequest = (channel: string, event: IpcMainInvokeEvent) => {
+  const message = `Unhandled IPC invocation in main process : No session found : sender=${event.sender.id}, channel=${channel}`
+  log.error(message); throw Error(message);
+}
+
+export const registerIpcHandlers = () => {
+
+  ipcMain.handle(IPC_INVOKE_ANIMAL_SEARCH, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return animalSearch(session.db.raw(), queryParams);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_ANIMAL_SEARCH, event)
   });
 
-  ipcMain.handle("edit-existing-default", async (_, queryParams) => {
-    return editExistingDefaultSettings(getDatabase().raw(), queryParams);
+  ipcMain.handle(IPC_INVOKE_EDIT_EXISTING_DEFAULT, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return editExistingDefaultSettings(session.db.raw(), queryParams)
+        .then(() => {
+          session.window.webContents.send('default-settings-list-changed')
+        });
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EDIT_EXISTING_DEFAULT, event)
   });
 
-  ipcMain.handle("export-animal-notes-csv", async (_, animals: string[]) => {
-    return writeAnimalNotesCsv(getDatabase().raw(), animals);
+  ipcMain.handle(IPC_INVOKE_EXPORT_ANIMAL_NOTES, async (event: IpcMainInvokeEvent, animals: string[]) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return writeAnimalNotesCsv(session.db.raw(), animals);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EXPORT_ANIMAL_NOTES, event)
   });
 
-  ipcMain.handle("export-drug-history-csv", async (_, animals: string[]) => {
-    return writeDrugHistoryCsv(getDatabase().raw(), animals);
+  ipcMain.handle(IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV, async (event: IpcMainInvokeEvent, animals: string[]) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return writeDrugHistoryCsv(session.db.raw(), animals);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV, event)
   });
 
-  ipcMain.handle("export-tissue-test-results-csv", async (_, animals: string[]) => {
-    return writeTissueTestResults(getDatabase().raw(), animals);
+  ipcMain.handle(IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV, async (event: IpcMainInvokeEvent, animals: string[]) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return writeTissueTestResults(session.db.raw(), animals);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV, event)
   });
 
-  ipcMain.handle("export-registration", async (_, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
-    return writeRegistration(getDatabase().raw(), animals, registrationType, signatureFilePath);
+  ipcMain.handle(IPC_INVOKE_EXPORT_REGISTRATION, async (event: IpcMainInvokeEvent, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return writeRegistration(session.db.raw(), animals, registrationType, signatureFilePath);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EXPORT_REGISTRATION, event)
   });
 
-  ipcMain.handle("select-database", async (_, ) => {
-    return selectNewDb(mainWindow);
+  ipcMain.handle(IPC_INVOKE_SELECT_PNG_FILE, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return pngFileDialog(session.window);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_SELECT_PNG_FILE, event)
   });
 
-  ipcMain.handle("select-png-file", async (_, ) => {
-    return pngFileDialog(mainWindow);
+  ipcMain.handle(IPC_INVOKE_GET_ANIMAL_IDENTIFICATION, async (event: IpcMainInvokeEvent, animalId: string) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getAnimalIdentification(session.db.raw(), animalId);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_ANIMAL_IDENTIFICATION, event)
   });
 
-  ipcMain.handle("get-animal-identification", async (_, animalId: string) => {
-    return getAnimalIdentification(getDatabase().raw(), animalId);
+  ipcMain.handle(IPC_INVOKE_GET_BIRTH_TYPES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getBirthTypes(session.db.raw())
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BIRTH_TYPES, event)
   });
 
-  ipcMain.handle("get-birth-types", async (_) => {
-    return getBirthTypes(getDatabase().raw())
+  ipcMain.handle(IPC_INVOKE_GET_BREEDS, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getBreeds(session.db.raw(), queryParams);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BREEDS, event)
   });
 
-  ipcMain.handle("get-breeds", async (_, queryParams) => {
-    return getBreeds(getDatabase().raw(), queryParams);
+  ipcMain.handle(IPC_INVOKE_GET_COLORS, (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getColors(session.db.raw())
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_COLORS, event)
   });
 
-  ipcMain.handle("get-colors", (_) => {
-    getColors(getDatabase().raw())
+  ipcMain.handle(IPC_INVOKE_GET_COMPANY_INFO, async (event: IpcMainInvokeEvent, onlyGetRegistryCompanies) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getCompanies(session.db.raw(), onlyGetRegistryCompanies);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_COMPANY_INFO, event)
   });
 
-  ipcMain.handle("get-company-info", async (_, onlyGetRegistryCompanies) => {
-    return getCompanies(getDatabase().raw(), onlyGetRegistryCompanies);
+  ipcMain.handle(IPC_INVOKE_GET_CONTACT_INFO, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getContacts(session.db.raw())
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_CONTACT_INFO, event)
   });
 
-  ipcMain.handle("get-contact-info", async (_) => {
-    return getContacts(getDatabase().raw())
+  ipcMain.handle(IPC_INVOKE_GET_COUNTIES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getCounties(session.db.raw())
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_COUNTIES, event)
   });
 
-  ipcMain.handle("get-counties", async (_) => {
-    return getCounties(getDatabase().raw())
+  ipcMain.handle(IPC_INVOKE_GET_COUNTRIES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getCountries(session.db.raw())
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_COUNTRIES, event)
   });
 
-  ipcMain.handle("get-countries", async (_) => {
-    return getCountries(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_COUNTRY_PREFIX_FOR_OWNER, async (event: IpcMainInvokeEvent, ownerId: string, isCompany: boolean) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getCountryPrefixForOwner(session.db.raw(), ownerId, isCompany);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_COUNTRY_PREFIX_FOR_OWNER, event)
   });
 
-  ipcMain.handle("get-country-prefix-for-owner", async (_, ownerId: string, isCompany: boolean) => {
-    return getCountryPrefixForOwner(getDatabase().raw(), ownerId, isCompany);
+  ipcMain.handle(IPC_INVOKE_GET_DEATH_REASONS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getDeathReasons(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_DEATH_REASONS, event)
   });
 
-  ipcMain.handle("get-death-reasons", async (_) => {
-    return getDeathReasons(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_EXISTING_DEFAULTS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getExistingDefaults(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_EXISTING_DEFAULTS, event)
   });
 
-  ipcMain.handle("get-existing-defaults", async (_) => {
-    return getExistingDefaults(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_FLOCK_PREFIXES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getFlockPrefixes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_FLOCK_PREFIXES, event)
   });
 
-  ipcMain.handle("get-flock-prefixes", async (_) => {
-    return getFlockPrefixes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_LOCATIONS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTagLocations(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_LOCATIONS, event)
   });
 
-  ipcMain.handle("get-locations", async (_) => {
-    return getTagLocations(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_PEDIGREE, async (event: IpcMainInvokeEvent, animalId) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getPedigree(session.db.raw(), animalId, 4); // TODO --> what depth to use?
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PEDIGREE, event)
   });
 
-  ipcMain.handle("get-pedigree", async (_, animalId) => {
-    return getPedigree(getDatabase().raw(), animalId, 4); // TODO --> what depth to use?
+  ipcMain.handle(IPC_INVOKE_GET_PREMISE_INFO, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getPremises(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PREMISE_INFO, event)
   });
 
-  ipcMain.handle("get-premise-info", async (_) => {
-    return getPremises(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_REMOVE_REASONS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getRemoveReasons(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_REMOVE_REASONS, event)
   });
 
-  ipcMain.handle("get-remove-reasons", async (_) => {
-    return getRemoveReasons(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_SCRAPIE_FLOCK_INFO, async (event: IpcMainInvokeEvent, ownerId: string, isCompany: boolean) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getScrapieFlockInfo(session.db.raw(), ownerId, isCompany);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_SCRAPIE_FLOCK_INFO, event)
   });
 
-  ipcMain.handle("get-scrapie-flock-info", async (_, ownerId: string, isCompany: boolean) => {
-    return getScrapieFlockInfo(getDatabase().raw(), ownerId, isCompany);
+  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_DEFAULT, (event: IpcMainInvokeEvent): DefaultSettingsResults | null => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return getStoreSelectedDefault();
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STORE_SELECTED_DEFAULT, event)
   });
 
-  ipcMain.handle('get-store-selected-default', (): DefaultSettingsResults | null => {
-    return getStoreSelectedDefault();
+  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent): Species | null => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return getStoreSelectedSpecies();
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STORE_SELECTED_SPECIES, event)
   });
 
-  ipcMain.handle('get-store-selected-species', (): Species | null => {
-    return getStoreSelectedSpecies();
+  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH, (event: IpcMainInvokeEvent): string => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return getStoreSelectedFilepath();
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH, event)
   });
 
-  ipcMain.handle("get-store-selected-signature-file-path", (): string => {
-    return getStoreSelectedFilepath();
+  ipcMain.handle(IPC_INVOKE_GET_SEXES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getSexes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_SEXES, event)
   });
 
-  ipcMain.handle("get-sexes", async (_) => {
-    return getSexes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_SPECIES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getSpecies(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_SPECIES, event)
   });
 
-  ipcMain.handle("get-species", async (_) => {
-    return getSpecies(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_STATES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getStates(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STATES, event)
   });
 
-  ipcMain.handle("get-states", async (_) => {
-    return getStates(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_TAG_TYPES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTagTypes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_TAG_TYPES, event)
   });
 
-  ipcMain.handle("get-tag-types", async (_) => {
-    return getTagTypes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_TISSUE_SAMPLE_TYPES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTissueSampleTypes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_TISSUE_SAMPLE_TYPES, event)
   });
 
-  ipcMain.handle("get-tissue-sample-types", async (_) => {
-    return getTissueSampleTypes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_TISSUE_SAMPLE_CONTAINER_TYPES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTissueSampleContainerTypes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_TISSUE_SAMPLE_CONTAINER_TYPES, event)
   });
 
-  ipcMain.handle("get-tissue-sample-container-types", async (_) => {
-    return getTissueSampleContainerTypes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_TISSUE_TESTS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTissueTests(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_TISSUE_TESTS, event)
   });
 
-  ipcMain.handle("get-tissue-tests", async (_) => {
-    return getTissueTests(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_TRANSFER_REASONS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getTransferReasons(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_TRANSFER_REASONS, event)
   });
 
-  ipcMain.handle("get-transfer-reasons", async (_) => {
-    return getTransferReasons(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_GET_UNITS, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getUnits(session.db.raw(), queryParams);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_UNITS, event)
   });
 
-  ipcMain.handle("get-units", async (_, queryParams) => {
-    return getUnits(getDatabase().raw(), queryParams);
+  ipcMain.handle(IPC_INVOKE_GET_UNIT_TYPES, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getUnitTypes(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_UNIT_TYPES, event)
   });
 
-  ipcMain.handle("get-unit-types", async (_) => {
-    return getUnitTypes(getDatabase().raw());
+  ipcMain.handle(IPC_INVOKE_IS_OWNER_COMPANY, async (event: IpcMainInvokeEvent, ownerId) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return isOwnerCompany(session.db.raw(), ownerId);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_IS_OWNER_COMPANY, event)
   });
 
-  ipcMain.handle("is-owner-company", async (_, ownerId) => {
-    return isOwnerCompany(getDatabase().raw(), ownerId);
-  });
-
-  ipcMain.handle("is-database-loaded", () => {
-    return isDatabaseInitialized();
-  });
-
-  ipcMain.handle('open-directory', async (_event, path) => {
+  ipcMain.handle('open-directory', async (event: IpcMainInvokeEvent, path) => {
     return shell.openPath(path);
   });
 
@@ -232,51 +437,100 @@ export const registerIpcHandlers = (mainWindow: BrowserWindow) => {
     await shell.openExternal(url);
   });
 
-  ipcMain.handle('registry-parse-births', async (_, ) => {
-    return birthParser(mainWindow);
-  });
-
-  ipcMain.handle('registry-parse-deaths', async (_, ) => {
-    return deathParser(mainWindow);
-  });
-
-  ipcMain.handle('registry-parse-registrations', async (_, ) => {
-    return registrationParser(mainWindow);
-  });
-
-  ipcMain.handle('registry-parse-transfers', async (_, ) => {
-    return transferParser(mainWindow);
-  });
-
-  ipcMain.handle(
-    "registry-process",
-    async (_event, args: RegistryProcessRequest) => {
-      const { processType, species, sections } = args;
-      return handleRegistryProcess(getDatabase().raw(), processType, species, sections);
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return birthParser(session.window);
     }
-  );
-
-  ipcMain.handle("database-state-check", async (_) => {
-    return handleDatabaseStateCheck(getDatabase().raw());
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, event)
   });
 
-  ipcMain.handle("resolve-database-issues",(_event, dbscr: DatabaseStateCheckResponse) => {
-    return resolveDatabaseIssues(getDatabase().raw(), dbscr);
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_DEATHS, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return deathParser(session.window);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_DEATHS, event)
   });
 
-  ipcMain.handle('set-store-selected-default', (_event, value: DefaultSettingsResults) => {
-    return promiseFrom(() => setStoreSelectedDefault(value));
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return registrationParser(session.window);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS, event)
   });
 
-  ipcMain.handle('set-store-selected-species', (_event, value: Species) => {
-    return promiseFrom(() => setStoreSelectedSpecies(value));
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return transferParser(session.window);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, event)
   });
 
-  ipcMain.handle('set-store-selected-signature-file-path', (_event, value: string) => {
-    return promiseFrom(() => setStoreSelectedFilepath(value));
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS, async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      const {processType, species, sections} = args;
+      return handleRegistryProcess(session.db.raw(), processType, species, sections);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });
 
-  ipcMain.handle("write-new-default-settings", async (_, queryParams) => {
-    return writeNewDefaultSettings(getDatabase().raw(), queryParams);
+  ipcMain.handle(IPC_INVOKE_DATABASE_STATE_CHECK, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return handleDatabaseStateCheck(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_DATABASE_STATE_CHECK, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_RESOLVE_DATABASE_ISSUES, (event: IpcMainInvokeEvent, dbscr: DatabaseStateCheckResponse) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return resolveDatabaseIssues(session.db.raw(), dbscr);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_RESOLVE_DATABASE_ISSUES, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, async (event: IpcMainInvokeEvent, value: DefaultSettingsResults) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      setStoreSelectedDefault(value)
+      session.window.webContents.send('active-default-settings-changed')
+      return
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent, value: Species) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return promiseFrom(() => setStoreSelectedSpecies(value));
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_SPECIES, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH, (event: IpcMainInvokeEvent, value: string) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return promiseFrom(() => setStoreSelectedFilepath(value));
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return writeNewDefaultSettings(session.db.raw(), queryParams)
+        .then(() => {
+          session.window.webContents.send('default-settings-list-changed')
+        });
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS, event)
   });
 };

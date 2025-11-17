@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { ScrapieFlockInfo } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { ScrapieFlockInfo } from '@app/api';
 
 type RawScrapieRow = {
   id_scrapieflocknumberid: string;

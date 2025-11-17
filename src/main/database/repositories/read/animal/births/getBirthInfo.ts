@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { BirthInfo, BirthType } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { BirthInfo, BirthType } from '@app/api';
 
 type BirthInfoRow = {
   birth_weight: number | null;

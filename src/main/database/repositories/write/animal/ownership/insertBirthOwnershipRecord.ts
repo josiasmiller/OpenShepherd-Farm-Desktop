@@ -1,9 +1,9 @@
 import {Database} from "sqlite3";
 import { dateTimeAsString } from "../../../../dbUtils";
 import { ID_TRANSFER_REASON_NATURAL_ADDITION } from "../../../../dbConstants";
-import { Result, Success, Failure } from "packages/core";
-import { Owner } from "packages/api";
-import { OwnerType } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Owner } from '@app/api';
+import { OwnerType } from '@app/api';
 import { v4 as uuidv4 } from "uuid";
 
 /**

@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
 import { BrowserWindow, dialog } from 'electron';
-import { ParseResult, BirthParseResponse, BirthParseRow } from 'packages/api';
+import { ParseResult, BirthParseResponse, BirthParseRow } from '@app/api';
 import { birthParseMap } from './util/birthParseMap';
 
 /**

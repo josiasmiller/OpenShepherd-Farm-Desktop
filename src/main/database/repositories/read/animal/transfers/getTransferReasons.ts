@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { TransferReason } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { TransferReason } from '@app/api';
 
 /**
  * gets all transfer reasons from the DB

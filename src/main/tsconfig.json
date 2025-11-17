@@ -12,10 +12,11 @@
   "include": ["./**/*.ts"],
   "exclude": ["./build/*", "./**/*.test.ts"],
   "references": [
-    { "path": "../packages/appBuild" },
+    { "path": "../packages/app/buildVariant" },
     { "path": "../packages/database" },
-    { "path": "../packages/api" },
-    { "path": "../packages/core" },
-    { "path": "../packages/time" }
+    { "path": "../packages/app/api" },
+    { "path": "../packages/ipc/api" },
+    { "path": "../packages/common/core" },
+    { "path": "../packages/common/time" }
   ]
 }

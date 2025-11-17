@@ -1,4 +1,4 @@
-import { NewDefaultSettingsParameters, OwnerType } from "packages/api";
+import { NewDefaultSettingsParameters, OwnerType } from '@app/api';
 import { v4 as uuidv4 } from 'uuid';
 
 export const getAnimalDefaultValues = (queryParams: NewDefaultSettingsParameters): any[] => {

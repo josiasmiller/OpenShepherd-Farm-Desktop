@@ -1,5 +1,5 @@
-import type { DeathReason } from 'packages/api';
-import { Success } from 'packages/core';
+import type { DeathReason } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockDeathReasons = new Success<DeathReason[]>([
   { id: '1', name: 'Natural Causes', display_order: 1 },

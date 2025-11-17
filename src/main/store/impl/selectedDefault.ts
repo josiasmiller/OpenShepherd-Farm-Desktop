@@ -1,4 +1,4 @@
-import type { DefaultSettingsResults } from 'packages/api';
+import type { DefaultSettingsResults } from '@app/api';
 import { getStoreItem, setStoreItem } from '../core';
 
 export function setStoreSelectedDefault(value: DefaultSettingsResults) {

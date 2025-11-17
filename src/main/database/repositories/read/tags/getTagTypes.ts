@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { TagType } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { TagType } from '@app/api';
 
 /**
  * Gets all possible Tag Types from the DB

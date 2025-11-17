@@ -1,4 +1,4 @@
-import {Database} from "packages/database";
+import {Database} from "@database/async";
 
 /**
  * Representation of the major, minor,

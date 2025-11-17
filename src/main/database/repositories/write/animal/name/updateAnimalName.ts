@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 import { dateTimeAsString } from "../../../../dbUtils";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * Updates the animal_name and modified timestamp for a given animal ID.

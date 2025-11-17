@@ -1,7 +1,7 @@
-import { Species, RegistryRow, ValidationResponse } from 'packages/api';
+import { Species, RegistryRow, ValidationResponse } from '@app/api';
 import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../../database';
-import { unwrapOrFailWithAnimal } from 'packages/core';
 import {Database} from "sqlite3";
+import { unwrapOrFailWithAnimal } from '@common/core';
 
 export async function checkDamBreedingAge(db: Database, row: RegistryRow, species: Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;

@@ -67,7 +67,7 @@ export { isOwnerCompany } from "./repositories/read/owners/isOwnerCompany"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // export write models
-export type { AnimalIdInfoInput } from "packages/api";
+export type { AnimalIdInfoInput } from '@app/api';
 export type { InsertAnimalTableInput } from "./models/write/animal/animalTable/animalTableInput";
 export type { InsertWeightRecordInput } from "./models/write/animal/weightEvaluation/animalEvaluationWeightInput";
 
@@ -121,7 +121,7 @@ export { deleteAnimalForSaleEntry } from "./repositories/delete/animal/deleteAni
 
 // DB constant
 
-export type { RegistryType } from "packages/api";
+export type { RegistryType } from '@app/api';
 
 export { 
     DIED_STILLBORN,

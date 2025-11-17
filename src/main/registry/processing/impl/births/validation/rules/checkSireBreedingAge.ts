@@ -1,5 +1,5 @@
-import { unwrapOrFailWithAnimal } from 'packages/core';
-import { Species, RegistryRow, ValidationResponse } from 'packages/api';
+import { unwrapOrFailWithAnimal } from '@common/core';
+import { Species, RegistryRow, ValidationResponse } from '@app/api';
 import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../../database';
 import {Database} from "sqlite3";
 

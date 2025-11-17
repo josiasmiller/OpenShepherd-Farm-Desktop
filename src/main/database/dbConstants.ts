@@ -1,4 +1,4 @@
-import { RegistryType } from 'packages/api'
+import { RegistryType } from '@app/api'
 
 export function registryTypeToUuid(input : RegistryType): string {
   if (input == "black" || input == "badger face") {

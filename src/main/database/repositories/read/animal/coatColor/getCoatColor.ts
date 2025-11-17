@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants";
-import { Result, Success, Failure } from "packages/core";
-import { CoatColor } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { CoatColor } from '@app/api';
 
 interface CoatColorRow {
   coatColor: string;

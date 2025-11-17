@@ -1,7 +1,7 @@
 import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+import { Result, Success, Failure } from '@common/core';
 
 /**
  * Inserts a note into the animal_note_table for the given animal.

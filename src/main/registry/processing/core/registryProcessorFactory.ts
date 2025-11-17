@@ -1,4 +1,4 @@
-import { RegistryProcessType, ValidationResult } from 'packages/api';
+import { RegistryProcessType, ValidationResult } from '@app/api';
 import { RegistryProcessor } from './types'
 
 // births

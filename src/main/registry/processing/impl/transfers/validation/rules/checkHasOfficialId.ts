@@ -1,7 +1,7 @@
-import { RegistryRow, ValidationResponse } from 'packages/api';
-import { animalHasActiveOfficialTag  } from '../../../../../../database';
-import { handleResult } from 'packages/core';
 import {Database} from "sqlite3";
+import { RegistryRow, ValidationResponse } from '@app/api';
+import { animalHasActiveOfficialTag } from '../../../../../../database';
+import { handleResult } from '@common/core';
 
 /**
  * @param db The Database to act on

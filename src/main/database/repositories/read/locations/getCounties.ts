@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { County } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { County } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all counties from the DB

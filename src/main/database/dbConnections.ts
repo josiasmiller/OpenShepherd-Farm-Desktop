@@ -1,4 +1,4 @@
-import {Database} from 'packages/database';
+import {Database} from '@database/async';
 import log from 'electron-log';
 import {BrowserWindow, dialog} from "electron";
 import checkDBVersion, {
@@ -19,8 +19,6 @@ import {
   DB_QUERY_CHECK_PASSED
 } from "./checkDBQueryable";
 
-let dbInstance: Database | null = null
-
 /**
  * Opens the database at the given path and performs various integrity checks.
  *
@@ -32,48 +30,23 @@ let dbInstance: Database | null = null
  * @returns The given dbPath value if the database is successfully opened
  * and passes integrity checks, null otherwise.
  */
-export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promise<string | null> => {
+export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promise<Database | null> => {
 
-  let newDb: Database | null = await validateDBVersionOrClose(
+  let db: Database | null = await validateDBVersionOrClose(
     await Database.open(dbPath), dbPath, parentWindow,
   )
 
-  if (!newDb) {
+  if (!db) {
     return null
   }
 
-  newDb = await validateDBQueryableOrClose(newDb, dbPath, parentWindow)
+  db = await validateDBQueryableOrClose(db, dbPath, parentWindow)
 
-  if (!newDb) {
+  if (!db) {
     return null
   }
 
-  if (dbInstance) {
-    // Close old connection safely
-    await dbInstance.close().catch((err: Error) => {
-      log.error("Failed to close previous database connection:", err)
-    })
-    dbInstance = null
-  }
-
-  dbInstance = newDb
-
-  await dbInstance.exec("PRAGMA journal_mode=DELETE").catch((err: Error) => {
-    log.error("Failed to set PRAGMA journal_mode:", err)
-  })
-
-  log.info("Database connection established:", dbPath)
-
-  return dbPath
-}
-
-export const isDatabaseInitialized = (): Boolean => {
-  return dbInstance !== null
-}
-
-export const getDatabase = (): Database | null => {
-  if (!dbInstance) throw new Error("Database not initialized")
-  return dbInstance
+  return db
 }
 
 const validateDBVersionOrClose = async (

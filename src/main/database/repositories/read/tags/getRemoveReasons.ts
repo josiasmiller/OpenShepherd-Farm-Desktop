@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { RemoveReason } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { RemoveReason } from '@app/api';
 
 /**
  * gets all DI remove reasons from the DB

@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure, unwrapOrFailWithAnimal } from "packages/core";
-import { Owner, OwnerType, Contact, Company } from "packages/api";
+import { Result, Success, Failure, unwrapOrFailWithAnimal } from "@common/core";
+import { Owner, OwnerType, Contact, Company } from '@app/api';
 import { getContactPremise } from "../../premises/getContactPremise";
 import { getCompanyPremise } from "../../premises/getCompanyPremise";
 import { getScrapieFlockInfo } from "../../scrapie/getScrapieFlockInfo";

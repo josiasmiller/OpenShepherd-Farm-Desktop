@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import { BrowserWindow, dialog } from 'electron';
 import Papa from 'papaparse';
-import { ParseResult } from 'packages/api';
-import { RegistrationParseResponse, RegistrationParseRow } from 'packages/api';
+import { ParseResult } from '@app/api';
+import { RegistrationParseResponse, RegistrationParseRow } from '@app/api';
 import { registrationParseMap } from './util/registrationParseMap';
 
 /**

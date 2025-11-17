@@ -4,7 +4,7 @@ import {
   RegistryRow,
   ProcessingResult,
   ValidationResult,
-} from "packages/api";
+} from '@app/api';
 import { registryProcessorFactory } from "../core/registryProcessorFactory";
 import {
   RegistryProcessor,

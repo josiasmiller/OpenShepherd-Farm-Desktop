@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { AnimalNote } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { AnimalNote } from '@app/api';
 
 /**
  * gets all animal notes for a given animal

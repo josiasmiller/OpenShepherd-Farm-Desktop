@@ -1,4 +1,4 @@
-import type { Unit } from 'packages/api';
+import type { Unit } from '@app/api';
 
 // note --> the `unit type` field should reference the correspdoning ID from `mockUnitTypes.ts`
 

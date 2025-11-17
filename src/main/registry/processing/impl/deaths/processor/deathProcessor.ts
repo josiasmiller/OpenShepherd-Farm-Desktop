@@ -1,5 +1,5 @@
-import { handleResult } from 'packages/core';
-import { Species, RegistryRow, ProcessingResult } from 'packages/api';
+import { handleResult } from '@common/core';
+import { Species, RegistryRow, ProcessingResult } from '@app/api';
 
 
 // DB actions

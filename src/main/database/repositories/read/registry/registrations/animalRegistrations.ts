@@ -1,12 +1,12 @@
 import {Database} from "sqlite3";
-import { Failure, handleResult, Result, Success, unwrapOrFailWithAnimal } from "packages/core";
-import { BirthInfo, Sex } from 'packages/api'
-import { CodonResponse } from "packages/api";
-import { AnimalIdentification } from "packages/api";
-import { PedigreeNode } from "packages/api";
-import { idTag } from "packages/api";
-import { Owner, OwnerType, OwnerContact, Company } from "packages/api";
-import { AnimalRegistrationResult } from "packages/api";
+import { Failure, handleResult, Result, Success, unwrapOrFailWithAnimal } from "@common/core";
+import { BirthInfo, Sex } from '@app/api'
+import { CodonResponse } from '@app/api';
+import { AnimalIdentification } from '@app/api';
+import { PedigreeNode } from '@app/api';
+import { idTag } from '@app/api';
+import { Owner, OwnerType, OwnerContact, Company } from '@app/api';
+import { AnimalRegistrationResult } from '@app/api';
 import { getBirthInfo } from "../../animal/births/getBirthInfo";
 import { getSexFromAnimalId } from "../../animal/sex/getSexFromAnimalId";
 import { getCodon136ForAnimal } from "../../animal/geneticCharacteristic/getCodon136";

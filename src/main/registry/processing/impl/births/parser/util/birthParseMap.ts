@@ -1,4 +1,4 @@
-import { BirthParseRow } from 'packages/api';
+import { BirthParseRow } from '@app/api';
 
 export const birthParseMap: Record<string, keyof BirthParseRow> = {
   BREEDER_ID: 'breederId',

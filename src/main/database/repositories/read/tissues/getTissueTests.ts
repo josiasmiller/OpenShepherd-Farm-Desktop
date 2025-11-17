@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { TissueTest } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { TissueTest } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 /**
  * gets all tissue tests from the DB

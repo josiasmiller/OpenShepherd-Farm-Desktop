@@ -1,5 +1,5 @@
-import { DefaultSettingsResults, OwnerType } from 'packages/api';
-import { Success } from 'packages/core';
+import { DefaultSettingsResults, OwnerType } from '@app/api';
+import { Success } from '@common/core';
 
 export const mockExistingDefaults = new Success<DefaultSettingsResults[]>([
   {

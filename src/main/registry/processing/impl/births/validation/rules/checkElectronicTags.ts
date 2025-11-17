@@ -1,8 +1,7 @@
-import { RegistryRow, ValidationResponse } from 'packages/api';
-import { getAllCountryTagPrefixes } from '../../../../../../database';
-import { handleResult } from 'packages/core';
 import {Database} from "sqlite3";
-
+import { RegistryRow, ValidationResponse } from '@app/api';
+import { getAllCountryTagPrefixes } from '../../../../../../database';
+import { handleResult } from '@common/core';
 
 export async function checkElectronicTags(db: Database, row: RegistryRow): Promise<ValidationResponse> {
   const errors: string[] = [];

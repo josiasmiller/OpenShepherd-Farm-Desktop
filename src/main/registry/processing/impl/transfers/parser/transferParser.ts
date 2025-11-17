@@ -1,14 +1,14 @@
-import fs from "fs/promises";
-import Papa from "papaparse";
-import { BrowserWindow, dialog } from "electron";
-import { ParseResult } from "packages/api";
+import fs from 'fs/promises';
+import Papa from 'papaparse';
+import { BrowserWindow, dialog } from 'electron';
+import { ParseResult } from '@app/api';
 import {
   TransferParseResponse,
   AnimalRow,
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
-} from "packages/api";
+} from '@app/api';
 
 /**
  * Parses a transfer CSV with multiple sections (animals, seller, buyer)

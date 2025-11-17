@@ -1,7 +1,6 @@
-import type { Species, RegistryRow, ValidationResult } from 'packages/api';
+import type { Species, RegistryRow, ValidationResult } from '@app/api';
 import { checkHasOfficialId } from './rules/checkHasOfficialId';
 import {Database} from "sqlite3";
-
 
 /**
  * validates the data extracted from a registration CSV

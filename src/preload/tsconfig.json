@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["./build/*", "./**/*.test.ts"],
+  "references": [
+    { "path": "../packages/app/api" },
+    { "path": "../packages/ipc/api" },
+    { "path": "../packages/ipc/preload" },
+  ]
+}

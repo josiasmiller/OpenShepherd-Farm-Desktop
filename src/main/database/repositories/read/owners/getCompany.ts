@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Company } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Company } from '@app/api';
 
 /**
  * gets companies from the DB, either all companies or just the registry companies

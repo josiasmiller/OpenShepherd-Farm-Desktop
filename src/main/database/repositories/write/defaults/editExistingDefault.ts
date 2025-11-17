@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { NewDefaultSettingsParameters } from "packages/api";
+import { NewDefaultSettingsParameters } from '@app/api';
 import { animalDefaultColumns, getAnimalDefaultValues } from "./defaultParser";
 
 export const editExistingDefaultSettings = async (

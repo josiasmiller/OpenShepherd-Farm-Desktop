@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import Papa from 'papaparse';
-import { DeathParseResponse, DeathParseRow, ParseResult } from 'packages/api';
+import { DeathParseResponse, DeathParseRow, ParseResult } from '@app/api';
 import { deathParseMap } from './util/deathParseMap';
 import { BrowserWindow, dialog } from 'electron';
 

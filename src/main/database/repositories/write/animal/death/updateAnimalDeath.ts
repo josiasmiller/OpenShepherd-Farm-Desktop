@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 import { dateTimeAsString } from '../../../../dbUtils';
-import { Result, Success, Failure } from 'packages/core/src/resultTypes';
+import { Result, Success, Failure } from '@common/core';
 
 /**
  * Updates the death date and death reason for a given animal.

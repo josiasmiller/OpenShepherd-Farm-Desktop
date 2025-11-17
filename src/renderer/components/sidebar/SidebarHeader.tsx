@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card, CardContent, Typography, useTheme} from "@mui/material";
 import transparentLogo from "../../assets/images/AnimalTrakker.png";
-import {isRegistryDesktop} from "packages/appBuild/src";
+import {isRegistryDesktop} from '@app/buildVariant';
 
 const SidebarHeader = () => {
   const theme = useTheme()

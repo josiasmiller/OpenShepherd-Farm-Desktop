@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { handleResult } from "packages/core";
+import { handleResult } from "@common/core";
 
 import { 
   verifyLastRegistrationNumberIsUpToDate,

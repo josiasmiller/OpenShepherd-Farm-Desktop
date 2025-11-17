@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { Result, Success, Failure } from "packages/core";
-import { Species } from "packages/api";
+import { Result, Success, Failure } from "@common/core";
+import { Species } from '@app/api';
 
 /**
  * gets all species from the DB

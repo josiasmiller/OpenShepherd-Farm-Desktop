@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 import { correctLatestRegistrationNumber } from "../../../database/registry/write/correctLatestRegistrationNumber";
-import { Result, Success, Failure } from "packages/core";
+import { Result, Success, Failure } from "@common/core";
 import { DatabaseStateCheckResponse } from "./handleDatabaseStateCheck";
 
 import { 

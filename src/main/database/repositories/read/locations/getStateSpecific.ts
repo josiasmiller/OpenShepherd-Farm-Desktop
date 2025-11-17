@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
-import { State } from "packages/api";
-import { Result, Success, Failure } from "packages/core";
+import { State } from '@app/api';
+import { Result, Success, Failure } from "@common/core";
 
 // Define the expected structure of a row from the database
 type StateRow = {
