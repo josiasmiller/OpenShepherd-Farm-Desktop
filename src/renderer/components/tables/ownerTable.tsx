@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-// import log from "electron-log";
+
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 
 import { Owner, OwnerType, Contact, Company } from "packages/api";
 import { unwrapOrThrow } from "packages/core";
@@ -19,68 +30,71 @@ export type OwnerInfo = {
 };
 
 export interface OwnerInformationTableProps {
-  /** Array of owners to display, including type */
+  /** Array of owners to display, including OwnerType */
   owners: { ownerId: string; ownerType: OwnerType }[];
 }
 
 /**
- * Displays a table of owner information.
- * Fetches details via window.ownerAPI.getOwnerById for each owner.
+ * Converts raw API responses into a normalized UI-friendly structure.
+ */
+export const normalizeOwners = (owners: Owner[]): OwnerInfo[] => {
+  return owners.map((owner) => {
+    let displayName: string;
+    if (owner.type === OwnerType.CONTACT) {
+      const c: Contact = owner.contact;
+      displayName = `${c.firstName} ${c.lastName}`;
+    } else {
+      const co: Company = owner.company;
+      displayName = co.name;
+    }
+
+    return {
+      id: owner.type === OwnerType.CONTACT ? owner.contact.id : owner.company.id,
+      type: owner.type,
+      name: displayName,
+      flockId: owner.flockId ?? "—",
+      phoneNumber: owner.phoneNumber ?? "—",
+      scrapieId: owner.scrapieId?.scrapieName ?? "—",
+      premise: owner.premise.address ?? "—",
+    };
+  });
+};
+
+/**
+ * Displays a styled table showing owner information.
  */
 export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
   owners,
 }) => {
   const [ownerData, setOwnerData] = useState<OwnerInfo[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!owners || owners.length === 0) {
       setOwnerData([]);
+      setError(null);
       return;
     }
 
     const fetchOwnerData = async () => {
-      try {
-        setLoading(true);
-        const collected: OwnerInfo[] = [];
+      setLoading(true);
+      setError(null);
 
+      try {
+        const collected: Owner[] = [];
         for (const { ownerId, ownerType } of owners) {
-          // unwrapOrThrow will throw if the result is a Failure
           const result: Owner = await unwrapOrThrow(
             window.lookupAPI.getOwnerById(ownerId, ownerType)
           );
-
-          let displayName: string;
-          if (result.type === OwnerType.CONTACT) {
-            const c: Contact = result.contact;
-            displayName = `${c.firstName} ${c.lastName}`;
-          } else {
-            const co: Company = result.company;
-            displayName = co.name;
-          }
-
-          collected.push({
-            id: result.type === OwnerType.CONTACT ? result.contact.id : result.company.id,
-            type: result.type,
-            name: displayName,
-            flockId: result.flockId ?? "—",
-            phoneNumber: result.phoneNumber ?? "—",
-            scrapieId: result.scrapieId?.scrapieName ?? "—", // TODO --> verify this is correct
-            premise: result.premise.address ?? "—", // TODO --> verify this is correct
-          });
+          collected.push(result);
         }
 
-        // Deduplicate by ID
-        const unique = new Map(collected.map((o) => [o.id, o]));
-        setOwnerData(Array.from(unique.values()));
+        const normalized = normalizeOwners(collected);
+        setOwnerData(normalized);
       } catch (err: any) {
-        // log.error("Error fetching owner data:", err?.message);
         console.error("Error fetching owner data:", err?.message);
-        await Swal.fire({
-          icon: "error",
-          title: "Failed to Load Owner Info",
-          text: err?.message ?? "Unknown error while fetching owner data.",
-        });
+        setError(err?.message ?? "Unknown error while fetching owner data.");
       } finally {
         setLoading(false);
       }
@@ -89,44 +103,123 @@ export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
     fetchOwnerData();
   }, [owners]);
 
+  const cellStyle = {
+    padding: "12px 16px",
+    borderBottom: "1px solid var(--md-sys-color-outline-variant)",
+    color: "var(--md-sys-color-on-surface-variant)",
+  };
+
   return (
-    <div className="results-section">
-      <table className="results-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Membership Number</th>
-            <th>Phone</th>
-            <th>Scrapie Flock ID</th>
-            <th>Premise</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={6} style={{ textAlign: "center", padding: "1.5em" }}>
-                Loading...
-              </td>
-            </tr>
-          ) : ownerData.length > 0 ? (
-            ownerData.map((owner) => (
-              <tr key={owner.id}>
-                <td>{owner.name}</td>
-                <td>{owner.flockId}</td>
-                <td>{owner.phoneNumber}</td>
-                <td>{owner.scrapieId ?? "—"}</td>
-                <td>{owner.premise}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6} style={{ textAlign: "center", padding: "1.5em" }}>
-                No owner data found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <Box
+      className="results-section"
+      sx={{
+        flex: 4,
+        display: "flex",
+        flexDirection: "column",
+        padding: "20px",
+        minHeight: 0,
+        backgroundColor: "var(--md-sys-color-surface)",
+        overflowY: "hidden",
+      }}
+    >
+      <TableContainer
+        component={Paper}
+        elevation={3}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          borderRadius: 2,
+        }}
+      >
+        <Table stickyHeader>
+          {/* Table Header */}
+          <TableHead>
+            <TableRow>
+              {["Name", "Membership Number", "Phone", "Scrapie Flock ID", "Premise"].map(
+                (header) => (
+                  <TableCell
+                    key={header}
+                    sx={{
+                      backgroundColor: "var(--md-sys-color-secondary-container)",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      fontFamily="Roboto Mono Bold"
+                      sx={{ color: "var(--md-sys-color-primary)" }}
+                    >
+                      {header}
+                    </Typography>
+                  </TableCell>
+                )
+              )}
+            </TableRow>
+          </TableHead>
+
+          {/* Table Body */}
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                  <CircularProgress />
+                </TableCell>
+              </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                  <Typography
+                    variant="body1"
+                    color="error"
+                    fontFamily="Roboto Mono"
+                  >
+                    Failed to load owner data: {error}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : ownerData.length > 0 ? (
+              ownerData.map((owner) => (
+                <TableRow
+                  key={owner.id}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "var(--md-sys-color-surface-variant)",
+                      transition: "background-color 0.2s ease-in-out",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  {[
+                    owner.name,
+                    owner.flockId,
+                    owner.phoneNumber,
+                    owner.scrapieId ?? "—",
+                    owner.premise,
+                  ].map((value, idx) => (
+                    <TableCell key={idx} sx={cellStyle}>
+                      <Typography variant="body2" fontFamily="Roboto Mono">
+                        {value}
+                      </Typography>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    fontFamily="Roboto Mono"
+                  >
+                    No owner data found.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
