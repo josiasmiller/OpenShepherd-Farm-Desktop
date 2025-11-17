@@ -1,32 +1,41 @@
 import React from "react";
+import { Box, Typography } from "@mui/material";
 
 interface DateDisplayProps {
   title: string;
   value?: string | null;
 }
 
+/**
+ * Displays a labeled date/value in a styled box.
+ */
 export const DateDisplay: React.FC<DateDisplayProps> = ({ title, value }) => {
   return (
-    <div style={{ flex: 1 }}>
-      <label
-        style={{
-          fontWeight: "bold",
-          display: "block",
-          marginBottom: "0.3em",
-        }}
+    <Box flex={1}>
+      <Typography
+        variant="subtitle2"
+        fontWeight="bold"
+        gutterBottom
+        fontFamily="Roboto Mono Bold"
       >
         {title}
-      </label>
-      <div
-        style={{
+      </Typography>
+      <Box
+        sx={{
           padding: "0.6em 1em",
-          backgroundColor: "#f9f9f9",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
+          backgroundColor: "var(--md-sys-color-surface-container-low)",
+          border: "1px solid var(--md-sys-color-outline-variant)",
+          borderRadius: 2,
         }}
       >
-        {value || "—"}
-      </div>
-    </div>
+        <Typography
+          variant="body2"
+          fontFamily="Roboto Mono"
+          color={value ? "text.primary" : "text.secondary"}
+        >
+          {value || "—"}
+        </Typography>
+      </Box>
+    </Box>
   );
 };
