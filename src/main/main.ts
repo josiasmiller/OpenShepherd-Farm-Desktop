@@ -267,7 +267,17 @@ function updateLandingWindowMenu(window: BrowserWindow | null) {
   const shouldShowDevTools = !app.isPackaged;
   const menuTemplate: MenuItemConstructorOptions[] = [
     ...(process.platform === 'darwin' ? [{ role: 'appMenu' }] : []) as MenuItemConstructorOptions[],
-    ...(shouldShowDevTools ? [{ role: 'toggleDevTools' }] : []) as MenuItemConstructorOptions[],
+    ...(
+      shouldShowDevTools ? [
+        {
+          label: '&Tools',
+          submenu: [
+            { role: 'reload' },
+            { role: 'forceReload' },
+            { role: 'toggleDevTools' },
+          ] as MenuItemConstructorOptions[]
+        },
+      ] : []) as MenuItemConstructorOptions[],
   ];
   const menu = Menu.buildFromTemplate(menuTemplate);
   if (window) {
