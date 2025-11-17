@@ -140,7 +140,7 @@ function createLandingWindow(): BrowserWindow {
     // there is no expectation
     // to stay open and show
     // the landing window.
-    landingWindow = null
+    landingWindow = null;
   });
   // Menu and Dev Tools only available
   // when not packaged
