@@ -39,6 +39,20 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
       return;
     }
 
+    const normalizeAnimals = (abi : AnimalBasicInfo[]) => {
+      const normalized: AnimalInfo[] = abi.map((a) => ({
+        id: a.animalId,
+        flockPrefix: a.flockPrefix ?? "—",
+        name: a.name ?? "—",
+        registrationNumber: a.registrationNumber ?? "—",
+        birthDate: a.birthDate
+          ? new Date(a.birthDate).toLocaleDateString()
+          : "—",
+        coatColor: a.coatColor ?? "—",
+      }));
+      return normalized;
+    }
+
     const fetchAnimalData = async () => {
       try {
         setLoading(true);
@@ -57,16 +71,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
         });
 
         // Normalize DB response into display shape
-        const normalized: AnimalInfo[] = animalBasicInfo.map((a) => ({
-          id: a.animalId,
-          flockPrefix: a.flockPrefix ?? "—",
-          name: a.name ?? "—",
-          registrationNumber: a.registrationNumber ?? "—",
-          birthDate: a.birthDate
-            ? new Date(a.birthDate).toLocaleDateString()
-            : "—",
-          coatColor: a.coatColor ?? "—",
-        }));
+        const normalized: AnimalInfo[] = normalizeAnimals(animalBasicInfo);
 
         // Deduplicate by ID (in case duplicates returned)
         const unique = new Map(normalized.map((a) => [a.id, a]));
