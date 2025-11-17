@@ -63,7 +63,7 @@ export const getBasicAnimalInfo = async (
           animalId: row.id_animalid,
           flockPrefix: row.flock_prefix ?? "—",
           name: row.animal_name ?? "—",
-          registrationNumber: row.registration_number ?? "—",
+          registrationNumber: row.registration_number ?? null,
           birthDate: row.birth_date ?? null,
           coatColor: row.coat_color ?? "Unknown",
         })) as AnimalBasicInfo[];

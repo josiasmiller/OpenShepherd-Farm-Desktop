@@ -733,7 +733,7 @@ export type AnimalBasicInfo = {
   animalId: string;
   flockPrefix: string;
   name: string;
-  registrationNumber: string;
+  registrationNumber: string | null;
   birthDate: string;
   coatColor: string;
 }
