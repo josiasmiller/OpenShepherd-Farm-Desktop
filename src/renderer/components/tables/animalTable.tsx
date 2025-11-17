@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
-// import log from 'electron-log';
-import Swal from "sweetalert2";
+
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 
 import { handleResult, Result } from "packages/core";
 import { AnimalBasicInfo } from "packages/api";
@@ -13,19 +24,40 @@ export type AnimalInfo = {
   flockPrefix: string;
   name: string;
   registrationNumber: string;
-  birthDate: string; // formatted date
-  coatColor?: string; // optional placeholder
+  birthDate: string;
+  coatColor?: string;
 };
 
 interface AnimalInformationTableProps {
-  /** A list of animal UUIDs to look up and display. */
+  /**
+   * A list of animal IDs whose information should be fetched and displayed.
+   */
   animalIds: string[];
 }
 
 /**
- * Displays a simple table of animal information.
- * Fetches details via window.animalAPI.getAnimalTableInfo(animalIds)
- * and maps DB rows into display-friendly data.
+ * Converts shape of DB response into the expected shape for this component
+ *  
+ * @param abi DB field to be converted
+ * @returns array of `AnimalInfo`
+ */
+export const normalizeAnimals = (abi: AnimalBasicInfo[]): AnimalInfo[] => {
+  return abi.map((a) => ({
+    id: a.animalId,
+    flockPrefix: a.flockPrefix ?? "—",
+    name: a.name ?? "—",
+    registrationNumber: a.registrationNumber ?? "—",
+    birthDate: a.birthDate
+      ? new Date(a.birthDate).toLocaleDateString()
+      : "—",
+    coatColor: a.coatColor ?? "—",
+  }));
+};
+
+/**
+ * Displays a styled table showing essential animal information.
+ * 
+ * @param animalIds AnimalInformationTableProps
  */
 export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
   animalIds,
@@ -33,103 +65,168 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
   const [animalData, setAnimalData] = useState<AnimalInfo[]>([]);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Holds an error message string if the fetch fails.
+   */
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    // If no animals selected, clear current data + any errors.
     if (!animalIds || animalIds.length === 0) {
       setAnimalData([]);
+      setError(null);
       return;
     }
 
-    const normalizeAnimals = (abi : AnimalBasicInfo[]) => {
-      const normalized: AnimalInfo[] = abi.map((a) => ({
-        id: a.animalId,
-        flockPrefix: a.flockPrefix ?? "—",
-        name: a.name ?? "—",
-        registrationNumber: a.registrationNumber ?? "—",
-        birthDate: a.birthDate
-          ? new Date(a.birthDate).toLocaleDateString()
-          : "—",
-        coatColor: a.coatColor ?? "—",
-      }));
-      return normalized;
-    }
-
+    /**
+     * Fetches animal basic information and updates component state.
+     */
     const fetchAnimalData = async () => {
-      try {
-        setLoading(true);
+      setLoading(true);
+      setError(null);
 
-        let basicAnimalResult: Result<AnimalBasicInfo[], string> = await window.animalAPI.getBasicAnimalInfo(animalIds);
-        let animalBasicInfo: AnimalBasicInfo[] = [];
+      const basicAnimalResult: Result<AnimalBasicInfo[], string> = await window.animalAPI.getBasicAnimalInfo(animalIds);
 
-        await handleResult(basicAnimalResult, {
-          success: (data: AnimalBasicInfo[]) => {
-            animalBasicInfo = data;
-          },
-          error: (err: string) => {
-            console.error("Failed to get animalBasicInfo: ", err);
-            throw new Error(err);
-          },
-        });
+      let animalBasicInfo: AnimalBasicInfo[] = [];
 
-        // Normalize DB response into display shape
-        const normalized: AnimalInfo[] = normalizeAnimals(animalBasicInfo);
+      await handleResult(basicAnimalResult, {
+        success: (data) => {
+          animalBasicInfo = data;
+        },
+        error: (err) => {
+          console.error("Failed to get animalBasicInfo:", err);
+          setError(err); // store error and continue
+        },
+      });
 
-        // Deduplicate by ID (in case duplicates returned)
-        const unique = new Map(normalized.map((a) => [a.id, a]));
-        setAnimalData(Array.from(unique.values()));
-      } catch (err: any) {
-        // log.error("Error fetching animal data:", err?.message);
-        console.error("Error fetching animal data:", err?.message);
-        await Swal.fire({
-          icon: "error",
-          title: "Failed to Load Animal Info",
-          text: err?.message ?? "Unknown error while fetching animal data.",
-        });
-      } finally {
-        setLoading(false);
+      // Only map data if no error was recorded.
+      if (!error) {
+        const normalized = normalizeAnimals(animalBasicInfo);
+        setAnimalData(normalized);
       }
+
+      setLoading(false);
     };
 
     fetchAnimalData();
   }, [animalIds]);
 
   return (
-    <div className="results-section">
-      <table className="results-table">
-        <thead>
-          <tr>
-            <th>Registration Number</th>
-            <th>Flock Prefix</th>
-            <th>Animal Name</th>
-            <th>Birth Date</th>
-            <th>Coat Color</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={5} style={{ textAlign: "center", padding: "1.5em" }}>
-                Loading...
-              </td>
-            </tr>
-          ) : animalData.length > 0 ? (
-            animalData.map((animal) => (
-              <tr key={animal.id}>
-                <td>{animal.registrationNumber}</td>
-                <td>{animal.flockPrefix}</td>
-                <td>{animal.name}</td>
-                <td>{animal.birthDate}</td>
-                <td>{animal.coatColor ?? "—"}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={5} style={{ textAlign: "center", padding: "1.5em" }}>
-                No animal data found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <Box
+      className="results-section"
+      sx={{
+        flex: 4,
+        display: "flex",
+        flexDirection: "column",
+        padding: "20px",
+        minHeight: 0,
+        backgroundColor: "var(--md-sys-color-surface)",
+        overflowY: "hidden",
+      }}
+    >
+      <TableContainer
+        component={Paper}
+        elevation={3}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          borderRadius: 2,
+        }}
+      >
+        <Table stickyHeader>
+          {/* Table Header */}
+          <TableHead>
+            <TableRow>
+              {[
+                "Registration Number",
+                "Flock Prefix",
+                "Animal Name",
+                "Birth Date",
+                "Coat Color",
+              ].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={{
+                    backgroundColor: "var(--md-sys-color-secondary-container)",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    fontFamily="Roboto Mono Bold"
+                    sx={{ color: "var(--md-sys-color-primary)" }}
+                  >
+                    {header}
+                  </Typography>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+
+          {/* Table Body */}
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                  <CircularProgress />
+                </TableCell>
+              </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                  <Typography variant="body1" color="error" fontFamily="Roboto Mono">
+                    Failed to load animal data: {error}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : animalData.length > 0 ? (
+              animalData.map((animal) => {
+                const cellStyle = {
+                  padding: "12px 16px",
+                  borderBottom: "1px solid var(--md-sys-color-outline-variant)",
+                  color: "var(--md-sys-color-on-surface-variant)",
+                };
+
+                return (
+                  <TableRow
+                    key={animal.id}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "var(--md-sys-color-surface-variant)",
+                        transition: "background-color 0.2s ease-in-out",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    {[
+                      animal.registrationNumber,
+                      animal.flockPrefix,
+                      animal.name,
+                      animal.birthDate,
+                      animal.coatColor,
+                    ].map((value, idx) => (
+                      <TableCell key={idx} sx={cellStyle}>
+                        <Typography variant="body2" fontFamily="Roboto Mono">
+                          {value}
+                        </Typography>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                  <Typography variant="body1" color="text.secondary" fontFamily="Roboto Mono">
+                    No animal data found.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
+
 };
