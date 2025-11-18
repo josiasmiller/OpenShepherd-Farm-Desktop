@@ -1,7 +1,8 @@
+// import { Database } from "@database/async";
 import { Database } from "sqlite3";
-import { AnimalBasicInfo } from "packages/api";
+import { AnimalBasicInfo } from "@app/api";
 import { CHARACTERISTIC_COAT_COLOR } from "../../../../../../../src/main/database/dbConstants"; // TODO --> better import path???
-import { Failure, Result, Success } from "packages/core/src";
+import { Failure, Result, Success } from "@common/core";
 
 
 /**
@@ -29,6 +30,7 @@ export const getBasicAnimalInfo = async (
         ) AS rn
       FROM animal_registration_table ar
       WHERE ar.registration_date IS NOT NULL
+      LIMIT 1
     ),
     coat_colors AS (
       SELECT

@@ -13,8 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Owner, OwnerType, Contact, Company } from "packages/api";
-import { unwrapOrThrow } from "packages/core";
+import { Owner, OwnerType, Contact, Company } from "@app/api";
+import { unwrapOrThrow } from "@common/core";
 
 /**
  * Local display shape for normalized owner info.

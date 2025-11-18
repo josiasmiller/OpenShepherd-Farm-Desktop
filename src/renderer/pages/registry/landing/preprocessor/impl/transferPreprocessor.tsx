@@ -11,7 +11,7 @@ import {
   ExistingMemberBuyer,
   OwnerType,
   Species,
-} from "packages/api";
+} from "@app/api";
 
 
 export const TransferPreprocessorPage: React.FC = () => {

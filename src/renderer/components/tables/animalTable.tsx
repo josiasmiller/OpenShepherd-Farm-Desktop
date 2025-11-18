@@ -13,8 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import { handleResult, Result } from "packages/core";
-import { AnimalBasicInfo } from "packages/api";
+import { handleResult, Result } from "@common/core";
+import { AnimalBasicInfo } from "@app/api";
 
 /**
  * Local display shape for normalized animal info.
