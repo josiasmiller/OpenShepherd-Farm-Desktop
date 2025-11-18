@@ -99,10 +99,6 @@ const IPC_INVOKE_GET_TRANSFER_REASONS = 'get-transfer-reasons'
 const IPC_INVOKE_GET_UNITS = 'get-units'
 const IPC_INVOKE_GET_UNIT_TYPES = 'get-unit-types'
 const IPC_INVOKE_IS_OWNER_COMPANY = 'is-owner-company'
-const IPC_INVOKE_PARSE_BIRTHS = 'registry-parse-births'
-const IPC_INVOKE_PARSE_DEATHS = 'registry-parse-deaths'
-const IPC_INVOKE_PARSE_REGISTRATIONS = 'registry-parse-registrations'
-const IPC_INVOKE_PARSE_TRANSFERS = 'registry-parse-transfers'
 const IPC_INVOKE_REGISTRY_PARSE_BIRTHS = 'registry-parse-births'
 const IPC_INVOKE_REGISTRY_PARSE_DEATHS = 'registry-parse-deaths'
 const IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS = 'registry-parse-registrations'
@@ -459,46 +455,6 @@ export const registerIpcHandlers = () => {
     await shell.openExternal(url);
   });
 
-  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return birthParser(session.window);
-    }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, event)
-  });
-
-  ipcMain.handle(IPC_INVOKE_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return birthParser(null);
-    }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_PARSE_BIRTHS, event)
-  });
-
-  ipcMain.handle(IPC_INVOKE_PARSE_DEATHS, async (event: IpcMainInvokeEvent, ) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return deathParser(null);
-    }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_PARSE_DEATHS, event)
-  });
-
-  ipcMain.handle(IPC_INVOKE_PARSE_REGISTRATIONS, async (event: IpcMainInvokeEvent, ) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return registrationParser(null);
-    }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_PARSE_REGISTRATIONS, event)
-  });
-
-  ipcMain.handle(IPC_INVOKE_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, ) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return transferParser(null);
-    }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_PARSE_TRANSFERS, event)
-  });
-
   ipcMain.handle(
     "registry-process",
     async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
@@ -507,6 +463,14 @@ export const registerIpcHandlers = () => {
       return handleRegistryProcess(session.db.raw(), processType, species, sections);
     },
   );
+
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return birthParser(session.window);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, event)
+  });
 
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_DEATHS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
