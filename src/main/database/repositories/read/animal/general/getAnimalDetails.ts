@@ -1,7 +1,7 @@
 // import { Database } from "@database/async";
 import { Database } from "sqlite3";
-import { AnimalBasicInfo } from "@app/api";
-import { CHARACTERISTIC_COAT_COLOR } from "../../../../../../../src/main/database/dbConstants"; // TODO --> better import path???
+import { AnimalDetails } from "@app/api";
+import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants"; // TODO --> better import path???
 import { Failure, Result, Success } from "@common/core";
 
 
@@ -9,10 +9,10 @@ import { Failure, Result, Success } from "@common/core";
  * Fetches basic animal info for a list of animal UUIDs.
  * Pulls coat color from animal_genetic_characteristic_table + genetic_coat_color_table.
  */
-export const getBasicAnimalInfo = async (
+export const getAnimalDetails = async (
   db: Database,
   animalIds: string[]
-): Promise<Result<AnimalBasicInfo[], string>> => {
+): Promise<Result<AnimalDetails[], string>> => {
   if (!animalIds || animalIds.length === 0) {
     return new Success([]);
   }
@@ -68,7 +68,7 @@ export const getBasicAnimalInfo = async (
           registrationNumber: row.registration_number ?? null,
           birthDate: row.birth_date ?? null,
           coatColor: row.coat_color ?? "Unknown",
-        })) as AnimalBasicInfo[];
+        })) as AnimalDetails[];
 
         resolve(new Success(animals));
       }

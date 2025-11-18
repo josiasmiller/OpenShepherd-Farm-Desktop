@@ -1,5 +1,5 @@
 import {
-  AnimalBasicInfo,
+  AnimalDetails,
   AnimalIdentification,
   AnimalSearchRequest,
   AnimalSearchResult,
@@ -50,7 +50,7 @@ import { type IpcEventRegistrarFunc } from "@ipc/api/core";
 export interface AnimalAPI {
   search: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
   getIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
-  getBasicAnimalInfo: (animalIds: string[]) => Promise<Result<AnimalBasicInfo[], string>>;
+  getAnimalDetails: (animalIds: string[]) => Promise<Result<AnimalDetails[], string>>;
   getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
 }
 

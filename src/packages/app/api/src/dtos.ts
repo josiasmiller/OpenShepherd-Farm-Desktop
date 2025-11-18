@@ -729,7 +729,7 @@ export type DatabaseSessionInfo = {
   path: string
 }
 
-export type AnimalBasicInfo = {
+export type AnimalDetails = {
   animalId: string;
   flockPrefix: string;
   name: string;

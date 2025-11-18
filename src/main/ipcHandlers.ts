@@ -5,7 +5,7 @@ import {
   animalSearch,
   editExistingDefaultSettings,
   getAnimalIdentification,
-  getBasicAnimalInfo,
+  getAnimalDetails,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -196,7 +196,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle("get-basic-animal-info", async (event: IpcMainInvokeEvent, animalIds: string[]) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return getBasicAnimalInfo(session.db.raw(), animalIds);
+      return getAnimalDetails(session.db.raw(), animalIds);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BREEDS, event)
   });

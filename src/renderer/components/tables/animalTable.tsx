@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import { handleResult, Result } from "@common/core";
-import { AnimalBasicInfo } from "@app/api";
+import { AnimalDetails } from "@app/api";
 
 /**
  * Local display shape for normalized animal info.
@@ -41,7 +41,7 @@ interface AnimalInformationTableProps {
  * @param abi DB field to be converted
  * @returns array of `AnimalInfo`
  */
-export const normalizeAnimals = (abi: AnimalBasicInfo[]): AnimalInfo[] => {
+export const normalizeAnimals = (abi: AnimalDetails[]): AnimalInfo[] => {
   return abi.map((a) => ({
     id: a.animalId,
     flockPrefix: a.flockPrefix ?? "—",
@@ -85,9 +85,9 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
       setLoading(true);
       setError(null);
 
-      const basicAnimalResult: Result<AnimalBasicInfo[], string> = await window.animalAPI.getBasicAnimalInfo(animalIds);
+      const basicAnimalResult: Result<AnimalDetails[], string> = await window.animalAPI.getAnimalDetails(animalIds);
 
-      let animalBasicInfo: AnimalBasicInfo[] = [];
+      let animalBasicInfo: AnimalDetails[] = [];
 
       await handleResult(basicAnimalResult, {
         success: (data) => {
