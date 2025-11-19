@@ -4,38 +4,42 @@ import React from "react";
 import log from "electron-log/renderer";
 
 import { AnimalInformationTable, normalizeAnimals } from "./animalTable";
-import { handleResult } from "@common/core";
-import { AnimalDetails } from "@app/api";
+import { handleResult, Result, Success, Failure } from "@common/core";
+import { AnimalDetails, AnimalSearchRequest } from "@app/api";
 
 // ==================================================
-// MOCKS
+// Constants for tests
+const animalIdOne = '994cc9b6-8694-4332-a9b0-37a0b5d7d52c';
+const animalIdTwo = 'd55a9c86-c8d0-4cc8-a3aa-40de2749a714';
+
+// ==================================================
+// mock the logger
 jest.mock("electron-log/renderer", () => ({
   error: jest.fn(),
 }));
 
-jest.mock("@common/core", () => ({
-  handleResult: jest.fn(),
-}));
-
-jest.mock('uuid', () => ({
-  validate: jest.fn().mockReturnValue(true),
-  version: jest.fn().mockReturnValue(4),
-}));
-
 // ==================================================
-// Mock window API
-declare global {
-  interface Window {
-    animalAPI: {
-      getAnimalDetails: jest.Mock;
-    };
-  }
+// Define a typed AnimalAPI interface for tests
+interface AnimalAPI {
+  getAnimalDetails: (animalIds: string[]) => Promise<Result<AnimalDetails[], string>>;
 }
 
-window.animalAPI = {
+// ==================================================
+// Create a typed mock implementation
+const mockAnimalAPI: AnimalAPI = {
   getAnimalDetails: jest.fn(),
 };
 
+// ==================================================
+// Assign to window
+declare global {
+  interface Window {
+    animalAPI: AnimalAPI;
+  }
+}
+window.animalAPI = mockAnimalAPI;
+
+// ==================================================
 describe("AnimalInformationTable", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,9 +51,12 @@ describe("AnimalInformationTable", () => {
   });
 
   test("renders loading state then table rows with normalized data", async () => {
+
+    const numberEmDashes = 5; // how many em dashes are included due to invalid data
+
     const mockAnimals: AnimalDetails[] = [
       {
-        animalId: "random_uuid_1",
+        animalId: animalIdOne,
         flockPrefix: "Desert Where",
         name: "Boba Fett",
         registrationNumber: "12345",
@@ -57,7 +64,7 @@ describe("AnimalInformationTable", () => {
         coatColor: "Black",
       },
       {
-        animalId: "random_uuid_2",
+        animalId: animalIdTwo,
         flockPrefix: null,
         name: null,
         registrationNumber: null,
@@ -66,58 +73,54 @@ describe("AnimalInformationTable", () => {
       },
     ];
 
-    const mockResult = { ok: true, value: mockAnimals };
-    (window.animalAPI.getAnimalDetails as jest.Mock).mockResolvedValueOnce(mockResult);
+    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(
+      new Success(mockAnimals)
+    );
 
-    (handleResult as jest.Mock).mockImplementation(async (res, handlers) => {
-      handlers.success(mockAnimals);
-    });
-
-    render(<AnimalInformationTable animalIds={["random_uuid_1", "random_uuid_2"]} />);
+    render(<AnimalInformationTable animalIds={[animalIdOne, animalIdTwo]} />);
 
     // Loading indicator should appear
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
 
     // Wait for API call
     await waitFor(() => {
-      expect(window.animalAPI.getAnimalDetails).toHaveBeenCalledWith(["random_uuid_1", "random_uuid_2"]);
+      expect(mockAnimalAPI.getAnimalDetails)
+        .toHaveBeenCalledWith([animalIdOne, animalIdTwo]);
     });
 
-    // Check rendered table rows
-    await waitFor(() => {
-      expect(screen.getByText("12345")).toBeInTheDocument();
-      expect(screen.getByText("Desert Where")).toBeInTheDocument();
-      expect(screen.getByText("Boba Fett")).toBeInTheDocument();
-      expect(screen.getByText("Black")).toBeInTheDocument();
+    // Verify specific data is rendered in the document
+    expect(await screen.findByText("12345")).toBeInTheDocument();
+    expect(await screen.findByText("Desert Where")).toBeInTheDocument();
+    expect(await screen.findByText("Boba Fett")).toBeInTheDocument();
+    expect(await screen.findByText("Black")).toBeInTheDocument();
 
-      // Fallback placeholders for null/undefined values
-      expect(screen.getAllByText("—").length).toBeGreaterThan(0);
-    });
+    // Fallback placeholders for null/undefined
+    expect(await screen.findAllByText("—")).toHaveLength(numberEmDashes);
   });
 
-  test("renders error message if handleResult returns error", async () => {
 
-    const errorName = "Some Random DB Query Error Here"
+  test("renders error message if API returns error", async () => {
+    const errorMessage = "Some Random DB Query Error Here";
 
-    const mockResult = { ok: false, error: errorName };
-    (window.animalAPI.getAnimalDetails as jest.Mock).mockResolvedValueOnce(mockResult);
-
-    (handleResult as jest.Mock).mockImplementation(async (res, handlers) => {
-      handlers.error(errorName);
-    });
+    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(
+      new Failure(errorMessage)
+    );
 
     render(<AnimalInformationTable animalIds={["bad-id"]} />);
 
     await waitFor(() => {
-      expect(log.error).toHaveBeenCalledWith("Failed to get animalDetails:", errorName);
-      expect(screen.getByText("Failed to load animal data.")).toBeInTheDocument();
+      expect(log.error)
+        .toHaveBeenCalledWith("Failed to get animalDetails:", errorMessage);
+
+      expect(screen.getByText("Failed to load animal data."))
+        .toBeInTheDocument();
     });
   });
 
   test("renders table rows correctly with normalized data using normalizeAnimals helper", () => {
     const input: AnimalDetails[] = [
       {
-        animalId: "random_uuid_1",
+        animalId: animalIdOne,
         flockPrefix: null,
         name: null,
         registrationNumber: null,
@@ -130,7 +133,7 @@ describe("AnimalInformationTable", () => {
 
     expect(normalized).toEqual([
       {
-        id: "random_uuid_1",
+        id: animalIdOne,
         flockPrefix: "—",
         name: "—",
         registrationNumber: "—",

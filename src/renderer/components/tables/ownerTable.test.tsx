@@ -4,35 +4,15 @@ import React from "react";
 import log from "electron-log/renderer";
 
 import { OwnerInformationTable, normalizeOwners, OwnerInfo } from "./ownerTable";
-import { unwrapOrThrow } from "@common/core";
 import { Owner, OwnerType, Contact, Company, Premise, State } from "@app/api";
+import { Result, Success, Failure } from "@common/core";
+
 
 // ==================================================
-// MOCKS
-jest.mock("electron-log/renderer", () => ({
-  error: jest.fn(),
-}));
+// Constants / Dummy Data
 
-jest.mock("@common/core", () => ({
-  unwrapOrThrow: jest.fn(),
-}));
-
-// ==================================================
-// Mock window API
-declare global {
-  interface Window {
-    lookupAPI: {
-      getOwnerById: jest.Mock;
-    };
-  }
-}
-
-window.lookupAPI = {
-  getOwnerById: jest.fn(),
-};
-
-// ==================================================
-// Dummy data
+const ownerIdOne = "2a1c0682-01af-41b4-b620-1f5c50a10dc9";
+const ownerIdTwo = "d3ca296e-7cd0-4345-8023-61898da4cd99";
 
 const dummyState: State = {
   id: "random_state_uuid_1",
@@ -60,11 +40,10 @@ const dummyPremiseTwo: Premise = {
   country: "USA",
 };
 
-
 const mockOwners: Owner[] = [
   {
     type: OwnerType.CONTACT,
-    contact: { id: "random_owner_uuid_1", firstName: "John", lastName: "Doe" },
+    contact: { id: ownerIdOne, firstName: "John", lastName: "Doe" },
     flockId: "F1",
     phoneNumber: "555-1234",
     premise: dummyPremiseOne,
@@ -72,7 +51,7 @@ const mockOwners: Owner[] = [
   } as Owner,
   {
     type: OwnerType.COMPANY,
-    company: { id: "random_owner_uuid_2", name: "Acme Corp" },
+    company: { id: ownerIdTwo, name: "Acme Corp" },
     flockId: null,
     phoneNumber: null,
     premise: dummyPremiseTwo,
@@ -80,27 +59,51 @@ const mockOwners: Owner[] = [
   } as Owner,
 ];
 
+// ==================================================
+// Mock logger
+jest.mock("electron-log/renderer", () => ({
+  error: jest.fn(),
+}));
+
+// ==================================================
+// Define a typed LookupAPI interface
+interface LookupAPI {
+  getOwnerById: (id: string, type: OwnerType) => Promise<Result<Owner, string>>;
+}
+
+// ==================================================
+// Create a typed mock implementation
+const mockLookupAPI: LookupAPI = {
+  getOwnerById: jest.fn(),
+};
+
+// Assign to window
+declare global {
+  interface Window {
+    lookupAPI: LookupAPI;
+  }
+}
+window.lookupAPI = mockLookupAPI;
+
+// ==================================================
 describe("OwnerInformationTable", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock unwrapOrThrow to just return the value
-    (unwrapOrThrow as jest.Mock).mockImplementation(async (val) => val);
-
-    // Mock getOwnerById to return owner by id/type
-    (window.lookupAPI.getOwnerById as jest.Mock).mockImplementation(
-        async (id: string, type: OwnerType) => {
-          const owner = mockOwners.find((o) => {
-            if (type === OwnerType.CONTACT && o.type === OwnerType.CONTACT) {
-              return o.contact.id === id;
-            } else if (type === OwnerType.COMPANY && o.type === OwnerType.COMPANY) {
-              return o.company.id === id;
-            }
-            return false;
-          });
-          return owner;
+    // Default mock implementation
+    mockLookupAPI.getOwnerById = jest.fn(async (id: string, type: OwnerType) => {
+      const owner = mockOwners.find((o) => {
+        if (type === OwnerType.CONTACT && o.type === OwnerType.CONTACT) {
+          return o.contact.id === id;
+        } else if (type === OwnerType.COMPANY && o.type === OwnerType.COMPANY) {
+          return o.company.id === id;
         }
-      );
+        return false;
+      });
+
+      if (!owner) return new Failure("Owner not found");
+      return new Success(owner);
+    });
   });
 
   test("renders 'No owner data found.' when no owners are provided", () => {
@@ -108,12 +111,12 @@ describe("OwnerInformationTable", () => {
     expect(screen.getByText("No owner data found.")).toBeInTheDocument();
   });
 
-  test("renders loading state then table rows with normalized owner data", async () => {
+  test("renders loading state then table rows with normalized data", async () => {
     render(
       <OwnerInformationTable
         owners={[
-          { ownerId: "random_owner_uuid_1", ownerType: OwnerType.CONTACT },
-          { ownerId: "random_owner_uuid_2", ownerType: OwnerType.COMPANY },
+          { ownerId: ownerIdOne, ownerType: OwnerType.CONTACT },
+          { ownerId: ownerIdTwo, ownerType: OwnerType.COMPANY },
         ]}
       />
     );
@@ -121,30 +124,22 @@ describe("OwnerInformationTable", () => {
     // Loading indicator appears
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
 
-    // Wait for API calls
-    await waitFor(() => {
-      expect(window.lookupAPI.getOwnerById).toHaveBeenCalledWith("random_owner_uuid_1", OwnerType.CONTACT);
-      expect(window.lookupAPI.getOwnerById).toHaveBeenCalledWith("random_owner_uuid_2", OwnerType.COMPANY);
-    });
+    // Wait for table cells to render
+    expect(await screen.findByText("John Doe")).toBeInTheDocument();
+    expect(await screen.findByText("F1")).toBeInTheDocument();
+    expect(await screen.findByText("555-1234")).toBeInTheDocument();
+    expect(await screen.findByText("SCR-001")).toBeInTheDocument();
+    expect(await screen.findByText("123 Main St")).toBeInTheDocument();
 
-    // Wait for table to render
-    await waitFor(() => {
-      // Contact owner
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-      expect(screen.getByText("F1")).toBeInTheDocument();
-      expect(screen.getByText("555-1234")).toBeInTheDocument();
-      expect(screen.getByText("SCR-001")).toBeInTheDocument();
-      expect(screen.getByText("123 Main St")).toBeInTheDocument();
+    expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
 
-      // Company owner
-      expect(screen.getByText("Acme Corp")).toBeInTheDocument();
-      expect(screen.getAllByText("—").length).toBeGreaterThanOrEqual(2); // flockId / phoneNumber / scrapieId fallback
-    });
+    const allEmDashes = await screen.findAllByText("—");
+    expect(allEmDashes.length).toBeGreaterThanOrEqual(2);
   });
 
   test("renders error message if getOwnerById fails", async () => {
-    const errorMsg = "API failed";
-    (window.lookupAPI.getOwnerById as jest.Mock).mockRejectedValueOnce(new Error(errorMsg));
+    const errorMsg = "Some Random Error Message";
+    mockLookupAPI.getOwnerById = jest.fn().mockRejectedValueOnce(new Error(errorMsg));
 
     render(<OwnerInformationTable owners={[{ ownerId: "bad", ownerType: OwnerType.CONTACT }]} />);
 
@@ -156,12 +151,11 @@ describe("OwnerInformationTable", () => {
 
   test("normalizeOwners helper works correctly", () => {
     const input: Owner[] = mockOwners;
-
     const normalized: OwnerInfo[] = normalizeOwners(input);
 
     expect(normalized).toEqual([
       {
-        id: "random_owner_uuid_1",
+        id: ownerIdOne,
         type: OwnerType.CONTACT,
         name: "John Doe",
         flockId: "F1",
@@ -170,7 +164,7 @@ describe("OwnerInformationTable", () => {
         premise: "123 Main St",
       },
       {
-        id: "random_owner_uuid_2",
+        id: ownerIdTwo,
         type: OwnerType.COMPANY,
         name: "Acme Corp",
         flockId: "—",
