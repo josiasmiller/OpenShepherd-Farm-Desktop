@@ -1,7 +1,7 @@
 // import { Database } from "@database/async";
 import { Database } from "sqlite3";
 import { AnimalDetails } from "@app/api";
-import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants"; // TODO --> better import path???
+import { CHARACTERISTIC_COAT_COLOR } from "@database/schema"; // TODO --> better import path???
 import { Failure, Result, Success } from "@common/core";
 
 
