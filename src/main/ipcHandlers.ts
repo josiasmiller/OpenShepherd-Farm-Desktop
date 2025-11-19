@@ -81,6 +81,7 @@ const IPC_INVOKE_GET_DEATH_REASONS = 'get-death-reasons'
 const IPC_INVOKE_GET_EXISTING_DEFAULTS = 'get-existing-defaults'
 const IPC_INVOKE_GET_FLOCK_PREFIXES = 'get-flock-prefixes'
 const IPC_INVOKE_GET_LOCATIONS = 'get-locations'
+const IPC_INVOKE_GET_OWNER_BY_ID = 'get-owner-by-id'
 const IPC_INVOKE_GET_PEDIGREE = 'get-pedigree'
 const IPC_INVOKE_GET_PREMISE_INFO = 'get-premise-info'
 const IPC_INVOKE_GET_REMOVE_REASONS = 'get-remove-reasons'
@@ -297,12 +298,12 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PEDIGREE, event)
   });
 
-  ipcMain.handle("get-owner-by-id", async (event: IpcMainInvokeEvent, ownerId: string, ownerType: OwnerType) => {
+  ipcMain.handle(IPC_INVOKE_GET_OWNER_BY_ID, async (event: IpcMainInvokeEvent, ownerId: string, ownerType: OwnerType) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
       return getOwnerById(session.db.raw(), ownerId, ownerType);
     }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PREMISE_INFO, event)
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_OWNER_BY_ID, event)
   });
 
   ipcMain.handle(IPC_INVOKE_GET_PREMISE_INFO, async (event: IpcMainInvokeEvent) => {
