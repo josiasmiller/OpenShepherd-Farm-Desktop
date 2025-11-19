@@ -15,6 +15,7 @@ import {
 
 import { Owner, OwnerType, Contact, Company } from "@app/api";
 import { unwrapOrThrow } from "@common/core";
+import log from 'electron-log/renderer';
 
 /**
  * Local display shape for normalized owner info.
@@ -93,7 +94,7 @@ export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
         const normalized = normalizeOwners(collected);
         setOwnerData(normalized);
       } catch (err: any) {
-        console.error("Error fetching owner data:", err?.message);
+        log.error("Error fetching owner data:", err?.message);
         setError(err?.message ?? "Unknown error while fetching owner data.");
       } finally {
         setLoading(false);

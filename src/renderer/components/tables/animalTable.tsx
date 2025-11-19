@@ -16,6 +16,8 @@ import {
 import { handleResult, Result } from "@common/core";
 import { AnimalDetails } from "@app/api";
 
+import log from 'electron-log/renderer';
+
 /**
  * Local display shape for normalized animal info.
  */
@@ -94,7 +96,8 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
           animalBasicInfo = data;
         },
         error: (err) => {
-          console.error("Failed to get animalBasicInfo:", err);
+          // console.error("Failed to get animalBasicInfo:", err);
+          log.error("Failed to get animalBasicInfo:", err);
           setError(err); // store error and continue
         },
       });
