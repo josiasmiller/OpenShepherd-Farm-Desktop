@@ -30,7 +30,6 @@ export const getAnimalDetails = async (
         ) AS rn
       FROM animal_registration_table ar
       WHERE ar.registration_date IS NOT NULL
-      LIMIT 1
     ),
     coat_colors AS (
       SELECT
@@ -59,7 +58,7 @@ export const getAnimalDetails = async (
   return new Promise((resolve, reject) => {
     db.all(query, animalIds, (err, rows) => {
       if (err) {
-        reject(new Failure(`Unable to query for BasicAnimalInfo: ${err}`));
+        reject(new Failure(`Unable to query for AnimalDetails: ${err}`));
       } else {
         const animals = rows.map((row: any) => ({
           animalId: row.id_animalid,
@@ -69,6 +68,11 @@ export const getAnimalDetails = async (
           birthDate: row.birth_date ?? null,
           coatColor: row.coat_color ?? "Unknown",
         })) as AnimalDetails[];
+
+        // ensure number of rows returns matches number of rows retrieved
+        if (animals.length != animalIds.length) {
+          reject(new Failure(`Excpeted ${animalIds.length} records, but only retrieved ${animals.length}`));
+        }
 
         resolve(new Success(animals));
       }
