@@ -1,4 +1,4 @@
-import { validate, version } from 'uuid/dist/esm-browser/index.js';
+import { validate, version } from 'uuid';
 
 
 export function isUUIDv4(str: string): boolean {
