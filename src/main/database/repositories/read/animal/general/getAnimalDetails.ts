@@ -44,6 +44,7 @@ export const getAnimalDetails = async (
         JOIN genetic_coat_color_table gcc 
           ON gcc.id_geneticcoatcolorid = agct.id_geneticcharacteristicvalueid
         WHERE agct.id_geneticcharacteristictableid = '${CHARACTERISTIC_COAT_COLOR}'
+        AND agct.id_animalid in (${placeholders})
       )
       SELECT 
         a.id_animalid,
@@ -60,7 +61,7 @@ export const getAnimalDetails = async (
       WHERE a.id_animalid IN (${placeholders});
     `;
 
-    const queryParams : string[] = [...animalIds, ...animalIds]; // handle both placeholder sections
+    const queryParams : string[] = [...animalIds, ...animalIds, ...animalIds]; // handle all placeholder sections
 
     const rows = await db.all<any>(query, queryParams);
 
