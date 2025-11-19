@@ -1,6 +1,6 @@
 import { Database } from "@database/async";
 import { AnimalDetails } from "@app/api";
-import { CHARACTERISTIC_COAT_COLOR } from "@database/schema";
+import { CHARACTERISTIC_COAT_COLOR, REGISTRATION_TYPE_REGISTERED } from "@database/schema";
 import { Failure, Result, Success } from "@common/core";
 
 /**
@@ -20,15 +20,21 @@ export const getAnimalDetails = async (
 
     const query = `
       WITH latest_registration AS (
-        SELECT 
-          ar.id_animalid,
-          ar.registration_number,
+        SELECT id_animalid, registration_number FROM ( 
+          SELECT 
+            ar.id_animalid,
+            ar.registration_number,
           ROW_NUMBER() OVER (
             PARTITION BY ar.id_animalid 
             ORDER BY DATE(ar.registration_date) DESC
           ) AS rn
-        FROM animal_registration_table ar
-        WHERE ar.registration_date IS NOT NULL
+            FROM animal_registration_table ar
+            WHERE ar.registration_date IS NOT NULL
+          AND ar.id_animalregistrationtypeid = '${REGISTRATION_TYPE_REGISTERED}'
+          AND ar.id_animalid in (${placeholders})
+          ORDER BY ar.id_animalid, ar.registration_date DESC -- <-- Makes sure most recent regnum is showing up
+        )
+        WHERE rn = 1
       ),
       coat_colors AS (
         SELECT
@@ -50,11 +56,13 @@ export const getAnimalDetails = async (
       LEFT JOIN coat_colors cc ON a.id_animalid = cc.id_animalid
       LEFT JOIN animal_flock_prefix_table afp ON afp.id_animalid = a.id_animalid
       LEFT JOIN flock_prefix_table fp ON fp.id_flockprefixid = afp.id_flockprefixid
-      LEFT JOIN latest_registration lr ON lr.id_animalid = a.id_animalid AND lr.rn = 1
+      LEFT JOIN latest_registration lr ON lr.id_animalid = a.id_animalid
       WHERE a.id_animalid IN (${placeholders});
     `;
 
-    const rows = await db.all<any>(query, animalIds);
+    const queryParams : string[] = [...animalIds, ...animalIds]; // handle both placeholder sections
+
+    const rows = await db.all<any>(query, queryParams);
 
     const animals = rows.map(row => ({
       animalId: row.id_animalid,
