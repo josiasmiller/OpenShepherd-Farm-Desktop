@@ -174,7 +174,7 @@ export const OwnerInformationTable: React.FC<OwnerInformationTableProps> = ({
                     color="error"
                     fontFamily="Roboto Mono"
                   >
-                    Failed to load owner data: {error}
+                    Failed to load owner data.
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -68,7 +68,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
   const [loading, setLoading] = useState(false);
 
   /**
-   * Holds an error message string if the fetch fails.
+   * Holds any error string that occurs
    */
   const [error, setError] = useState<string | null>(null);
 
@@ -96,8 +96,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
           animalBasicInfo = data;
         },
         error: (err) => {
-          // console.error("Failed to get animalBasicInfo:", err);
-          log.error("Failed to get animalBasicInfo:", err);
+          log.error("Failed to get animalDetails:", err);
           setError(err); // store error and continue
         },
       });
@@ -178,7 +177,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
                   <Typography variant="body1" color="error" fontFamily="Roboto Mono">
-                    Failed to load animal data: {error}
+                    Failed to load animal data.
                   </Typography>
                 </TableCell>
               </TableRow>
