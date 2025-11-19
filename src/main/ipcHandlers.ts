@@ -68,6 +68,7 @@ const IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV = 'export-drug-history-csv'
 const IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV = 'export-tissue-test-results-csv'
 const IPC_INVOKE_EXPORT_REGISTRATION = 'export-registration'
 const IPC_INVOKE_SELECT_PNG_FILE = 'select-png-file'
+const IPC_INVOKE_GET_ANIMAL_DETAILS = 'get-animal-details'; 
 const IPC_INVOKE_GET_ANIMAL_IDENTIFICATION = 'get-animal-identification'
 const IPC_INVOKE_GET_BIRTH_TYPES = 'get-birth-types'
 const IPC_INVOKE_GET_BREEDS = 'get-breeds'
@@ -194,12 +195,12 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BIRTH_TYPES, event)
   });
 
-  ipcMain.handle("get-basic-animal-info", async (event: IpcMainInvokeEvent, animalIds: string[]) => {
+  ipcMain.handle(IPC_INVOKE_GET_ANIMAL_DETAILS, async (event: IpcMainInvokeEvent, animalIds: string[]) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return getAnimalDetails(session.db.raw(), animalIds);
+      return getAnimalDetails(session.db, animalIds);
     }
-    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BREEDS, event)
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_ANIMAL_DETAILS, event)
   });
 
   ipcMain.handle(IPC_INVOKE_GET_BREEDS, async (event: IpcMainInvokeEvent, queryParams) => {
@@ -455,15 +456,6 @@ export const registerIpcHandlers = () => {
     }
     await shell.openExternal(url);
   });
-
-  ipcMain.handle(
-    "registry-process",
-    async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
-      const session = atrkkrSessionForEvent(event)
-      const { processType, species, sections, } = args;
-      return handleRegistryProcess(session.db.raw(), processType, species, sections);
-    },
-  );
 
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
