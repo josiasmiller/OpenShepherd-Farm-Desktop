@@ -103,7 +103,20 @@ export const transferParser = async (
   };
 
   // ---- PARSE EACH SECTION ----
-  const animals = parseCsvSection<AnimalRow>(animalSection);
+  const animalsRaw = parseCsvSection<any>(animalSection);
+
+  // Convert uppercase CSV headers into `AnimalRow`
+  const animals: AnimalRow[] = animalsRaw.map((a) => ({
+    animalId: a.animalId ?? a.ANIMAL_ID ?? "",
+    registrationNumber: a.registrationNumber ?? a.REGISTRATION_NUMBER ?? "",
+    prefix: a.prefix ?? a.PREFIX ?? "",
+    name: a.name ?? a.NAME ?? "",
+    birthDate: a.birthDate ?? a.BIRTH_DATE ?? "",
+    birthType: a.birthType ?? a.BIRTH_TYPE ?? "",
+    sex: a.sex ?? a.SEX ?? "",
+    coatColor: a.coatColor ?? a.COAT_COLOR ?? "",
+  }));
+
   const sellerData = parseCsvSection<SellerInfo>(sellerSection);
   const seller = sellerData.length > 0 ? sellerData[0] : null;
 

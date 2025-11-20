@@ -1,3 +1,7 @@
+// https://stackoverflow.com/questions/51080947/how-to-use-path-alias-in-a-react-project-with-typescript-jest
+const { pathsToModuleNameMapper } = require("ts-jest");
+const { compilerOptions } = require('./tsconfig');
+
 
 module.exports = {
     globals: {
@@ -21,11 +25,7 @@ module.exports = {
             testMatch: ['<rootDir>/**/*.test.ts?(x)'],
             setupFiles: ['<rootDir>/jest.setup.ts'],
             setupFilesAfterEnv: ['<rootDir>/jest.setup-env.ts'],
-            moduleNameMapper: {
-                "^packages/(.*)$": "<rootDir>/../packages/$1",
-                "\\.(png)$": "<rootDir>/../__mocks__/fileMock.js",
-                "\\.(css|less|scss|sass)$": "identity-obj-proxy"
-            }
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } )
         },
         {
             preset: 'ts-jest',

@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { CHARACTERISTIC_COAT_COLOR } from "../../../../dbConstants";
+import { CHARACTERISTIC_COAT_COLOR } from "@database/schema";
 import { Result, Success, Failure } from "@common/core";
 import { CoatColor } from '@app/api';
 

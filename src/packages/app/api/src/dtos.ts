@@ -728,3 +728,12 @@ export type AnimalIdInfoInput = {
 export type DatabaseSessionInfo = {
   path: string
 }
+
+export type AnimalDetails = {
+  animalId: string;
+  flockPrefix: string;
+  name: string;
+  registrationNumber: string | null;
+  birthDate: string;
+  coatColor: string;
+}

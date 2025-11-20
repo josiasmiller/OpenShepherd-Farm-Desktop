@@ -8,6 +8,7 @@ import {
   Species,
   RegistryProcessRequest,
   DatabaseStateCheckResponse,
+  OwnerType,
 } from '@app/api';
 
 import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
@@ -20,6 +21,7 @@ import { SessionManagement } from "@ipc/api/sessionManagement";
 const animalAPI : AnimalAPI = {
   search: (params: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", params),
   getIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
+  getAnimalDetails: (animalIds: string[]) => ipcRenderer.invoke("get-animal-details", animalIds),
   getPedigree: (animalId: string) => ipcRenderer.invoke("get-pedigree", animalId),
 }
 
@@ -62,6 +64,7 @@ const lookupAPI : LookupAPI = {
   getDeathReasons: () => ipcRenderer.invoke("get-death-reasons"),
   getFlockPrefixes: () => ipcRenderer.invoke("get-flock-prefixes"),
   getLocations: () => ipcRenderer.invoke("get-locations"),
+  getOwnerById: (ownerId: string, ownerType: OwnerType) => ipcRenderer.invoke("get-owner-by-id", ownerId, ownerType),
   getPremiseInfo: () => ipcRenderer.invoke("get-premise-info"),
   getRemoveReasons: () => ipcRenderer.invoke("get-remove-reasons"),
   getSexes: () => ipcRenderer.invoke("get-sexes"),

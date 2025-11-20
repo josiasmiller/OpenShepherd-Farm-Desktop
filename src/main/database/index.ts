@@ -13,6 +13,7 @@ export { getAnimalBirthDate } from "./repositories/read/animal/birthday/getAnima
 export { getAnimalIdentification } from "./repositories/read/animal/identification/getAnimalIdentification";
 export { getAnimalNotes } from "./repositories/read/animal/notes/getAnimalNotes";
 export { getAnimalRegistrationInfo } from "./repositories/read/registry/registrations/animalRegistrations";
+export { getAnimalDetails } from "./repositories/read/animal/general/getAnimalDetails"
 export { getBirthTypeByDisplayOrder } from "./repositories/read/animal/births/birthTypes/getBirthTypeByDisplayOrder";
 export { getBirthTypes } from "./repositories/read/animal/births/birthTypes/getBirthTypes";
 export { getBreederById } from "./repositories/read/owners/getBreederFromId";

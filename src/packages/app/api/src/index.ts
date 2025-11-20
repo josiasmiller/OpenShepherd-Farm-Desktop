@@ -1,6 +1,7 @@
 import { AnimalTrakkerIPC } from "./apis";
 
 export {
+  AnimalDetails,
   AnimalIdentification,
   AnimalIdInfoInput,
   AnimalNote,

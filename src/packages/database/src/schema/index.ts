@@ -1,0 +1,6 @@
+
+// DB CONSTANTS
+export { 
+    CHARACTERISTIC_COAT_COLOR,
+    REGISTRATION_TYPE_REGISTERED
+} from "./schema";

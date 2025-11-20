@@ -38,6 +38,3 @@ export const ID_TRANSFER_REASON_TRANSFERRED_BREEDING = "2d3e0aed-84c9-48e8-b11f-
 
 // death_reason_table
 export const DIED_STILLBORN = "9de9f67c-afc4-4d16-83d3-20c4337f4344";
-
-// genetic_characteristic_table
-export const CHARACTERISTIC_COAT_COLOR = "0972486b-7b99-427e-b942-fa5ec88c2678";

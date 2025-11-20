@@ -23,10 +23,10 @@ import {
 
 import SidebarHeader from './SidebarHeader'
 import {styled} from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home.js";
-import SearchIcon from "@mui/icons-material/Search.js";
-import EditIcon from "@mui/icons-material/Edit.js";
-import InventoryIcon from "@mui/icons-material/Inventory.js";
+import HomeIcon from "@mui/icons-material/Home";
+import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import {DefaultSettingsService, DefaultSettingsServiceContext} from "../../services/defaults/defaultSettingsService";
 
 const drawerWidth = 240

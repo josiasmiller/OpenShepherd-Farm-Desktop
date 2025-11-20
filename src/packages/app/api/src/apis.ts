@@ -1,4 +1,5 @@
 import {
+  AnimalDetails,
   AnimalIdentification,
   AnimalSearchRequest,
   AnimalSearchResult,
@@ -38,6 +39,8 @@ import {
   RegistrationParseResponse,
   TransferParseResponse,
   DeathParseResponse,
+  OwnerType,
+  Owner,
 } from "./dtos";
 
 import { Result } from "@common/core";
@@ -47,6 +50,7 @@ import { type IpcEventRegistrarFunc } from "@ipc/api/core";
 export interface AnimalAPI {
   search: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
   getIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
+  getAnimalDetails: (animalIds: string[]) => Promise<Result<AnimalDetails[], string>>;
   getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
 }
 
@@ -85,6 +89,7 @@ export interface LookupAPI {
   getDeathReasons: () => Promise<Result<DeathReason[], string>>;
   getFlockPrefixes: () => Promise<Result<FlockPrefix[], string>>;
   getLocations: () => Promise<Result<TagLocation[], string>>;
+  getOwnerById: (ownerId: string, OwnerType: OwnerType) => Promise<Result<Owner, string>>;
   getPremiseInfo: () => Promise<Result<Premise[], string>>;
   getRemoveReasons: () => Promise<Result<RemoveReason[], string>>;
   getSexes: () => Promise<Result<Sex[], string>>;

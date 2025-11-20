@@ -5,6 +5,7 @@ import {
   animalSearch,
   editExistingDefaultSettings,
   getAnimalIdentification,
+  getAnimalDetails,
   getBirthTypes,
   getBreeds,
   getColors,
@@ -16,6 +17,7 @@ import {
   getDeathReasons,
   getExistingDefaults, 
   getFlockPrefixes,
+  getOwnerById,
   getPedigree,
   getPremises,
   getRemoveReasons,
@@ -47,7 +49,7 @@ import { deathParser } from "./registry/processing/impl/deaths/parser/deathParse
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
 import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults} from '@app/api';
+import {DatabaseStateCheckResponse, DefaultSettingsResults, OwnerType} from '@app/api';
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
@@ -66,6 +68,7 @@ const IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV = 'export-drug-history-csv'
 const IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV = 'export-tissue-test-results-csv'
 const IPC_INVOKE_EXPORT_REGISTRATION = 'export-registration'
 const IPC_INVOKE_SELECT_PNG_FILE = 'select-png-file'
+const IPC_INVOKE_GET_ANIMAL_DETAILS = 'get-animal-details'; 
 const IPC_INVOKE_GET_ANIMAL_IDENTIFICATION = 'get-animal-identification'
 const IPC_INVOKE_GET_BIRTH_TYPES = 'get-birth-types'
 const IPC_INVOKE_GET_BREEDS = 'get-breeds'
@@ -79,6 +82,7 @@ const IPC_INVOKE_GET_DEATH_REASONS = 'get-death-reasons'
 const IPC_INVOKE_GET_EXISTING_DEFAULTS = 'get-existing-defaults'
 const IPC_INVOKE_GET_FLOCK_PREFIXES = 'get-flock-prefixes'
 const IPC_INVOKE_GET_LOCATIONS = 'get-locations'
+const IPC_INVOKE_GET_OWNER_BY_ID = 'get-owner-by-id'
 const IPC_INVOKE_GET_PEDIGREE = 'get-pedigree'
 const IPC_INVOKE_GET_PREMISE_INFO = 'get-premise-info'
 const IPC_INVOKE_GET_REMOVE_REASONS = 'get-remove-reasons'
@@ -191,6 +195,14 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_BIRTH_TYPES, event)
   });
 
+  ipcMain.handle(IPC_INVOKE_GET_ANIMAL_DETAILS, async (event: IpcMainInvokeEvent, animalIds: string[]) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getAnimalDetails(session.db, animalIds);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_ANIMAL_DETAILS, event)
+  });
+
   ipcMain.handle(IPC_INVOKE_GET_BREEDS, async (event: IpcMainInvokeEvent, queryParams) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
@@ -285,6 +297,14 @@ export const registerIpcHandlers = () => {
       return getPedigree(session.db.raw(), animalId, 4); // TODO --> what depth to use?
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PEDIGREE, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_GET_OWNER_BY_ID, async (event: IpcMainInvokeEvent, ownerId: string, ownerType: OwnerType) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getOwnerById(session.db.raw(), ownerId, ownerType);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_OWNER_BY_ID, event)
   });
 
   ipcMain.handle(IPC_INVOKE_GET_PREMISE_INFO, async (event: IpcMainInvokeEvent) => {
