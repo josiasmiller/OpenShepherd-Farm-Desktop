@@ -327,7 +327,7 @@ export const PreprocessorPage: React.FC = () => {
 
 
   const handleTransfers = async () => {
-    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
+    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers('FIXME');
 
     if (parseResult.errorCode !== undefined) {
       return;

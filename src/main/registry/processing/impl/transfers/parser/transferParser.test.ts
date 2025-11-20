@@ -2,78 +2,81 @@
  * @jest-environment node
  */
 import fs from "fs/promises";
+import log from "electron-log";
 import { transferParser } from "./transferParser";
 
+import {
+  MISSING_FIELDS,
+  PARSE_ERROR,
+  NEW_BUYER_NOT_SUPPORTED,
+} from "../../processingErrorCodes";
+
+// Mock only what the parser actually uses
 jest.mock("fs/promises");
-jest.mock("electron", () => ({
-  dialog: {
-    showOpenDialog: jest.fn(),
-  },
+jest.mock("electron-log", () => ({
+  error: jest.fn(),
 }));
 
-import { dialog } from "electron";
-
 const mockFs = fs as jest.Mocked<typeof fs>;
-const mockDialog = dialog as jest.Mocked<typeof dialog>;
+const mockLog = log as jest.Mocked<typeof log>;
 
 describe("transferParser", () => {
-  // silence console logs/ err logs to reduce noice when running tests
-  beforeAll(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
-  });
-
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  test("returns CANCELLED_DIALOG when user cancels file selection", async () => {
-    mockDialog.showOpenDialog.mockResolvedValueOnce({
-      canceled: true,
-      filePaths: [],
-    });
+  // --------------------------------------------------------
+  // 1. Missing required fields --> MISSING_FIELDS
+  // --------------------------------------------------------
+  test("returns MISSING_FIELDS when ANIMALS / SELLER / BUYER are missing", async () => {
+    const badJson = {
+      SELLER: {},
+      BUYER: {},
+    };
 
-    const result = await transferParser();
+    mockFs.readFile.mockResolvedValueOnce(JSON.stringify(badJson));
 
-    expect(result.errorCode).toBe("CANCELLED_DIALOG");
+    const result = await transferParser("/fake/path.json");
+
+    expect(result.errorCode).toBe(MISSING_FIELDS);
     expect(result.data.animals).toEqual([]);
     expect(result.data.seller).toBeNull();
     expect(result.data.buyer).toBeNull();
-  });
 
-  test("returns MISSING_FIELDS when required fields are missing", async () => {
-    mockDialog.showOpenDialog.mockResolvedValueOnce({
-      canceled: false,
-      filePaths: ["/fake/path.json"],
-    });
-
-    mockFs.readFile.mockResolvedValueOnce(JSON.stringify({ SELLER: {}, BUYER: {} }));
-
-    const result = await transferParser();
-
-    expect(result.errorCode).toBe("MISSING_FIELDS");
     expect(result.warnings[0]).toMatch(/Invalid JSON: missing ANIMALS/);
   });
 
+  // --------------------------------------------------------
+  // 2. NEW BUYER --> returns NEW_BUYER_NOT_SUPPORTED
+  // --------------------------------------------------------
   test("returns NEW_BUYER_NOT_SUPPORTED when buyer type is NEW", async () => {
     const json = {
       ANIMALS: [],
-      SELLER: { CONTACT_ID: "", COMPANY_ID: "", PREMISE_ID: "", SOLD_AT: "", MOVED_AT: "" },
+      SELLER: {
+        CONTACT_ID: "",
+        COMPANY_ID: "",
+        PREMISE_ID: "",
+        SOLD_AT: "",
+        MOVED_AT: "",
+      },
       BUYER: { TYPE: "NEW" },
     };
 
-    mockDialog.showOpenDialog.mockResolvedValueOnce({
-      canceled: false,
-      filePaths: ["/fake/path.json"],
-    });
-
     mockFs.readFile.mockResolvedValueOnce(JSON.stringify(json));
 
-    const result = await transferParser();
+    const result = await transferParser("/fake/path.json");
 
-    expect(result.errorCode).toBe("NEW_BUYER_NOT_SUPPORTED");
+    expect(result.errorCode).toBe(NEW_BUYER_NOT_SUPPORTED);
+    expect(result.data).toMatchObject({
+      animals: [],
+      seller: null,
+      buyer: null,
+    });
   });
 
+  // --------------------------------------------------------
+  // 3. Valid JSON --> parsed fields are returned correctly
+  // --------------------------------------------------------
   test("parses valid JSON correctly", async () => {
     const json = {
       ANIMALS: [
@@ -107,36 +110,38 @@ describe("transferParser", () => {
       },
     };
 
-    mockDialog.showOpenDialog.mockResolvedValueOnce({
-      canceled: false,
-      filePaths: ["/fake/path.json"],
-    });
-
     mockFs.readFile.mockResolvedValueOnce(JSON.stringify(json));
 
-    const result = await transferParser();
+    const result = await transferParser("/fake/path.json");
 
     expect(result.errorCode).toBeUndefined();
     expect(result.warnings).toEqual([]);
+
+    // Animals
     expect(result.data.animals[0].name).toBe("Boba Fett");
-    expect(result.data.seller.contactId).toBe("SELLER_CONTACT_ID_HERE");
+    expect(result.data.animals[0].registrationNumber).toBe("124_000000123456");
+
+    // Seller
+    expect(result.data.seller?.contactId).toBe("SELLER_CONTACT_ID_HERE");
+
+    // Buyer
     expect(result.data.buyer).toMatchObject({
       membershipNumber: "12345",
       firstName: "Bob",
     });
   });
 
-  test("returns PARSE_ERROR when JSON is invalid", async () => {
-    mockDialog.showOpenDialog.mockResolvedValueOnce({
-      canceled: false,
-      filePaths: ["/fake/path.json"],
-    });
-
+  // --------------------------------------------------------
+  // 4. Invalid JSON → PARSE_ERROR
+  // --------------------------------------------------------
+  test("returns PARSE_ERROR when JSON parsing fails", async () => {
     mockFs.readFile.mockResolvedValueOnce("{ invalid json }");
 
-    const result = await transferParser();
+    const result = await transferParser("/fake/path.json");
 
-    expect(result.errorCode).toBe("PARSE_ERROR");
+    expect(mockLog.error).toHaveBeenCalled();
+
+    expect(result.errorCode).toBe(PARSE_ERROR);
     expect(result.warnings[0]).toMatch(/Failed to parse JSON/);
   });
 });

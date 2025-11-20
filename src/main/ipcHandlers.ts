@@ -481,10 +481,10 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, ) => {
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, filePath : string) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return transferParser();
+      return transferParser(filePath);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, event)
   });

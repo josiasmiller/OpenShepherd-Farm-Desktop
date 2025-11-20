@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { dialog } from "electron";
+import log from "electron-log";
 
 import {
   TransferParseResponse,
@@ -10,28 +10,17 @@ import {
   ParseResult,
 } from '@app/api';
 
+import {
+  MISSING_FIELDS,
+  PARSE_ERROR,
+  NEW_BUYER_NOT_SUPPORTED
+} from "../../processingErrorCodes";
+
 
 /**
  * Core JSON parser
  */
-export const transferParser = async (): Promise<ParseResult<TransferParseResponse>> => {
-
-  const { filePaths, canceled } = await dialog.showOpenDialog({
-    title: "Select Transfer JSON File",
-    properties: ["openFile"],
-    filters: [{ name: "JSON Files", extensions: ["json"] }],
-  });
-
-  if (canceled || filePaths.length === 0) {
-    console.log("User cancelled JSON file selection.");
-    return {
-      data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
-      warnings: [],
-      errorCode: "CANCELLED_DIALOG",
-    } as ParseResult<TransferParseResponse>;
-  }
-
-  let filePath = filePaths[0];
+export const transferParser = async (filePath: string): Promise<ParseResult<TransferParseResponse>> => {
 
   const warnings: string[] = [];
 
@@ -52,7 +41,7 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
       return {
         data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
         warnings: [`Invalid JSON: missing ${missingFields.join(", ")}`],
-        errorCode: "MISSING_FIELDS",
+        errorCode: MISSING_FIELDS,
       } as ParseResult<TransferParseResponse>;
     }
 
@@ -95,7 +84,7 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
       return {
         data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
         warnings: warnings,
-        errorCode: "NEW_BUYER_NOT_SUPPORTED",
+        errorCode: NEW_BUYER_NOT_SUPPORTED,
       } as ParseResult<TransferParseResponse>;
     } else {
       warnings.push(`Unknown or missing BUYER.TYPE: ${buyerType}`);
@@ -106,11 +95,11 @@ export const transferParser = async (): Promise<ParseResult<TransferParseRespons
       warnings,
     };
   } catch (err: any) {
-    console.error("Error parsing transfer JSON:", err);
+    log.error("Error parsing transfer JSON:", err);
     return {
       data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
       warnings: [`Failed to parse JSON: ${err.message}`],
-      errorCode: "PARSE_ERROR",
+      errorCode: PARSE_ERROR,
     } as ParseResult<TransferParseResponse>;
   }
 };
