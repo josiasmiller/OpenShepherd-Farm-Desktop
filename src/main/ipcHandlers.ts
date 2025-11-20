@@ -484,7 +484,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return transferParser(session.window);
+      return transferParser();
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, event)
   });
@@ -493,7 +493,7 @@ export const registerIpcHandlers = () => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
       const {processType, species, sections} = args;
-      return handleRegistryProcess(session.db.raw(), processType, species, sections);
+      return handleRegistryProcess(session.db.raw(), processType, species, sections, null);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });

@@ -1,4 +1,4 @@
-import { RegistryRow, Species, ValidationResult } from '@app/api';
+import { RegistryRow, Species, ValidationResult, ParseResult } from '@app/api';
 import { checkSireAlive } from './rules/checkSireAlive';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge';

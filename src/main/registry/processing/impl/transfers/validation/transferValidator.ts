@@ -1,4 +1,4 @@
-import type { Species, RegistryRow, ValidationResult, ParseResult } from '@app/api';
+import type { Species, RegistryRow, ValidationResult, ParseResult, TransferParseResponse } from '@app/api';
 import { checkHasOfficialId } from './rules/checkHasOfficialId';
 import {Database} from "sqlite3";
 
