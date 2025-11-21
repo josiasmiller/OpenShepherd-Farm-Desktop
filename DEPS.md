@@ -1,8 +1,10 @@
 ## Dependencies
 
-Last updated Tue Oct 14 03:46:05 PM EDT 2025
+Last updated Fri Nov 21 17:15:53 CST 2025
 
 
+[@adobe/css-tools@4.4.4](https://github.com/adobe/css-tools) - MIT
+[@ampproject/remapping@2.3.0](https://github.com/ampproject/remapping) - Apache-2.0
 [@asamuzakjp/css-color@3.2.0](https://github.com/asamuzaK/cssColor) - MIT
 [@babel/code-frame@7.27.1](https://github.com/babel/babel) - MIT
 [@babel/compat-data@7.28.4](https://github.com/babel/babel) - MIT
@@ -40,6 +42,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@babel/traverse@7.28.4](https://github.com/babel/babel) - MIT
 [@babel/types@7.28.4](https://github.com/babel/babel) - MIT
 [@bcoe/v8-coverage@0.2.3](https://github.com/demurgos/v8-coverage) - MIT
+[@bitdisaster/exe-icon-extractor@1.0.10](https://github.com/pelayomendez/exe-icon-extractor) - ISC
 [@cspotcode/source-map-support@0.8.1](https://github.com/cspotcode/node-source-map-support) - MIT
 [@csstools/color-helpers@5.1.0](https://github.com/csstools/postcss-plugins) - MIT-0
 [@csstools/css-calc@2.1.4](https://github.com/csstools/postcss-plugins) - MIT
@@ -54,6 +57,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@electron-forge/maker-dmg@7.8.2](https://github.com/electron/forge) - MIT
 [@electron-forge/maker-rpm@7.8.2](https://github.com/electron/forge) - MIT
 [@electron-forge/maker-squirrel@7.8.2](https://github.com/electron/forge) - MIT
+[@electron-forge/maker-wix@7.8.2](https://github.com/electron/forge) - MIT
 [@electron-forge/maker-zip@7.8.2](https://github.com/electron/forge) - MIT
 [@electron-forge/plugin-auto-unpack-natives@7.8.2](https://github.com/electron/forge) - MIT
 [@electron-forge/plugin-base@7.8.2](https://github.com/electron/forge) - MIT
@@ -93,6 +97,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@emotion/utils@1.4.2](https://github.com/emotion-js/emotion/tree/main/packages/utils) - MIT
 [@emotion/weak-memoize@0.4.0](https://github.com/emotion-js/emotion/tree/main/packages/weak-memoize) - MIT
 [@epic-web/invariant@1.0.0](https://github.com/epicweb-dev/invariant) - MIT
+[@eslint-community/eslint-utils@4.7.0](https://github.com/eslint-community/eslint-utils) - MIT
 [@eslint-community/eslint-utils@4.9.0](https://github.com/eslint-community/eslint-utils) - MIT
 [@eslint-community/regexpp@4.12.1](https://github.com/eslint-community/regexpp) - MIT
 [@eslint/eslintrc@2.1.4](https://github.com/eslint/eslintrc) - MIT
@@ -110,7 +115,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@jest/environment-jsdom-abstract@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/environment@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/expect-utils@30.1.1](https://github.com/jestjs/jest) - MIT
-[@jest/expect-utils@30.1.2](https://github.com/jestjs/jest) - MIT
+[@jest/expect-utils@30.2.0](https://github.com/jestjs/jest) - MIT
 [@jest/expect@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/fake-timers@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/get-type@30.1.0](https://github.com/jestjs/jest) - MIT
@@ -124,24 +129,29 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@jest/test-sequencer@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/transform@30.1.1](https://github.com/jestjs/jest) - MIT
 [@jest/types@30.0.5](https://github.com/jestjs/jest) - MIT
+[@jest/types@30.2.0](https://github.com/jestjs/jest) - MIT
+[@jridgewell/gen-mapping@0.3.12](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/gen-mapping@0.3.13](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/remapping@2.3.5](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/resolve-uri@3.1.2](https://github.com/jridgewell/resolve-uri) - MIT
+[@jridgewell/source-map@0.3.10](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/source-map@0.3.11](https://github.com/jridgewell/sourcemaps) - MIT
+[@jridgewell/sourcemap-codec@1.5.4](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/sourcemap-codec@1.5.5](https://github.com/jridgewell/sourcemaps) - MIT
+[@jridgewell/trace-mapping@0.3.29](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/trace-mapping@0.3.31](https://github.com/jridgewell/sourcemaps) - MIT
 [@jridgewell/trace-mapping@0.3.9](https://github.com/jridgewell/trace-mapping) - MIT
 [@leichtgewicht/ip-codec@2.0.5](https://github.com/martinheidegger/ip-codec) - MIT
 [@malept/cross-spawn-promise@1.1.1](https://github.com/malept/cross-spawn-promise) - Apache-2.0
 [@malept/cross-spawn-promise@2.0.0](https://github.com/malept/cross-spawn-promise) - Apache-2.0
-[@mui/core-downloads-tracker@7.3.2](https://github.com/mui/material-ui) - MIT
+[@mui/core-downloads-tracker@7.3.4](https://github.com/mui/material-ui) - MIT
 [@mui/icons-material@7.3.2](https://github.com/mui/material-ui) - MIT
 [@mui/material@7.3.2](https://github.com/mui/material-ui) - MIT
-[@mui/private-theming@7.3.2](https://github.com/mui/material-ui) - MIT
-[@mui/styled-engine@7.3.2](https://github.com/mui/material-ui) - MIT
+[@mui/private-theming@7.3.3](https://github.com/mui/material-ui) - MIT
+[@mui/styled-engine@7.3.3](https://github.com/mui/material-ui) - MIT
 [@mui/system@7.3.2](https://github.com/mui/material-ui) - MIT
-[@mui/types@7.4.6](https://github.com/mui/material-ui) - MIT
-[@mui/utils@7.3.2](https://github.com/mui/material-ui) - MIT
+[@mui/types@7.4.7](https://github.com/mui/material-ui) - MIT
+[@mui/utils@7.3.3](https://github.com/mui/material-ui) - MIT
 [@nodelib/fs.scandir@2.1.5](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir) - MIT
 [@nodelib/fs.stat@2.0.5](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat) - MIT
 [@nodelib/fs.walk@1.2.8](https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk) - MIT
@@ -161,6 +171,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@sinonjs/fake-timers@13.0.5](https://github.com/sinonjs/fake-timers) - BSD-3-Clause
 [@szmarczak/http-timer@4.0.6](https://github.com/szmarczak/http-timer) - MIT
 [@testing-library/dom@10.4.1](https://github.com/testing-library/dom-testing-library) - MIT
+[@testing-library/jest-dom@6.9.1](https://github.com/testing-library/jest-dom) - MIT
 [@testing-library/react@16.3.0](https://github.com/testing-library/react-testing-library) - MIT
 [@tootallnate/once@1.1.2](https://github.com/TooTallNate/once) - MIT
 [@tootallnate/once@2.0.0](https://github.com/TooTallNate/once) - MIT
@@ -200,6 +211,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@types/json5@0.0.29](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/keyv@3.1.4](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/mime@1.3.5](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
+[@types/node-forge@1.3.13](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/node-forge@1.3.14](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/node@22.13.1](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/papaparse@5.3.16](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
@@ -212,10 +224,12 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@types/react@19.1.9](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/responselike@1.0.3](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/retry@0.12.0](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
+[@types/semver@7.7.0](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/semver@7.7.1](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/send@0.17.5](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
+[@types/send@1.2.0](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/serve-index@1.9.4](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
-[@types/serve-static@1.15.8](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
+[@types/serve-static@1.15.9](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/sockjs@0.3.36](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/stack-utils@2.0.3](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
 [@types/tough-cookie@4.0.5](https://github.com/DefinitelyTyped/DefinitelyTyped) - MIT
@@ -232,7 +246,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@typescript-eslint/utils@5.62.0](https://github.com/typescript-eslint/typescript-eslint) - MIT
 [@typescript-eslint/visitor-keys@5.62.0](https://github.com/typescript-eslint/typescript-eslint) - MIT
 [@ungap/structured-clone@1.3.0](https://github.com/ungap/structured-clone) - ISC
-[@unrs/resolver-binding-linux-x64-gnu@1.11.1](https://github.com/unrs/unrs-resolver) - MIT
+[@unrs/resolver-binding-win32-x64-msvc@1.11.1](https://github.com/unrs/unrs-resolver) - MIT
 [@vercel/webpack-asset-relocator-loader@1.7.3](https://github.com/vercel/webpack-asset-relocator-loader) - MIT
 [@webassemblyjs/ast@1.14.1](https://github.com/xtuc/webassemblyjs) - MIT
 [@webassemblyjs/floating-point-hex-parser@1.13.2](https://github.com/xtuc/webassemblyjs) - MIT
@@ -249,6 +263,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [@webassemblyjs/wasm-opt@1.14.1](https://github.com/xtuc/webassemblyjs) - MIT
 [@webassemblyjs/wasm-parser@1.14.1](https://github.com/xtuc/webassemblyjs) - MIT
 [@webassemblyjs/wast-printer@1.14.1](https://github.com/xtuc/webassemblyjs) - MIT
+[@xmldom/xmldom@0.8.10](https://github.com/xmldom/xmldom) - MIT
 [@xmldom/xmldom@0.8.11](https://github.com/xmldom/xmldom) - MIT
 [@xtuc/ieee754@1.2.0](https://github.com/feross/ieee754) - BSD-3-Clause
 [@xtuc/long@4.2.2](https://github.com/dcodeIO/long.js) - Apache-2.0
@@ -268,6 +283,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [ajv-keywords@5.1.0](https://github.com/epoberezkin/ajv-keywords) - MIT
 [ajv@6.12.6](https://github.com/ajv-validator/ajv) - MIT
 [ajv@8.17.1](https://github.com/ajv-validator/ajv) - MIT
+[animaltrakker_desktop@0.0.0](undefined) - ISC
 [ansi-escapes@4.3.2](https://github.com/sindresorhus/ansi-escapes) - MIT
 [ansi-escapes@5.0.0](https://github.com/sindresorhus/ansi-escapes) - MIT
 [ansi-html-community@0.0.8](https://github.com/mahdyar/ansi-html-community) - Apache-2.0
@@ -307,7 +323,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [babel-preset-jest@30.0.1](https://github.com/jestjs/jest) - MIT
 [balanced-match@1.0.2](https://github.com/juliangruber/balanced-match) - MIT
 [base64-js@1.5.1](https://github.com/beatgammit/base64-js) - MIT
-[baseline-browser-mapping@2.8.6](https://github.com/web-platform-dx/baseline-browser-mapping) - Apache-2.0
+[baseline-browser-mapping@2.8.11](https://github.com/web-platform-dx/baseline-browser-mapping) - Apache-2.0
 [batch@0.6.1](https://github.com/visionmedia/batch) - MIT
 [big.js@5.2.2](https://github.com/MikeMcl/big.js) - MIT
 [binary-extensions@2.3.0](https://github.com/sindresorhus/binary-extensions) - MIT
@@ -321,7 +337,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [brace-expansion@1.1.12](https://github.com/juliangruber/brace-expansion) - MIT
 [brace-expansion@2.0.2](https://github.com/juliangruber/brace-expansion) - MIT
 [braces@3.0.3](https://github.com/micromatch/braces) - MIT
-[browserslist@4.26.2](https://github.com/browserslist/browserslist) - MIT
+[browserslist@4.26.3](https://github.com/browserslist/browserslist) - MIT
 [bs-logger@0.2.6](https://github.com/huafu/bs-logger) - MIT
 [bser@2.1.1](https://github.com/facebook/watchman) - Apache-2.0
 [buffer-crc32@0.2.13](https://github.com/brianloveswords/buffer-crc32) - MIT
@@ -339,7 +355,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [camel-case@4.1.2](https://github.com/blakeembrey/change-case) - MIT
 [camelcase@5.3.1](https://github.com/sindresorhus/camelcase) - MIT
 [camelcase@6.3.0](https://github.com/sindresorhus/camelcase) - MIT
-[caniuse-lite@1.0.30001743](https://github.com/browserslist/caniuse-lite) - CC-BY-4.0
+[caniuse-lite@1.0.30001747](https://github.com/browserslist/caniuse-lite) - CC-BY-4.0
 [chalk@2.4.2](https://github.com/chalk/chalk) - MIT
 [chalk@4.1.2](https://github.com/chalk/chalk) - MIT
 [char-regex@1.0.2](https://github.com/Richienb/char-regex) - MIT
@@ -355,7 +371,6 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [cli-cursor@4.0.0](https://github.com/sindresorhus/cli-cursor) - MIT
 [cli-spinners@2.9.2](https://github.com/sindresorhus/cli-spinners) - MIT
 [cli-truncate@3.1.0](https://github.com/sindresorhus/cli-truncate) - MIT
-[cliui@7.0.4](https://github.com/yargs/cliui) - ISC
 [cliui@8.0.1](https://github.com/yargs/cliui) - ISC
 [clone-deep@4.0.1](https://github.com/jonschlinkert/clone-deep) - MIT
 [clone-response@1.0.3](https://github.com/sindresorhus/clone-response) - MIT
@@ -394,12 +409,14 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [create-require@1.1.1](https://github.com/nuxt-contrib/create-require) - MIT
 [cross-dirname@0.1.0](https://github.com/JumpLink/cross-dirname) - MIT
 [cross-env@10.0.0](https://github.com/kentcdodds/cross-env) - MIT
+[cross-spawn-windows-exe@1.2.0](https://github.com/malept/cross-spawn-windows-exe) - Apache-2.0
 [cross-spawn@6.0.6](https://github.com/moxystudio/node-cross-spawn) - MIT
 [cross-spawn@7.0.6](https://github.com/moxystudio/node-cross-spawn) - MIT
 [cross-zip@4.0.1](https://github.com/feross/cross-zip) - MIT
 [css-loader@6.11.0](https://github.com/webpack-contrib/css-loader) - MIT
 [css-select@4.3.0](https://github.com/fb55/css-select) - BSD-2-Clause
 [css-what@6.2.2](https://github.com/fb55/css-what) - BSD-2-Clause
+[css.escape@1.5.1](https://github.com/mathiasbynens/CSS.escape) - MIT
 [cssesc@3.0.0](https://github.com/mathiasbynens/cssesc) - MIT
 [cssstyle@4.6.0](https://github.com/jsdom/cssstyle) - MIT
 [csstype@3.1.3](https://github.com/frenic/csstype) - MIT
@@ -429,7 +446,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [depd@2.0.0](https://github.com/dougwilson/nodejs-depd) - MIT
 [dequal@2.0.3](https://github.com/lukeed/dequal) - MIT
 [destroy@1.2.0](https://github.com/stream-utils/destroy) - MIT
-[detect-libc@2.1.0](https://github.com/lovell/detect-libc) - Apache-2.0
+[detect-libc@2.1.1](https://github.com/lovell/detect-libc) - Apache-2.0
 [detect-newline@3.1.0](https://github.com/sindresorhus/detect-newline) - MIT
 [detect-node@2.1.0](https://github.com/iliakan/detect-node) - MIT
 [dezalgo@1.0.4](https://github.com/npm/dezalgo) - ISC
@@ -440,6 +457,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [doctrine@2.1.0](https://github.com/eslint/doctrine) - Apache-2.0
 [doctrine@3.0.0](https://github.com/eslint/doctrine) - Apache-2.0
 [dom-accessibility-api@0.5.16](https://github.com/eps1lon/dom-accessibility-api) - MIT
+[dom-accessibility-api@0.6.3](https://github.com/eps1lon/dom-accessibility-api) - MIT
 [dom-converter@0.2.0](https://github.com/AriaMinaei/dom-converter) - MIT
 [dom-helpers@5.2.1](https://github.com/react-bootstrap/dom-helpers) - MIT
 [dom-serializer@1.4.1](https://github.com/cheeriojs/dom-renderer) - MIT
@@ -452,14 +470,13 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [eastasianwidth@0.2.0](https://github.com/komagata/eastasianwidth) - MIT
 [ee-first@1.1.1](https://github.com/jonathanong/ee-first) - MIT
 [electron-installer-common@0.10.4](https://github.com/electron-userland/electron-installer-common) - Apache-2.0
-[electron-installer-debian@3.2.0](https://github.com/electron-userland/electron-installer-debian) - MIT
 [electron-installer-dmg@5.0.1](https://github.com/electron-userland/electron-installer-dmg) - Apache-2.0
-[electron-installer-redhat@3.4.0](https://github.com/electron-userland/electron-installer-redhat) - MIT
 [electron-log@5.4.2](https://github.com/megahertz/electron-log) - MIT
 [electron-squirrel-startup@1.0.1](https://github.com/mongodb-js/electron-squirrel-startup) - Apache-2.0
 [electron-store@10.1.0](https://github.com/sindresorhus/electron-store) - MIT
-[electron-to-chromium@1.5.222](https://github.com/kilian/electron-to-chromium) - ISC
+[electron-to-chromium@1.5.230](https://github.com/kilian/electron-to-chromium) - ISC
 [electron-winstaller@5.4.0](https://github.com/electron/windows-installer) - MIT
+[electron-wix-msi@5.1.3](https://github.com/felixrieseberg/electron-wix-msi) - MIT
 [electron@37.2.4](https://github.com/electron/electron) - MIT
 [emittery@0.13.1](https://github.com/sindresorhus/emittery) - MIT
 [emoji-regex@8.0.0](https://github.com/mathiasbynens/emoji-regex) - MIT
@@ -515,7 +532,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [exit-x@0.2.2](https://github.com/gruntjs/node-exit-x) - MIT
 [expand-template@2.0.3](https://github.com/ralphtheninja/expand-template) - (MIT OR WTFPL)
 [expect@30.1.1](https://github.com/jestjs/jest) - MIT
-[expect@30.1.2](https://github.com/jestjs/jest) - MIT
+[expect@30.2.0](https://github.com/jestjs/jest) - MIT
 [exponential-backoff@3.1.2](https://github.com/coveooss/exponential-backoff) - Apache-2.0
 [express-ws@5.0.2](https://github.com/HenningM/express-ws) - BSD-2-Clause
 [express@4.21.2](https://github.com/expressjs/express) - MIT
@@ -563,11 +580,10 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [function.prototype.name@1.1.8](https://github.com/es-shims/Function.prototype.name) - MIT
 [functions-have-names@1.2.3](https://github.com/inspect-js/functions-have-names) - MIT
 [galactus@1.0.0](https://github.com/marshallOfSound/galactus) - MIT
-[gar@1.0.4](https://github.com/ethanent/gar) - MIT
 [gauge@4.0.4](https://github.com/npm/gauge) - ISC
+[generator-function@2.0.1](https://github.com/TimothyGu/generator-function) - MIT
 [gensync@1.0.0-beta.2](https://github.com/loganfsmyth/gensync) - MIT
 [get-caller-file@2.0.5](https://github.com/stefanpenner/get-caller-file) - ISC
-[get-folder-size@2.0.1](https://github.com/alessioalex/get-folder-size) - MIT
 [get-intrinsic@1.3.0](https://github.com/ljharb/get-intrinsic) - MIT
 [get-package-info@1.0.0](https://github.com/rahatarmanahmed/get-package-info) - MIT
 [get-package-type@0.1.0](https://github.com/cfware/get-package-type) - MIT
@@ -667,7 +683,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [is-fullwidth-code-point@3.0.0](https://github.com/sindresorhus/is-fullwidth-code-point) - MIT
 [is-fullwidth-code-point@4.0.0](https://github.com/sindresorhus/is-fullwidth-code-point) - MIT
 [is-generator-fn@2.1.0](https://github.com/sindresorhus/is-generator-fn) - MIT
-[is-generator-function@1.1.0](https://github.com/inspect-js/is-generator-function) - MIT
+[is-generator-function@1.1.2](https://github.com/inspect-js/is-generator-function) - MIT
 [is-glob@4.0.3](https://github.com/micromatch/is-glob) - MIT
 [is-interactive@1.0.0](https://github.com/sindresorhus/is-interactive) - MIT
 [is-lambda@1.0.1](https://github.com/watson/is-lambda) - MIT
@@ -708,7 +724,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [jest-cli@30.1.1](https://github.com/jestjs/jest) - MIT
 [jest-config@30.1.1](https://github.com/jestjs/jest) - MIT
 [jest-diff@30.1.1](https://github.com/jestjs/jest) - MIT
-[jest-diff@30.1.2](https://github.com/jestjs/jest) - MIT
+[jest-diff@30.2.0](https://github.com/jestjs/jest) - MIT
 [jest-docblock@30.0.1](https://github.com/jestjs/jest) - MIT
 [jest-each@30.1.0](https://github.com/jestjs/jest) - MIT
 [jest-environment-jsdom@30.1.1](https://github.com/jestjs/jest) - MIT
@@ -716,9 +732,11 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [jest-haste-map@30.1.0](https://github.com/jestjs/jest) - MIT
 [jest-leak-detector@30.1.0](https://github.com/jestjs/jest) - MIT
 [jest-matcher-utils@30.1.1](https://github.com/jestjs/jest) - MIT
-[jest-matcher-utils@30.1.2](https://github.com/jestjs/jest) - MIT
+[jest-matcher-utils@30.2.0](https://github.com/jestjs/jest) - MIT
 [jest-message-util@30.1.0](https://github.com/jestjs/jest) - MIT
+[jest-message-util@30.2.0](https://github.com/jestjs/jest) - MIT
 [jest-mock@30.0.5](https://github.com/jestjs/jest) - MIT
+[jest-mock@30.2.0](https://github.com/jestjs/jest) - MIT
 [jest-pnp-resolver@1.2.3](https://github.com/arcanis/jest-pnp-resolver) - MIT
 [jest-regex-util@30.0.1](https://github.com/jestjs/jest) - MIT
 [jest-resolve-dependencies@30.1.1](https://github.com/jestjs/jest) - MIT
@@ -727,12 +745,13 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [jest-runtime@30.1.1](https://github.com/jestjs/jest) - MIT
 [jest-snapshot@30.1.1](https://github.com/jestjs/jest) - MIT
 [jest-util@30.0.5](https://github.com/jestjs/jest) - MIT
+[jest-util@30.2.0](https://github.com/jestjs/jest) - MIT
 [jest-validate@30.1.0](https://github.com/jestjs/jest) - MIT
 [jest-watcher@30.1.1](https://github.com/jestjs/jest) - MIT
 [jest-worker@27.5.1](https://github.com/facebook/jest) - MIT
 [jest-worker@30.1.0](https://github.com/jestjs/jest) - MIT
 [jest@30.1.1](https://github.com/jestjs/jest) - MIT
-[jiti@2.5.1](https://github.com/unjs/jiti) - MIT
+[jiti@2.6.1](https://github.com/unjs/jiti) - MIT
 [js-tokens@4.0.0](https://github.com/lydell/js-tokens) - MIT
 [js-yaml@3.14.1](https://github.com/nodeca/js-yaml) - MIT
 [js-yaml@4.1.0](https://github.com/nodeca/js-yaml) - MIT
@@ -752,6 +771,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [junk@3.1.0](https://github.com/sindresorhus/junk) - MIT
 [keyv@4.5.4](https://github.com/jaredwray/keyv) - MIT
 [kind-of@6.0.3](https://github.com/jonschlinkert/kind-of) - MIT
+[klaw@4.1.0](https://github.com/jprichardson/node-klaw) - MIT
 [launch-editor@2.11.1](https://github.com/yyx990803/launch-editor) - MIT
 [leven@3.1.0](https://github.com/sindresorhus/leven) - MIT
 [levn@0.4.1](https://github.com/gkz/levn) - MIT
@@ -803,6 +823,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [mimic-function@5.0.1](https://github.com/sindresorhus/mimic-function) - MIT
 [mimic-response@1.0.1](https://github.com/sindresorhus/mimic-response) - MIT
 [mimic-response@3.1.0](https://github.com/sindresorhus/mimic-response) - MIT
+[min-indent@1.0.1](https://github.com/thejameskyle/min-indent) - MIT
 [minimalistic-assert@1.0.1](https://github.com/calvinmetcalf/minimalistic-assert) - ISC
 [minimatch@3.1.2](https://github.com/isaacs/minimatch) - ISC
 [minimatch@5.1.6](https://github.com/isaacs/minimatch) - ISC
@@ -843,7 +864,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [node-gyp@8.4.1](https://github.com/nodejs/node-gyp) - MIT
 [node-int64@0.4.0](https://github.com/broofa/node-int64) - MIT
 [node-loader@2.1.0](https://github.com/webpack-contrib/node-loader) - MIT
-[node-releases@2.0.21](https://github.com/chicoxyzzy/node-releases) - MIT
+[node-releases@2.0.23](https://github.com/chicoxyzzy/node-releases) - MIT
 [nopt@4.0.3](https://github.com/npm/nopt) - ISC
 [nopt@5.0.0](https://github.com/npm/nopt) - ISC
 [nopt@6.0.0](https://github.com/npm/nopt) - ISC
@@ -936,6 +957,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [pretty-error@4.0.0](https://github.com/AriaMinaei/pretty-error) - MIT
 [pretty-format@27.5.1](https://github.com/facebook/jest) - MIT
 [pretty-format@30.0.5](https://github.com/jestjs/jest) - MIT
+[pretty-format@30.2.0](https://github.com/jestjs/jest) - MIT
 [proc-log@2.0.1](https://github.com/npm/proc-log) - ISC
 [process-nextick-args@2.0.1](https://github.com/calvinmetcalf/process-nextick-args) - MIT
 [progress@2.0.3](https://github.com/visionmedia/node-progress) - MIT
@@ -953,11 +975,13 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [range-parser@1.2.1](https://github.com/jshttp/range-parser) - MIT
 [raw-body@2.5.2](https://github.com/stream-utils/raw-body) - MIT
 [rc@1.2.8](https://github.com/dominictarr/rc) - (BSD-2-Clause OR MIT OR Apache-2.0)
+[rcedit@4.0.1](https://github.com/electron/node-rcedit) - MIT
+[rcinfo@0.1.3](https://github.com/spinico/rcinfo) - BSD-2-Clause
 [react-dom@19.1.1](https://github.com/facebook/react) - MIT
 [react-is@16.13.1](https://github.com/facebook/react) - MIT
 [react-is@17.0.2](https://github.com/facebook/react) - MIT
 [react-is@18.3.1](https://github.com/facebook/react) - MIT
-[react-is@19.1.1](https://github.com/facebook/react) - MIT
+[react-is@19.2.0](https://github.com/facebook/react) - MIT
 [react-router-dom@7.7.1](https://github.com/remix-run/react-router) - MIT
 [react-router@7.7.1](https://github.com/remix-run/react-router) - MIT
 [react-transition-group@4.4.5](https://github.com/reactjs/react-transition-group) - BSD-3-Clause
@@ -972,6 +996,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [readdir-scoped-modules@1.1.0](https://github.com/npm/readdir-scoped-modules) - ISC
 [readdirp@3.6.0](https://github.com/paulmillr/readdirp) - MIT
 [rechoir@0.8.0](https://github.com/gulpjs/rechoir) - MIT
+[redent@3.0.0](https://github.com/sindresorhus/redent) - MIT
 [reflect.getprototypeof@1.0.10](https://github.com/es-shims/Reflect.getPrototypeOf) - MIT
 [regexp.prototype.flags@1.5.4](https://github.com/es-shims/RegExp.prototype.flags) - MIT
 [relateurl@0.2.7](https://github.com/stevenvachon/relateurl) - MIT
@@ -1009,7 +1034,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [saxes@6.0.0](https://github.com/lddubeau/saxes) - ISC
 [scheduler@0.26.0](https://github.com/facebook/react) - MIT
 [schema-utils@3.3.0](https://github.com/webpack/schema-utils) - MIT
-[schema-utils@4.3.2](https://github.com/webpack/schema-utils) - MIT
+[schema-utils@4.3.3](https://github.com/webpack/schema-utils) - MIT
 [select-hose@2.0.0](https://github.com/indutny/select-hose) - MIT
 [selfsigned@2.4.1](https://github.com/jfromaniello/selfsigned) - MIT
 [semver-compare@1.0.0](https://github.com/substack/semver-compare) - MIT
@@ -1088,6 +1113,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [strip-bom@4.0.0](https://github.com/sindresorhus/strip-bom) - MIT
 [strip-eof@1.0.0](https://github.com/sindresorhus/strip-eof) - MIT
 [strip-final-newline@2.0.0](https://github.com/sindresorhus/strip-final-newline) - MIT
+[strip-indent@3.0.0](https://github.com/sindresorhus/strip-indent) - MIT
 [strip-json-comments@2.0.1](https://github.com/sindresorhus/strip-json-comments) - MIT
 [strip-json-comments@3.1.1](https://github.com/sindresorhus/strip-json-comments) - MIT
 [strip-outer@1.0.1](https://github.com/sindresorhus/strip-outer) - MIT
@@ -1104,7 +1130,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [symbol-tree@3.2.4](https://github.com/jsdom/js-symbol-tree) - MIT
 [synckit@0.11.11](https://github.com/un-ts/synckit) - MIT
 [tapable@0.1.10](https://github.com/webpack/tapable) - MIT
-[tapable@2.2.3](https://github.com/webpack/tapable) - MIT
+[tapable@2.3.0](https://github.com/webpack/tapable) - MIT
 [tar-fs@2.1.4](https://github.com/mafintosh/tar-fs) - MIT
 [tar-stream@2.2.0](https://github.com/mafintosh/tar-stream) - MIT
 [tar@6.2.1](https://github.com/isaacs/node-tar) - ISC
@@ -1114,7 +1140,6 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [test-exclude@6.0.0](https://github.com/istanbuljs/test-exclude) - ISC
 [text-table@0.2.0](https://github.com/substack/text-table) - MIT
 [thunky@1.1.0](https://github.com/mafintosh/thunky) - MIT
-[tiny-each-async@2.0.3](https://github.com/alessioalex/tiny-each-async) - MIT
 [tinyglobby@0.2.15](https://github.com/SuperchupuDev/tinyglobby) - MIT
 [tldts-core@6.1.86](https://github.com/remusao/tldts) - MIT
 [tldts@6.1.86](https://github.com/remusao/tldts) - MIT
@@ -1187,7 +1212,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [webpack-dev-server@4.15.2](https://github.com/webpack/webpack-dev-server) - MIT
 [webpack-merge@5.10.0](https://github.com/survivejs/webpack-merge) - MIT
 [webpack-sources@3.3.3](https://github.com/webpack/webpack-sources) - MIT
-[webpack@5.101.3](https://github.com/webpack/webpack) - MIT
+[webpack@5.102.0](https://github.com/webpack/webpack) - MIT
 [websocket-driver@0.7.4](https://github.com/faye/websocket-driver-node) - Apache-2.0
 [websocket-extensions@0.1.4](https://github.com/faye/websocket-extensions-node) - Apache-2.0
 [whatwg-encoding@3.1.1](https://github.com/jsdom/whatwg-encoding) - MIT
@@ -1221,9 +1246,7 @@ Last updated Tue Oct 14 03:46:05 PM EDT 2025
 [yallist@3.1.1](https://github.com/isaacs/yallist) - ISC
 [yallist@4.0.0](https://github.com/isaacs/yallist) - ISC
 [yaml@1.10.2](https://github.com/eemeli/yaml) - ISC
-[yargs-parser@20.2.9](https://github.com/yargs/yargs-parser) - ISC
 [yargs-parser@21.1.1](https://github.com/yargs/yargs-parser) - ISC
-[yargs@16.2.0](https://github.com/yargs/yargs) - MIT
 [yargs@17.7.2](https://github.com/yargs/yargs) - MIT
 [yauzl@2.10.0](https://github.com/thejoshwolfe/yauzl) - MIT
 [yn@3.1.1](https://github.com/sindresorhus/yn) - MIT
