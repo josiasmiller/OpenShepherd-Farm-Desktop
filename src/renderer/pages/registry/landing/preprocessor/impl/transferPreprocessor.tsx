@@ -205,7 +205,7 @@ export const TransferPreprocessorPage: React.FC = () => {
           onClick={selectAndLoadFile}
           disabled={loading}
         >
-          {loading ? "Loading..." : "Select Transfer JSON"}
+          {loading ? "Loading..." : "Select Transfer JSON File"}
         </button>
       </div>
 
