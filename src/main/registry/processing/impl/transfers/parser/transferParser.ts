@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { BrowserWindow } from "electron";
 import log from "electron-log";
 
 import {
@@ -8,13 +9,34 @@ import {
   ExistingMemberBuyer,
   NewBuyer,
   ParseResult,
-} from '@app/api';
-
-import {
   MISSING_FIELDS,
   PARSE_ERROR,
-  NEW_BUYER_NOT_SUPPORTED
-} from "../../processingErrorCodes";
+  NEW_BUYER_NOT_SUPPORTED,
+  DIALOG_CANCELLED
+} from '@app/api';
+
+// import { selectJsonFile } from "src/main/fileDialogs/jsonSelect";
+import { selectJsonFile } from "@main/fileDialogs/jsonSelect";
+
+
+/**
+ * Main Entrypoint for transfer parsing
+ */
+export const selectAndParseTransfers = async (window: BrowserWindow): Promise<ParseResult<TransferParseResponse>> => {
+
+  const fileResult = await selectJsonFile("Select Transfers JSON file", window);
+
+  if (fileResult === null) {
+    return {
+      data: null,
+      warnings: [],
+      errorCode: DIALOG_CANCELLED,
+    } as ParseResult<TransferParseResponse>;
+  }
+
+  return transferParser(fileResult);
+}
+
 
 
 /**

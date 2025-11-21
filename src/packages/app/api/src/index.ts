@@ -85,6 +85,13 @@ export type {
   StoreAPI
 } from "./apis"
 
+export {
+  DIALOG_CANCELLED,
+  MISSING_FIELDS,
+  PARSE_ERROR,
+  NEW_BUYER_NOT_SUPPORTED,
+} from "./errorCodes"
+
 declare global {
   interface Window extends AnimalTrakkerIPC {}
 }

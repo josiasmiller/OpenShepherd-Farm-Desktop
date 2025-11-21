@@ -20,7 +20,10 @@
       "@database/schema": ["src/packages/database/src/schema"],
       "@ipc/api": ["src/packages/ipc/api"],
       "@ipc/core": ["src/packages/ipc/core"],
-      "@common/*": ["src/packages/common/*"]
+      "@ipc/api/*": ["src/packages/ipc/api/src/*.ts"],
+      "@ipc/preload/*": ["src/packages/ipc/preload/src/*.ts"],
+      "@common/*": ["src/packages/common/*"],
+      "@main/*": ["src/main/*"]
     }
   }
 }

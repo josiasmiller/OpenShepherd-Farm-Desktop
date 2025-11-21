@@ -22,6 +22,7 @@ export async function handleRegistryProcess(
 ): Promise<ProcessingResult> {
 
   const processor : RegistryProcessor = registryProcessorFactory(processType);
+
   const validationResults : ValidationResult[] = await processor.validateRegistryRows(db, sections, species, parseResult);
   const hasErrors = validationResults.some((r) => !r.isValid);
 

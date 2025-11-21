@@ -142,8 +142,8 @@ export const PreprocessorPage: React.FC = () => {
       } else if (processType === 'registrations') {
         await handleRegistrations();
 
-      } else if (processType === 'transfers') {
-        await handleTransfers();
+      // } else if (processType === 'transfers') {
+      //   await handleTransfers();
 
       } else if (processType == 'deaths') {
         await handleDeaths();
@@ -327,7 +327,7 @@ export const PreprocessorPage: React.FC = () => {
 
 
   const handleTransfers = async () => {
-    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers('FIXME');
+    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
 
     if (parseResult.errorCode !== undefined) {
       return;

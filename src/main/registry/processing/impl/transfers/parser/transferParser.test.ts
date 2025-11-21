@@ -9,7 +9,7 @@ import {
   MISSING_FIELDS,
   PARSE_ERROR,
   NEW_BUYER_NOT_SUPPORTED,
-} from "../../processingErrorCodes";
+} from "@app/api";
 
 // Mock only what the parser actually uses
 jest.mock("fs/promises");

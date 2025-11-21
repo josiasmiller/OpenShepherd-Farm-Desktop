@@ -113,7 +113,7 @@ export interface RegistryAPI {
   parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
   parseDeaths: () => Promise<ParseResult<DeathParseResponse>>;
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
-  parseTransfers: (filePath: string) => Promise<ParseResult<TransferParseResponse>>;
+  parseTransfers: () => Promise<ParseResult<TransferParseResponse>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
 }
 

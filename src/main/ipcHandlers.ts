@@ -47,9 +47,14 @@ import { writeRegistration } from "./writers/pdf/writeRegistration";
 import { birthParser } from "./registry/processing/impl/births/parser/birthParser";
 import { deathParser } from "./registry/processing/impl/deaths/parser/deathParser";
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
-import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
+import { selectAndParseTransfers } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults, OwnerType} from '@app/api';
+import {
+  DatabaseStateCheckResponse, 
+  DefaultSettingsResults, 
+  OwnerType, 
+} from '@app/api';
+
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
@@ -481,10 +486,10 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, filePath : string) => {
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return transferParser(filePath);
+      return selectAndParseTransfers(session.window);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, event)
   });
@@ -492,8 +497,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS, async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      const {processType, species, sections} = args;
-      return handleRegistryProcess(session.db.raw(), processType, species, sections, null);
+      const {processType, species, sections, parseResult} = args;
+      return handleRegistryProcess(session.db.raw(), processType, species, sections, parseResult);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });

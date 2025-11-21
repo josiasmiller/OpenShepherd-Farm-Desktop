@@ -11,12 +11,20 @@ import {
   ExistingMemberBuyer,
   OwnerType,
   Species,
+  RegistryProcessType,
+  RegistryProcessRequest,
+  ProcessingResult,
+  DIALOG_CANCELLED,
 } from "@app/api";
+
+import { Box, Typography, } from "@mui/material"
 
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const [currentParseResult, setCurrentParseResult] = useState<ParseResult<TransferParseResponse>>();
 
   const [animalIds, setAnimalIds] = useState<string[]>([]);
   const [buyers, setBuyers] = useState<OwnerInformationTableProps["owners"]>([]);
@@ -34,19 +42,26 @@ export const TransferPreprocessorPage: React.FC = () => {
    * Opens a file dialog and loads the JSON file.
    */
   const selectAndLoadFile = async () => {
+
     try {
       setLoading(true);
 
       const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
 
+      if (parseResult.errorCode === DIALOG_CANCELLED) {
+        return;
+      }
+
       if (!parseResult.data) {
         await Swal.fire({
           icon: "warning",
           title: "No Data",
-          text: "No valid transfer data found in the CSV file.",
+          text: "No valid transfer data found in the JSON file.",
         });
         return;
       }
+
+      setCurrentParseResult(parseResult);
 
       const { animals, seller, buyer } = parseResult.data;
 
@@ -67,8 +82,8 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       const buyerList: OwnerInformationTableProps["owners"] = [];
 
-      const buyerContactId = existingMem.contactId ?? existingMem["CONTACT_ID"];
-      const buyerCompanyId = existingMem.companyId ?? existingMem["COMPANY_ID"];
+      const buyerContactId = existingMem.contactId;
+      const buyerCompanyId = existingMem.companyId;
 
       if (buyerContactId) {
         buyerList.push({
@@ -91,8 +106,8 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       const sellerList: OwnerInformationTableProps["owners"] = [];
 
-      const sellerContactId = seller.contactId ?? seller["CONTACT_ID"];
-      const sellerCompanyId = seller.companyId ?? seller["COMPANY_ID"];
+      const sellerContactId = seller.contactId;
+      const sellerCompanyId = seller.companyId;
 
       if (sellerContactId) {
         sellerList.push({ 
@@ -110,13 +125,10 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       setSellers(sellerList);
 
-      // end buyer setup
+      // end seller setup
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      
-      const newSoldAt = seller.soldAt ?? seller["SOLD_AT"]; // BYPRODUCT OF CSV READING
-      setSoldAt(newSoldAt);
-      const newMovedAt = seller.movedAt ?? seller["MOVED_AT"];
-      setMovedAt(newMovedAt);
+      setSoldAt(seller.soldAt);
+      setMovedAt(seller.movedAt);
 
       setHasLoadedFile(true);
 
@@ -151,12 +163,34 @@ export const TransferPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading) return;
 
-    Swal.fire({
-      title: "UNDER CONSTRUCTION",
-      icon: "error",
-      confirmButtonText: "OK",
-      width: "40em",
-    });
+    const args: RegistryProcessRequest = {
+      processType: 'transfers' as RegistryProcessType,
+      species: species,
+      sections: {},
+      parseResult: currentParseResult,
+    };
+
+    const result: ProcessingResult = await window.registryAPI.process(args);
+
+    if (result.success) {
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        confirmButtonText: "OK",
+        width: "40em",
+        text: "Transfers processed successfully",
+      });
+
+      navigate("/"); // nav back to home after processing
+    } else {
+      Swal.fire({
+        title: "Error",
+        icon: "error",
+        confirmButtonText: "OK",
+        width: "40em",
+        text: "There was an error processing transfers.",
+      });
+    }
     return;
   };
 
@@ -171,51 +205,57 @@ export const TransferPreprocessorPage: React.FC = () => {
           onClick={selectAndLoadFile}
           disabled={loading}
         >
-          {loading ? "Loading..." : "Select Transfer CSV"}
+          {loading ? "Loading..." : "Select Transfer JSON"}
         </button>
       </div>
 
       {hasLoadedFile && (
         <>
           {/* --- Animal Information Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Animal(s)</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Animal(s)
+              </Typography>
+            </Box>
             <AnimalInformationTable animalIds={animalIds} />
-          </div>
+          </Box>
 
           {/* --- Buyer Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Buyer</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Buyer
+              </Typography>
+            </Box>
             <OwnerInformationTable owners={buyers} />
-          </div>
+          </Box>
 
           {/* --- Seller Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Seller</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Seller
+              </Typography>
+            </Box>
             <OwnerInformationTable owners={sellers} />
-          </div>
+          </Box>
 
           {/* --- Sold / Moved Dates --- */}
-          <div className="padded-horizontal-lg" style={{ marginBottom: "3em" }}>
-            <div style={{ display: "flex", gap: "2em", alignItems: "center" }}>
+          <Box px={4} mb={6}>
+            <Box display="flex" gap={4} alignItems="center">
               <DateDisplay title="Sold At" value={soldAt} />
               <DateDisplay title="Moved At" value={movedAt} />
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-
-
+          {/* --- Continue Button --- */}
           <div className="padded-horizontal-lg" style={{ paddingBottom: '8em' }}>
             <button className='wide-button' onClick={handleSubmit}>{loading ? 'Loading...' : 'Continue'}</button>
           </div>
         </>
       )}
+
     </div>
   );
 };

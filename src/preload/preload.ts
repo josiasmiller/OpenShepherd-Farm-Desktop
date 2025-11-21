@@ -87,7 +87,7 @@ const registryAPI : RegistryAPI = {
   parseBirths: () => ipcRenderer.invoke("registry-parse-births"),
   parseDeaths: () => ipcRenderer.invoke("registry-parse-deaths"),
   parseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
-  parseTransfers: (filePath : string) => ipcRenderer.invoke("registry-parse-transfers"),
+  parseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   process: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
 }
 

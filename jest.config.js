@@ -16,6 +16,7 @@ module.exports = {
             testEnvironment: 'node',
             rootDir: './src/main',
             testMatch: ['<rootDir>/**/*.test.ts'],
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } )
         },
         {
             preset: 'ts-jest',
@@ -33,6 +34,7 @@ module.exports = {
             testEnvironment: 'node',
             rootDir: './src/packages',
             testMatch: ['<rootDir>/**/*.test.ts'],
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } )
         }
     ],
 }
