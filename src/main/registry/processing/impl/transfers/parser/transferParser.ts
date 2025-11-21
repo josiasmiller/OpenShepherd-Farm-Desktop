@@ -15,8 +15,8 @@ import {
   DIALOG_CANCELLED
 } from '@app/api';
 
-// import { selectJsonFile } from "src/main/fileDialogs/jsonSelect";
 import { selectJsonFile } from "@main/fileDialogs/jsonSelect";
+import { readJsonFile } from "@main/registry/processing/helpers/registryHelpers";
 
 
 /**
@@ -38,7 +38,6 @@ export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Pa
 }
 
 
-
 /**
  * Core JSON parser
  */
@@ -47,17 +46,16 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
   const warnings: string[] = [];
 
   try {
-    const fileContent = await fs.readFile(filePath, "utf-8");
-    const parsed = JSON.parse(fileContent);
+    const fileContents = await readJsonFile(filePath);
 
     // Validation without exceptions
     const missingFields: string[] = [];
-    if (!parsed.ANIMALS || !Array.isArray(parsed.ANIMALS))
-      missingFields.push("ANIMALS");
-    if (!parsed.SELLER || typeof parsed.SELLER !== "object")
-      missingFields.push("SELLER");
-    if (!parsed.BUYER || typeof parsed.BUYER !== "object")
-      missingFields.push("BUYER");
+    if (!fileContents.animals || !Array.isArray(fileContents.animals))
+      missingFields.push("animals");
+    if (!fileContents.seller || typeof fileContents.seller !== "object")
+      missingFields.push("seller");
+    if (!fileContents.buyer || typeof fileContents.buyer !== "object")
+      missingFields.push("buyer");
 
     if (missingFields.length > 0) {
       return {
@@ -67,41 +65,70 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
       } as ParseResult<TransferParseResponse>;
     }
 
+    // =================================================================================================
     // --- Map ANIMALS ---
-    const animals: AnimalRow[] = parsed.ANIMALS.map((a: any) => ({
-      animalId: a.ANIMAL_ID ?? "",
-      registrationNumber: a.REGISTRATION_NUMBER ?? "",
-      prefix: a.PREFIX ?? "",
-      name: a.NAME ?? "",
-      birthDate: a.BIRTH_DATE ?? "",
-      birthType: a.BIRTH_TYPE ?? "",
-      sex: a.SEX ?? "",
-      coatColor: a.COAT_COLOR ?? "",
+    const animals: AnimalRow[] = fileContents.animals.map((a: any) => ({
+      animalId: a.animalId ?? "",
+      registrationNumber: a.registrationNumber ?? "",
+      prefix: a.prefix ?? "",
+      name: a.name ?? "",
+      birthDate: a.birthDate ?? "",
+      birthType: a.birthType ?? "",
+      sex: a.sex ?? "",
+      coatColor: a.coatColor ?? "",
     }));
 
+    // =================================================================================================
     // --- Map SELLER ---
+    const sellerIdentityType = fileContents.seller.identity.type;
+    let sellerContactId : string = null;
+    let sellerCompanyId : string = null;
+
+    if (sellerIdentityType === 'contact') {
+      sellerContactId = fileContents.seller.identity.id;
+    } else if (sellerIdentityType === 'company') {
+      sellerCompanyId = fileContents.seller.identity.id;
+    } else {
+      throw new Error(`Unhandled sellerIdentityType: ${sellerIdentityType}`);
+    }
+
     const seller: SellerInfo = {
-      contactId: parsed.SELLER.CONTACT_ID ?? "",
-      companyId: parsed.SELLER.COMPANY_ID ?? "",
-      premiseId: parsed.SELLER.PREMISE_ID ?? "",
-      soldAt: parsed.SELLER.SOLD_AT ?? "",
-      movedAt: parsed.SELLER.MOVED_AT ?? "",
+      contactId: sellerContactId,
+      companyId: sellerCompanyId,
+      premiseId: fileContents.seller.premiseId ?? "",
+      soldAt: fileContents.seller.soldAt ?? "",
+      movedAt: fileContents.seller.movedAt ?? "",
     };
 
+    // =================================================================================================
     // --- Map BUYER ---
     let buyer: ExistingMemberBuyer | NewBuyer | null = null;
-    const buyerType = parsed.BUYER.TYPE?.toUpperCase();
+    const buyerType = fileContents.buyer.type?.toUpperCase();
 
     if (buyerType === "EXISTING") {
+
+      const buyerIdentityType = fileContents.buyer.identity.type;
+      let buyerContactId : string = null;
+      let buyerCompanyId : string = null;
+
+      if (buyerIdentityType === 'contact') {
+        buyerContactId = fileContents.buyer.identity.id;
+      } else if (buyerIdentityType === 'company') {
+        buyerCompanyId = fileContents.buyer.identity.id;
+      } else {
+        throw new Error(`Unhandled buyerIdentityType: ${buyerIdentityType}`);
+      }
+
       buyer = {
-        membershipNumber: parsed.BUYER.MEMBERSHIP_NUMBER ?? "",
-        contactId: parsed.BUYER.CONTACT_ID ?? "",
-        companyId: parsed.BUYER.COMPANY_ID ?? "",
-        premiseId: parsed.BUYER.PREMISE_ID ?? "",
-        firstName: parsed.BUYER.FIRST_NAME ?? "",
-        lastName: parsed.BUYER.LAST_NAME ?? "",
-        region: parsed.BUYER.REGION ?? "",
+        membershipNumber: fileContents.buyer.membershipNumber ?? "",
+        contactId: buyerContactId,
+        companyId: buyerCompanyId,
+        premiseId: fileContents.buyer.premiseId ?? "",
+        firstName: fileContents.buyer.firstName ?? "",
+        lastName: fileContents.buyer.lastName ?? "",
+        region: fileContents.buyer.region ?? "",
       };
+
     } else if (buyerType === "NEW") {
       return {
         data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
@@ -109,11 +136,11 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
         errorCode: NEW_BUYER_NOT_SUPPORTED,
       } as ParseResult<TransferParseResponse>;
     } else {
-      warnings.push(`Unknown or missing BUYER.TYPE: ${buyerType}`);
+      warnings.push(`Unknown or missing buyer.type: ${buyerType}`);
     }
 
     return {
-      data: { animals, seller, buyer },
+      data: { animals, seller, buyer } as TransferParseResponse,
       warnings,
     };
   } catch (err: any) {
@@ -125,4 +152,3 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
     } as ParseResult<TransferParseResponse>;
   }
 };
-

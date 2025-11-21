@@ -1,3 +1,4 @@
+import fs from "fs/promises";
 
 /**
  * increments a birth notify number by 1
@@ -28,3 +29,12 @@ export function incrementRegisteredValue(originalRegNum: string): string {
   return incremented;
 }
 
+/**
+ * Reads a JSON file and returns its contents as `unknown`.
+ *
+ * This function should NEVER assert a type.
+ */
+export async function readJsonFile(filePath: string): Promise<any> {
+  const fileContent = await fs.readFile(filePath, "utf-8");
+  return JSON.parse(fileContent);
+}

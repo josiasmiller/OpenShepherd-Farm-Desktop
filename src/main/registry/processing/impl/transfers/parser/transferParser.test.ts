@@ -1,23 +1,21 @@
-/**
- * @jest-environment node
- */
-import fs from "fs/promises";
 import log from "electron-log";
 import { transferParser } from "./transferParser";
-
 import {
   MISSING_FIELDS,
   PARSE_ERROR,
   NEW_BUYER_NOT_SUPPORTED,
+  ExistingMemberBuyer,
 } from "@app/api";
 
-// Mock only what the parser actually uses
-jest.mock("fs/promises");
-jest.mock("electron-log", () => ({
-  error: jest.fn(),
+// mock readJsonFile helper
+jest.mock("@main/registry/processing/helpers/registryHelpers", () => ({
+  readJsonFile: jest.fn(),
 }));
 
-const mockFs = fs as jest.Mocked<typeof fs>;
+jest.mock("electron-log", () => ({ error: jest.fn() }));
+
+import { readJsonFile } from "@main/registry/processing/helpers/registryHelpers";
+const mockRead = readJsonFile as jest.Mock;
 const mockLog = log as jest.Mocked<typeof log>;
 
 describe("transferParser", () => {
@@ -26,121 +24,123 @@ describe("transferParser", () => {
   });
 
   // --------------------------------------------------------
-  // 1. Missing required fields --> MISSING_FIELDS
+  // 1. Missing animals 
   // --------------------------------------------------------
-  test("returns MISSING_FIELDS when ANIMALS / SELLER / BUYER are missing", async () => {
-    const badJson = {
-      SELLER: {},
-      BUYER: {},
-    };
+  test("returns MISSING_FIELDS when animals is missing", async () => {
+    mockRead.mockResolvedValueOnce({ seller: {}, buyer: {} });
 
-    mockFs.readFile.mockResolvedValueOnce(JSON.stringify(badJson));
-
-    const result = await transferParser("/fake/path.json");
+    const result = await transferParser("fake.json");
 
     expect(result.errorCode).toBe(MISSING_FIELDS);
-    expect(result.data.animals).toEqual([]);
-    expect(result.data.seller).toBeNull();
-    expect(result.data.buyer).toBeNull();
-
-    expect(result.warnings[0]).toMatch(/Invalid JSON: missing ANIMALS/);
+    expect(result.data).toMatchObject({ animals: [], seller: null, buyer: null });
+    expect(result.warnings[0]).toMatch(/Invalid JSON: missing animals/);
   });
 
   // --------------------------------------------------------
-  // 2. NEW BUYER --> returns NEW_BUYER_NOT_SUPPORTED
+  // 2. Missing animals / buyer
+  // --------------------------------------------------------
+  test("returns MISSING_FIELDS when animals & buyer are missing", async () => {
+    mockRead.mockResolvedValueOnce({ seller: {}, });
+
+    const result = await transferParser("fake.json");
+
+    expect(result.errorCode).toBe(MISSING_FIELDS);
+    expect(result.data).toMatchObject({ animals: [], seller: null, buyer: null });
+    expect(result.warnings[0]).toMatch(/Invalid JSON: missing animals, buyer/);
+  });
+
+  // --------------------------------------------------------
+  // 3. Missing buyer / seller
+  // --------------------------------------------------------
+  test("returns MISSING_FIELDS when buyer & seller are missing", async () => {
+    mockRead.mockResolvedValueOnce({ animals: [], });
+
+    const result = await transferParser("fake.json");
+
+    expect(result.errorCode).toBe(MISSING_FIELDS);
+    expect(result.data).toMatchObject({ animals: [], seller: null, buyer: null });
+    expect(result.warnings[0]).toMatch(/Invalid JSON: missing seller, buyer/);
+  });
+
+
+
+  // --------------------------------------------------------
+  // 2. NEW buyer --> NEW_BUYER_NOT_SUPPORTED
   // --------------------------------------------------------
   test("returns NEW_BUYER_NOT_SUPPORTED when buyer type is NEW", async () => {
-    const json = {
-      ANIMALS: [],
-      SELLER: {
-        CONTACT_ID: "",
-        COMPANY_ID: "",
-        PREMISE_ID: "",
-        SOLD_AT: "",
-        MOVED_AT: "",
-      },
-      BUYER: { TYPE: "NEW" },
-    };
-
-    mockFs.readFile.mockResolvedValueOnce(JSON.stringify(json));
-
-    const result = await transferParser("/fake/path.json");
-
-    expect(result.errorCode).toBe(NEW_BUYER_NOT_SUPPORTED);
-    expect(result.data).toMatchObject({
+    mockRead.mockResolvedValueOnce({
       animals: [],
-      seller: null,
-      buyer: null,
+      seller: {
+        identity: { type: "contact", id: "x" },
+        premiseId: "",
+        soldAt: "",
+        movedAt: "",
+      },
+      buyer: { type: "NEW" },
     });
+
+    const result = await transferParser("fake.json");
+    expect(result.errorCode).toBe(NEW_BUYER_NOT_SUPPORTED);
+    expect(result.data).toEqual({ animals: [], seller: null, buyer: null });
   });
 
+
   // --------------------------------------------------------
-  // 3. Valid JSON --> parsed fields are returned correctly
+  // 3. Valid JSON
   // --------------------------------------------------------
   test("parses valid JSON correctly", async () => {
-    const json = {
-      ANIMALS: [
+    mockRead.mockResolvedValueOnce({
+      animals: [
         {
-          ANIMAL_ID: "random_uuid_here",
-          REGISTRATION_NUMBER: "124_000000123456",
-          PREFIX: "Desert Where",
-          NAME: "Boba Fett",
-          BIRTH_DATE: "2020-01-01",
-          BIRTH_TYPE: "Single",
-          SEX: "Ram",
-          COAT_COLOR: "Black",
+          animalId: "uuid",
+          registrationNumber: "123",
+          prefix: "Prefix",
+          name: "Test Animal",
+          birthDate: "2020-01-01",
+          birthType: "Single",
+          sex: "Ram",
+          coatColor: "Black",
         },
       ],
-      SELLER: {
-        CONTACT_ID: "SELLER_CONTACT_ID_HERE",
-        COMPANY_ID: null,
-        PREMISE_ID: "p1",
-        SOLD_AT: "2025-11-01",
-        MOVED_AT: "2025-11-02",
+      seller: {
+        identity: { type: "contact", id: "SELLER_ID" },
+        premiseId: "p1",
+        soldAt: "2025-11-01",
+        movedAt: "2025-11-02",
       },
-      BUYER: {
-        TYPE: "EXISTING",
-        MEMBERSHIP_NUMBER: "12345",
-        CONTACT_ID: "random_uuid_here",
-        COMPANY_ID: null,
-        PREMISE_ID: "random_uuid_here",
-        FIRST_NAME: "Bob",
-        LAST_NAME: "Bobbington",
-        REGION: "Central",
+      buyer: {
+        type: "EXISTING",
+        identity: { type: "contact", id: "BUYER_ID" },
+        membershipNumber: "12345",
+        premiseId: "pr1",
+        firstName: "Bob",
+        lastName: "Smith",
+        region: "Central",
       },
-    };
+    });
 
-    mockFs.readFile.mockResolvedValueOnce(JSON.stringify(json));
-
-    const result = await transferParser("/fake/path.json");
+    const result = await transferParser("fake.json");
 
     expect(result.errorCode).toBeUndefined();
     expect(result.warnings).toEqual([]);
 
-    // Animals
-    expect(result.data.animals[0].name).toBe("Boba Fett");
-    expect(result.data.animals[0].registrationNumber).toBe("124_000000123456");
+    expect(result.data.animals[0].name).toBe("Test Animal");
+    expect(result.data.seller?.contactId).toBe("SELLER_ID");
 
-    // Seller
-    expect(result.data.seller?.contactId).toBe("SELLER_CONTACT_ID_HERE");
+    const buyer = result.data.buyer as ExistingMemberBuyer;
+    expect(buyer.membershipNumber).toBe("12345");
 
-    // Buyer
-    expect(result.data.buyer).toMatchObject({
-      membershipNumber: "12345",
-      firstName: "Bob",
-    });
   });
 
   // --------------------------------------------------------
-  // 4. Invalid JSON → PARSE_ERROR
+  // 4. Invalid JSON --> PARSE_ERROR
   // --------------------------------------------------------
-  test("returns PARSE_ERROR when JSON parsing fails", async () => {
-    mockFs.readFile.mockResolvedValueOnce("{ invalid json }");
+  test("returns PARSE_ERROR if readJsonFile throws", async () => {
+    mockRead.mockRejectedValueOnce(new Error("bad json"));
 
-    const result = await transferParser("/fake/path.json");
+    const result = await transferParser("fake.json");
 
     expect(mockLog.error).toHaveBeenCalled();
-
     expect(result.errorCode).toBe(PARSE_ERROR);
     expect(result.warnings[0]).toMatch(/Failed to parse JSON/);
   });
