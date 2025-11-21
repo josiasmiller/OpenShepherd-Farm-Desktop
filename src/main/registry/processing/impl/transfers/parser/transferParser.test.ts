@@ -65,7 +65,7 @@ describe("transferParser", () => {
 
 
   // --------------------------------------------------------
-  // 2. NEW buyer --> NEW_BUYER_NOT_SUPPORTED
+  // 4. NEW buyer --> NEW_BUYER_NOT_SUPPORTED
   // --------------------------------------------------------
   test("returns NEW_BUYER_NOT_SUPPORTED when buyer type is NEW", async () => {
     mockRead.mockResolvedValueOnce({
@@ -86,7 +86,7 @@ describe("transferParser", () => {
 
 
   // --------------------------------------------------------
-  // 3. Valid JSON
+  // 5. Valid JSON
   // --------------------------------------------------------
   test("parses valid JSON correctly", async () => {
     mockRead.mockResolvedValueOnce({
@@ -133,7 +133,7 @@ describe("transferParser", () => {
   });
 
   // --------------------------------------------------------
-  // 4. Invalid JSON --> PARSE_ERROR
+  // 6. Invalid JSON --> PARSE_ERROR
   // --------------------------------------------------------
   test("returns PARSE_ERROR if readJsonFile throws", async () => {
     mockRead.mockRejectedValueOnce(new Error("bad json"));

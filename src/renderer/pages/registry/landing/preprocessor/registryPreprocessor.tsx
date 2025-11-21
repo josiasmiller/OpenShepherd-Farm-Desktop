@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
 import { BackButton } from "../../../../components/backButton/backButton";
 
-import { RegistryFieldDef, RegistryRow, TransferParseResponse } from '@app/api';
+import { RegistryFieldDef, RegistryRow } from '@app/api';
 
 import { BirthParseResponse, BirthParseRow } from '@app/api';
 import { DeathParseResponse, DeathParseRow } from '@app/api';
@@ -89,20 +89,6 @@ const processTypeButtons: Record<string, (ctx: {
     }
   ],
 
-  transfers: ({ handlePreCheck, selectAndLoadFile, loading }) => [
-    {
-      label: "Pre-check Database",
-      onClick: handlePreCheck,
-      className: "wide-button"
-    },
-    {
-      label: loading ? "Loading..." : "Select Transfers JSON",
-      onClick: selectAndLoadFile,
-      disabled: loading,
-      className: "wide-button"
-    }
-  ],
-
   // Default fallback
   default: ({ selectAndLoadFile, loading }) => [
     {
@@ -141,9 +127,6 @@ export const PreprocessorPage: React.FC = () => {
         
       } else if (processType === 'registrations') {
         await handleRegistrations();
-
-      // } else if (processType === 'transfers') {
-      //   await handleTransfers();
 
       } else if (processType == 'deaths') {
         await handleDeaths();
@@ -323,66 +306,6 @@ export const PreprocessorPage: React.FC = () => {
     ]);
     setHasSelectedFile(true);
   };
-
-
-
-  const handleTransfers = async () => {
-    const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
-
-    if (parseResult.errorCode !== undefined) {
-      return;
-    }
-
-    setParseResult(parseResult); // save parseResult 
-    handleWarnings(parseResult.warnings);
-
-    const { animals, seller, buyer } = parseResult.data;
-
-    const tables: EditableTableData[] = [];
-
-    // Animals table
-    tables.push({
-      title: "Transferred Animals",
-      editable: true,
-      columns: [
-        { key: 'animalId', label: 'Animal ID', editable: false },
-        { key: 'registrationNumber', label: 'Registration Number', editable: false },
-        { key: 'prefix', label: 'Prefix', editable: true },
-        { key: 'name', label: 'Name', editable: true },
-        { key: 'birthDate', label: 'Birth Date', editable: true },
-        { key: 'birthType', label: 'Birth Type', editable: true },
-        { key: 'sex', label: 'Sex', editable: true },
-        { key: 'coatColor', label: 'Coat Color', editable: true },
-      ],
-      rows: animals,
-    });
-
-    // Seller info
-    if (seller) {
-      tables.push({
-        title: "Seller Info",
-        editable: false,
-        columns: Object.keys(seller).map(key => ({ key, label: key, editable: false })),
-        rows: [seller],
-      });
-    }
-
-    // Buyer info
-    if (buyer) {
-      tables.push({
-        title: "Buyer Info",
-        editable: false,
-        columns: Object.keys(buyer).map(key => ({ key, label: key, editable: false })),
-        rows: [buyer],
-      });
-    }
-
-    setTables(tables);
-    setHasSelectedFile(true);
-  };
-
-
-
 
   /**
    * handles when a row is updated in any form
