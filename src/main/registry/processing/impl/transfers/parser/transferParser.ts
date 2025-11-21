@@ -15,8 +15,8 @@ import {
   DIALOG_CANCELLED
 } from '@app/api';
 
-import { selectJsonFile } from "@main/fileDialogs/jsonSelect";
-import { readJsonFile } from "@main/registry/processing/helpers/registryHelpers";
+import { selectJsonFile } from "src/main/fileDialogs/jsonSelect";
+import { readJsonFile } from "src/main/registry/processing/helpers/registryHelpers";
 
 
 /**
@@ -59,7 +59,7 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
 
     if (missingFields.length > 0) {
       return {
-        data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
+        data: { animals: [], seller: null, buyer: null },
         warnings: [`Invalid JSON: missing ${missingFields.join(", ")}`],
         errorCode: MISSING_FIELDS,
       } as ParseResult<TransferParseResponse>;
@@ -131,7 +131,7 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
 
     } else if (buyerType === "NEW") {
       return {
-        data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
+        data: { animals: [], seller: null, buyer: null },
         warnings: warnings,
         errorCode: NEW_BUYER_NOT_SUPPORTED,
       } as ParseResult<TransferParseResponse>;
@@ -140,13 +140,13 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
     }
 
     return {
-      data: { animals, seller, buyer } as TransferParseResponse,
+      data: { animals, seller, buyer },
       warnings,
     };
   } catch (err: any) {
     log.error("Error parsing transfer JSON:", err);
     return {
-      data: { animals: [], seller: null, buyer: null } as TransferParseResponse,
+      data: { animals: [], seller: null, buyer: null },
       warnings: [`Failed to parse JSON: ${err.message}`],
       errorCode: PARSE_ERROR,
     } as ParseResult<TransferParseResponse>;
