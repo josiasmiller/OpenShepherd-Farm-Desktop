@@ -7,14 +7,12 @@ import {
   ExistingMemberBuyer,
 } from "@app/api";
 
-import { readJsonFile } from "../../../helpers/registryHelpers";
+import { readJsonFile } from "@registryHelpers";
 
 // mock readJsonFile helper
-jest.mock("../../../helpers/registryHelpers", () => ({
+jest.mock("@registryHelpers", () => ({
   readJsonFile: jest.fn(),
 }));
-
-jest.mock("electron-log", () => ({ error: jest.fn() }));
 
 const mockRead = readJsonFile as jest.Mock;
 const mockLog = log as jest.Mocked<typeof log>;

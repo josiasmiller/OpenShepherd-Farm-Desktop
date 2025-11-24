@@ -1,4 +1,3 @@
-import fs from "fs/promises";
 import { BrowserWindow } from "electron";
 import log from "electron-log";
 
@@ -15,8 +14,8 @@ import {
   DIALOG_CANCELLED
 } from '@app/api';
 
-import { selectJsonFile } from "src/main/fileDialogs/jsonSelect";
-import { readJsonFile } from "src/main/registry/processing/helpers/registryHelpers";
+import { selectJsonFile } from "@fileDialogs/jsonSelect";
+import { readJsonFile } from "@registryHelpers";
 
 
 /**
