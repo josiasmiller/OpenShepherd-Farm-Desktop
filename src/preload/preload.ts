@@ -9,11 +9,16 @@ import {
   RegistryProcessRequest,
   DatabaseStateCheckResponse,
   OwnerType,
+  TransferRecord,
 } from '@app/api';
 
 import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
+import { DatabaseSessionInfo } from "@app/api";
 import { bindIpcCallback } from "./core/callbacks";
 import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
+import { SessionManagement } from "@ipc/api/sessionManagement";
+import {Database} from "@database/async";
+
 
 // -------------------- Animal --------------------
 const animalAPI : AnimalAPI = {
@@ -89,6 +94,7 @@ const registryAPI : RegistryAPI = {
   parseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
   parseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   process: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
+  processTransfers: (transferRecord: TransferRecord) => ipcRenderer.invoke("registry-process-transfers", transferRecord),
 }
 
 // -------------------- Store --------------------

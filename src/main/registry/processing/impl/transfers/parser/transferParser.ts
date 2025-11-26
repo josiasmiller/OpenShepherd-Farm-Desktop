@@ -2,35 +2,36 @@ import { BrowserWindow } from "electron";
 import log from "electron-log";
 
 import {
-  TransferParseResponse,
   AnimalRow,
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
-  ParseResult,
+  DIALOG_CANCELLED,
   MISSING_FIELDS,
-  PARSE_ERROR,
   NEW_BUYER_NOT_SUPPORTED,
-  DIALOG_CANCELLED
+  TransferError,
+  TransferRecord,
 } from '@app/api';
 
 import { selectJsonFile } from "@fileDialogs/jsonSelect";
 import { readJsonFile } from "@registryHelpers";
+import { DialogCancelledError, MissingFieldsError, ParseError, PARSE_ERROR } from "@app/api/src/errorCodes/genericCodes";
+import { Failure, Result, Success } from "@common/core";
+import { NewBuyerNotSupportedError } from "@app/api/src/errorCodes/registryProcessing/transferCodes";
 
 
 /**
  * Main Entrypoint for transfer parsing
  */
-export const selectAndParseTransfers = async (window: BrowserWindow): Promise<ParseResult<TransferParseResponse>> => {
+export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Result<TransferRecord, TransferError>> => {
 
   const fileResult = await selectJsonFile("Select Transfers JSON file", window);
 
   if (fileResult === null) {
-    return {
-      data: null,
-      warnings: [],
-      errorCode: DIALOG_CANCELLED,
-    } as ParseResult<TransferParseResponse>;
+    const ret: DialogCancelledError = {
+      type: DIALOG_CANCELLED,
+    };
+    return new Failure(ret);
   }
 
   return transferParser(fileResult);
@@ -40,9 +41,9 @@ export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Pa
 /**
  * Core JSON parser
  */
-export const transferParser = async (filePath: string): Promise<ParseResult<TransferParseResponse>> => {
+export const transferParser = async (filePath: string): Promise<Result<TransferRecord, TransferError>> => {
 
-  const warnings: string[] = [];
+  const warnings: string[] = []; // TODO --> what to do with this
 
   try {
     const fileContents = await readJsonFile(filePath);
@@ -57,11 +58,12 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
       missingFields.push("buyer");
 
     if (missingFields.length > 0) {
-      return {
-        data: { animals: [], seller: null, buyer: null },
-        warnings: [`Invalid JSON: missing ${missingFields.join(", ")}`],
-        errorCode: MISSING_FIELDS,
-      } as ParseResult<TransferParseResponse>;
+      const error: MissingFieldsError = {
+        type: MISSING_FIELDS,
+        missing: missingFields,
+      };
+
+      return new Failure(error);
     }
 
     // =================================================================================================
@@ -112,10 +114,16 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
 
       if (buyerIdentityType === 'contact') {
         buyerContactId = fileContents.buyer.identity.id;
+
       } else if (buyerIdentityType === 'company') {
         buyerCompanyId = fileContents.buyer.identity.id;
+        
       } else {
-        throw new Error(`Unhandled buyerIdentityType: ${buyerIdentityType}`);
+        const ret: ParseError = {
+          type: PARSE_ERROR,
+          details: `Unhandled BuyerIdentityType: ${buyerIdentityType}`,
+        };
+        return new Failure(ret);
       }
 
       buyer = {
@@ -126,28 +134,34 @@ export const transferParser = async (filePath: string): Promise<ParseResult<Tran
         firstName: fileContents.buyer.firstName ?? "",
         lastName: fileContents.buyer.lastName ?? "",
         region: fileContents.buyer.region ?? "",
-      };
+      } as ExistingMemberBuyer;
 
     } else if (buyerType === "NEW") {
-      return {
-        data: { animals: [], seller: null, buyer: null },
-        warnings: warnings,
-        errorCode: NEW_BUYER_NOT_SUPPORTED,
-      } as ParseResult<TransferParseResponse>;
+      const ret: NewBuyerNotSupportedError = {
+        type: NEW_BUYER_NOT_SUPPORTED,
+      };
+      return new Failure(ret);
     } else {
-      warnings.push(`Unknown or missing buyer.type: ${buyerType}`);
+      const ret: ParseError = {
+        type: PARSE_ERROR,
+        details: `Unhandled BuyerType: ${buyerType}`,
+      };
+      return new Failure(ret);
     }
 
-    return {
-      data: { animals, seller, buyer },
-      warnings,
-    };
+    const transferRec : TransferRecord = {
+      animals,
+      seller,
+      buyer,
+    } 
+    return new Success(transferRec);
+
   } catch (err: any) {
     log.error("Error parsing transfer JSON:", err);
-    return {
-      data: { animals: [], seller: null, buyer: null },
-      warnings: [`Failed to parse JSON: ${err.message}`],
-      errorCode: PARSE_ERROR,
-    } as ParseResult<TransferParseResponse>;
+    const ret: ParseError = {
+      type: PARSE_ERROR,
+      details: err?.message ?? String(err),
+    };
+    return new Failure(ret);
   }
 };

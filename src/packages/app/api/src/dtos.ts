@@ -1,3 +1,4 @@
+import { TransferError } from "./errorCodes/registryProcessing/transferCodes";
 
 export type AnimalIdentification = {
     id: string;
@@ -409,8 +410,7 @@ export type DatabaseStateCheckResponse = {
 
 export type ParseResult<T> = {
     data: T;
-    warnings: string[];
-    errorCode?: string;
+    warnings?: string[];
 };
 
 export interface ProcessingResult {
@@ -515,10 +515,12 @@ export type RegistrationParseRow = {
     coatColor: string;
 };
 
-export type TransferParseResponse = {
-    animals: AnimalRow[];                  // from first section of transfers CSV
-    seller: SellerInfo;                    // second section of transfers CSV
-    buyer: ExistingMemberBuyer | NewBuyer; // third section (mutually exclusive)
+// export type TransferParseResponse = TransferParseSuccess | TransferError
+
+export type TransferRecord  = {
+    animals: AnimalRow[];
+    seller: SellerInfo;
+    buyer: ExistingMemberBuyer | NewBuyer;
 };
 
 export type AnimalRow = {
@@ -541,6 +543,7 @@ export type SellerInfo = {
 };
 
 export type ExistingMemberBuyer = {
+    type: "ExistingMemberBuyer";
     membershipNumber: string;
     contactId: string;
     companyId: string;
@@ -551,6 +554,7 @@ export type ExistingMemberBuyer = {
 };
 
 export type NewBuyer = {
+    type: "NewBuyer";
     firstName: string;
     lastName: string;
     company: string;

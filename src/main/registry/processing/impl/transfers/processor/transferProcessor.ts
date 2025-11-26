@@ -1,5 +1,5 @@
-import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType, ParseResult } from '@app/api';
+import { Failure, handleResult, Result, Success } from '@common/core';
+import { ExistingMemberBuyer, NewBuyer, SellerInfo,  Owner, CoatColor, OwnerType,  TransferRecord, ValidationResult } from '@app/api';
 
 
 import {
@@ -22,30 +22,39 @@ import {
 } from '../../../../../database';
 import {Database} from "sqlite3";
 
+import { validateTransferRows } from '../validation/transferValidator'; // change import??
+
+
+export async function validateAndProcessTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
+  const validationAnswer : ValidationResult[] = await validateTransferRows(db, transferRecord);
+
+  // verify OK then process or ret
+
+  return processTransfers(db, transferRecord);
+}
+
+
+
 /**
- * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
+ * processes transfer rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param _sections deprecated, remains to satisfy interface in the interim 
- * @param _ here only to satisfy interface
- * @param parseResult the raw ParseResult that contains the pertinent information to this process
+ * @param transferRecord the transfer data being processed
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processTransferRows(db: Database, _sections: Record<string, RegistryRow[]>, _: Species, parseResult: ParseResult<TransferParseResponse>): Promise<ProcessingResult> {
+export async function processTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
 
-  let transferResponse : TransferParseResponse = parseResult.data;
-
-  if (isNewBuyer(transferResponse.buyer)) {
-    throw new Error("New Buyers not yet supported");
+  if (isNewBuyer(transferRecord.buyer)) {
+    throw new Error("New Buyers not yet supported"); // this should be handled higher in the stack --> we should never get a New Buyer here YET (until they are implemented)
   }
 
   // using this until new buyers are implemented
-  let buyer : ExistingMemberBuyer = transferResponse.buyer;
-  let seller : SellerInfo = transferResponse.seller;
+  let buyer : ExistingMemberBuyer = transferRecord.buyer as ExistingMemberBuyer; // we know this is an existing member due to the isNewBuyer check above ^^
+  let seller : SellerInfo = transferRecord.seller;
   
   try {
     await beginTransaction(db);
 
-    for (const animalInfo of transferResponse.animals) {
+    for (const animalInfo of transferRecord.animals) {
       
       try {
         let locationResult = await insertAnimalGoesToLocation(
@@ -249,20 +258,14 @@ export async function processTransferRows(db: Database, _sections: Record<string
     }
 
     await commitTransaction(db);
-    return {
-      success: true,
-      insertedRowCount: transferResponse.animals.length,
-    };
+    return new Success(transferRecord.animals.length);
 
   } catch (error) {
     await rollbackTransaction(db);
-    return {
-      success: false,
-      errors: [(error as Error).message]
-    };
+    return new Failure((error as Error).message);
   }
 }
 
 function isNewBuyer(buyer: ExistingMemberBuyer | NewBuyer): buyer is NewBuyer {
-  return "address1" in buyer;
+  return buyer.type == 'NewBuyer';
 }

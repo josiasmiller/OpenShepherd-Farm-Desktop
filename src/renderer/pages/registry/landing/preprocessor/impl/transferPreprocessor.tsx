@@ -1,30 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Swal from "sweetalert2";
+import Swal, { SweetAlertOptions } from "sweetalert2";
 import { BackButton } from "../../../../../components/backButton/backButton";
 import { AnimalInformationTable } from "../../../../../components/tables/animalTable";
 import { DateDisplay } from "../../../../../components/informationDisplay/dateDisplay";
 import { OwnerInformationTable, OwnerInformationTableProps  } from "../../../../../components/tables/ownerTable";
 import {
-  TransferParseResponse,
-  ParseResult,
+  TransferRecord,
+  TransferError,
   ExistingMemberBuyer,
   OwnerType,
   Species,
-  RegistryProcessType,
-  RegistryProcessRequest,
-  ProcessingResult,
   DIALOG_CANCELLED,
+  MISSING_FIELDS,
+  PARSE_ERROR,
+  NEW_BUYER_NOT_SUPPORTED,
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
+import { handleResult, Result } from "@common/core";
 
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [currentParseResult, setCurrentParseResult] = useState<ParseResult<TransferParseResponse>>();
+  const [currentTransferRecord, setCurrentTransferRecord] = useState<TransferRecord>();
 
   const [animalIds, setAnimalIds] = useState<string[]>([]);
   const [buyers, setBuyers] = useState<OwnerInformationTableProps["owners"]>([]);
@@ -46,24 +47,37 @@ export const TransferPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
+      const parsingResult: Result<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
-      if (parseResult.errorCode === DIALOG_CANCELLED) {
-        return;
+      let isSuccess : boolean = false;
+      let errType : TransferError = null;
+      let transferRecord : TransferRecord = null;
+
+      await handleResult(parsingResult, {
+        success: (data: TransferRecord) => {
+          isSuccess = true;
+          transferRecord = data; // this is needed for processing further in this file, otherwise a race condition of sorts crops up
+          setCurrentTransferRecord(data);
+        },
+        error: (err: TransferError) => {
+          errType = err;
+        },
+      });
+
+      // handle err cases
+      if (!isSuccess) {
+        if (errType.type == DIALOG_CANCELLED) { // dont display err on dialog cancel as this is an expected user input
+          return
+        }
+
+        // display error to user 
+        await Swal.fire(
+          getSwalErrParams(errType)
+        );
+        return
       }
 
-      if (!parseResult.data) {
-        await Swal.fire({
-          icon: "warning",
-          title: "No Data",
-          text: "No valid transfer data found in the JSON file.",
-        });
-        return;
-      }
-
-      setCurrentParseResult(parseResult);
-
-      const { animals, seller, buyer } = parseResult.data;
+      const { animals, seller, buyer } = transferRecord;
 
       let newAnimalIds : string[] = [];
 
@@ -132,20 +146,6 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       setHasLoadedFile(true);
 
-      // Show warnings (if any)
-      if (parseResult.warnings?.length) {
-        const html = `
-          <ul style="text-align:left;">
-            ${parseResult.warnings.map((w) => `<li>${w}</li>`).join("")}
-          </ul>
-        `;
-        await Swal.fire({
-          title: "Warnings Detected",
-          html,
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-      }
     } catch (err: any) {
       await Swal.fire({
         icon: "error",
@@ -163,34 +163,31 @@ export const TransferPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading) return;
 
-    const args: RegistryProcessRequest = {
-      processType: 'transfers' as RegistryProcessType,
-      species: species,
-      sections: {},
-      parseResult: currentParseResult,
-    };
+    const processingResult : Result<number, string> = await window.registryAPI.processTransfers(currentTransferRecord);
 
-    const result: ProcessingResult = await window.registryAPI.process(args);
+    await handleResult(processingResult, {
+      success: (data: number) => {
+        Swal.fire({
+          title: "Success",
+          icon: "success",
+          confirmButtonText: "OK",
+          width: "40em",
+          text: `${data} Transfers processed successfully`,
+        });
 
-    if (result.success) {
-      Swal.fire({
-        title: "Success",
-        icon: "success",
-        confirmButtonText: "OK",
-        width: "40em",
-        text: "Transfers processed successfully",
-      });
+        navigate("/"); // nav back to home after processing
+      },
+      error: (_: string) => {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          confirmButtonText: "OK",
+          width: "40em",
+          text: "There was an error processing transfers.",
+        });
+      },
+    });
 
-      navigate("/"); // nav back to home after processing
-    } else {
-      Swal.fire({
-        title: "Error",
-        icon: "error",
-        confirmButtonText: "OK",
-        width: "40em",
-        text: "There was an error processing transfers.",
-      });
-    }
     return;
   };
 
@@ -259,3 +256,47 @@ export const TransferPreprocessorPage: React.FC = () => {
     </div>
   );
 };
+
+export function getSwalErrParams(err: TransferError): SweetAlertOptions {
+  switch (true) {
+    case err.type === DIALOG_CANCELLED:
+      return {
+        title: "Cancelled",
+        text: "The operation was cancelled by the user.",
+        icon: "info",
+        confirmButtonText: "OK",
+      };
+
+    case err.type === MISSING_FIELDS:
+      return {
+        title: "Missing Required Fields",
+        text: "Some required fields were not provided.",
+        icon: "warning",
+        confirmButtonText: "Review",
+      };
+
+    case err.type === PARSE_ERROR:
+      return {
+        title: "Invalid Data",
+        text: "The provided data could not be processed.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      };
+
+    case err.type === NEW_BUYER_NOT_SUPPORTED:
+      return {
+        title: "Unsupported Transfer",
+        text: "Transfers involving a new buyer are not supported yet.",
+        icon: "error",
+        confirmButtonText: "Understood",
+      };
+
+    default:
+      return {
+        title: "Unknown Error",
+        text: "An unexpected error occurred.",
+        icon: "error",
+        confirmButtonText: "OK",
+      };
+  }
+}
