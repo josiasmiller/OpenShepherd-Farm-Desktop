@@ -1,8 +1,7 @@
 
 import {ipcRenderer} from "electron";
-import {SessionManagement, type SessionManagementIpc} from "@ipc/api/sessionManagement";
-
-export {SessionManagement, type SessionManagementIpc} from "@ipc/api/sessionManagement";
+import {SessionManagement, type SessionManagementIpc} from "@ipc/api";
+export {SessionManagement, type SessionManagementIpc} from "@ipc/api";
 
 /**
  * Factory method to create a proxy instance of SessionManagementIpc

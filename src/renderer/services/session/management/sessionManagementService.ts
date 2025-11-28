@@ -1,5 +1,5 @@
 import {createContext} from "react";
-import {type SessionManagementIpc} from "@ipc/api/sessionManagement";
+import {type SessionManagementIpc} from "../../../ipc/proxies/sessionManagement";
 
 export interface SessionManagementService {
   openSession: () => Promise<void>

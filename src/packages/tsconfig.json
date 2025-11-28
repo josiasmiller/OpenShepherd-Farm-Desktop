@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    { "path": "app/api" },
+    { "path": "app/buildVariant" },
+    { "path": "app/variant" },
+    { "path": "common/core" },
+    { "path": "common/time" },
+    { "path": "database" },
+    { "path": "ipc/api" },
+    { "path": "ipc/core" },
+  ]
+}

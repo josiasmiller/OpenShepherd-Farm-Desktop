@@ -36,7 +36,7 @@ export const mainConfig: Configuration = {
     [
         new ForkTsCheckerWebpackPlugin({
           typescript: {
-            build: true,
+            build: false,
             configFile: 'src/main/tsconfig.json'
           }
         }),

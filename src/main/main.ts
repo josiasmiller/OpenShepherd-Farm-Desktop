@@ -11,7 +11,7 @@ import {
 } from 'electron';
 
 import {registerIpcHandlers} from "./ipcHandlers";
-import {SessionManagement} from "@ipc/api/sessionManagement";
+import {SessionManagement} from "@ipc/api";
 import {selectNewDb} from "./dbSelect";
 
 import {

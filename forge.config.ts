@@ -1,4 +1,5 @@
 import type { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { exec } from 'child_process'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
@@ -53,6 +54,28 @@ const buildDescription = fromBuildIdentifier({
     registry: 'AnimalTrakker Registry'
 }).map[buildIdentifier]
 
+const execBuildPackagesScript = (hookName: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    exec(`tsc -b ./src/packages/tsconfig.json`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Build packages failed in ${hookName} hook: ${error}`)
+      } else {
+        console.log(`Build packages finished in ${hookName} hook.`)
+      }
+      if (stdout) {
+        console.log(`stdout: ${stdout}`)
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`)
+      }
+      if (error) {
+        return reject(error)
+      }
+      resolve()
+    })
+  })
+}
+
 const config: ForgeConfig = {
     buildIdentifier: buildIdentifier,
     rebuildConfig: {},
@@ -74,20 +97,30 @@ const config: ForgeConfig = {
         appCategoryType: 'public.app-category.utilities', // mac specific categorization
     },
     hooks: {
-        readPackageJson: async (
-            forgeConfig: ResolvedForgeConfig,
-            packageJson: Record<string,any>
-        ) => {
-            //The package.json name is required to be set,
-            //but package.json is not normally dynamic,
-            //so we write it based on the app variant here.
-            packageJson.name = buildPackageName
-            packageJson.productName = buildDisplayName
-            packageJson.description = buildDescription
-            packageJson.author = buildAuthor
-            packageJson.version = buildAppVersion
-            return packageJson
-        },
+      preStart: async (config: ResolvedForgeConfig) => {
+        await execBuildPackagesScript('preStart')
+      },
+      prePackage: async (
+        config: ResolvedForgeConfig,
+        platform: string,
+        arch: string
+      ) => {
+        await execBuildPackagesScript('prePackage')
+      },
+      readPackageJson: async (
+        forgeConfig: ResolvedForgeConfig,
+        packageJson: Record<string,any>
+      ) => {
+        //The package.json name is required to be set,
+        //but package.json is not normally dynamic,
+        //so we write it based on the app variant here.
+        packageJson.name = buildPackageName
+        packageJson.productName = buildDisplayName
+        packageJson.description = buildDescription
+        packageJson.author = buildAuthor
+        packageJson.version = buildAppVersion
+        return packageJson
+      },
     },
     makers: [
         new MakerZIP({}),

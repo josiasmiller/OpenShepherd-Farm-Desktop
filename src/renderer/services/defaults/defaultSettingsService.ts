@@ -1,7 +1,7 @@
 import {DefaultsAPI} from '@app/api';
 import {concat, from, map, Observable, switchMap} from "rxjs";
 import {DefaultSettingsResults} from '@app/api';
-import {observeApiEvent} from "@ipc/api/core";
+import {observeApiEvent} from "@ipc/core";
 import {createContext} from "react";
 
 export interface DefaultSettingsService {
