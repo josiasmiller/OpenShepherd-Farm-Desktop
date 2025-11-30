@@ -300,10 +300,10 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_LOCATIONS, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_GET_PEDIGREE, async (event: IpcMainInvokeEvent, animalId) => {
+  ipcMain.handle(IPC_INVOKE_GET_PEDIGREE, async (event: IpcMainInvokeEvent, animalId, preferredRegistry) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return getPedigree(session.db.raw(), animalId, 4); // TODO --> what depth to use?
+      return getPedigree(session.db.raw(), animalId, 4, preferredRegistry);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_PEDIGREE, event)
   });

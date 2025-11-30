@@ -13,6 +13,7 @@ import {
 import {Failure, handleResult, Result, Success} from "@common/core";
 import {dialog} from "electron";
 import { idTag, PedigreeNode } from '@app/api';
+import { REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_WHITE_WELSH, REGISTRY_COMPANY_ID } from "src/main/database/dbConstants";
 
 const templatePathBlack = path.join(__dirname, 'assets', 'documents', 'ABWMSA_registration_template_V3_black.pdf')
 const pdfBytesBlack = fs.readFileSync(templatePathBlack);
@@ -57,8 +58,22 @@ export const writeRegistration = async (
 
   const directoryPath = filePaths[0];
 
+  // for now we are hard coding which registry until we determine how to handle this
+  let preferredRegistry: string = null
+
+  if (registrationType === 'black') {
+    preferredRegistry = REGISTRY_COMPANY_ID;
+  } else if (registrationType === 'white') {
+    preferredRegistry = REGISTRATION_WHITE_WELSH;
+  } else if (registrationType === 'chocolate') {
+    preferredRegistry = REGISTRATION_CHOCOLATE_WELSH;
+  } else {
+    throw new Error(`Unhandled registrationType: ${registrationType}`);
+  }
+
+
   try {
-    const registrationResults = await getAnimalRegistrationInfo(db, animalIds);
+    const registrationResults = await getAnimalRegistrationInfo(db, animalIds, preferredRegistry);
 
     let success = false;
 

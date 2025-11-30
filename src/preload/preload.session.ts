@@ -25,7 +25,7 @@ const animalAPI : AnimalAPI = {
   search: (params: AnimalSearchRequest) => ipcRenderer.invoke("animal-search", params),
   getIdentification: (animalId: string) => ipcRenderer.invoke("get-animal-identification", animalId),
   getAnimalDetails: (animalIds: string[]) => ipcRenderer.invoke("get-animal-details", animalIds),
-  getPedigree: (animalId: string) => ipcRenderer.invoke("get-pedigree", animalId),
+  getPedigree: (animalId: string, preferredRegistry: string) => ipcRenderer.invoke("get-pedigree", animalId, preferredRegistry),
 }
 
 // -------------------- Export --------------------
