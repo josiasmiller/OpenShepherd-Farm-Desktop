@@ -173,22 +173,30 @@ const config: ForgeConfig = {
             renderer: {
                 config: rendererConfig,
                 entryPoints: [
-                    {
-                        html: rendererHtmlPath,
-                        js: './src/renderer/index.tsx',
-                        name: 'main_window',
-                        preload: {
-                            js: './src/preload/preload.ts',
-                        },
-                    },
-                    {
-                        name: 'landing_window',
-                        html: rendererHtmlPath,
-                        js: './src/renderer/landing/index.tsx',
-                        preload: {
-                            js: './src/preload/preload.landing.ts'
-                        }
+                  {
+                    name: 'landing_window',
+                    html: rendererHtmlPath,
+                    js: './src/renderer/landing/index.tsx',
+                    preload: {
+                      js: './src/preload/preload.landing.ts'
                     }
+                  },
+                  {
+                    html: rendererHtmlPath,
+                    js: './src/renderer/index.tsx',
+                    name: 'session_window',
+                    preload: {
+                      js: './src/preload/preload.session.ts',
+                    },
+                  },
+                  {
+                    name: 'about_window',
+                    html: rendererHtmlPath,
+                    js: './src/renderer/about/index.tsx',
+                    preload: {
+                      js: './src/preload/preload.about.ts',
+                    }
+                  }
                 ],
             },
         }),
