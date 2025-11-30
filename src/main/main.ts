@@ -12,7 +12,7 @@ import {
 
 import {registerIpcHandlers} from "./ipcHandlers";
 import {SessionManagement} from "@ipc/api";
-import {selectNewDb} from "./dbSelect";
+import {selectNewDb} from "@fileDialogs/dbSelect";
 import {
   atrkkrHasOpenSessions,
   atrkkrSessionForDBPath,
