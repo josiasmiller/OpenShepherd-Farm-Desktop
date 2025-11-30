@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import log from "electron-log";
 import {Database} from "sqlite3";
 import {PDFDocument} from "pdf-lib";
 import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } from '@app/api'
@@ -7,7 +8,6 @@ import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } f
 import {
     getAnimalRegistrationInfo,
     markRegistryCertificateAsPrinted,
-
 } from '../../database'
 
 import {Failure, handleResult, Result, Success} from "@common/core";
@@ -46,7 +46,7 @@ export const writeRegistration = async (
 
   // Handle user cancellation
   if (canceled || filePaths.length === 0) {
-    console.log("User cancelled folder selection.");
+    log.info("User cancelled folder selection.");
     return { 
       success: false, 
       resultingDirectory: "", 
@@ -71,13 +71,13 @@ export const writeRegistration = async (
           warnings.push(...(result.data));
           success = true;
         } else if (result instanceof Failure) {
-          console.error("PDF generation failed:", result.error);
+          log.error("PDF generation failed:", result.error);
           success = false;
           errors.push(result.error);
         }
       },
       error: (err : string) => {
-        console.error("Failed to fetch animal registration data:", err);
+        log.error("Failed to fetch animal registration data:", err);
         success = false;
         errors.push(err);
       },
@@ -91,7 +91,7 @@ export const writeRegistration = async (
     };
 
   } catch (e) {
-    console.error("Error setting form fields:", e);
+    log.error("Error setting form fields:", e);
     return { 
       success: false,
       resultingDirectory: directoryPath, 
@@ -396,7 +396,7 @@ const _handleRegistrationWrite = async (
           // updated DB, don't need to do anything
         },
         error: (err : string) => {
-          console.error("Failed to update registry_certificate_print_table:", err);
+          log.error("Failed to update registry_certificate_print_table:", err);
           const printCertificateWarning : string = `unable to update registry_certificate_print_table for ${regResult.animalIdentification!.name}`;
           allWarnings.push(printCertificateWarning);
         },
@@ -471,7 +471,7 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
 
     } catch (e) {
       birthDateFormatted = "---ERROR---";
-      console.error("Failed to parse birth date:", e);
+      log.error("Failed to parse birth date:", e);
     }
   }
 

@@ -2,6 +2,7 @@ import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
 import { Result, Success, Failure } from "@common/core";
 import { PedigreeNode } from '@app/api';
+import { REGISTRY_COMPANY_ID } from "src/main/database/dbConstants";
 
 type PedigreeRow = {
   animalId: string;
@@ -48,7 +49,7 @@ export const getPedigree = async (
       bt.birth_type_abbrev AS birthTypeAbbrev
     FROM animal_table a
     LEFT JOIN animal_registration_table ar 
-      ON ar.id_animalid = a.id_animalid 
+      ON ar.id_animalid = a.id_animalid
 
     LEFT JOIN animal_flock_prefix_table afp 
       ON afp.id_animalid = a.id_animalid
@@ -58,13 +59,19 @@ export const getPedigree = async (
       ON s.id_sexid = a.id_sexid
     LEFT JOIN birth_type_table bt 
       ON bt.id_birthtypeid = a.id_birthtypeid
+
     WHERE a.id_animalid = ?
-    ORDER BY ar.registration_date DESC
+
+    ORDER BY 
+      (ar.id_registry_id_companyid = ?) DESC,  -- prefer whatever registry is being saught after
+      ar.registration_date DESC                -- otherwise just choose the most recent registration
+
     LIMIT 1
   `;
 
+
   return new Promise((resolve) => {
-    db.get(query, [animalId], async (err, row: PedigreeRow | undefined) => {
+    db.get(query, [animalId, REGISTRY_COMPANY_ID], async (err, row: PedigreeRow | undefined) => {
       if (err) {
         resolve(new Failure(`Database error: ${err.message}`));
         return;
