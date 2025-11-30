@@ -1,0 +1,9 @@
+{
+  "name": "atrkkr-ipc-core",
+  "version": "1.0.0",
+  "description": "IPC core",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  }
+}

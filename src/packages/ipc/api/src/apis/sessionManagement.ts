@@ -20,7 +20,3 @@ export interface SessionManagementIpc {
 export interface SessionManagementIpcProvider {
   sessionManagementIpc: SessionManagementIpc
 }
-
-declare global {
-  interface Window extends SessionManagementIpcProvider {}
-}

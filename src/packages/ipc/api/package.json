@@ -1,22 +1,9 @@
 {
   "name": "atrkkr-ipc-api",
-  "type": "module",
   "version": "1.0.0",
   "description": "IPC api contracts",
+  "main": "./lib/index.js",
   "directories": {
     "lib": "lib"
-  },
-  "main": "./lib/index.js",
-  "exports": {
-    "./core": {
-      "import": "./lib/core.js",
-      "require": "./lib/core.js",
-      "types": "./lib/core.d.ts"
-    },
-    "./sessionManagement": {
-      "import": "./lib/sessionManagement.js",
-      "require": "./lib/sessionManagement.js",
-      "types": "./lib/sessionManagement.d.ts"
-    }
   }
 }

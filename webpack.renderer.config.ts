@@ -32,7 +32,7 @@ export const rendererConfig: Configuration = {
   plugins: plugins.concat([
     new ForkTsCheckerWebpackPlugin({
       typescript: {
-        build: true,
+        build: false,
         configFile: 'src/renderer/tsconfig.json'
       }
     }),

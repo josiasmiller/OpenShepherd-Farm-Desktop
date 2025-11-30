@@ -12,10 +12,8 @@ import {
 } from '@app/api';
 
 import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
-import { DatabaseSessionInfo } from "@app/api";
-import { bindIpcCallback } from "@ipc/preload/core";
-import {sessionManagementIpcProxy} from "@ipc/preload/sessionManagement";
-import { SessionManagement } from "@ipc/api/sessionManagement";
+import { bindIpcCallback } from "./core/callbacks";
+import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
 
 // -------------------- Animal --------------------
 const animalAPI : AnimalAPI = {

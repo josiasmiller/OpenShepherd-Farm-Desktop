@@ -10,7 +10,7 @@
     "outDir": "./lib"
   },
   "references": [
+    { "path": "../../ipc/core" },
     { "path": "../../common/core" },
-    { "path": "../../ipc/api" }
   ]
 }

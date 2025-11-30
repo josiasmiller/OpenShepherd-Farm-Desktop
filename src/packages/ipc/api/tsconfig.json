@@ -9,4 +9,9 @@
     "rootDir": "src",
     "outDir": "./lib"
   },
+  "references": [
+    { "path": "../core" },
+    { "path": "../../app/api" },
+    { "path": "../../common/core" }
+  ]
 }

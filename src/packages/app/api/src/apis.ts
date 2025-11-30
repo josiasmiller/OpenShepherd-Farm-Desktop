@@ -44,7 +44,7 @@ import {
 } from "./dtos";
 
 import { Result } from "@common/core";
-import { type IpcEventRegistrarFunc } from "@ipc/api/core";
+import { type IpcEventRegistrarFunc } from "@ipc/core";
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {

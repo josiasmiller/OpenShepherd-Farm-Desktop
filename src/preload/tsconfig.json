@@ -14,6 +14,6 @@
   "references": [
     { "path": "../packages/app/api" },
     { "path": "../packages/ipc/api" },
-    { "path": "../packages/ipc/preload" },
+    { "path": "../packages/ipc/core" },
   ]
 }

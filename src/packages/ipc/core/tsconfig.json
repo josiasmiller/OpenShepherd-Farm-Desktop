@@ -9,7 +9,4 @@
     "rootDir": "src",
     "outDir": "./lib"
   },
-  "references": [
-    { "path": "../api" }
-  ]
 }
