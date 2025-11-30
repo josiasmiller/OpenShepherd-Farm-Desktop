@@ -2,7 +2,7 @@ import {Database} from "sqlite3";
 import { getDbDate } from "../../../../dbUtils";
 import { Result, Success, Failure } from "@common/core";
 import { PedigreeNode } from '@app/api';
-import { REGISTRY_COMPANY_ID } from "src/main/database/dbConstants";
+import { REGISTRY_CHOCOLATE_WMSA, REGISTRY_COMPANY_ID, REGISTRY_WHITE_WMSA } from "src/main/database/dbConstants";
 
 type PedigreeRow = {
   animalId: string;
@@ -22,10 +22,6 @@ type PedigreeRow = {
  * @param db The Database to act on
  * @param animalId UUID of animal being sought
  * @param depth how deep in the search this iteration is
- * @param preferredRegistry UUID for the registry to prefer registration numbers
- *                          if there are multiple registration numbers for a given animal, the registration number that 
- *                          is part of this registry is used, otherwise the most recent one is used.
- * 
  * @returns A `Result` containing a `PedigreeNode` object or `null` on success, 
  *          or a string error message on failure.
  */
@@ -33,7 +29,6 @@ export const getPedigree = async (
   db: Database,
   animalId: string,
   depth: number,
-  preferredRegistry: string,
 ): Promise<Result<PedigreeNode | null, string>> => {
 
   if (depth < 0) {
@@ -67,16 +62,18 @@ export const getPedigree = async (
 
     WHERE a.id_animalid = ?
 
-    ORDER BY 
-      (ar.id_registry_id_companyid = ?) DESC,  -- prefer whatever registry is being saught after
-      ar.registration_date DESC                -- otherwise just choose the most recent registration
-
+    ORDER BY
+      (ar.id_registry_id_companyid = ?) DESC,  -- primary preference
+      (ar.id_registry_id_companyid = ?) DESC,  -- secondary preference
+      (ar.id_registry_id_companyid = ?) DESC,  -- tertiary preference
+      ar.registration_date DESC
     LIMIT 1
   `;
 
+  const queryParams : string[] = [animalId, REGISTRY_COMPANY_ID, REGISTRY_CHOCOLATE_WMSA, REGISTRY_WHITE_WMSA];
 
   return new Promise((resolve) => {
-    db.get(query, [animalId, preferredRegistry], async (err, row: PedigreeRow | undefined) => {
+    db.get(query, queryParams, async (err, row: PedigreeRow | undefined) => {
       if (err) {
         resolve(new Failure(`Database error: ${err.message}`));
         return;
@@ -88,7 +85,7 @@ export const getPedigree = async (
       }
 
       const resolvePedigreeBranch = async (parentId: string | null): Promise<Result<PedigreeNode | null, string>> => {
-        return parentId ? getPedigree(db, parentId, depth - 1, preferredRegistry) : new Success(null);
+        return parentId ? getPedigree(db, parentId, depth - 1) : new Success(null);
       };
 
       const [sireResult, damResult] = await Promise.all([

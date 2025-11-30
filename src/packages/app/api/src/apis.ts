@@ -52,7 +52,7 @@ export interface AnimalAPI {
   search: (params: AnimalSearchRequest) => Promise<AnimalSearchResult[]>;
   getIdentification: (animalId: string) => Promise<Result<AnimalIdentification[], string>>;
   getAnimalDetails: (animalIds: string[]) => Promise<Result<AnimalDetails[], string>>;
-  getPedigree: (animalId: string, preferredRegistry: string) => Promise<Result<PedigreeNode, string>>;
+  getPedigree: (animalId: string) => Promise<Result<PedigreeNode, string>>;
 }
 
 // -------------------- Export --------------------

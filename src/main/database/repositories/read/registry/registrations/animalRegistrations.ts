@@ -25,12 +25,11 @@ import { getCompaniesForContact } from "../../owners/getCompaniesForContact";
  *
  * @param db The Database to act on
  * @param animalIds UUID of animal(s) being sought
- * @param preferredRegistry UUID of preferred registry to gather information from
  * @returns A `Result` containing an array of `AnimalRegistrationResult` objects on success, 
  *          or a string error message on failure.
  */
 export const getAnimalRegistrationInfo = async (
-  db: Database, animalIds: string[], preferredRegistry: string,
+  db: Database, animalIds: string[],
 ): Promise<Result<AnimalRegistrationResult[], string>> => {
 
   try {
@@ -51,7 +50,7 @@ export const getAnimalRegistrationInfo = async (
         codon171Result,
         fiftyDayWeightResult,
       ] = await Promise.all([
-        getPedigree(db, animalId, 4, preferredRegistry),
+        getPedigree(db, animalId, 4),
         getAnimalIdentification(db, animalId),
         getBreeder(db, animalId),
         getOwner(db, animalId),

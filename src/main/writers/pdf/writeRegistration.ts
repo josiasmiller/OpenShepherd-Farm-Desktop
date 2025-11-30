@@ -58,22 +58,8 @@ export const writeRegistration = async (
 
   const directoryPath = filePaths[0];
 
-  // for now we are hard coding which registry until we determine how to handle this
-  let preferredRegistry: string = null
-
-  if (registrationType === 'black') {
-    preferredRegistry = REGISTRY_COMPANY_ID;
-  } else if (registrationType === 'white') {
-    preferredRegistry = REGISTRATION_WHITE_WELSH;
-  } else if (registrationType === 'chocolate') {
-    preferredRegistry = REGISTRATION_CHOCOLATE_WELSH;
-  } else {
-    throw new Error(`Unhandled registrationType: ${registrationType}`);
-  }
-
-
   try {
-    const registrationResults = await getAnimalRegistrationInfo(db, animalIds, preferredRegistry);
+    const registrationResults = await getAnimalRegistrationInfo(db, animalIds);
 
     let success = false;
 
