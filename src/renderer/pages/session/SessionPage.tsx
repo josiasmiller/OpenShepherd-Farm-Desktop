@@ -10,7 +10,6 @@ import RegistryLanding from "../registry/landing/registryLanding";
 import LandingPage from "../common/animalSearch/landingPage";
 import {PreprocessorPage} from "../registry/landing/preprocessor/registryPreprocessor";
 import { TransferPreprocessorPage } from '../registry/landing/preprocessor/impl/transferPreprocessor';
-import AtrkkrTheme from 'src/renderer/theme/AtrkkrTheme';
 
 const SessionPage = () => {
   return (
