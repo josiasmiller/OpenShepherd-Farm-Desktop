@@ -19,6 +19,8 @@ import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeig
 import { getBreeder } from "../../owners/getBreeder";
 import { getOwner } from "../../owners/getOwner";
 import { getCompaniesForContact } from "../../owners/getCompaniesForContact";
+import { getLatestUnprintedCertificateId } from "./getLatestUnprintedCertificateId";
+import log from "electron-log";
 
 /**
  * Gets the registration information for all animals in the input array
@@ -29,7 +31,9 @@ import { getCompaniesForContact } from "../../owners/getCompaniesForContact";
  *          or a string error message on failure.
  */
 export const getAnimalRegistrationInfo = async (
-  db: Database, animalIds: string[],
+  db: Database,
+  animalIds: string[],
+  registryCompanyId: string, 
 ): Promise<Result<AnimalRegistrationResult[], string>> => {
 
   try {
@@ -38,6 +42,7 @@ export const getAnimalRegistrationInfo = async (
     for (const animalId of animalIds) {
 
       const [
+        unprintedCertificateResult,
         pedigreeResult,
         animalIdentificationResult,
         breederResult,
@@ -50,6 +55,7 @@ export const getAnimalRegistrationInfo = async (
         codon171Result,
         fiftyDayWeightResult,
       ] = await Promise.all([
+        getLatestUnprintedCertificateId(db, registryCompanyId, animalId),
         getPedigree(db, animalId, 4),
         getAnimalIdentification(db, animalId),
         getBreeder(db, animalId),
@@ -62,6 +68,31 @@ export const getAnimalRegistrationInfo = async (
         getCodon171ForAnimal(db, animalId),
         estimateFiftyDayWeight(db, animalId),
       ]);
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // unprinted certificate ID checker
+
+      let foundUnprintedPaper : boolean = false;
+      let unprintedPaperUUID : string = null;
+
+      await handleResult(unprintedCertificateResult, {
+        success: (data: string) => {
+          
+          if (data !== undefined) {
+            foundUnprintedPaper = true;
+            unprintedPaperUUID = data;
+          }
+        },
+        error: (err: string) => {
+          log.error(`Error when finding certificate for animalId=\'${animalId}\':`, err);
+          throw new Error(err);
+        },
+      });
+
+      // when no unprinted paper is found or we do not find a UUID for said paper, do not do any processing
+      if (!foundUnprintedPaper || unprintedPaperUUID === null) {
+        continue;
+      }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Pedigree
@@ -208,7 +239,7 @@ export const getAnimalRegistrationInfo = async (
             ownerCompanies = data;
           },
           error: (err: string) => {
-            console.error("Failed to get owner companies: ", err);
+            log.error("Failed to get owner companies: ", err);
             throw new Error(err);
           },
         });
@@ -228,13 +259,14 @@ export const getAnimalRegistrationInfo = async (
             breederCompanies = data;
           },
           error: (err: string) => {
-            console.error("Failed to get owner companies: ", err);
+            log.error("Failed to get owner companies: ", err);
             throw new Error(err);
           },
         });
       }
 
       const registration: AnimalRegistrationResult = {
+        unprintedPaperUUID: unprintedPaperUUID,
         animalIdentification: animalIdentification,
         officialTag: officialTag,
         unofficialTag: unofficialTag,

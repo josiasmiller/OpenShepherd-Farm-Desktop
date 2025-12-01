@@ -13,7 +13,7 @@ import {
 import {Failure, handleResult, Result, Success} from "@common/core";
 import {dialog} from "electron";
 import { idTag, PedigreeNode } from '@app/api';
-import { REGISTRATION_CHOCOLATE_WELSH, REGISTRATION_WHITE_WELSH, REGISTRY_COMPANY_ID } from "src/main/database/dbConstants";
+import { REGISTRY_CHOCOLATE_WMSA, REGISTRY_COMPANY_ID, REGISTRY_WHITE_WMSA } from "src/main/database/dbConstants";
 
 const templatePathBlack = path.join(__dirname, 'assets', 'documents', 'ABWMSA_registration_template_V3_black.pdf')
 const pdfBytesBlack = fs.readFileSync(templatePathBlack);
@@ -58,8 +58,21 @@ export const writeRegistration = async (
 
   const directoryPath = filePaths[0];
 
+  let registryCompanyId : string = null;
+
+  // for now, these are the only registries handled
+  if (registrationType === 'black') {
+    registryCompanyId = REGISTRY_COMPANY_ID;
+  } else if (registrationType === 'white') {
+    registryCompanyId = REGISTRY_WHITE_WMSA;
+  } else if (registrationType === 'chocolate') {
+    registryCompanyId = REGISTRY_CHOCOLATE_WMSA;
+  } else {
+    throw new Error(`Unhandled registrationType: ${registrationType}`);
+  }
+
   try {
-    const registrationResults = await getAnimalRegistrationInfo(db, animalIds);
+    const registrationResults = await getAnimalRegistrationInfo(db, animalIds, registryCompanyId);
 
     let success = false;
 
@@ -388,9 +401,7 @@ const _handleRegistrationWrite = async (
 
     // after writing the file, write to the DB that the registration has been printed
     if (regResult.animalIdentification) {
-      const animalId : string = regResult.animalIdentification?.id;
-
-      var certResult = await markRegistryCertificateAsPrinted(db, animalId);
+      var certResult = await markRegistryCertificateAsPrinted(db, regResult.unprintedPaperUUID);
 
       await handleResult(certResult, {
         success: async (_ : null) => {

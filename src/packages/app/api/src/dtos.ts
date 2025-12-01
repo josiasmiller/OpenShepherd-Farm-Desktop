@@ -622,6 +622,7 @@ export type BirthInfo = {
 }
 
 export type AnimalRegistrationResult = {
+    unprintedPaperUUID: string;
     Codon171: CodonResponse | null;
     Codon136: CodonResponse | null;
     animalIdentification: AnimalIdentification | null;
