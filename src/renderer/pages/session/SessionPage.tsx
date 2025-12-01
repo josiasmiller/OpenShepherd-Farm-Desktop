@@ -14,30 +14,28 @@ import AtrkkrTheme from 'src/renderer/theme/AtrkkrTheme';
 
 const SessionPage = () => {
   return (
-    <AtrkkrTheme>
-      <Router>
-        <div id="app-container">
-          <IsolatedMuiScope>
-            <Sidebar />
-          </IsolatedMuiScope>
-          <div className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/animal-search" element={<AnimalSearch />} />
-              <Route path="/create-default" element={<CreateDefault />} />
-              <Route path="/registry" element={<RegistryLanding />} />
+    <Router>
+      <div id="app-container">
+        <IsolatedMuiScope>
+          <Sidebar />
+        </IsolatedMuiScope>
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/animal-search" element={<AnimalSearch />} />
+            <Route path="/create-default" element={<CreateDefault />} />
+            <Route path="/registry" element={<RegistryLanding />} />
 
-              {/* Routes that do NOT show up on the side bar: */}
+            {/* Routes that do NOT show up on the side bar: */}
 
-              <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
+            <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
 
-              <Route path="/registry/preprocess/transfers" element={<TransferPreprocessorPage />} />
-              <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
-            </Routes>
-          </div>
+            <Route path="/registry/preprocess/transfers" element={<TransferPreprocessorPage />} />
+            <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
+          </Routes>
         </div>
-      </Router>
-    </AtrkkrTheme>
+      </div>
+    </Router>
   );
 };
 

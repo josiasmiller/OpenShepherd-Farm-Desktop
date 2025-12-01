@@ -20,6 +20,8 @@ import {
   Paper,
   Typography,
   Box,
+  Stack,
+  Button
 } from "@mui/material";
 
 const LandingPage = () => {
@@ -235,78 +237,78 @@ const LandingPage = () => {
             </Box>
         )}
 
-      {/* Bottom Half */}
-      <div className="landing-page-bottom">
-        <Box mb={6}>
-          <Box px={4} mb={2}>
-            <Typography variant="h5" fontWeight="bold">
-              Selected Animals
-            </Typography>
-          </Box>
+        {/* Bottom Half */}
+        <div className="landing-page-bottom">
+          <Box mb={6}>
+            <Box px={4} mb={2}>
+              <Typography variant="h5" fontWeight="bold">
+                Selected Animals
+              </Typography>
+            </Box>
 
-          <TableContainer
-            component={Paper}
-            elevation={3}
-            sx={{
-              borderRadius: 2,
-              maxHeight: 420,
-              overflowY: "auto",
-            }}
-          >
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  {[
-                    "Name",
-                    "Registration Number",
-                    "Birth Date",
-                    "Death Date",
-                    "Sex",
-                    "Birth Type",
-                    "Sire Name",
-                    "Dam Name",
-                  ].map((header) => (
-                    <TableCell
-                      key={header}
+            <TableContainer
+              component={Paper}
+              elevation={3}
+              sx={{
+                borderRadius: 2,
+                maxHeight: 420,
+                overflowY: "auto",
+              }}
+            >
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    {[
+                      "Name",
+                      "Registration Number",
+                      "Birth Date",
+                      "Death Date",
+                      "Sex",
+                      "Birth Type",
+                      "Sire Name",
+                      "Dam Name",
+                    ].map((header) => (
+                      <TableCell
+                        key={header}
+                        sx={{
+                          backgroundColor: "primary.main",
+                          color: "white",
+                          fontWeight: "bold",
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        {header}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {chosenAnimals.map((animal) => (
+                    <TableRow
+                      key={animal.animal_id}
+                      hover
                       sx={{
-                        backgroundColor: "primary.main",
-                        color: "white",
-                        fontWeight: "bold",
-                        fontSize: "0.95rem",
+                        "&:nth-of-type(even)": {
+                          backgroundColor: "action.hover",
+                        },
                       }}
                     >
-                      {header}
-                    </TableCell>
+                      <TableCell>{animal.name}</TableCell>
+                      <TableCell>{animal.registration}</TableCell>
+                      <TableCell>{animal.birthDate}</TableCell>
+                      <TableCell>{animal.deathDate}</TableCell>
+                      <TableCell>{animal.sex}</TableCell>
+                      <TableCell>{animal.birthType}</TableCell>
+                      <TableCell>{animal.sireName}</TableCell>
+                      <TableCell>{animal.damName}</TableCell>
+                    </TableRow>
                   ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {chosenAnimals.map((animal) => (
-                  <TableRow
-                    key={animal.animal_id}
-                    hover
-                    sx={{
-                      "&:nth-of-type(even)": {
-                        backgroundColor: "action.hover",
-                      },
-                    }}
-                  >
-                    <TableCell>{animal.name}</TableCell>
-                    <TableCell>{animal.registration}</TableCell>
-                    <TableCell>{animal.birthDate}</TableCell>
-                    <TableCell>{animal.deathDate}</TableCell>
-                    <TableCell>{animal.sex}</TableCell>
-                    <TableCell>{animal.birthType}</TableCell>
-                    <TableCell>{animal.sireName}</TableCell>
-                    <TableCell>{animal.damName}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </div>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </div>
 
         {/* Loading Indicator */}
         <LoadingIndicator isLoading={isLoading} message={loadingStr} />
