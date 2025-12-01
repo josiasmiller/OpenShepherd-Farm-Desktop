@@ -15,6 +15,7 @@
     "noEmitOnError": true,
     "baseUrl": ".",
     "paths": {
+      "@app/api": ["src/packages/app/api/src"],
       "@app/*": ["src/packages/app/*"],
       "@database/async": ["src/packages/database"],
       "@database/schema": ["src/packages/database/src/schema"],

@@ -1,5 +1,5 @@
 import {Database} from "sqlite3";
-import { handleResult, Result, unwrapOrThrow } from '@common/core';
+import { handleResult, unwrapOrThrow } from '@common/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from '@app/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
 
