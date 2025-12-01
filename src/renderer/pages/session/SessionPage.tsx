@@ -10,31 +10,34 @@ import RegistryLanding from "../registry/landing/registryLanding";
 import LandingPage from "../common/animalSearch/landingPage";
 import {PreprocessorPage} from "../registry/landing/preprocessor/registryPreprocessor";
 import { TransferPreprocessorPage } from '../registry/landing/preprocessor/impl/transferPreprocessor';
+import AtrkkrTheme from 'src/renderer/theme/AtrkkrTheme';
 
 const SessionPage = () => {
   return (
-    <Router>
-      <div id="app-container">
-        <IsolatedMuiScope>
-          <Sidebar />
-        </IsolatedMuiScope>
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/animal-search" element={<AnimalSearch />} />
-            <Route path="/create-default" element={<CreateDefault />} />
-            <Route path="/registry" element={<RegistryLanding />} />
+    <AtrkkrTheme>
+      <Router>
+        <div id="app-container">
+          <IsolatedMuiScope>
+            <Sidebar />
+          </IsolatedMuiScope>
+          <div className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/animal-search" element={<AnimalSearch />} />
+              <Route path="/create-default" element={<CreateDefault />} />
+              <Route path="/registry" element={<RegistryLanding />} />
 
-            {/* Routes that do NOT show up on the side bar: */}
+              {/* Routes that do NOT show up on the side bar: */}
 
-            <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
+              <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
 
-            <Route path="/registry/preprocess/transfers" element={<TransferPreprocessorPage />} />
-            <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
-          </Routes>
+              <Route path="/registry/preprocess/transfers" element={<TransferPreprocessorPage />} />
+              <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </AtrkkrTheme>
   );
 };
 

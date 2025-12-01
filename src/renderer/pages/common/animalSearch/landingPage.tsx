@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from "react";
 import {useLocation, useNavigate} from "react-router-dom";
-import {
-  Box,
-  Stack,
-  Button,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
-  Paper,
-} from "@mui/material";
-import { AnimalSearchResult } from "@app/api";
+
 import Swal from "sweetalert2";
 
+import { AnimalSearchResult } from "@app/api";
 import CollapsibleSection from "@components/collapsible/collapsible";
 import { BackButton } from "@components/buttons";
 import LoadingIndicator from "@components/loadingIndicator/loadingIndicator";
 import { isRegistryDesktop } from "@app/buildVariant";
 import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Box,
+} from "@mui/material";
 
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
   const [showRegistryFeatures, setShowRegistryFeatures] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStr, setLoadingStr] = useState<string>("");
@@ -235,6 +234,79 @@ const LandingPage: React.FC = () => {
               </TableContainer>
             </Box>
         )}
+
+      {/* Bottom Half */}
+      <div className="landing-page-bottom">
+        <Box mb={6}>
+          <Box px={4} mb={2}>
+            <Typography variant="h5" fontWeight="bold">
+              Selected Animals
+            </Typography>
+          </Box>
+
+          <TableContainer
+            component={Paper}
+            elevation={3}
+            sx={{
+              borderRadius: 2,
+              maxHeight: 420,
+              overflowY: "auto",
+            }}
+          >
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  {[
+                    "Name",
+                    "Registration Number",
+                    "Birth Date",
+                    "Death Date",
+                    "Sex",
+                    "Birth Type",
+                    "Sire Name",
+                    "Dam Name",
+                  ].map((header) => (
+                    <TableCell
+                      key={header}
+                      sx={{
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {chosenAnimals.map((animal) => (
+                  <TableRow
+                    key={animal.animal_id}
+                    hover
+                    sx={{
+                      "&:nth-of-type(even)": {
+                        backgroundColor: "action.hover",
+                      },
+                    }}
+                  >
+                    <TableCell>{animal.name}</TableCell>
+                    <TableCell>{animal.registration}</TableCell>
+                    <TableCell>{animal.birthDate}</TableCell>
+                    <TableCell>{animal.deathDate}</TableCell>
+                    <TableCell>{animal.sex}</TableCell>
+                    <TableCell>{animal.birthType}</TableCell>
+                    <TableCell>{animal.sireName}</TableCell>
+                    <TableCell>{animal.damName}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </div>
 
         {/* Loading Indicator */}
         <LoadingIndicator isLoading={isLoading} message={loadingStr} />

@@ -1,6 +1,13 @@
 import { Database } from "sqlite3";
 import { Result, Success, Failure } from "@common/core";
 
+/**
+ * gets the newest unprinted certificate UUID for a given registry company + animalId pair
+ * @param db database to act on
+ * @param registryCompanyId id_companyid of the registry_certificate_print_table
+ * @param animalId UUId of the animal for the registry_certificate_print_table
+ * @returns Result<string, string>
+ */
 export async function getLatestUnprintedCertificateId(
   db: Database,
   registryCompanyId: string,
