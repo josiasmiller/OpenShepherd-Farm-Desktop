@@ -89,20 +89,6 @@ const processTypeButtons: Record<string, (ctx: {
     }
   ],
 
-  transfers: ({ handlePreCheck, selectAndLoadFile, loading }) => [
-    {
-      label: "Pre-check Database",
-      onClick: handlePreCheck,
-      className: "wide-button"
-    },
-    {
-      label: loading ? "Loading..." : "Select Transfers CSV",
-      onClick: selectAndLoadFile,
-      disabled: loading,
-      className: "wide-button"
-    }
-  ],
-
   // Default fallback
   default: ({ selectAndLoadFile, loading }) => [
     {
@@ -128,6 +114,8 @@ export const PreprocessorPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
 
+  const [currentParseResult, setParseResult] = useState(null);
+
   const selectAndLoadFile = async () => {
     if (!processType) return;
 
@@ -139,9 +127,6 @@ export const PreprocessorPage: React.FC = () => {
         
       } else if (processType === 'registrations') {
         await handleRegistrations();
-
-      } else if (processType === 'transfers') {
-        await handleTransfers();
 
       } else if (processType == 'deaths') {
         await handleDeaths();
@@ -321,79 +306,6 @@ export const PreprocessorPage: React.FC = () => {
     ]);
     setHasSelectedFile(true);
   };
-
-
-
-  const handleTransfers = async () => {
-    const parseResult = await window.registryAPI.parseTransfers();
-    const { animals, seller, buyer } = parseResult.data;
-
-    handleWarnings(parseResult.warnings);
-
-    const tables: EditableTableData[] = [];
-
-    // ANIMAL_ID,REGISTRATION_NUMBER,PREFIX,NAME,BIRTH_DATE,BIRTH_TYPE,SEX,COAT_COLOR
-    const headerMap: Record<string, string> = {
-      "ANIMAL_ID": "animalId",
-      "REGISTRATION_NUMBER": "registrationNumber",
-      "PREFIX": "prefix",
-      "NAME": "name",
-      "BIRTH_DATE": "birthDate",
-      "BIRTH_TYPE": "birthType",
-      "SEX": "sex",
-      "COAT_COLOR": "coatColor",
-    };
-
-    const normalizedAnimals = animals.map(a => {
-      const mapped: any = {};
-      for (const [csvKey, ourKey] of Object.entries(headerMap)) {
-        mapped[ourKey] = a[csvKey as keyof typeof a] ?? "";
-      }
-      return mapped;
-    });
-
-    // Animals table
-    tables.push({
-      title: "Transferred Animals",
-      editable: true,
-      columns: [
-        { key: 'animalId', label: 'Animal ID', editable: false },
-        { key: 'registrationNumber', label: 'Registration Number', editable: false },
-        { key: 'prefix', label: 'Prefix', editable: true },
-        { key: 'name', label: 'Name', editable: true },
-        { key: 'birthDate', label: 'Birth Date', editable: true },
-        { key: 'birthType', label: 'Birth Type', editable: true },
-        { key: 'sex', label: 'Sex', editable: true },
-        { key: 'coatColor', label: 'Coat Color', editable: true },
-      ],
-      rows: normalizedAnimals,
-    });
-
-    // Seller info
-    if (seller) {
-      tables.push({
-        title: "Seller Info",
-        editable: false,
-        columns: Object.keys(seller).map(key => ({ key, label: key, editable: false })),
-        rows: [seller],
-      });
-    }
-
-    // Buyer info
-    if (buyer) {
-      tables.push({
-        title: "Buyer Info",
-        editable: false,
-        columns: Object.keys(buyer).map(key => ({ key, label: key, editable: false })),
-        rows: [buyer],
-      });
-    }
-
-    setTables(tables);
-    setHasSelectedFile(true);
-  };
-
-
 
   /**
    * handles when a row is updated in any form

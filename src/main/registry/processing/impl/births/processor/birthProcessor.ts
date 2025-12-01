@@ -1,9 +1,7 @@
 import {Database} from "sqlite3";
-import { handleResult, Result, unwrapOrThrow } from '@common/core';
+import { handleResult, Result, unwrapOrThrow, isUUIDv4 } from '@common/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from '@app/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
-
-import { isUUIDv4 } from '@common/core';
 
 
 // DB actions
@@ -55,7 +53,7 @@ import {
   DefaultSettingsResults,
   FlockPrefix,
   Owner,
-  OwnerType
+  OwnerType,
 } from '@app/api';
 // import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 

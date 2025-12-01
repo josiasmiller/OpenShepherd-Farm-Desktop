@@ -1,6 +1,14 @@
-import { RegistryRow, ProcessingResult } from '@app/api';
 import { handleResult } from '@common/core';
-import { Owner, Species, CoatColor, RegistryType, ScrapieFlockInfo } from '@app/api';
+import { 
+  Owner, 
+  Species, 
+  CoatColor, 
+  RegistryType, 
+  ScrapieFlockInfo,
+  RegistryRow, 
+  ProcessingResult,
+} from '@app/api';
+
 
 // DB actions
 import {

@@ -1,144 +1,167 @@
-import fs from 'fs/promises';
-import Papa from 'papaparse';
-import { BrowserWindow, dialog } from 'electron';
-import { ParseResult } from '@app/api';
+import { BrowserWindow } from "electron";
+import log from "electron-log";
+
 import {
-  TransferParseResponse,
   AnimalRow,
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
+  DIALOG_CANCELLED,
+  MISSING_FIELDS,
+  NEW_BUYER_NOT_SUPPORTED,
+  TransferError,
+  TransferRecord,
 } from '@app/api';
 
+import { selectJsonFile } from "@fileDialogs/jsonSelect";
+import { readJsonFile } from "@registryHelpers";
+import { DialogCancelledError, MissingFieldsError, ParseError, PARSE_ERROR } from "@app/api/src/errorCodes/genericCodes";
+import { Failure, Result, Success } from "@common/core";
+import { NewBuyerNotSupportedError } from "@app/api/src/errorCodes/registryProcessing/transferCodes";
+
+
 /**
- * Parses a transfer CSV with multiple sections (animals, seller, buyer)
+ * Main Entrypoint for transfer parsing
  */
-export const transferParser = async (
-  mainWindow: BrowserWindow
-): Promise<ParseResult<TransferParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
-    title: "Select Transfer CSV File",
-    properties: ["openFile"],
-    filters: [{ name: "CSV Files", extensions: ["csv"] }],
-  });
+export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Result<TransferRecord, TransferError>> => {
 
-  if (canceled || filePaths.length === 0) {
-    console.log("User cancelled CSV file selection.");
-    return {
-      data: { animals: [], seller: null, buyer: null },
-      warnings: [],
+  const fileResult = await selectJsonFile("Select Transfers JSON file", window);
+
+  if (fileResult === null) {
+    const ret: DialogCancelledError = {
+      type: DIALOG_CANCELLED,
     };
+    return new Failure(ret);
   }
 
-  const selectedFile = filePaths[0];
-  const fileContent = await fs.readFile(selectedFile, "utf-8");
+  return transferParser(fileResult);
+}
 
-  // Split and normalize lines
-  const lines = fileContent
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
 
-  const warnings: string[] = [];
+/**
+ * Core JSON parser
+ */
+export const transferParser = async (filePath: string): Promise<Result<TransferRecord, TransferError>> => {
 
-  // Helper for case-insensitive header lookup
-  const findHeaderIndex = (header: string) =>
-    lines.findIndex((l) => l.toUpperCase() === header.toUpperCase());
+  const warnings: string[] = []; // TODO --> what to do with this
 
-  // Locate section headers
-  const sellerHeaderIndex = findHeaderIndex("SELLER");
-  const existingMemberIndex = findHeaderIndex("EXISTING_BUYER");
-  const newBuyerIndex = findHeaderIndex("NEW_BUYER");
+  try {
+    const fileContents = await readJsonFile(filePath);
 
-  if (sellerHeaderIndex === -1) {
-    warnings.push("Missing 'SELLER' section header.");
-  }
+    // Validation without exceptions
+    const missingFields: string[] = [];
+    if (!fileContents.animals || !Array.isArray(fileContents.animals))
+      missingFields.push("animals");
+    if (!fileContents.seller || typeof fileContents.seller !== "object")
+      missingFields.push("seller");
+    if (!fileContents.buyer || typeof fileContents.buyer !== "object")
+      missingFields.push("buyer");
 
-  const buyerSectionStart = existingMemberIndex !== -1 ? existingMemberIndex : newBuyerIndex;
-  const buyerIsNew = newBuyerIndex !== -1;
+    if (missingFields.length > 0) {
+      const error: MissingFieldsError = {
+        type: MISSING_FIELDS,
+        missing: missingFields,
+      };
 
-  // ---- SECTION EXTRACTION ----
-  // Animals: everything from top until just before SELLER or BUYER
-  const animalSection = (() => {
-    const end =
-      sellerHeaderIndex !== -1
-        ? sellerHeaderIndex
-        : buyerSectionStart !== -1
-        ? buyerSectionStart
-        : lines.length;
-    // Start from very top
-    const section = lines.slice(0, end);
-    return section.filter((l) => l.includes(","));
-  })();
-
-  const sellerSection = (() => {
-    if (sellerHeaderIndex === -1) return [];
-    const start = sellerHeaderIndex + 1;
-    const end = buyerSectionStart !== -1 ? buyerSectionStart : lines.length;
-    return lines.slice(start, end).filter((l) => l.includes(","));
-  })();
-
-  const buyerSection = (() => {
-    if (buyerSectionStart === -1) return [];
-    const start = buyerSectionStart + 1;
-    return lines.slice(start).filter((l) => l.includes(","));
-  })();
-
-  // ---- PARSING HELPERS ----
-  const parseCsvSection = <T>(csvLines: string[]): T[] => {
-    if (csvLines.length === 0) return [];
-    const csvText = csvLines.join("\n");
-    const result = Papa.parse<T>(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: false,
-      newline: "\n",
-    });
-    if (result.errors && result.errors.length > 0) {
-      result.errors.forEach((e: { message: any; }) =>
-        warnings.push(`Parse error: ${e.message}`)
-      );
+      return new Failure(error);
     }
-    return result.data as T[];
-  };
 
-  // ---- PARSE EACH SECTION ----
-  const animalsRaw = parseCsvSection<any>(animalSection);
+    // =================================================================================================
+    // --- Map ANIMALS ---
+    const animals: AnimalRow[] = fileContents.animals.map((a: any) => ({
+      animalId: a.animalId ?? "",
+      registrationNumber: a.registrationNumber ?? "",
+      prefix: a.prefix ?? "",
+      name: a.name ?? "",
+      birthDate: a.birthDate ?? "",
+      birthType: a.birthType ?? "",
+      sex: a.sex ?? "",
+      coatColor: a.coatColor ?? "",
+    }));
 
-  // Convert uppercase CSV headers into `AnimalRow`
-  const animals: AnimalRow[] = animalsRaw.map((a) => ({
-    animalId: a.animalId ?? a.ANIMAL_ID ?? "",
-    registrationNumber: a.registrationNumber ?? a.REGISTRATION_NUMBER ?? "",
-    prefix: a.prefix ?? a.PREFIX ?? "",
-    name: a.name ?? a.NAME ?? "",
-    birthDate: a.birthDate ?? a.BIRTH_DATE ?? "",
-    birthType: a.birthType ?? a.BIRTH_TYPE ?? "",
-    sex: a.sex ?? a.SEX ?? "",
-    coatColor: a.coatColor ?? a.COAT_COLOR ?? "",
-  }));
+    // =================================================================================================
+    // --- Map SELLER ---
+    const sellerIdentityType = fileContents.seller.identity.type;
+    let sellerContactId : string = null;
+    let sellerCompanyId : string = null;
 
-  const sellerData = parseCsvSection<SellerInfo>(sellerSection);
-  const seller = sellerData.length > 0 ? sellerData[0] : null;
+    if (sellerIdentityType === 'contact') {
+      sellerContactId = fileContents.seller.identity.id;
+    } else if (sellerIdentityType === 'company') {
+      sellerCompanyId = fileContents.seller.identity.id;
+    } else {
+      throw new Error(`Unhandled sellerIdentityType: ${sellerIdentityType}`);
+    }
 
-  let buyer: ExistingMemberBuyer | NewBuyer | null = null;
-  if (buyerIsNew) {
-    const parsed = parseCsvSection<NewBuyer>(buyerSection);
-    if (parsed.length > 0) buyer = parsed[0];
-  } else if (existingMemberIndex !== -1) {
-    const parsed = parseCsvSection<ExistingMemberBuyer>(buyerSection);
-    if (parsed.length > 0) buyer = parsed[0];
-  } else {
-    warnings.push(
-      "Missing buyer section (no 'EXISTING_BUYER' or 'NEW_BUYER' header found)."
-    );
-  }
+    const seller: SellerInfo = {
+      contactId: sellerContactId,
+      companyId: sellerCompanyId,
+      premiseId: fileContents.seller.premiseId ?? "",
+      soldAt: fileContents.seller.soldAt ?? "",
+      movedAt: fileContents.seller.movedAt ?? "",
+    };
 
-  return {
-    data: {
+    // =================================================================================================
+    // --- Map BUYER ---
+    let buyer: ExistingMemberBuyer | NewBuyer | null = null;
+    const buyerType = fileContents.buyer.type?.toUpperCase();
+
+    if (buyerType === "EXISTING") {
+
+      const buyerIdentityType = fileContents.buyer.identity.type;
+      let buyerContactId : string = null;
+      let buyerCompanyId : string = null;
+
+      if (buyerIdentityType === 'contact') {
+        buyerContactId = fileContents.buyer.identity.id;
+
+      } else if (buyerIdentityType === 'company') {
+        buyerCompanyId = fileContents.buyer.identity.id;
+        
+      } else {
+        const ret: ParseError = {
+          type: PARSE_ERROR,
+          details: `Unhandled BuyerIdentityType: ${buyerIdentityType}`,
+        };
+        return new Failure(ret);
+      }
+
+      buyer = {
+        membershipNumber: fileContents.buyer.membershipNumber ?? "",
+        contactId: buyerContactId,
+        companyId: buyerCompanyId,
+        premiseId: fileContents.buyer.premiseId ?? "",
+        firstName: fileContents.buyer.firstName ?? "",
+        lastName: fileContents.buyer.lastName ?? "",
+        region: fileContents.buyer.region ?? "",
+      } as ExistingMemberBuyer;
+
+    } else if (buyerType === "NEW") {
+      const ret: NewBuyerNotSupportedError = {
+        type: NEW_BUYER_NOT_SUPPORTED,
+      };
+      return new Failure(ret);
+    } else {
+      const ret: ParseError = {
+        type: PARSE_ERROR,
+        details: `Unhandled BuyerType: ${buyerType}`,
+      };
+      return new Failure(ret);
+    }
+
+    const transferRec : TransferRecord = {
       animals,
       seller,
       buyer,
-    },
-    warnings,
-  };
+    } 
+    return new Success(transferRec);
+
+  } catch (err: any) {
+    log.error("Error parsing transfer JSON:", err);
+    const ret: ParseError = {
+      type: PARSE_ERROR,
+      details: err?.message ?? String(err),
+    };
+    return new Failure(ret);
+  }
 };

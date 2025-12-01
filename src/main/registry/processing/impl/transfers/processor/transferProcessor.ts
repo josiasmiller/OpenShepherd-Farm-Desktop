@@ -1,5 +1,6 @@
-import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult, ExistingMemberBuyer, NewBuyer, SellerInfo, AnimalRow, TransferParseResponse, Owner, CoatColor, OwnerType } from '@app/api';
+import { Failure, handleResult, Result, Success } from '@common/core';
+import { ExistingMemberBuyer, NewBuyer, SellerInfo,  Owner, CoatColor, OwnerType,  TransferRecord, ValidationResult } from '@app/api';
+
 
 import {
   beginTransaction,
@@ -21,30 +22,40 @@ import {
 } from '../../../../../database';
 import {Database} from "sqlite3";
 
+import { validateTransferRows } from '../validation/transferValidator'; // change import??
+
+
+export async function validateAndProcessTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
+  const validationAnswer : ValidationResult[] = await validateTransferRows(db, transferRecord);
+
+  // verify OK then process or ret
+
+  return processTransfers(db, transferRecord);
+}
+
+
+
 /**
- * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
+ * processes transfer rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param rows RegistryRows to be processed
- * @param _ here only to satisfy interface
+ * @param transferRecord the transfer data being processed
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processTransferRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ProcessingResult> {
+export async function processTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
 
-  let transferResponse : TransferParseResponse = parseTransferSections(sections);
-
-  if (isNewBuyer(transferResponse.buyer)) {
-    throw new Error("New Buyers not yet supported");
+  if (isNewBuyer(transferRecord.buyer)) {
+    throw new Error("New Buyers not yet supported"); // this should be handled higher in the stack --> we should never get a New Buyer here YET (until they are implemented)
   }
 
   // using this until new buyers are implemented
-  let buyer : ExistingMemberBuyer = transferResponse.buyer;
-  let seller : SellerInfo = transferResponse.seller;
+  let buyer : ExistingMemberBuyer = transferRecord.buyer as ExistingMemberBuyer; // we know this is an existing member due to the isNewBuyer check above ^^
+  let seller : SellerInfo = transferRecord.seller;
   
   try {
     await beginTransaction(db);
 
-    for (const animalInfo of transferResponse.animals) {
-
+    for (const animalInfo of transferRecord.animals) {
+      
       try {
         let locationResult = await insertAnimalGoesToLocation(
           db,
@@ -112,7 +123,7 @@ export async function processTransferRows(db: Database, sections: Record<string,
           buyerId = buyer.contactId;
           buyerType = OwnerType.CONTACT;
         } else if (buyer.companyId) {
-          sellerId = buyer.companyId;
+          buyerId = buyer.companyId;
           buyerType = OwnerType.COMPANY;
         } else {
           throw new Error("Buyer must have either contactId or companyId");
@@ -247,100 +258,14 @@ export async function processTransferRows(db: Database, sections: Record<string,
     }
 
     await commitTransaction(db);
-    return {
-      success: true,
-      insertedRowCount: transferResponse.animals.length,
-    };
+    return new Success(transferRecord.animals.length);
 
   } catch (error) {
     await rollbackTransaction(db);
-    return {
-      success: false,
-      errors: [(error as Error).message]
-    };
+    return new Failure((error as Error).message);
   }
-}
-
-
-/**
- * Takes a sections receieved from the processing interface and massages it back into a `TransferParseResponse`. 
- * The keys are hacky for the time being due to how the CSVs are formatted from the website
- * 
- * @param sections information received from the registry processing interface
- * @returns TransferParseResponse
- */
-function parseTransferSections(sections: Record<string, RegistryRow[]>): TransferParseResponse {
-  // animals
-  const animals = (sections.transferred_animals ?? []) as AnimalRow[];
-
-  // seller
-  const rawSeller = sections.seller_info?.[0];
-  if (!rawSeller) {
-    throw new Error("Missing seller_info section");
-  }
-
-  const seller: SellerInfo = {
-    contactId: normalizeId(rawSeller['CONTACT_ID']),
-    companyId: normalizeId(rawSeller['COMPANY_ID']),
-    premiseId: rawSeller['PREMISE_ID'],
-    soldAt: rawSeller['SOLD_AT'],
-    movedAt: rawSeller['MOVED_AT'],
-  };
-
-  // buyer
-  const rawBuyer = sections.buyer_info?.[0];
-  if (!rawBuyer) {
-    throw new Error("Missing buyer_info section");
-  }
-
-  let buyer: ExistingMemberBuyer | NewBuyer;
-
-  if ('MEMBERSHIP_NUMBER' in rawBuyer) {
-    // Existing member
-    buyer = {
-      membershipNumber: rawBuyer['MEMBERSHIP_NUMBER'],
-      contactId: normalizeId(rawBuyer['CONTACT_ID']),
-      companyId: normalizeId(rawBuyer['COMPANY_ID']),
-      premiseId: rawBuyer['PREMISE_ID'],
-      firstName: rawBuyer['FIRST_NAME'],
-      lastName: rawBuyer['LAST_NAME'],
-      region: rawBuyer['REGION'],
-    };
-  } else if (' Address 1' in rawBuyer) {
-    // New buyer
-    buyer = {
-      firstName: rawBuyer['First Name'],
-      lastName: rawBuyer['Last Name'],
-      company: rawBuyer['Company'],
-      address1: rawBuyer['Address 1'],
-      address2: rawBuyer['Address 2'],
-      city: rawBuyer['City'],
-      stateKey: rawBuyer['State Key'],
-      state: rawBuyer['State'],
-      postCode: rawBuyer['Post Code'],
-      federalScrapieId: rawBuyer['Federal Scrapie ID (US)'],
-      federalPremiseId: rawBuyer['Federal Premise ID'],
-      statePremiseId: rawBuyer['State Premise ID'],
-      longitude: rawBuyer['Premise Longitude (Decimal Degrees)'],
-      latitude: rawBuyer['Premise Latitude (Decimal Degrees)'],
-      primaryPhone: rawBuyer['Primary Phone'],
-      mobilePhone: rawBuyer['Mobile Phone'],
-      email: rawBuyer['Primary Email'],
-      website: rawBuyer['Website'],
-    };
-  } else {
-    throw new Error("Invalid buyer_info format --> must be ExistingMemberBuyer or NewBuyer");
-  }
-
-  return { animals, seller, buyer };
-}
-
-function normalizeId(value: string | undefined): string | null {
-  if (!value) return null;
-  const trimmed = value.trim();
-  return trimmed === "" || trimmed.toLowerCase() === "none" ? null : trimmed;
 }
 
 function isNewBuyer(buyer: ExistingMemberBuyer | NewBuyer): buyer is NewBuyer {
-  return "address1" in buyer;
+  return buyer.type == 'NewBuyer';
 }

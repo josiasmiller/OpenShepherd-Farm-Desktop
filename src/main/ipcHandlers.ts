@@ -47,9 +47,15 @@ import { writeRegistration } from "./writers/pdf/writeRegistration";
 import { birthParser } from "./registry/processing/impl/births/parser/birthParser";
 import { deathParser } from "./registry/processing/impl/deaths/parser/deathParser";
 import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
-import { transferParser } from "./registry/processing/impl/transfers/parser/transferParser";
+import { selectAndParseTransfers } from "./registry/processing/impl/transfers/parser/transferParser";
 import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
-import {DatabaseStateCheckResponse, DefaultSettingsResults, OwnerType} from '@app/api';
+import {
+  DatabaseStateCheckResponse, 
+  DefaultSettingsResults, 
+  OwnerType,
+  TransferRecord, 
+} from '@app/api';
+
 import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
 import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
 
@@ -59,7 +65,9 @@ import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/s
 import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
 import { promiseFrom } from "@common/core";
 import {atrkkrSessionForEvent} from "./session/sessionManagement";
+import {Database} from "@database/async";
 import log from "electron-log";
+import { validateAndProcessTransfers } from "./registry";
 
 const IPC_INVOKE_ANIMAL_SEARCH = 'animal-search'
 const IPC_INVOKE_EDIT_EXISTING_DEFAULT = 'edit-existing-default'
@@ -106,6 +114,7 @@ const IPC_INVOKE_REGISTRY_PARSE_DEATHS = 'registry-parse-deaths'
 const IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS = 'registry-parse-registrations'
 const IPC_INVOKE_REGISTRY_PARSE_TRANSFERS = 'registry-parse-transfers'
 const IPC_INVOKE_REGISTRY_PROCESS = 'registry-process'
+const IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS = 'registry-process-transfers'
 const IPC_INVOKE_DATABASE_STATE_CHECK = 'database-state-check'
 const IPC_INVOKE_RESOLVE_DATABASE_ISSUES = 'resolve-database-issues'
 const IPC_INVOKE_SET_STORE_SELECTED_DEFAULT = 'set-store-selected-default'
@@ -481,10 +490,10 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent, ) => {
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return transferParser(session.window);
+      return selectAndParseTransfers(session.window);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_TRANSFERS, event)
   });
@@ -497,6 +506,16 @@ export const registerIpcHandlers = () => {
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });
+
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS, async (event: IpcMainInvokeEvent, transferRecord: TransferRecord) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return validateAndProcessTransfers(session.db.raw(), transferRecord); // TODO --> fix DB type
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS, event)
+  });
+
+  
 
   ipcMain.handle(IPC_INVOKE_DATABASE_STATE_CHECK, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)

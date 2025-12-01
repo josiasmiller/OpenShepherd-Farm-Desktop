@@ -53,7 +53,7 @@ export {
   TissueSampleType,
   TissueTest,
   TransferReason,
-  TransferParseResponse,
+  TransferRecord,
   Unit,
   UnitRequest,
   UnitType,
@@ -84,6 +84,17 @@ export type {
   RegistryAPI,
   StoreAPI
 } from "./apis"
+
+export {
+  DIALOG_CANCELLED,
+  MISSING_FIELDS,
+  PARSE_ERROR,
+} from "./errorCodes/genericCodes"
+
+export {
+  NEW_BUYER_NOT_SUPPORTED,
+  TransferError,
+} from "./errorCodes/registryProcessing/transferCodes"
 
 declare global {
   interface Window extends AnimalTrakkerIPC {}

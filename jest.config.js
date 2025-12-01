@@ -16,6 +16,8 @@ module.exports = {
             testEnvironment: 'node',
             rootDir: './src/main',
             testMatch: ['<rootDir>/**/*.test.ts'],
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } ),
+            setupFilesAfterEnv: ["<rootDir>/../../jest.setup.js"]
         },
         {
             preset: 'ts-jest',
@@ -25,7 +27,7 @@ module.exports = {
             testMatch: ['<rootDir>/**/*.test.ts?(x)'],
             setupFiles: ['<rootDir>/jest.setup.ts'],
             setupFilesAfterEnv: ['<rootDir>/jest.setup-env.ts'],
-            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } )
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } ),
         },
         {
             preset: 'ts-jest',
@@ -33,6 +35,8 @@ module.exports = {
             testEnvironment: 'node',
             rootDir: './src/packages',
             testMatch: ['<rootDir>/**/*.test.ts'],
+            moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/../../' } ),
+            setupFilesAfterEnv: ["<rootDir>/../../jest.setup.js"]
         }
     ],
 }

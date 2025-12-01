@@ -1,22 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Swal from "sweetalert2";
+import Swal, { SweetAlertOptions } from "sweetalert2";
 import { BackButton } from "../../../../../components/backButton/backButton";
 import { AnimalInformationTable } from "../../../../../components/tables/animalTable";
 import { DateDisplay } from "../../../../../components/informationDisplay/dateDisplay";
 import { OwnerInformationTable, OwnerInformationTableProps  } from "../../../../../components/tables/ownerTable";
 import {
-  TransferParseResponse,
-  ParseResult,
+  TransferRecord,
+  TransferError,
   ExistingMemberBuyer,
   OwnerType,
   Species,
+  DIALOG_CANCELLED,
+  MISSING_FIELDS,
+  PARSE_ERROR,
+  NEW_BUYER_NOT_SUPPORTED,
 } from "@app/api";
+
+import { Box, Typography, } from "@mui/material"
+import { handleResult, Result } from "@common/core";
 
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const [currentTransferRecord, setCurrentTransferRecord] = useState<TransferRecord>();
 
   const [animalIds, setAnimalIds] = useState<string[]>([]);
   const [buyers, setBuyers] = useState<OwnerInformationTableProps["owners"]>([]);
@@ -34,21 +43,41 @@ export const TransferPreprocessorPage: React.FC = () => {
    * Opens a file dialog and loads the JSON file.
    */
   const selectAndLoadFile = async () => {
+
     try {
       setLoading(true);
 
-      const parseResult: ParseResult<TransferParseResponse> = await window.registryAPI.parseTransfers();
+      const parsingResult: Result<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
-      if (!parseResult.data) {
-        await Swal.fire({
-          icon: "warning",
-          title: "No Data",
-          text: "No valid transfer data found in the CSV file.",
-        });
-        return;
+      let isSuccess : boolean = false;
+      let errType : TransferError = null;
+      let transferRecord : TransferRecord = null;
+
+      await handleResult(parsingResult, {
+        success: (data: TransferRecord) => {
+          isSuccess = true;
+          transferRecord = data; // this is needed for processing further in this file, otherwise a race condition of sorts crops up
+          setCurrentTransferRecord(data);
+        },
+        error: (err: TransferError) => {
+          errType = err;
+        },
+      });
+
+      // handle err cases
+      if (!isSuccess) {
+        if (errType.type == DIALOG_CANCELLED) { // dont display err on dialog cancel as this is an expected user input
+          return
+        }
+
+        // display error to user 
+        await Swal.fire(
+          getSwalErrParams(errType)
+        );
+        return
       }
 
-      const { animals, seller, buyer } = parseResult.data;
+      const { animals, seller, buyer } = transferRecord;
 
       let newAnimalIds : string[] = [];
 
@@ -67,8 +96,8 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       const buyerList: OwnerInformationTableProps["owners"] = [];
 
-      const buyerContactId = existingMem.contactId ?? existingMem["CONTACT_ID"];
-      const buyerCompanyId = existingMem.companyId ?? existingMem["COMPANY_ID"];
+      const buyerContactId = existingMem.contactId;
+      const buyerCompanyId = existingMem.companyId;
 
       if (buyerContactId) {
         buyerList.push({
@@ -91,8 +120,8 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       const sellerList: OwnerInformationTableProps["owners"] = [];
 
-      const sellerContactId = seller.contactId ?? seller["CONTACT_ID"];
-      const sellerCompanyId = seller.companyId ?? seller["COMPANY_ID"];
+      const sellerContactId = seller.contactId;
+      const sellerCompanyId = seller.companyId;
 
       if (sellerContactId) {
         sellerList.push({ 
@@ -110,30 +139,13 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       setSellers(sellerList);
 
-      // end buyer setup
+      // end seller setup
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      
-      const newSoldAt = seller.soldAt ?? seller["SOLD_AT"]; // BYPRODUCT OF CSV READING
-      setSoldAt(newSoldAt);
-      const newMovedAt = seller.movedAt ?? seller["MOVED_AT"];
-      setMovedAt(newMovedAt);
+      setSoldAt(seller.soldAt);
+      setMovedAt(seller.movedAt);
 
       setHasLoadedFile(true);
 
-      // Show warnings (if any)
-      if (parseResult.warnings?.length) {
-        const html = `
-          <ul style="text-align:left;">
-            ${parseResult.warnings.map((w) => `<li>${w}</li>`).join("")}
-          </ul>
-        `;
-        await Swal.fire({
-          title: "Warnings Detected",
-          html,
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-      }
     } catch (err: any) {
       await Swal.fire({
         icon: "error",
@@ -151,12 +163,31 @@ export const TransferPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading) return;
 
-    Swal.fire({
-      title: "UNDER CONSTRUCTION",
-      icon: "error",
-      confirmButtonText: "OK",
-      width: "40em",
+    const processingResult : Result<number, string> = await window.registryAPI.processTransfers(currentTransferRecord);
+
+    await handleResult(processingResult, {
+      success: (data: number) => {
+        Swal.fire({
+          title: "Success",
+          icon: "success",
+          confirmButtonText: "OK",
+          width: "40em",
+          text: `${data} Transfers processed successfully`,
+        });
+
+        navigate("/"); // nav back to home after processing
+      },
+      error: (_: string) => {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          confirmButtonText: "OK",
+          width: "40em",
+          text: "There was an error processing transfers.",
+        });
+      },
     });
+
     return;
   };
 
@@ -171,51 +202,101 @@ export const TransferPreprocessorPage: React.FC = () => {
           onClick={selectAndLoadFile}
           disabled={loading}
         >
-          {loading ? "Loading..." : "Select Transfer CSV"}
+          {loading ? "Loading..." : "Select Transfer JSON File"}
         </button>
       </div>
 
       {hasLoadedFile && (
         <>
           {/* --- Animal Information Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Animal(s)</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Animal(s)
+              </Typography>
+            </Box>
             <AnimalInformationTable animalIds={animalIds} />
-          </div>
+          </Box>
 
           {/* --- Buyer Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Buyer</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Buyer
+              </Typography>
+            </Box>
             <OwnerInformationTable owners={buyers} />
-          </div>
+          </Box>
 
           {/* --- Seller Table --- */}
-          <div style={{ marginBottom: "2em" }}>
-            <div className="padded-horizontal-lg">
-              <h2>Seller</h2>
-            </div>
+          <Box mb={4}>
+            <Box px={4}>
+              <Typography variant="h5" gutterBottom>
+                Seller
+              </Typography>
+            </Box>
             <OwnerInformationTable owners={sellers} />
-          </div>
+          </Box>
 
           {/* --- Sold / Moved Dates --- */}
-          <div className="padded-horizontal-lg" style={{ marginBottom: "3em" }}>
-            <div style={{ display: "flex", gap: "2em", alignItems: "center" }}>
+          <Box px={4} mb={6}>
+            <Box display="flex" gap={4} alignItems="center">
               <DateDisplay title="Sold At" value={soldAt} />
               <DateDisplay title="Moved At" value={movedAt} />
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-
-
+          {/* --- Continue Button --- */}
           <div className="padded-horizontal-lg" style={{ paddingBottom: '8em' }}>
             <button className='wide-button' onClick={handleSubmit}>{loading ? 'Loading...' : 'Continue'}</button>
           </div>
         </>
       )}
+
     </div>
   );
 };
+
+export function getSwalErrParams(err: TransferError): SweetAlertOptions {
+  switch (true) {
+    case err.type === DIALOG_CANCELLED:
+      return {
+        title: "Cancelled",
+        text: "The operation was cancelled by the user.",
+        icon: "info",
+        confirmButtonText: "OK",
+      };
+
+    case err.type === MISSING_FIELDS:
+      return {
+        title: "Missing Required Fields",
+        text: "Some required fields were not provided.",
+        icon: "warning",
+        confirmButtonText: "Review",
+      };
+
+    case err.type === PARSE_ERROR:
+      return {
+        title: "Invalid Data",
+        text: "The provided data could not be processed.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      };
+
+    case err.type === NEW_BUYER_NOT_SUPPORTED:
+      return {
+        title: "Unsupported Transfer",
+        text: "Transfers involving a new buyer are not supported yet.",
+        icon: "error",
+        confirmButtonText: "Understood",
+      };
+
+    default:
+      return {
+        title: "Unknown Error",
+        text: "An unexpected error occurred.",
+        icon: "error",
+        confirmButtonText: "OK",
+      };
+  }
+}
