@@ -18,6 +18,7 @@ import {
   markAnimalDeathLocation,
   updateAnimalDeath,
   endAnimalLeaseFromDeath,
+  endMaleBreedingFromDeath,
 } from '../../../../../database';
 import {Database} from "sqlite3";
 import log from 'electron-log';
@@ -142,7 +143,21 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
             // do nothing
           },
           error: (err: string) => {
-            log.error("Failed to delete from animal for sale table:", err);
+            log.error("Failed to update animal leases:", err);
+            throw new Error(err);
+          },
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // end any male stud records
+        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock until JSON parsing is updated and we can get the time
+
+        await handleResult(animalEndMaleBreeding, {
+          success: (_: null) => {
+            // do nothing
+          },
+          error: (err: string) => {
+            log.error("Failed to update male breeding table:", err);
             throw new Error(err);
           },
         });
@@ -180,7 +195,7 @@ async function _writeAnimalNote(db: Database, animalId : string, animalNote: str
       // do nothing since we do not care about he new note's ID
     },
     error: (err: string) => {
-      console.error("Failed to write animal death note:", err);
+      log.error("Failed to write animal death note:", err);
       throw new Error(err);
     },
   });
