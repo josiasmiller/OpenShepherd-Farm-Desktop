@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { EditableTable } from '../../../../components/editableTable/editableTable';
-import { BackButton } from "../../../../components/backButton/backButton";
+import { BackButton } from "../../../../components/buttons/backButton";
 
 import { RegistryFieldDef, RegistryRow } from '@app/api';
 

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { AnimalSearchResult } from '@app/api';
 import Swal from "sweetalert2";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/backButton/backButton";
+import { BackButton } from "../../../components/buttons/backButton";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import { isRegistryDesktop } from '@app/buildVariant';
 

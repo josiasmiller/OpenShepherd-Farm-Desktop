@@ -30,7 +30,7 @@ import Swal from "sweetalert2";
 import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from '@common/core';
 import { getCurrentFormattedTimestamp } from '@common/time';
-import { BackButton } from "../../../components/backButton/backButton";
+import { BackButton } from "../../../components/buttons/backButton";
 
 const CreateDefaults: React.FC = () => {
 

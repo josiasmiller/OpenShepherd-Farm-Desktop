@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Swal, { SweetAlertOptions } from "sweetalert2";
-import { BackButton } from "../../../../../components/backButton/backButton";
+
+import Swal from "sweetalert2";
+import { BackButton } from "../../../../../components/buttons/backButton";
 import { AnimalInformationTable } from "../../../../../components/tables/animalTable";
 import { DateDisplay } from "../../../../../components/informationDisplay/dateDisplay";
 import { OwnerInformationTable, OwnerInformationTableProps  } from "../../../../../components/tables/ownerTable";

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import React, { useEffect, useMemo } from "react";
 import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/backButton/backButton";
+import { BackButton } from "../../../components/buttons/backButton";
 
 import { useState } from "react";
 import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
