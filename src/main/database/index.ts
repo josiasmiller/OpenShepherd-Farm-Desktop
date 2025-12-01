@@ -74,6 +74,7 @@ export type { InsertWeightRecordInput } from "./models/write/animal/weightEvalua
 
 // export write repositories
 export { editExistingDefaultSettings } from "./repositories/write/defaults/editExistingDefault";
+export { endAnimalLeaseFromDeath } from "./repositories/write/animal/lease/endAnimalLeaseFromDeath";
 export { incrementLastBirthNotifyValue } from "./repositories/write/registrations/registrationNumbers/incrementLastBirthNotifyValue";
 export { incrementLastDiedAtBirthValue } from "./repositories/write/registrations/registrationNumbers/incrementLastDiedAtBirthValue";
 export { incrementLastRegistrationNumber } from "./repositories/write/registrations/registrationNumbers/incrementLastRegistrationNumber";
