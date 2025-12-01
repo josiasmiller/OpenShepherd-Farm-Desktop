@@ -1,4 +1,4 @@
-import { Species, RegistryRow, ValidationResult, ParseResult } from '@app/api';
+import { Species, RegistryRow, ValidationResult } from '@app/api';
 import { checkHasOfficialId } from './rules/checkHasOfficialId';
 import {Database} from "sqlite3";
 
@@ -10,7 +10,7 @@ import {Database} from "sqlite3";
  * @param _ here only to satisfy interface
  * @returns ValidationResult indicating if the validation was successful or not
  */
-export async function validateRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species, parseResult: ParseResult<any>,): Promise<ValidationResult[]> {
+export async function validateRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 
   var rows : RegistryRow[] = sections.registration_records;

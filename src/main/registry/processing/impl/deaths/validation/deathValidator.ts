@@ -6,7 +6,6 @@ export async function validateDeathRows(
   db: Database, 
   sections: Record<string, RegistryRow[]>, 
   _: Species, 
-  parseResult: ParseResult<any>,
 ): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
 

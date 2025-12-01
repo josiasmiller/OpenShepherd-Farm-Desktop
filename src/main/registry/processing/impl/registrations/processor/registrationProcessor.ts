@@ -5,7 +5,6 @@ import {
   CoatColor, 
   RegistryType, 
   ScrapieFlockInfo,
-  ParseResult,
   RegistryRow, 
   ProcessingResult,
 } from '@app/api';
@@ -43,7 +42,7 @@ import {Database} from "sqlite3";
  * @param _ here only to satisfy interface
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species, parseResult: ParseResult<any>,): Promise<ProcessingResult> {
+export async function processRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction(db);
 

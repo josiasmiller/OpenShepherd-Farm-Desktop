@@ -1,4 +1,4 @@
-import { RegistryRow, Species, ValidationResult, ParseResult } from '@app/api';
+import { RegistryRow, Species, ValidationResult } from '@app/api';
 import { checkSireAlive } from './rules/checkSireAlive';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge';
@@ -7,7 +7,7 @@ import { checkHasAtLeastOneValidTag } from './rules/checkHasAtLeastOneValidTag';
 import { checkElectronicTags } from './rules/checkElectronicTags';
 import {Database} from "sqlite3";
 
-export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species, parseResult: ParseResult<any>,): Promise<ValidationResult[]> {
+export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
   
   var rows : RegistryRow[] = sections.birth_records;

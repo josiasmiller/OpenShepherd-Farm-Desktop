@@ -54,12 +54,11 @@ import {
   FlockPrefix,
   Owner,
   OwnerType,
-  ParseResult
 } from '@app/api';
 // import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 
 
-export async function processBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species : Species, parseResult: ParseResult<any>,): Promise<ProcessingResult> {
+export async function processBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
   try {
     await beginTransaction(db);
 

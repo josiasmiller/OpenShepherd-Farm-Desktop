@@ -501,8 +501,8 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS, async (event: IpcMainInvokeEvent, args: RegistryProcessRequest) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      const {processType, species, sections, parseResult} = args;
-      return handleRegistryProcess(session.db.raw(), processType, species, sections, parseResult);
+      const {processType, species, sections} = args;
+      return handleRegistryProcess(session.db.raw(), processType, species, sections);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });
