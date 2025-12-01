@@ -1,4 +1,4 @@
-import { RegistryRow, Species, ValidationResult, ParseResult } from '@app/api';
+import { RegistryRow, Species, ValidationResult } from '@app/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
 import {Database} from "sqlite3";
 

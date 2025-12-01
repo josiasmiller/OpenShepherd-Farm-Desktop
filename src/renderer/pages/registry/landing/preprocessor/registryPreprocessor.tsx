@@ -364,7 +364,6 @@ export const PreprocessorPage: React.FC = () => {
           acc[key] = table.rows;
           return acc;
         }, {}),
-        parseResult: currentParseResult,
       };
 
       const result: ProcessingResult = await window.registryAPI.process(args);
