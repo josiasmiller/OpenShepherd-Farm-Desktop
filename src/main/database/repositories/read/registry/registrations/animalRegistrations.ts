@@ -27,7 +27,8 @@ import log from "electron-log";
  *
  * @param db The Database to act on
  * @param animalIds UUID of animal(s) being sought
- * @returns A `Result` containing an array of `AnimalRegistrationResult` objects on success, 
+ * @param registryCompanyId which registry company to use to get the latest unprinted certificate Id
+ * @returns A `Result` containing an array of `AnimalRegistrationResult` objects on success,
  *          or a string error message on failure.
  */
 export const getAnimalRegistrationInfo = async (
@@ -71,20 +72,13 @@ export const getAnimalRegistrationInfo = async (
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // AnimalIdentification
-      const idUnwrap = await unwrapOrFailWithAnimal(animalIdentificationResult, "animalIdentification", animalId);
-
-      var animalIdentification : AnimalIdentification | null
-
-      if (idUnwrap.tag === "error") {
-        animalIdentification = null;
-      } else {
-        animalIdentification = idUnwrap.data;
-      }
+      let animalIdentification : AnimalIdentification | null = dataOrNull(animalIdentificationResult)
 
       // we always want some form of identification for the animals
       if (animalIdentification === null) {
-        log.error(`No identification found for animalId=\'${animalId}\'`)
-        continue;
+        const errMsg = `No identification found for animalId=\'${animalId}\'`
+        log.error(errMsg)
+        return new Failure(errMsg);
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,124 +108,26 @@ export const getAnimalRegistrationInfo = async (
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Pedigree
-      const pedigreeUnwrap = await unwrapOrFailWithAnimal(pedigreeResult, "pedigree", animalId);
+      // Extract rest of information from results
+      let pedigree : PedigreeNode | null = dataOrNull(pedigreeResult);
 
-      var pedigree : PedigreeNode | null 
+      let breeder : Owner | null = dataOrNull(breederResult);
 
-      if (pedigreeUnwrap.tag === "error") {
-        pedigree = null;
-      } else {
-        pedigree = pedigreeUnwrap.data;
-      }
+      let owner : Owner | null = dataOrNull(ownerResult);
 
+      let officialTag : idTag | null = dataOrNull(officialTagResult);
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Breeder
-      const breederUnwrap = await unwrapOrFailWithAnimal(breederResult, "breeder", animalId);
+      let unofficialTag : idTag | null = dataOrNull(unofficialTagResult);
 
-      var breeder : Owner | null 
+      let birthInfo : BirthInfo | null = dataOrNull(animalBirthInfoResult);
 
-      if (breederUnwrap.tag === "error") {
-        breeder = null;
-      } else {
-        breeder = breederUnwrap.data;
-      }
+      let animalSex : Sex | null = dataOrNull(animalSexResult);
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Owner
-      const ownerUnwrap = await unwrapOrFailWithAnimal(ownerResult, "owner", animalId);
-      var owner : Owner | null 
+      let codon136 : CodonResponse | null = dataOrNull(codon136Result);
 
-      if (ownerUnwrap.tag === "error") {
-        owner = null;
-      } else {
-        owner = ownerUnwrap.data;
-      }
+      let codon171 : CodonResponse | null = dataOrNull(codon171Result);
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Official Tag
-      const officialTagUnwrap = await unwrapOrFailWithAnimal(officialTagResult, "officialTag", animalId);
-
-      var officialTag : idTag | null
-
-      if (officialTagUnwrap.tag === "error") {
-        officialTag = null;
-      } else {
-        officialTag = officialTagUnwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Unofficial Tag
-      const unofficialTagUnwrap = await unwrapOrFailWithAnimal(unofficialTagResult, "unofficialTag", animalId);
-
-      var unofficialTag : idTag | null
-
-      if (unofficialTagUnwrap.tag === "error") {
-        unofficialTag = null;
-      } else {
-        unofficialTag = unofficialTagUnwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // BirthInfo
-      const birthInfoUnwrap = await unwrapOrFailWithAnimal(animalBirthInfoResult, "birthInfo", animalId);
-
-      var birthInfo : BirthInfo | null
-
-      if (birthInfoUnwrap.tag === "error") {
-        birthInfo = null;
-      } else {
-        birthInfo = birthInfoUnwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // AnimalSex
-      const sexUnwrap = await unwrapOrFailWithAnimal(animalSexResult, "animalSex", animalId);
-
-      var animalSex : Sex | null
-
-      if (sexUnwrap.tag === "error") {
-        animalSex = null;
-      } else {
-        animalSex = sexUnwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Codon 136
-      const codon136Unwrap = await unwrapOrFailWithAnimal(codon136Result, "codon136", animalId);
-      
-      var codon136 : CodonResponse | null
-      
-      if (codon136Unwrap.tag === "error") {
-        codon136 = null;
-      } else {
-        codon136 = codon136Unwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // Codon 171
-      const codon171Unwrap = await unwrapOrFailWithAnimal(codon171Result, "codon171", animalId);
-
-      var codon171 : CodonResponse | null
-      
-      if (codon171Unwrap.tag === "error") {
-        codon171 = null;
-      } else {
-        codon171 = codon171Unwrap.data;
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // 50 Day Weight
-      const fiftyDayWeightUnwrap = await unwrapOrFailWithAnimal(fiftyDayWeightResult, "fiftyDayWeight", animalId);
-
-      var fiftyDayWeight : number | null
-      
-      if (fiftyDayWeightUnwrap.tag === "error") {
-        fiftyDayWeight = null;
-      } else {
-        fiftyDayWeight = fiftyDayWeightUnwrap.data;
-      }
+      let fiftyDayWeight : number | null = dataOrNull(fiftyDayWeightResult);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // after getting the previous data, get any companies for a given contact owner
@@ -300,3 +196,11 @@ export const getAnimalRegistrationInfo = async (
     return new Failure(`Failed to fetch registration info: ${e.message}`);
   }
 };
+
+function dataOrNull<T, E>(result: Result<T, E>): T | null {
+  if (result.tag === "error") {
+    return null
+  } else {
+    return result.data
+  }
+}
