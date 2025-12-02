@@ -227,6 +227,14 @@ export type State = {
     country_id: string;
 }
 
+export type RegistryCertificate = {
+    id: string;
+    animalId: string;
+    registryCompanyId: string;
+    registrationType: string;
+    isPrinted: boolean;
+}
+
 export type RemoveReason = {
     id: string;
     name: string;
@@ -622,7 +630,7 @@ export type BirthInfo = {
 }
 
 export type AnimalRegistrationResult = {
-    unprintedPaperUUID: string;
+    unprintedCertificates: RegistryCertificate[];
     Codon171: CodonResponse | null;
     Codon136: CodonResponse | null;
     animalIdentification: AnimalIdentification | null;
