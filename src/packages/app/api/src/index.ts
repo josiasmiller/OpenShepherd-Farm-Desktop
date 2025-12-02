@@ -96,6 +96,16 @@ export {
   TransferError,
 } from "./errorCodes/registryProcessing/transferCodes"
 
+export type {
+  DialogCancelledError,
+  MissingFieldsError,
+  ParseError,
+} from "./errorCodes/genericCodes";
+
+export type {
+  NewBuyerNotSupportedError
+} from "./errorCodes/registryProcessing/transferCodes";
+
 declare global {
   interface Window extends AnimalTrakkerIPC {}
 }
