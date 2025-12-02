@@ -52,7 +52,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       <Divider />
 
       {/* Collapsible Content */}
-      <Collapse in={isOpen} timeout={100}>
+      <Collapse in={isOpen} timeout={50}>
         <Box sx={{ px: 2, py: 1 }}>{children}</Box>
       </Collapse>
     </Box>

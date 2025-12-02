@@ -348,7 +348,7 @@ const AnimalSearch: React.FC = () => {
             isOpen={showChosen}
             onToggle={() => setShowChosen(!showChosen)}
           >
-            <Box sx={{ maxHeight: 400, overflowY: "auto", mt: 2 }}>
+            <Box sx={{ maxHeight: 400, overflowY: "auto", mt: 2, pb: 2 }}>
               <Stack spacing={2}>
                 <ActionButton
                   label="Choose Animals"
