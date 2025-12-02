@@ -9,15 +9,21 @@ import {
   DIALOG_CANCELLED,
   MISSING_FIELDS,
   NEW_BUYER_NOT_SUPPORTED,
+  PARSE_ERROR,
   TransferError,
   TransferRecord,
 } from '@app/api';
 
+import type {
+  DialogCancelledError,
+  MissingFieldsError,
+  ParseError,
+  NewBuyerNotSupportedError,
+} from '@app/api';
+
 import { selectJsonFile } from "@fileDialogs/jsonSelect";
 import { readJsonFile } from "@registryHelpers";
-import { DialogCancelledError, MissingFieldsError, ParseError, PARSE_ERROR } from "@app/api/src/errorCodes/genericCodes";
 import { Failure, Result, Success } from "@common/core";
-import { NewBuyerNotSupportedError } from "@app/api/src/errorCodes/registryProcessing/transferCodes";
 
 
 /**
@@ -42,9 +48,6 @@ export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Re
  * Core JSON parser
  */
 export const transferParser = async (filePath: string): Promise<Result<TransferRecord, TransferError>> => {
-
-  const warnings: string[] = []; // TODO --> what to do with this
-
   try {
     const fileContents = await readJsonFile(filePath);
 
