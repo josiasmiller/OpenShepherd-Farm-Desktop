@@ -1,4 +1,4 @@
-import {Database} from "sqlite3";
+import { Database } from "@database/async";
 import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "@common/core";
 
@@ -11,7 +11,8 @@ import { Result, Success, Failure } from "@common/core";
  * @param certificatePrintId UUID of the DB row being altered
  */
 export async function markRegistryCertificateAsPrinted(
-  db: Database, certificatePrintId: string
+    db: Database,
+    certificatePrintId: string
 ): Promise<Result<null, string>> {
 
   const query = `
@@ -21,23 +22,22 @@ export async function markRegistryCertificateAsPrinted(
     WHERE id_registrycertificateprintid = ?
   `;
 
-  const todayDt : String = dateTimeAsString();
+  const todayDt: string = dateTimeAsString();
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      db.run(query, [todayDt, certificatePrintId], function (err) {
-        if (err) {
-          reject(err);
-        } else if (this.changes === 0) {
-          reject(new Error(`No rows updated for certificatePrintId: ${certificatePrintId}`));
-        } else {
-          resolve();
-        }
-      });
-    });
+    const result = await db.run(query, [todayDt, certificatePrintId]);
+
+    if (result.changes === 0) {
+      return new Failure(
+          `No rows updated for certificatePrintId: ${certificatePrintId}`
+      );
+    }
 
     return new Success(null);
+
   } catch (err: any) {
-    return new Failure(`Failed to update registry certificate print row: ${err.message}`);
+    return new Failure(
+        `Failed to update registry certificate print row: ${err.message}`
+    );
   }
 }

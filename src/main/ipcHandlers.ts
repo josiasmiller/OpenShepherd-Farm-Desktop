@@ -175,7 +175,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_EXPORT_REGISTRATION, async (event: IpcMainInvokeEvent, animals: string[], registrationType: "black" | "white" | "chocolate", signatureFilePath: string | null) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return writeRegistration(session.db.raw(), animals, registrationType, signatureFilePath);
+      return writeRegistration(session.db, animals, registrationType, signatureFilePath);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_EXPORT_REGISTRATION, event)
   });

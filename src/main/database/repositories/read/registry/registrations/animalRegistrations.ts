@@ -1,5 +1,5 @@
-import {Database} from "sqlite3";
-import { Failure, handleResult, Result, Success, unwrapOrFailWithAnimal } from "@common/core";
+import {Database} from "@database/async";
+import { Failure, handleResult, Result, Success } from "@common/core";
 import { BirthInfo, Sex } from '@app/api'
 import { CodonResponse } from '@app/api';
 import { AnimalIdentification } from '@app/api';
@@ -57,17 +57,19 @@ export const getAnimalRegistrationInfo = async (
         fiftyDayWeightResult,
       ] = await Promise.all([
         getLatestUnprintedCertificateId(db, registryCompanyId, animalId),
-        getPedigree(db, animalId, 4),
-        getAnimalIdentification(db, animalId),
-        getBreeder(db, animalId),
-        getOwner(db, animalId),
-        getMostRecentOfficialTag(db, animalId),
-        getMostRecentUnofficialTag(db, animalId),
-        getBirthInfo(db, animalId),
-        getSexFromAnimalId(db, animalId),
-        getCodon136ForAnimal(db, animalId),
-        getCodon171ForAnimal(db, animalId),
-        estimateFiftyDayWeight(db, animalId),
+
+        // this will need to be updated to use our DB wrapper
+        getPedigree(db.raw(), animalId, 4),
+        getAnimalIdentification(db.raw(), animalId),
+        getBreeder(db.raw(), animalId),
+        getOwner(db.raw(), animalId),
+        getMostRecentOfficialTag(db.raw(), animalId),
+        getMostRecentUnofficialTag(db.raw(), animalId),
+        getBirthInfo(db.raw(), animalId),
+        getSexFromAnimalId(db.raw(), animalId),
+        getCodon136ForAnimal(db.raw(), animalId),
+        getCodon171ForAnimal(db.raw(), animalId),
+        estimateFiftyDayWeight(db.raw(), animalId),
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////

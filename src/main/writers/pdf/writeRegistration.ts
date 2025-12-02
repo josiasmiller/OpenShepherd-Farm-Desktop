@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import log from "electron-log";
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 import {PDFDocument} from "pdf-lib";
 import { Owner, Company, AnimalRegistrationResult, RegistrationWriteResponse } from '@app/api'
 
