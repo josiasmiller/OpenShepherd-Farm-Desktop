@@ -1,5 +1,5 @@
 import {Database} from "@database/async";
-import { Failure, handleResult, Result, Success } from "@common/core";
+import { Failure, handleResult, Result, Success, dataOrNull } from "@common/core";
 import { BirthInfo, Sex } from '@app/api'
 import { CodonResponse } from '@app/api';
 import { AnimalIdentification } from '@app/api';
@@ -199,10 +199,3 @@ export const getAnimalRegistrationInfo = async (
   }
 };
 
-function dataOrNull<T, E>(result: Result<T, E>): T | null {
-  if (result.tag === "error") {
-    return null
-  } else {
-    return result.data
-  }
-}

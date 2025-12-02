@@ -56,3 +56,11 @@ export const unwrapOrFailWithAnimal = async <T>(
     return new Failure(`Failed to get ${label} for animal ID ${animalId}`);
   }
 };
+
+export function dataOrNull<T, E>(result: Result<T, E>): T | null {
+    if (result.tag === "error") {
+        return null
+    } else {
+        return result.data
+    }
+}
