@@ -8,10 +8,10 @@ import { Result, Success, Failure } from "@common/core";
  * Returns Failure if no row was updated.
  *
  * @param db The Database to act on
- * @param rowId UUID of the row being altered
+ * @param certificatePrintId UUID of the DB row being altered
  */
 export async function markRegistryCertificateAsPrinted(
-  db: Database, rowId: string
+  db: Database, certificatePrintId: string
 ): Promise<Result<null, string>> {
 
   const query = `
@@ -25,11 +25,11 @@ export async function markRegistryCertificateAsPrinted(
 
   try {
     await new Promise<void>((resolve, reject) => {
-      db.run(query, [todayDt, rowId], function (err) {
+      db.run(query, [todayDt, certificatePrintId], function (err) {
         if (err) {
           reject(err);
         } else if (this.changes === 0) {
-          reject(new Error(`No rows updated for rowId: ${rowId}`));
+          reject(new Error(`No rows updated for certificatePrintId: ${certificatePrintId}`));
         } else {
           resolve();
         }

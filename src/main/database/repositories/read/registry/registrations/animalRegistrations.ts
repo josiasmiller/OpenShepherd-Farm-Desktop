@@ -70,6 +70,24 @@ export const getAnimalRegistrationInfo = async (
       ]);
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
+      // AnimalIdentification
+      const idUnwrap = await unwrapOrFailWithAnimal(animalIdentificationResult, "animalIdentification", animalId);
+
+      var animalIdentification : AnimalIdentification | null
+
+      if (idUnwrap.tag === "error") {
+        animalIdentification = null;
+      } else {
+        animalIdentification = idUnwrap.data;
+      }
+
+      // we always want some form of identification for the animals
+      if (animalIdentification === null) {
+        log.error(`No identification found for animalId=\'${animalId}\'`)
+        continue;
+      }
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       // unprinted certificate ID checker
 
       let foundUnprintedPaper : boolean = false;
@@ -91,6 +109,7 @@ export const getAnimalRegistrationInfo = async (
 
       // when no unprinted paper is found or we do not find a UUID for said paper, do not do any processing
       if (!foundUnprintedPaper || unprintedPaperUUID === null) {
+        log.info(`No certificate papers for for name=\'${animalIdentification.name}\' animalId=\'${animalId}\'`)
         continue;
       }
 
@@ -106,17 +125,6 @@ export const getAnimalRegistrationInfo = async (
         pedigree = pedigreeUnwrap.data;
       }
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////
-      // AnimalIdentification
-      const idUnwrap = await unwrapOrFailWithAnimal(animalIdentificationResult, "animalIdentification", animalId);
-      
-      var animalIdentification : AnimalIdentification | null
-      
-      if (idUnwrap.tag === "error") {
-        animalIdentification = null;
-      } else {
-        animalIdentification = idUnwrap.data;
-      }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // Breeder
