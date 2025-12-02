@@ -46,8 +46,6 @@ import {
 import { Result } from "@common/core";
 import { type IpcEventRegistrarFunc } from "@ipc/core";
 import { TransferError } from "./errorCodes/registryProcessing/transferCodes";
-import {Database} from "@database/async";
-
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {

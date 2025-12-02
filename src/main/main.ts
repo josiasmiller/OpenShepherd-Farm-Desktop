@@ -23,16 +23,21 @@ import {
 import {AtrkkrSession} from "./session/AtrkkrSession";
 import {openDb} from "./database/dbConnections";
 import {bringWindowToFront} from "./electron/windows";
+import {isRegistryDesktop} from "@app/buildVariant";
 
 declare const LANDING_WINDOW_WEBPACK_ENTRY: string;
 declare const LANDING_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const SESSION_WINDOW_WEBPACK_ENTRY: string;
+declare const SESSION_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+
+declare const ABOUT_WINDOW_WEBPACK_ENTRY: string;
+declare const ABOUT_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 log.initialize();
 
 let landingWindow: BrowserWindow | null = null;
+let aboutWindow: BrowserWindow | null = null;
 
 log.info(`Application starting - PID:${process.pid}`);
 
@@ -75,6 +80,11 @@ function run() {
   });
 
   app.on('browser-window-created', (event, window: BrowserWindow) => {
+    // If we have just created the about window
+    // move along we don't need to track it
+    if (aboutWindow && aboutWindow.id == window.id) {
+      return;
+    }
     // If any window other than the landing window is created,
     // a new session window in most cases, get rid of the
     // landing window.
@@ -111,7 +121,6 @@ function run() {
  */
 function showLandingWindow() {
   landingWindow = createLandingWindow();
-  updateMenuForPlatform(landingWindow, updateLandingWindowMenu);
   landingWindow.loadURL(LANDING_WINDOW_WEBPACK_ENTRY)
     .catch(err => {
       log.error(`Failed to load landing window: ${err}`);
@@ -134,6 +143,11 @@ function createLandingWindow(): BrowserWindow {
     }
   });
   window.on('closed', () => {
+    // Don't let the about window hold up shutdown.
+    if (aboutWindow) {
+      aboutWindow.destroy();
+      aboutWindow = null;
+    }
     // Make sure this references is null
     // so that will-quit event knows
     // there is no expectation
@@ -144,6 +158,7 @@ function createLandingWindow(): BrowserWindow {
   // Menu and Dev Tools only available
   // when not packaged
   window.menuBarVisible = !app.isPackaged;
+  setupMenuHandlingForPlatform(window, updateGenericWindowMenu);
   return window;
 }
 
@@ -179,7 +194,7 @@ async function openNewSession(parentWindow: BrowserWindow): Promise<void> {
     height: 900,
     title: `AnimalTrakker - ${dbPath}`,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: SESSION_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: false,
       contextIsolation: true,
     }
@@ -217,8 +232,8 @@ async function openNewSession(parentWindow: BrowserWindow): Promise<void> {
       });
       showLandingWindowIfNoSessions();
     });
-    updateMenuForPlatform(newSessionWindow, updateSessionWindowMenu);
-    await newSessionWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    setupMenuHandlingForPlatform(newSessionWindow, updateSessionWindowMenu);
+    await newSessionWindow.loadURL(SESSION_WINDOW_WEBPACK_ENTRY);
   } else {
     // Failed to open the database, there is no need for the window anymore.
     newSessionWindow.destroy();
@@ -239,6 +254,62 @@ function showLandingWindowIfNoSessions() {
 }
 
 /**
+ * Show About window if it is not already showing.
+ * Otherwise, bring it to the front.
+ */
+function showAboutWindow() {
+  // If it already exists, bring it to the front.
+  if (aboutWindow) {
+    bringWindowToFront(aboutWindow);
+    return;
+  }
+  aboutWindow = createAboutWindow();
+  aboutWindow.loadURL(ABOUT_WINDOW_WEBPACK_ENTRY)
+    .catch(err => {
+      log.error(`Failed to load about window: ${err}`);
+    });
+}
+
+function createAboutWindow(): BrowserWindow {
+  const window = new BrowserWindow({
+    width: 450,
+    height: 260,
+    title: `About AnimalTrakker ${isRegistryDesktop() ? 'Registry' : 'Farm'}`,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    webPreferences: {
+      preload: ABOUT_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      nodeIntegration: false,
+      contextIsolation: true,
+    }
+  });
+  window.setMenu(null);
+  window.menuBarVisible = false;
+  // Menu and Dev Tools only available
+  // when not packaged
+  window.menuBarVisible = !app.isPackaged;
+  setupMenuHandlingForPlatform(window, updateGenericWindowMenu);
+  window.on('closed', () => {
+    aboutWindow = null;
+  });
+  return window;
+}
+
+/**
+ * Convenience method for setting up menu handling for
+ * window menus across various platforms.
+ */
+function setupMenuHandlingForPlatform(window: BrowserWindow, updateMenuFunction: (window: BrowserWindow) => void): void {
+  if (process.platform === 'darwin') {
+    window.on('focus', () => {
+      updateMenuForPlatform(window, updateMenuFunction);
+    })
+  }
+  updateMenuForPlatform(window, updateMenuFunction);
+}
+
+/**
  * Convenience method for handling the differences in app/window
  * menu management between Mac, Windows, and Linux.
  *
@@ -256,13 +327,13 @@ function updateMenuForPlatform(window: BrowserWindow, updateMenuFunction: (windo
 }
 
 /**
- * Creates the menu that should be shown when the landing window
- * is active and sets it on the window provided, or the application
+ * Creates the menu that should be shown when the landing or about windows
+ * are active and sets it on the window provided, or the application
  * if a window is not provided (for Mac for example).
  *
  * @param window
  */
-function updateLandingWindowMenu(window: BrowserWindow | null) {
+function updateGenericWindowMenu(window: BrowserWindow | null) {
   const shouldShowDevTools = !app.isPackaged;
   const menuTemplate: MenuItemConstructorOptions[] = [
     ...(process.platform === 'darwin' ? [{ role: 'appMenu' }] : []) as MenuItemConstructorOptions[],
@@ -351,6 +422,17 @@ function updateSessionWindowMenu(window: BrowserWindow | null) {
         { role: 'minimize' },
         { role: 'zoom' },
         { role: 'close' }
+      ]
+    },
+    {
+      label: '&Help',
+      submenu: [
+        {
+          label: '&About',
+          click: async () => {
+            showAboutWindow();
+          }
+        }
       ]
     }
   ];

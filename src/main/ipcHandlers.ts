@@ -1,21 +1,20 @@
-
 import {ipcMain, IpcMainInvokeEvent, shell} from "electron";
 
-import { 
+import {
   animalSearch,
   editExistingDefaultSettings,
-  getAnimalIdentification,
   getAnimalDetails,
+  getAnimalIdentification,
   getBirthTypes,
   getBreeds,
   getColors,
-  getCompanies, 
+  getCompanies,
   getContacts,
-  getCounties, 
+  getCounties,
   getCountries,
   getCountryPrefixForOwner,
   getDeathReasons,
-  getExistingDefaults, 
+  getExistingDefaults,
   getFlockPrefixes,
   getOwnerById,
   getPedigree,
@@ -37,37 +36,38 @@ import {
   writeNewDefaultSettings,
 } from "./database";
 
-import { pngFileDialog } from "./selectPng";
-import { writeAnimalNotesCsv } from "./writers/csv/writeAnimalNotes";
-import { writeDrugHistoryCsv } from "./writers/csv/writeDrugEvents";
-import { writeTissueTestResults } from "./writers/csv/writeTissueTestResults";
+import {pngFileDialog} from "./selectPng";
+import {writeAnimalNotesCsv} from "./writers/csv/writeAnimalNotes";
+import {writeDrugHistoryCsv} from "./writers/csv/writeDrugEvents";
+import {writeTissueTestResults} from "./writers/csv/writeTissueTestResults";
 
-import { writeRegistration } from "./writers/pdf/writeRegistration";
+import {writeRegistration} from "./writers/pdf/writeRegistration";
 
-import { birthParser } from "./registry/processing/impl/births/parser/birthParser";
-import { deathParser } from "./registry/processing/impl/deaths/parser/deathParser";
-import { registrationParser } from "./registry/processing/impl/registrations/parser/registrationParser";
-import { selectAndParseTransfers } from "./registry/processing/impl/transfers/parser/transferParser";
-import { handleDatabaseStateCheck } from "./registry/processing/ipc/handleDatabaseStateCheck";
+import {birthParser} from "./registry/processing/impl/births/parser/birthParser";
+import {deathParser} from "./registry/processing/impl/deaths/parser/deathParser";
+import {registrationParser} from "./registry/processing/impl/registrations/parser/registrationParser";
+import {selectAndParseTransfers} from "./registry/processing/impl/transfers/parser/transferParser";
+import {handleDatabaseStateCheck} from "./registry/processing/ipc/handleDatabaseStateCheck";
 import {
-  DatabaseStateCheckResponse, 
-  DefaultSettingsResults, 
+  DatabaseStateCheckResponse,
+  DefaultSettingsResults,
   OwnerType,
-  TransferRecord, 
+  RegistryProcessRequest,
+  Species,
+  TransferRecord,
 } from '@app/api';
 
-import { handleRegistryProcess } from "./registry/processing/ipc/handleRegistryProcess";
-import { resolveDatabaseIssues } from "./registry/processing/ipc/resolveDatabaseStateIssues";
-
-import { RegistryProcessRequest, Species } from '@app/api';
-import { getStoreSelectedDefault, setStoreSelectedDefault } from "./store/impl/selectedDefault";
-import { getStoreSelectedSpecies, setStoreSelectedSpecies } from "./store/impl/selectedSpecies";
-import { getStoreSelectedFilepath, setStoreSelectedFilepath } from "./store/impl/selectedSignatureFilepath";
-import { promiseFrom } from "@common/core";
+import {handleRegistryProcess} from "./registry/processing/ipc/handleRegistryProcess";
+import {resolveDatabaseIssues} from "./registry/processing/ipc/resolveDatabaseStateIssues";
+import {getStoreSelectedDefault, setStoreSelectedDefault} from "./store/impl/selectedDefault";
+import {getStoreSelectedSpecies, setStoreSelectedSpecies} from "./store/impl/selectedSpecies";
+import {getStoreSelectedFilepath, setStoreSelectedFilepath} from "./store/impl/selectedSignatureFilepath";
+import {promiseFrom} from "@common/core";
 import {atrkkrSessionForEvent} from "./session/sessionManagement";
-import {Database} from "@database/async";
 import log from "electron-log";
-import { validateAndProcessTransfers } from "./registry";
+import {validateAndProcessTransfers} from "./registry";
+import {ApplicationSettings} from "@ipc/api";
+import {AboutApp, AppAboutInfo} from "@app/buildVariant";
 
 const IPC_INVOKE_ANIMAL_SEARCH = 'animal-search'
 const IPC_INVOKE_EDIT_EXISTING_DEFAULT = 'edit-existing-default'
@@ -572,4 +572,22 @@ export const registerIpcHandlers = () => {
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS, event)
   });
+
+  ipcMain.handle(ApplicationSettings.CHANNEL_QUERY_ABOUT_APP, async (_: IpcMainInvokeEvent): Promise<AppAboutInfo> => {
+    return promiseFrom(() => {
+      return AboutApp
+    })
+  })
+
+  ipcMain.handle(ApplicationSettings.CHANNEL_OPEN_ATRKKR_WEBSITE, async (_: IpcMainInvokeEvent): Promise<void> => {
+    return shell.openExternal('https://animaltrakker.com')
+  })
+
+  ipcMain.handle(ApplicationSettings.CHANNEL_OPEN_ATRKKR_SUPPORT_MAIL, async (_: IpcMainInvokeEvent): Promise<void> => {
+    return shell.openExternal('mailto:support@animaltrakker.com')
+  })
+
+  ipcMain.handle(ApplicationSettings.CHANNEL_OPEN_ATRKKR_BUILD_COMMIT, async (_: IpcMainInvokeEvent): Promise<void> => {
+    return shell.openExternal(`https://gitlab.com/animaltrakker_system/animaltrakker_desktop/-/commit/${AboutApp.commitSHAFull}`)
+  })
 };
