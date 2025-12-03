@@ -188,7 +188,9 @@ const AnimalSearch: React.FC = () => {
                   id="birthStartDate"
                   value={searchParams.birthStartDate}
                   onChange={handleTextFieldChange}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                   fullWidth
                 />
                 <TextField
@@ -197,7 +199,9 @@ const AnimalSearch: React.FC = () => {
                   id="birthEndDate"
                   value={searchParams.birthEndDate}
                   onChange={handleTextFieldChange}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                   fullWidth
                 />
                 <TextField
@@ -206,7 +210,9 @@ const AnimalSearch: React.FC = () => {
                   id="deathStartDate"
                   value={searchParams.deathStartDate}
                   onChange={handleTextFieldChange}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                   fullWidth
                 />
                 <TextField
@@ -215,7 +221,9 @@ const AnimalSearch: React.FC = () => {
                   id="deathEndDate"
                   value={searchParams.deathEndDate}
                   onChange={handleTextFieldChange}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
                   fullWidth
                 />
               </Stack>
