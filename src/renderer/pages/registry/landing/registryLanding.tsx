@@ -165,7 +165,7 @@ const RegistryLanding: React.FC = () => {
       >
         {/* Back Button */}
         <Box mb={2}>
-          <BackButton />
+          <BackButton onClick={() => navigate(-1)} />
         </Box>
 
         {/* Species Selector */}

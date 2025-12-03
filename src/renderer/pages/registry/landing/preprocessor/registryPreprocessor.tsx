@@ -596,7 +596,7 @@ export const PreprocessorPage: React.FC = () => {
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
 
-      <BackButton />
+      <BackButton onClick={() => navigate(-1)} />
 
       <h1 className="app-header">{capitalizedType ? `Preprocess ${capitalizedType}` : 'Preprocess Records'}</h1>
 

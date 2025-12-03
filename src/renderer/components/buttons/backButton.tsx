@@ -1,14 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-export const BackButton: React.FC = () => {
-    const navigate = useNavigate();
+interface BackButtonProps {
+    onClick: () => void;
+}
 
+export const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
     return (
         <IconButton
-            onClick={() => navigate(-1)}
+            onClick={onClick}
             size="small"
             title="Go Back"
             sx={{ p: 0.5 }}

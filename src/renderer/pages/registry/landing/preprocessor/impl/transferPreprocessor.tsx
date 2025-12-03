@@ -194,7 +194,7 @@ export const TransferPreprocessorPage: React.FC = () => {
 
   return (
     <div style={{ height: "100vh", overflowY: "auto", paddingBottom: "5em" }}>
-      <BackButton />
+      <BackButton onClick={() => navigate(-1)} />
       <h1 className="app-header">Preprocess Transfers</h1>
 
       <div className="padded-horizontal-lg" style={{ marginBottom: "3em" }}>

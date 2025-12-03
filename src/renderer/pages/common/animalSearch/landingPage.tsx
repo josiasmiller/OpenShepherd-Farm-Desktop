@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {
   Box,
   Stack,
@@ -30,6 +30,7 @@ const LandingPage: React.FC = () => {
   const [signaturePath, setSignaturePath] = useState<string | null>(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const chosenAnimals: AnimalSearchResult[] = location.state?.chosenAnimals || [];
 
   useEffect(() => {
@@ -149,7 +150,7 @@ const LandingPage: React.FC = () => {
     <AtrkkrTheme>
       <Box sx={{ p: 2 }}>
         <Box sx={{ mb: 3 }}>
-          <BackButton />
+          <BackButton onClick={() => navigate(-1)} />
         </Box>
 
         {/* Top Section */}

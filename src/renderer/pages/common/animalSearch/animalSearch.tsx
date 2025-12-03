@@ -153,7 +153,7 @@ const AnimalSearch: React.FC = () => {
     <AtrkkrTheme>
       <Box sx={{ height: "100vh", overflowY: "auto", p: 2 }}>
         <Box sx={{ mb: 3 }}>
-          <BackButton />
+          <BackButton onClick={() => navigate(-1)} />
         </Box>
   
         <Stack spacing={3}> 

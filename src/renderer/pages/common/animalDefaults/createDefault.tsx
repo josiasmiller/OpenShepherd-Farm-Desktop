@@ -31,8 +31,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { handleResult } from '@common/core';
 import { getCurrentFormattedTimestamp } from '@common/time';
 import { BackButton } from "../../../components/buttons/backButton";
+import {useNavigate} from "react-router-dom";
 
 const CreateDefaults: React.FC = () => {
+
+  const navigate = useNavigate();
 
   ////////////
   // STATES //
@@ -1658,7 +1661,7 @@ const CreateDefaults: React.FC = () => {
       {/* Top Section */}
       <div className="create-defaults-top-section">
 
-        <BackButton />
+        <BackButton onClick={() => navigate(-1)} />
 
         <h2>Default Settings</h2>
         <div className="button-group">
