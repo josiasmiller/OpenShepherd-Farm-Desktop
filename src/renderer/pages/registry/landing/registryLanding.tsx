@@ -1,14 +1,26 @@
 import { useNavigate } from "react-router-dom";
 
-import React, { useEffect, useMemo } from "react";
-import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/backButton/backButton";
+import React, { useEffect } from "react";
 
 import { useState } from "react";
-import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import { handleResult } from '@common/core';
 import { Species } from '@app/api';
 import Swal from "sweetalert2";
+
+import {
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  SelectChangeEvent,
+} from "@mui/material";
+
+import CollapsibleSection from "@components/collapsible/collapsible";
+import { ActionButton, BackButton } from "@components/buttons";
+import LoadingIndicator from "@components/loadingIndicator/loadingIndicator";
+import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
 const RegistryLanding: React.FC = () => {
   const navigate = useNavigate();
@@ -19,13 +31,12 @@ const RegistryLanding: React.FC = () => {
   const [species, setSpecies] = useState<Species[]>([]);
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
 
-  const speciesOptions = useMemo(() => (
-    species.map((spec) => (
-      <option key={spec.id} value={spec.id}>
-        {spec.common_name}
-      </option>
-    ))
-  ), [species]);
+  const speciesOptions = species.map(s => (
+    <MenuItem key={s.id} value={String(s.id)}>
+      {s.common_name}
+    </MenuItem>
+  ));
+  
 
   const handleBirthNotifications = () => {
     if (!selectedSpecies) {
@@ -92,14 +103,19 @@ const RegistryLanding: React.FC = () => {
     navigate('/registry/preprocess/deaths', { state: { species: selectedSpecies } });
   };
 
-  const handleSpecies = async (e : React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSpecies = async (e: SelectChangeEvent<string>) => {
     const selectedId = e.target.value;
-    const found : Species | null = species.find((s) => s.id === selectedId) || null;
+    const found: Species | null = species.find((s) => s.id === selectedId) || null;
+  
     if (found != null) {
       setSelectedSpecies(found);
       await window.storeAPI.setSelectedSpecies(found);
+    } else {
+      setSelectedSpecies(null);
+      await window.storeAPI.setSelectedSpecies(null);
     }
-  }
+  };
+  
 
   useEffect(() => {
     const loadData = async () => {
@@ -138,68 +154,77 @@ const RegistryLanding: React.FC = () => {
 
 
   return (
-    <div>
-
-      <BackButton />
-
-      <div className="padded-horizontal-lg search-filters">
-        <label htmlFor="selectSpecies">Species</label>
-        {/* <select id="selectSpecies" value={searchParams.registrationType} onChange={handleChange}> */}
-        <select
-          id="selectSpecies"
-          value={selectedSpecies?.id ?? ''}
-          onChange={handleSpecies}
-        >
-          <option value="">Select Species</option>
-          {speciesOptions}
-        </select>
-      </div>
-
-
-      <CollapsibleSection
-        title="Processors"
-        isOpen={showProccesors}
-        onToggle={() => setShowProccesors(!showProccesors)}
+    <AtrkkrTheme>
+      <Box
+        sx={{
+          height: "100vh",
+          overflowY: "auto",
+          p: 2,
+        }}
       >
-        <div className="action-buttons registry-section" 
-             style={{ display: 'flex', flexWrap: 'wrap', gap: '1em' }}
+        {/* Back Button */}
+        <Box mb={2}>
+          <BackButton onClick={() => navigate(-1)} />
+        </Box>
+
+        {/* Species Selector */}
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <FormControl fullWidth>
+            <InputLabel id="species-label">Species</InputLabel>
+            <Select
+              labelId="species-label"
+              id="selectSpecies"
+              label="Species"
+              value={selectedSpecies?.id ?? ""}
+              onChange={handleSpecies}
+            >
+              <MenuItem value="">
+                <em>Select Species</em>
+              </MenuItem>
+              {speciesOptions}
+            </Select>
+          </FormControl>
+        </Paper>
+
+        {/* Processors Section */}
+        <CollapsibleSection
+          title="Processors"
+          isOpen={showProccesors}
+          onToggle={() => setShowProccesors(!showProccesors)}
         >
-          <button
-            className="forward-button"
-            onClick={handleBirthNotifications}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              p: 1
+            }}
           >
-            Process Birth Notifications
-          </button>
+            <ActionButton
+              label="Process Birth Notifications"
+              onClick={handleBirthNotifications}
+            />
 
-          <button
-            className="forward-button"
-            onClick={handleRegistrations}
-          >
-            Process Registrations
-          </button>
+            <ActionButton
+              label="Process Registrations"
+              onClick={handleRegistrations}
+            />
 
-          <button
-            className="forward-button"
-            onClick={handleTransfers}
-          >
-            Process Tranfers
-          </button>
+            <ActionButton
+              label="Process Transfers"
+              onClick={handleTransfers}
+            />
 
-          <button
-            className="forward-button"
-            onClick={handleDeaths}
-          >
-            Process Deaths
-          </button>
-        </div>
-      </CollapsibleSection>
+            <ActionButton
+              label="Process Deaths"
+              onClick={handleDeaths}
+            />
+          </Box>
+        </CollapsibleSection>
 
-      <LoadingIndicator
-        isLoading={isLoading}
-        message="Processing..."
-      />
-      
-    </div>
+        <LoadingIndicator isLoading={isLoading} message="Processing..." />
+      </Box>
+    </AtrkkrTheme>
   );
 };
 

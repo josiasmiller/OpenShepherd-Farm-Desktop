@@ -1,7 +1,7 @@
 import React from 'react';
 import {HashRouter as Router} from "react-router";
 import IsolatedMuiScope from "../../theme/IsolatedMuiScope";
-import Sidebar from "../../components/sidebar/sidebar";
+import Sidebar from "@components/sidebar/sidebar";
 import {Route, Routes} from "react-router-dom";
 import Home from "../common/home";
 import AnimalSearch from "../common/animalSearch/animalSearch";

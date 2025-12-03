@@ -24,7 +24,8 @@
       "@ipc/preload/*": ["src/packages/ipc/preload/src/*.ts"],
       "@common/*": ["src/packages/common/*"],
       "@fileDialogs/*": ["src/main/fileDialogs/*"],
-      "@registryHelpers": ["src/main/registry/processing/helpers/registryHelpers"]
+      "@registryHelpers": ["src/main/registry/processing/helpers/registryHelpers"],
+      "@components/*": ["src/renderer/components/*"]
     }
   }
 }

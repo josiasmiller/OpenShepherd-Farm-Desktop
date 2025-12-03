@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Swal, { SweetAlertOptions } from "sweetalert2";
-import { BackButton } from "../../../../../components/backButton/backButton";
-import { AnimalInformationTable } from "../../../../../components/tables/animalTable";
-import { DateDisplay } from "../../../../../components/informationDisplay/dateDisplay";
-import { OwnerInformationTable, OwnerInformationTableProps  } from "../../../../../components/tables/ownerTable";
+
+import Swal, {SweetAlertOptions} from "sweetalert2";
+import { BackButton } from "@components/buttons";
+import { AnimalInformationTable } from "@components/tables/animalTable";
+import { DateDisplay } from "@components/informationDisplay/dateDisplay";
+import { OwnerInformationTable, OwnerInformationTableProps  } from "@components/tables/ownerTable";
 import {
   TransferRecord,
   TransferError,
@@ -193,7 +194,7 @@ export const TransferPreprocessorPage: React.FC = () => {
 
   return (
     <div style={{ height: "100vh", overflowY: "auto", paddingBottom: "5em" }}>
-      <BackButton />
+      <BackButton onClick={() => navigate(-1)} />
       <h1 className="app-header">Preprocess Transfers</h1>
 
       <div className="padded-horizontal-lg" style={{ marginBottom: "3em" }}>
