@@ -268,6 +268,7 @@ const AnimalSearch: React.FC = () => {
                 label={isSearchingForAnimals ? "Searching..." : "Search"}
                 onClick={fetchAndDisplayAnimals}
                 disabled={isSearchingForAnimals}
+                fullWidth
               />
 
             </Stack>
@@ -370,6 +371,7 @@ const AnimalSearch: React.FC = () => {
                 <ActionButton
                   label="Choose Animals"
                   onClick={handleChooseAnimals}
+                  fullWidth
                 />
         
                   {chosenAnimals.length > 0 && (
