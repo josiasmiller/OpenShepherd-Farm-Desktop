@@ -282,7 +282,15 @@ const AnimalSearch: React.FC = () => {
               {message && <Box mb={1}>{message}</Box>}
     
               {uniqueResults.length > 0 && (
-                <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
+                <TableContainer
+                  component={Paper}
+                  elevation={3}
+                  sx={{
+                    borderRadius: 2,
+                    maxHeight: 400,
+                    overflow: "auto",
+                  }}
+                >
                   <Table stickyHeader>
                     <TableHead>
                       <TableRow>
@@ -305,7 +313,7 @@ const AnimalSearch: React.FC = () => {
                           <TableCell
                             key={header}
                             sx={{
-                              backgroundColor: "primary.main",
+                              backgroundColor: "secondary.main",
                               color: "white",
                               fontWeight: "bold",
                               fontSize: "0.95rem",
@@ -364,7 +372,15 @@ const AnimalSearch: React.FC = () => {
                 />
         
                   {chosenAnimals.length > 0 && (
-                    <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
+                    <TableContainer
+                      component={Paper}
+                      elevation={3}
+                      sx={{
+                        borderRadius: 2,
+                        maxHeight: 400,
+                        overflow: "auto",
+                      }}
+                    >
                       <Table stickyHeader>
                         <TableHead>
                           <TableRow>
@@ -387,7 +403,7 @@ const AnimalSearch: React.FC = () => {
                               <TableCell
                                 key={header}
                                 sx={{
-                                  backgroundColor: "primary.main",
+                                  backgroundColor: "secondary.main",
                                   color: "white",
                                   fontWeight: "bold",
                                   fontSize: "0.95rem",
