@@ -1,19 +1,19 @@
-import { Database } from "sqlite3";
+import { Database } from "@database/async";
 import { dateTimeAsString } from "../../../../dbUtils";
 import { Result, Success, Failure } from "@common/core";
 
 /**
  * Ends all active leases for an animal by setting the end date to its death date.
  *
- * @param db - The SQLite Database object
+ * @param db - The async Database wrapper
  * @param animalId - The ID of the animal whose leases are to be ended
  * @param deathDate - The date to set as the end of lease (YYYY-MM-DD)
- * @returns Result<void, string> - Success on completion, Failure with error message
+ * @returns Result<void, string>
  */
 export async function endAnimalLeaseFromDeath(
-  db: Database,
-  animalId: string,
-  deathDate: string
+    db: Database,
+    animalId: string,
+    deathDate: string
 ): Promise<Result<void, string>> {
 
   const modifiedTimestamp = dateTimeAsString();
@@ -24,13 +24,18 @@ export async function endAnimalLeaseFromDeath(
     WHERE id_animalid = ? AND end_lease_date IS NULL
   `;
 
-  return new Promise<Result<void, string>>((resolve) => {
-    db.run(query, [deathDate, modifiedTimestamp, animalId], (err: Error | null) => {
-      if (err) {
-        resolve(new Failure(`Failed to end leases for animal ${animalId}: ${err.message}`));
-      } else {
-        resolve(new Success(undefined));
-      }
-    });
-  });
+  try {
+    const _ = await db.run(query, [
+      deathDate,
+      modifiedTimestamp,
+      animalId,
+    ]);
+
+    return new Success(undefined);
+
+  } catch (err: any) {
+    return new Failure(
+        `Failed to end leases for animal ${animalId}: ${err.message}`
+    );
+  }
 }

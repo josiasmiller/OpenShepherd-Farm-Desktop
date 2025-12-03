@@ -1,4 +1,4 @@
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 import { Species, ProcessingResult, RegistryRow, ValidationResult } from '@app/api';
 
 export interface RegistryProcessor {

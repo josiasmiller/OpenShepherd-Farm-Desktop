@@ -1,7 +1,7 @@
 import { handleResult } from '@common/core';
 import { RegistryRow, ValidationResponse } from '@app/api';
 import { animalHasActiveOfficialTag } from '../../../../../../database';
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 
 /**
  * @param db The Database to act on
@@ -16,7 +16,7 @@ export async function checkHasOfficialId(db: Database, row: RegistryRow): Promis
     return { checkName: "checkHasOfficialId", errors, passed: errors.length === 0 };
   }
 
-  var tagResult = await animalHasActiveOfficialTag(db, row.animalId);
+  var tagResult = await animalHasActiveOfficialTag(db.raw(), row.animalId);
 
   await handleResult(tagResult, {
     success: (data: boolean) => {

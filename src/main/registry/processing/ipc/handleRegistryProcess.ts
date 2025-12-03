@@ -10,7 +10,7 @@ import { registryProcessorFactory } from "../core/registryProcessorFactory";
 import {
   RegistryProcessor,
 } from "../core/types";
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 
 export async function handleRegistryProcess(
   db: Database,

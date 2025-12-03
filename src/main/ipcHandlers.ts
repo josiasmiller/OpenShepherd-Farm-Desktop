@@ -502,7 +502,7 @@ export const registerIpcHandlers = () => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
       const {processType, species, sections} = args;
-      return handleRegistryProcess(session.db.raw(), processType, species, sections);
+      return handleRegistryProcess(session.db, processType, species, sections);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });
