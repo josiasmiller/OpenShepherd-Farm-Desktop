@@ -22,13 +22,14 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/buttons/backButton";
-import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
+import { ActionButton, BackButton } from "@components/buttons";
+import CollapsibleSection from "@components/collapsible/collapsible";
+
+import LoadingIndicator from "@components/loadingIndicator/loadingIndicator";
 import { isRegistryDesktop } from "@app/buildVariant";
 import { AnimalSearchRequest, AnimalSearchResult } from "@app/api";
 import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
-import ActionButton from "src/renderer/components/buttons/actionButton";
+
 
 const AnimalSearch: React.FC = () => {
   const navigate = useNavigate();

@@ -16,9 +16,9 @@ import {
 import { AnimalSearchResult } from "@app/api";
 import Swal from "sweetalert2";
 
-import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/buttons/backButton";
-import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
+import CollapsibleSection from "@components/collapsible/collapsible";
+import { BackButton } from "@components/buttons";
+import LoadingIndicator from "@components/loadingIndicator/loadingIndicator";
 import { isRegistryDesktop } from "@app/buildVariant";
 import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 

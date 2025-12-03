@@ -5,7 +5,7 @@ interface ActionButtonProps extends ButtonProps {
   label: string; // the text to display
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ label, ...props }) => {
+export const ActionButton: React.FC<ActionButtonProps> = ({ label, ...props }) => {
   return (
     <Button
       variant="contained"
@@ -29,7 +29,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ label, ...props }) => {
           boxShadow: "none",
         },
       }}
-      {...props} // spread other MUI Button props like onClick, disabled
+      {...props}
     >
       {label}
     </Button>

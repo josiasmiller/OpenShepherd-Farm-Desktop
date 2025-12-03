@@ -1,11 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-import React, { useEffect, useMemo } from "react";
-import CollapsibleSection from "../../../components/collapsible/collapsible";
-import { BackButton } from "../../../components/buttons/backButton";
+import React, { useEffect } from "react";
 
 import { useState } from "react";
-import LoadingIndicator from "../../../components/loadingIndicator/loadingIndicator";
 import { handleResult } from '@common/core';
 import { Species } from '@app/api';
 import Swal from "sweetalert2";
@@ -19,9 +16,11 @@ import {
   Paper,
   SelectChangeEvent,
 } from "@mui/material";
-import ActionButton from "src/renderer/components/buttons/actionButton";
-import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
+import CollapsibleSection from "@components/collapsible/collapsible";
+import { ActionButton, BackButton } from "@components/buttons";
+import LoadingIndicator from "@components/loadingIndicator/loadingIndicator";
+import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
 const RegistryLanding: React.FC = () => {
   const navigate = useNavigate();
