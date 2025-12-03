@@ -4,7 +4,7 @@ import { Result, Success, Failure } from "@common/core";
 import {
   ARTIFICIAL_INSEMINATION_FROZEN_LAPROSCOPIC,
   ARTIFICIAL_INSEMINATION_FROZEN_VAGINAL,
-} from "src/main/database/dbConstants";
+} from "@database/schema";
 
 /**
  * Ends all pertinent sections of the `animal_male_breeding_table`

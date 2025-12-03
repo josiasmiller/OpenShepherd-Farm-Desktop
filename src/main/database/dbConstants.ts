@@ -38,7 +38,3 @@ export const ID_TRANSFER_REASON_TRANSFERRED_BREEDING = "2d3e0aed-84c9-48e8-b11f-
 
 // death_reason_table
 export const DIED_STILLBORN = "9de9f67c-afc4-4d16-83d3-20c4337f4344";
-
-// service_type_table
-export const ARTIFICIAL_INSEMINATION_FROZEN_LAPROSCOPIC = 'aa46e122-cc6e-4468-b177-93cb117d24c6';
-export const ARTIFICIAL_INSEMINATION_FROZEN_VAGINAL = 'f513a321-120b-4b71-af4c-6f6c818ffe19';
