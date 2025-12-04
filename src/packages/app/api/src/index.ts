@@ -61,6 +61,7 @@ export {
   PedigreeNode,
   ScrapieFlockInfo,
   ProcessingResult,
+  RegistryCertificate,
   RegistryRow,
   RegistryFieldDef,
   RegistrationWriteResponse,
