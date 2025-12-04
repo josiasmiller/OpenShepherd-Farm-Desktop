@@ -50,7 +50,7 @@ export const deathParser = async (filePath: string): Promise<Result<DeathRecord,
     }
     // ===================================================================================================================
     // --- Map deaths ---
-    const animalDeaths: AnimalDeath[] = fileContents.animals.map((a: any) => ({
+    const animalDeaths: AnimalDeath[] = fileContents.deaths.map((a: any) => ({
       deathDate: a.deathDate ?? "",
       animalId: a.animalId ?? "",
       registrationNumber: a.registrationNumber ?? "",

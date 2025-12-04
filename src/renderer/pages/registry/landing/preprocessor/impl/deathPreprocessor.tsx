@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Swal, {SweetAlertOptions} from "sweetalert2";
 import {ActionButton, BackButton} from "@components/buttons";
 import { AnimalInformationTable } from "@components/tables/animalTable";
-import { DateDisplay } from "@components/informationDisplay/dateDisplay";
-import { OwnerInformationTable  } from "@components/tables/ownerTable";
+import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
+
 
 import {
     Species,
@@ -112,18 +112,18 @@ export const DeathPreprocessorPage: React.FC = () => {
                     icon: "success",
                     confirmButtonText: "OK",
                     width: "40em",
-                    text: `${data} Transfers processed successfully`,
+                    text: `${data} Deaths processed successfully`,
                 });
 
                 navigate("/"); // nav back to home after processing
             },
-            error: (_: string) => {
+            error: (errMsg: string) => {
                 Swal.fire({
                     title: "Error",
                     icon: "error",
                     confirmButtonText: "OK",
                     width: "40em",
-                    text: "There was an error processing transfers.",
+                    text: `There was an error processing deaths:\n${errMsg}`,
                 });
             },
         });
@@ -131,61 +131,63 @@ export const DeathPreprocessorPage: React.FC = () => {
     };
 
     return (
-        <Box
-            sx={{
-                height: "100vh",
-                overflowY: "auto",
-                pb: "5em",
-            }}
-        >
-            <BackButton onClick={() => navigate(-1)} />
-
-            {/* Page Title */}
-            <Typography
-                variant="h4"
+        <AtrkkrTheme>
+            <Box
                 sx={{
-                    fontWeight: "bold",
-                    px: 4,
-                    pt: 2,
-                    pb: 3,
+                    height: "100vh",
+                    overflowY: "auto",
+                    pb: "5em",
                 }}
             >
-                Preprocess Transfers
-            </Typography>
+                <BackButton onClick={() => navigate(-1)} />
 
-            {/* --- Select File Button --- */}
-            <Box px={4} mb={3}>
-                <ActionButton
-                    label={loading ? "Loading..." : "Select Transfer JSON File"}
-                    onClick={selectAndLoadFile}
-                    disabled={loading}
-                    fullWidth
-                />
-            </Box>
+                {/* Page Title */}
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontWeight: "bold",
+                        px: 4,
+                        pt: 2,
+                        pb: 3,
+                    }}
+                >
+                    Preprocess Deaths
+                </Typography>
 
-            {hasLoadedFile && (
-                <>
-                    {/* --- Animal Information Table --- */}
-                    <Box mb={4}>
-                        <Box px={4}>
-                            <Typography variant="h5" gutterBottom>
-                                Animal(s)
-                            </Typography>
+                {/* --- Select File Button --- */}
+                <Box px={4} mb={3}>
+                    <ActionButton
+                        label={loading ? "Loading..." : "Select Death JSON File"}
+                        onClick={selectAndLoadFile}
+                        disabled={loading}
+                        fullWidth
+                    />
+                </Box>
+
+                {hasLoadedFile && (
+                    <>
+                        {/* --- Animal Information Table --- */}
+                        <Box mb={4}>
+                            <Box px={4}>
+                                <Typography variant="h5" gutterBottom>
+                                    Animal(s)
+                                </Typography>
+                            </Box>
+                            <AnimalInformationTable animalIds={animalIds} />
                         </Box>
-                        <AnimalInformationTable animalIds={animalIds} />
-                    </Box>
 
-                    <Box px={4} mb={3}>
-                        <ActionButton
-                            label={loading ? "Loading..." : "Process Deaths"}
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            fullWidth
-                        />
-                    </Box>
-                </>
-            )}
-        </Box>
+                        <Box px={4} mb={3}>
+                            <ActionButton
+                                label={loading ? "Loading..." : "Process Deaths"}
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                fullWidth
+                            />
+                        </Box>
+                    </>
+                )}
+            </Box>
+        </AtrkkrTheme>
     );
 };
 
