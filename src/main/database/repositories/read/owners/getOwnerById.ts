@@ -77,16 +77,16 @@ const _getContactOwnerById = async (
     LIMIT 1;
   `;
 
-  const row: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
+  const queryResult: Result<OwnerByIdRow | undefined, string> = await new Promise((resolve, reject) => {
     db.get(contactQuery, [ownerId], (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
+      if (err) reject(new Failure(`Database query failed: ${err.message}`));
+      else resolve(new Success(result));
     });
-  }).catch(err => {
-    return new Failure(`Database query failed: ${err.message}`);
   });
 
-  if (row instanceof Failure) return row;
+  if (queryResult.tag === "error") return queryResult;
+
+  const row: OwnerByIdRow | undefined = queryResult.data
 
   if (!row || !row.id_contactid) {
     return new Failure(`No contact record found for ID: ${ownerId}`);
@@ -151,17 +151,17 @@ const _getCompanyOwnerById = async (
     LIMIT 1;
   `;
 
-  const row: OwnerByIdRow | undefined = await new Promise((resolve, reject) => {
+  const queryResult: Result<OwnerByIdRow | undefined, string> = await new Promise((resolve, reject) => {
     db.get(companyQuery, [ownerId], (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
+      if (err) reject(new Failure(`Database query failed: ${err.message}`));
+      else resolve(new Success(result));
     });
-  }).catch(err => {
-    return new Failure(`Database query failed: ${err.message}`);
   });
 
-  if (row instanceof Failure) return row;
-  
+  if (queryResult.tag === "error") return queryResult;
+
+  const row = queryResult.data
+
   if (!row || !row.id_companyid) {
     return new Failure(`No company record found for ID: ${ownerId}`);
   }
