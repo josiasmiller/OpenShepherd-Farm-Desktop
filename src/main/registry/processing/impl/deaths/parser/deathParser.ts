@@ -1,62 +1,79 @@
-import fs from 'fs/promises';
-import Papa from 'papaparse';
-import { DeathParseResponse, DeathParseRow, ParseResult } from '@app/api';
-import { deathParseMap } from './util/deathParseMap';
-import { BrowserWindow, dialog } from 'electron';
+import {
+  DIALOG_CANCELLED,
+  DialogCancelledError,
+  MISSING_FIELDS,
+  type MissingFieldsError, PARSE_ERROR, type ParseError
+} from '@app/api';
 
-export const deathParser = async (mainWindow: BrowserWindow): Promise<ParseResult<DeathParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog( mainWindow, {
-    title: "Select Death CSV File",
-    properties: ["openFile"],
-    filters: [{ name: "CSV Files", extensions: ["csv"] }],
-  });
+import { BrowserWindow } from 'electron';
+import {selectJsonFile} from "@fileDialogs/jsonSelect";
+import {AnimalDeath, DeathRecord} from "@app/api/src/dtos";
+import {Failure, Result, Success} from "@common/core";
+import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
+import {readJsonFile} from "@registryHelpers";
+import log from "electron-log";
 
-  if (canceled || filePaths.length === 0) {
-    console.log("User cancelled CSV file selection.");
-    return { 
-      data: {
-        rows : []
-      }, 
-      warnings: [] 
+/**
+ * Main Entrypoint for death parsing
+ */
+export const selectAndParseDeaths = async (window: BrowserWindow): Promise<Result<DeathRecord, DeathError>> => {
+
+  const fileResult = await selectJsonFile("Select Deaths JSON file", window);
+
+  if (fileResult === null) {
+    const ret: DialogCancelledError = {
+      type: DIALOG_CANCELLED,
     };
+    return new Failure(ret);
   }
 
-  const selectedFile = filePaths[0];
-  const fileContent = await fs.readFile(selectedFile, 'utf-8');
+  return deathParser(fileResult);
+}
 
-  return new Promise((resolve, reject) => {
-    Papa.parse(fileContent, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const warnings: string[] = [];
-        const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(deathParseMap);
 
-        for (const header of expectedHeaders) {
-          if (!actualHeaders.includes(header)) {
-            warnings.push(`Missing expected column: "${header}"`);
-          }
-        }
+export const deathParser = async (filePath: string): Promise<Result<DeathRecord, DeathError>> => {
 
-        const parsedData: DeathParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<DeathParseRow> = {};
+  try{
+    const fileContents = await readJsonFile(filePath);
 
-          for (const [csvKey, fieldKey] of Object.entries(deathParseMap)) {
-            parsedRow[fieldKey as keyof DeathParseRow] = row[csvKey];
-          }
+    const missingFields: string[] = [];
+    if (!fileContents.deaths || !Array.isArray(fileContents.deaths))
+      missingFields.push("deaths");
 
-          return parsedRow as DeathParseRow;
-        });
+    if (missingFields.length > 0) {
+      const error: MissingFieldsError = {
+        type: MISSING_FIELDS,
+        missing: missingFields,
+      };
 
-        resolve({ 
-          data: {
-            rows : parsedData
-          }, 
-          warnings: warnings 
-        });
-      },
-      error: (err: any) => reject(err),
-    });
-  });
+      return new Failure(error);
+    }
+    // ===================================================================================================================
+    // --- Map deaths ---
+    const animalDeaths: AnimalDeath[] = fileContents.animals.map((a: any) => ({
+      deathDate: a.deathDate ?? "",
+      animalId: a.animalId ?? "",
+      registrationNumber: a.registrationNumber ?? "",
+      prefixKey: a.prefixKey ?? "",
+      prefix: a.prefix ?? "",
+      name: a.name ?? "",
+      reasonKey: a.reasonKey ?? "",
+      reason: a.reason ?? "",
+      notes: a.notes ?? "",
+    }));
+
+    const deathRecord : DeathRecord = {
+      deaths: animalDeaths
+    }
+
+    return new Success(deathRecord);
+
+  } catch (err: any) {
+    log.error("Error parsing json JSON:", err);
+    const ret: ParseError = {
+      type: PARSE_ERROR,
+      details: err?.message ?? String(err),
+    };
+    return new Failure(ret);
+  }
 };

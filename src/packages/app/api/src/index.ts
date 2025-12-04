@@ -1,6 +1,7 @@
 import { AnimalTrakkerIPC } from "./apis";
 
 export {
+  AnimalDeath,
   AnimalDetails,
   AnimalIdentification,
   AnimalIdInfoInput,
@@ -25,8 +26,7 @@ export {
   DatabaseSessionInfo,
   DatabaseStateCheckResponse,
   DeathReason,
-  DeathParseResponse,
-  DeathParseRow,
+  DeathRecord,
   DefaultSettingsResults,
   DrugEvent,
   ExistingMemberBuyer,

@@ -28,7 +28,17 @@ import { validateTransferRows } from '../validation/transferValidator'; // chang
 export async function validateAndProcessTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
   const validationAnswer : ValidationResult[] = await validateTransferRows(db, transferRecord);
 
-  // verify OK then process or ret
+  const hasInvalid = validationAnswer.some(v => !v.isValid);
+
+  if (hasInvalid) {
+    // Combine all errors into a single message
+    const errorMessage = validationAnswer
+        .filter(v => !v.isValid)
+        .map(v => `Row ${v.rowIndex}: ${v.errors.join(", ")}`)
+        .join("\n");
+
+    return new Failure(errorMessage);
+  }
 
   return processTransfers(db, transferRecord);
 }

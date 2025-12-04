@@ -51,7 +51,6 @@ export const transferParser = async (filePath: string): Promise<Result<TransferR
   try {
     const fileContents = await readJsonFile(filePath);
 
-    // Validation without exceptions
     const missingFields: string[] = [];
     if (!fileContents.animals || !Array.isArray(fileContents.animals))
       missingFields.push("animals");

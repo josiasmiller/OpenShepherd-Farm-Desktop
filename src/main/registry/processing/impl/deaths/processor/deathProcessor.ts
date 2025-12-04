@@ -1,5 +1,5 @@
-import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult } from '@app/api';
+import {Failure, handleResult, Result, Success} from '@common/core';
+import {Species, RegistryRow, ProcessingResult, ValidationResult, DeathRecord} from '@app/api';
 
 
 // DB actions
@@ -20,23 +20,44 @@ import {
   endAnimalLeaseFromDeath,
   endMaleBreedingFromDeath,
 } from '../../../../../database';
-import {Database} from '@database/async';
+
 import log from 'electron-log';
+import {Database} from "@database/async";
+import {validateDeathRows} from "../validation/deathValidator";
+
+
+
+export async function validateAndProcessDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<number, string>> {
+  const validationAnswer : ValidationResult[] = await validateDeathRows(db, deathRecord);
+
+  const hasInvalid = validationAnswer.some(v => !v.isValid);
+
+  if (hasInvalid) {
+    // Combine all errors into a single message
+    const errorMessage = validationAnswer
+        .filter(v => !v.isValid)
+        .map(v => `Row ${v.rowIndex}: ${v.errors.join(", ")}`)
+        .join("\n");
+
+    return new Failure(errorMessage);
+  }
+
+  return processDeaths(db, deathRecord);
+}
+
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param rows RegistryRows to be processed
- * @param _ here only to satisfy interface
+ * @param deathRecord the record of deaths
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
+export async function processDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<number, string>> {
   try {
     await beginTransaction(db.raw());
 
-    let rows : RegistryRow[] = sections.death_records;
+    for (const row of deathRecord.deaths) {
 
-    for (const row of rows) {
       try {
 
         const animalId : string = row.animalId;
@@ -163,22 +184,21 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         });
 
       } catch (innerError) {
-        throw new Error(`Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`);
+        return new Failure(
+            `Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`
+        );
       }
     }
 
     await commitTransaction(db.raw());
-    return {
-      success: true,
-      insertedRowCount: rows.length
-    };
+
+    return new Success(deathRecord.deaths.length);
 
   } catch (error) {
     await rollbackTransaction(db.raw());
-    return {
-      success: false,
-      errors: [(error as Error).message]
-    };
+    return new Failure(
+        (error as Error).message
+    );
   }
 }
 

@@ -524,8 +524,6 @@ export type RegistrationParseRow = {
     coatColor: string;
 };
 
-// export type TransferParseResponse = TransferParseSuccess | TransferError
-
 export type TransferRecord  = {
     animals: AnimalRow[];
     seller: SellerInfo;
@@ -584,11 +582,11 @@ export type NewBuyer = {
     website?: string;
 };
 
-export type DeathParseResponse = {
-    rows: DeathParseRow[];
+export type DeathRecord = {
+    deaths: AnimalDeath[];
 }
 
-export type DeathParseRow = {
+export type AnimalDeath = {
     deathDate: string;
     animalId: string;
     prefixKey: string;

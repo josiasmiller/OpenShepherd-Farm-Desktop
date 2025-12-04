@@ -44,12 +44,12 @@ import {writeTissueTestResults} from "./writers/csv/writeTissueTestResults";
 import {writeRegistration} from "./writers/pdf/writeRegistration";
 
 import {birthParser} from "./registry/processing/impl/births/parser/birthParser";
-import {deathParser} from "./registry/processing/impl/deaths/parser/deathParser";
+import {deathParser, selectAndParseDeaths} from "./registry/processing/impl/deaths/parser/deathParser";
 import {registrationParser} from "./registry/processing/impl/registrations/parser/registrationParser";
 import {selectAndParseTransfers} from "./registry/processing/impl/transfers/parser/transferParser";
 import {handleDatabaseStateCheck} from "./registry/processing/ipc/handleDatabaseStateCheck";
 import {
-  DatabaseStateCheckResponse,
+  DatabaseStateCheckResponse, DeathRecord,
   DefaultSettingsResults,
   OwnerType,
   RegistryProcessRequest,
@@ -65,7 +65,7 @@ import {getStoreSelectedFilepath, setStoreSelectedFilepath} from "./store/impl/s
 import {promiseFrom} from "@common/core";
 import {atrkkrSessionForEvent} from "./session/sessionManagement";
 import log from "electron-log";
-import {validateAndProcessTransfers} from "./registry";
+import {validateAndProcessTransfers, validateAndProcessDeaths} from "./registry";
 import {ApplicationSettings} from "@ipc/api";
 import {AboutApp, AppAboutInfo} from "@app/buildVariant";
 
@@ -114,6 +114,7 @@ const IPC_INVOKE_REGISTRY_PARSE_DEATHS = 'registry-parse-deaths'
 const IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS = 'registry-parse-registrations'
 const IPC_INVOKE_REGISTRY_PARSE_TRANSFERS = 'registry-parse-transfers'
 const IPC_INVOKE_REGISTRY_PROCESS = 'registry-process'
+const IPC_INVOKE_REGISTRY_PROCESS_DEATHS = 'registry-process-deaths'
 const IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS = 'registry-process-transfers'
 const IPC_INVOKE_DATABASE_STATE_CHECK = 'database-state-check'
 const IPC_INVOKE_RESOLVE_DATABASE_ISSUES = 'resolve-database-issues'
@@ -477,7 +478,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_DEATHS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return deathParser(session.window);
+      return selectAndParseDeaths(session.window);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_DEATHS, event)
   });
@@ -515,7 +516,13 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS, event)
   });
 
-  
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS_DEATHS, async (event: IpcMainInvokeEvent, deathRecord: DeathRecord) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return validateAndProcessDeaths(session.db, deathRecord);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS_DEATHS, event)
+  });
 
   ipcMain.handle(IPC_INVOKE_DATABASE_STATE_CHECK, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)
