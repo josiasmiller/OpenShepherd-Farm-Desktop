@@ -26,7 +26,7 @@ export async function correctLatestRegistrationNumber(
         WHERE id_animalregistrationtypeid = ?
           AND registration_number IS NOT NULL
       `;
-      db.all(query, [id_registrationtypeid], (err, rows) => {
+      db.all(query, [id_registrationtypeid], (err, rows: { registration_number: string }[]) => {
         if (err) return reject(err);
         resolve(rows.map((r: { registration_number: string }) => r.registration_number));
       });
