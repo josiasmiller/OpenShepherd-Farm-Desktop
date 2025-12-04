@@ -137,7 +137,7 @@ export const getAnimalRegistrationInfo = async (
 
       let ownerCompanies : Company[] = [];
 
-      if (owner.type === OwnerType.CONTACT) {
+      if (owner?.type === OwnerType.CONTACT) {
         const contactOwner = owner as OwnerContact;
         const contactCompanyResult = await getCompaniesForContact(db, contactOwner.contact.id);
 
@@ -157,7 +157,7 @@ export const getAnimalRegistrationInfo = async (
 
       let breederCompanies : Company[] = [];
 
-      if (breeder.type === OwnerType.CONTACT) {
+      if (breeder?.type === OwnerType.CONTACT) {
         const breederOwner = breeder as OwnerContact;
         const breederCompanyResult = await getCompaniesForContact(db, breederOwner.contact.id);
 
