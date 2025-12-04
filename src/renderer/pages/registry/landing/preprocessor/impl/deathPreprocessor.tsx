@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Swal, {SweetAlertOptions} from "sweetalert2";
 import {ActionButton, BackButton} from "@components/buttons";
@@ -8,7 +8,6 @@ import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
 
 import {
-    Species,
     DIALOG_CANCELLED,
     MISSING_FIELDS,
     PARSE_ERROR,
@@ -21,7 +20,6 @@ import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes"
 
 
 export const DeathPreprocessorPage: React.FC = () => {
-    const location = useLocation();
     const navigate = useNavigate();
 
     const [currentDeathRecord, setCurrentDeathRecord] = useState<DeathRecord>();
@@ -32,8 +30,8 @@ export const DeathPreprocessorPage: React.FC = () => {
     const [hasLoadedFile, setHasLoadedFile] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const navigationState = location.state as { species?: Species };
-    const species : Species = navigationState?.species!;
+    const [deathDateMap, setDeathDateMap] = useState<Record<string, string>>({});
+
 
     /**
      * Opens a file dialog and loads the JSON file.
@@ -76,12 +74,17 @@ export const DeathPreprocessorPage: React.FC = () => {
             const deathRows : AnimalDeath[] = deathRecord.deaths;
 
             let newAnimalIds : string[] = [];
+            let newDeathMap : Record<string, string> = {};
 
             for (const deathRow of deathRows) {
                 let animalId: string = deathRow.animalId;
                 newAnimalIds.push(animalId);
+
+                // also populate newDeathMap so information can be displayed on the animalInformationTable
+                newDeathMap[animalId] = deathRow.deathDate;
             }
             setAnimalIds(newAnimalIds);
+            setDeathDateMap(newDeathMap);
 
 
             setHasLoadedFile(true);
@@ -170,10 +173,27 @@ export const DeathPreprocessorPage: React.FC = () => {
                         <Box mb={4}>
                             <Box px={4}>
                                 <Typography variant="h5" gutterBottom>
-                                    Animal(s)
+                                    {animalIds.length === 1 ? "Animal" : "Animals"}
                                 </Typography>
                             </Box>
-                            <AnimalInformationTable animalIds={animalIds} />
+                            <AnimalInformationTable
+                                animalIds={animalIds}
+                                extraColumns={[
+                                    {
+                                        key: "deathDate",
+                                        header: "Death Date",
+                                        getValue: (animalId) => deathDateMap[animalId] ?? "—",
+                                    },
+                                ]}
+                                columnOrder={[
+                                    "registrationNumber",
+                                    "flockPrefix",
+                                    "name",
+                                    "birthDate",
+                                    "deathDate",
+                                    "coatColor",
+                                ]}
+                            />
                         </Box>
 
                         <Box px={4} mb={3}>

@@ -44,12 +44,13 @@ import {writeTissueTestResults} from "./writers/csv/writeTissueTestResults";
 import {writeRegistration} from "./writers/pdf/writeRegistration";
 
 import {birthParser} from "./registry/processing/impl/births/parser/birthParser";
-import {deathParser, selectAndParseDeaths} from "./registry/processing/impl/deaths/parser/deathParser";
+import {selectAndParseDeaths} from "./registry/processing/impl/deaths/parser/deathParser";
 import {registrationParser} from "./registry/processing/impl/registrations/parser/registrationParser";
 import {selectAndParseTransfers} from "./registry/processing/impl/transfers/parser/transferParser";
 import {handleDatabaseStateCheck} from "./registry/processing/ipc/handleDatabaseStateCheck";
 import {
-  DatabaseStateCheckResponse, DeathRecord,
+  DatabaseStateCheckResponse,
+  DeathRecord,
   DefaultSettingsResults,
   OwnerType,
   RegistryProcessRequest,
