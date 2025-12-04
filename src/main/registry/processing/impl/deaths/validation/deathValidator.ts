@@ -1,6 +1,6 @@
 import { RegistryRow, Species, ValidationResult } from '@app/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 
 export async function validateDeathRows(
   db: Database, 
@@ -15,7 +15,7 @@ export async function validateDeathRows(
     const row = rows[index];
     const errors: string[] = [];
 
-    var isDeadCheck = await checkIsAnimalAlreadyDead(db, row);
+    var isDeadCheck = await checkIsAnimalAlreadyDead(db.raw(), row);
     errors.push(...isDeadCheck.errors);
 
     results.push({

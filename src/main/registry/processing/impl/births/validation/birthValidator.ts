@@ -5,7 +5,7 @@ import { checkDamBreedingAge } from './rules/checkDamBreedingAge';
 import { checkDamRecentOffspring } from './rules/checkDamRecentOffspring';
 import { checkHasAtLeastOneValidTag } from './rules/checkHasAtLeastOneValidTag';
 import { checkElectronicTags } from './rules/checkElectronicTags';
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 
 export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
@@ -17,22 +17,22 @@ export async function validateBirthRows(db: Database, sections: Record<string, R
     const errors: string[] = [];
 
     // Run all relevant checks
-    const tagCheck = await checkElectronicTags(db, row);
+    const tagCheck = await checkElectronicTags(db.raw(), row);
     errors.push(...tagCheck.errors);
 
     const atLeastOneValidTagCheck = await checkHasAtLeastOneValidTag(row);
     errors.push(...atLeastOneValidTagCheck.errors)
 
-    const sireCheck = await checkSireAlive(db, row, species);
+    const sireCheck = await checkSireAlive(db.raw(), row, species);
     errors.push(...sireCheck.errors);
 
-    const sireAgeCheck = await checkSireBreedingAge(db, row, species);
+    const sireAgeCheck = await checkSireBreedingAge(db.raw(), row, species);
     errors.push(...sireAgeCheck.errors);
 
-    const damAgeCheck = await checkDamBreedingAge(db, row, species);
+    const damAgeCheck = await checkDamBreedingAge(db.raw(), row, species);
     errors.push(...damAgeCheck.errors);
 
-    const damRecentOffspringCheck = await checkDamRecentOffspring(db, row, species);
+    const damRecentOffspringCheck = await checkDamRecentOffspring(db.raw(), row, species);
     errors.push(...damRecentOffspringCheck.errors);
 
     results.push({

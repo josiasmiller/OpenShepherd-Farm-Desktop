@@ -17,8 +17,11 @@ import {
   insertAnimalNote,
   markAnimalDeathLocation,
   updateAnimalDeath,
+  endAnimalLeaseFromDeath,
+  endMaleBreedingFromDeath,
 } from '../../../../../database';
-import {Database} from "sqlite3";
+import {Database} from '@database/async';
+import log from 'electron-log';
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
@@ -29,9 +32,9 @@ import {Database} from "sqlite3";
  */
 export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
   try {
-    await beginTransaction(db);
+    await beginTransaction(db.raw());
 
-    var rows : RegistryRow[] = sections.death_records;
+    let rows : RegistryRow[] = sections.death_records;
 
     for (const row of rows) {
       try {
@@ -44,8 +47,8 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // update death record of animal
 
-        var animalDeathResult = await updateAnimalDeath(
-          db,
+        let animalDeathResult = await updateAnimalDeath(
+          db.raw(),
           animalId,
           deathDate,
           deathReasonId,
@@ -56,7 +59,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
             // do nothing
           },
           error: (err: string) => {
-            console.error("Failed to update animal's death date:", err);
+            log.error("Failed to update animal's death date:", err);
             throw new Error(err);
           },
         });
@@ -64,8 +67,8 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // update last location of animal
 
-        var deathLocationResult = await markAnimalDeathLocation(
-          db,
+        let deathLocationResult = await markAnimalDeathLocation(
+          db.raw(),
           animalId,
           deathDate,
         );
@@ -75,7 +78,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
             // do nothing
           },
           error: (err: string) => {
-            console.error("Failed to update animal's death location:", err);
+            log.error("Failed to update animal's death location:", err);
             throw new Error(err);
           },
         });
@@ -89,42 +92,72 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // delete any pertinent data that needs to be on animal death
-        var deleteAnimalAlertResult = await deleteAnimalAlerts(db, animalId);
+        let deleteAnimalAlertResult = await deleteAnimalAlerts(db.raw(), animalId);
 
         await handleResult(deleteAnimalAlertResult, {
           success: (_: null) => {
             // do nothing
           },
           error: (err: string) => {
-            console.error("Failed to delete from animal alert table:", err);
+            log.error("Failed to delete from animal alert table:", err);
             throw new Error(err);
           },
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // remove from animal at stud table
 
-        var deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(db, animalId);
+        let deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(db.raw(), animalId);
 
         await handleResult(deleteAnimalAtStudResult, {
           success: (_: null) => {
             // do nothing
           },
           error: (err: string) => {
-            console.error("Failed to delete from animal at stud table:", err);
+            log.error("Failed to delete from animal at stud table:", err);
             throw new Error(err);
           },
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Remove from animal for sale table
 
-        var deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(db, animalId);
+        let deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(db.raw(), animalId);
 
         await handleResult(deleteAnimalForSaleResult, {
           success: (_: null) => {
             // do nothing
           },
           error: (err: string) => {
-            console.error("Failed to delete from animal for sale table:", err);
+            log.error("Failed to delete from animal for sale table:", err);
+            throw new Error(err);
+          },
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // end any breeding leases
+        let animalEndBreedingLeases = await endAnimalLeaseFromDeath(db, animalId, deathDate);
+
+        await handleResult(animalEndBreedingLeases, {
+          success: (_: null) => {
+            // do nothing
+          },
+          error: (err: string) => {
+            log.error("Failed to update animal leases:", err);
+            throw new Error(err);
+          },
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // end any male stud records
+        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock until JSON parsing is updated and we can get the time
+
+        await handleResult(animalEndMaleBreeding, {
+          success: (_: null) => {
+            // do nothing
+          },
+          error: (err: string) => {
+            log.error("Failed to update male breeding table:", err);
             throw new Error(err);
           },
         });
@@ -134,14 +167,14 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
       }
     }
 
-    await commitTransaction(db);
+    await commitTransaction(db.raw());
     return {
       success: true,
       insertedRowCount: rows.length
     };
 
   } catch (error) {
-    await rollbackTransaction(db);
+    await rollbackTransaction(db.raw());
     return {
       success: false,
       errors: [(error as Error).message]
@@ -150,8 +183,8 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
 }
 
 async function _writeAnimalNote(db: Database, animalId : string, animalNote: string, noteDate: string) {
-  var noteResult = await insertAnimalNote(
-    db,
+  let noteResult = await insertAnimalNote(
+    db.raw(),
     animalId,
     animalNote,
     noteDate,
@@ -162,7 +195,7 @@ async function _writeAnimalNote(db: Database, animalId : string, animalNote: str
       // do nothing since we do not care about he new note's ID
     },
     error: (err: string) => {
-      console.error("Failed to write animal death note:", err);
+      log.error("Failed to write animal death note:", err);
       throw new Error(err);
     },
   });

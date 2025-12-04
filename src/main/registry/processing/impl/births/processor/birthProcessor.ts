@@ -1,4 +1,4 @@
-import {Database} from "sqlite3";
+import {Database} from "@database/async";
 import { handleResult, Result, unwrapOrThrow, isUUIDv4 } from '@common/core';
 import { RegistryRow, Sex, Species, ProcessingResult } from '@app/api';
 import { getStoreSelectedDefault } from '../../../../../store/impl/selectedDefault';
@@ -55,12 +55,11 @@ import {
   Owner,
   OwnerType,
 } from '@app/api';
-// import { unwrapOrThrow } from 'packages/core/src/resultTypes';
 
 
 export async function processBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species : Species): Promise<ProcessingResult> {
   try {
-    await beginTransaction(db);
+    await beginTransaction(db.raw());
 
     var selectedDefault : DefaultSettingsResults | null = getStoreSelectedDefault();
     if (!selectedDefault) {
@@ -83,12 +82,12 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
 
     ///////////////////////////////////////////////////////////////
     // determine the rear type of the living animals
-    const rearType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(db, numNotStillborn));
+    const rearType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(db.raw(), numNotStillborn));
 
     ///////////////////////////////////////////////////////////////
     // determine the birth type of all animals, regardless of being stillborn or not
     // rear type is how many animals are being processed
-    const birthType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(db, rows.length));
+    const birthType : BirthType = await unwrapOrThrow(getBirthTypeByDisplayOrder(db.raw(), rows.length));
 
     let stillbornIteration : number = 0; // this gets incremented by 1 at the start of any stillborn handling
 
@@ -117,14 +116,14 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
           animalTableInput.rearType = rearType; // not stillborn --> the reartype is what is determined from above
         }
        
-        let newAnimalId : string = await insertIntoAnimalTable(db, animalTableInput);
+        let newAnimalId : string = await insertIntoAnimalTable(db.raw(), animalTableInput);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert weight row into animal_evaluations_table
         let weightInput : InsertWeightRecordInput = mapRegistryRowToWeightRecordInput(row, newAnimalId);
 
         if (weightInput.weight > 0.0) {
-          await insertWeightRecord(db, weightInput);
+          await insertWeightRecord(db.raw(), weightInput);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +131,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         const damId : string = row.damId;
         const sireId : string = row.sireId;
         await writeAnimalBreedPercentages(
-          db,
+          db.raw(),
           newAnimalId,
           damId,
           sireId,
@@ -143,7 +142,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
 
         const breeder : Owner = await unwrapOrThrow(
           getBreederFromOwnershipHistory(
-            db,
+            db.raw(),
             damId,
             species.id,
             birthDate,
@@ -153,14 +152,14 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Flock Prefix Id
         const flockPrefixId : string = await unwrapOrThrow(
-          getFlockPrefixIdByMembershipNumber(db, breeder.flockId)
+          getFlockPrefixIdByMembershipNumber(db.raw(), breeder.flockId)
         );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // add to flock table
 
         await insertAnimalFlockTableRow(
-          db,
+          db.raw(),
           newAnimalId,
           flockPrefixId,
         );
@@ -171,7 +170,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         let coatColorId : string = row.coatColorKey;
 
         await insertGeneticCoatRow(
-          db,
+          db.raw(),
           newAnimalId,
           coatColorId,
           birthDateString,
@@ -182,7 +181,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
 
         const owner : Owner = await unwrapOrThrow(
           getOwnerAtBirth(
-            db,
+            db.raw(),
             damId,
             birthDate,
           )
@@ -191,7 +190,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // insert row into animal location history table
         await insertAnimalGoesToLocation(
-          db,
+          db.raw(),
           newAnimalId,
           null,
           owner.premise.id,
@@ -201,7 +200,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         if (row.isStillborn) {
           // stillborn animals need to go from the premise they were born at to `null`
           await insertAnimalGoesToLocation(
-            db,
+            db.raw(),
             newAnimalId,
             owner.premise.id,
             null,
@@ -213,7 +212,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         // insert record into animal_ownership_history_table for the animal's birth
 
         await insertBirthOwnershipRecord(
-          db,
+          db.raw(),
           newAnimalId,
           owner,
           birthDateString,
@@ -227,13 +226,13 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         if (row.isStillborn) {
 
           newRegistrationNumber = await unwrapOrThrow(
-            incrementLastDiedAtBirthValue(db)
+            incrementLastDiedAtBirthValue(db.raw())
           );
 
         } else {
 
           newRegistrationNumber = await unwrapOrThrow(
-            incrementLastBirthNotifyValue(db)
+            incrementLastBirthNotifyValue(db.raw())
           );
 
         }
@@ -241,14 +240,14 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID
         let regCompanyId : string = await unwrapOrThrow(
-          getRegistryCompanyIdForMembershipNumber(db, owner.flockId)
+          getRegistryCompanyIdForMembershipNumber(db.raw(), owner.flockId)
         );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get flock book ID
 
         let flockBookId : string = await unwrapOrThrow(
-          getDefaultFlockBookId(db, regCompanyId)
+          getDefaultFlockBookId(db.raw(), regCompanyId)
         );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +256,7 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
         let regTypeUUID : string = row.isStillborn ? REGISTRATION_DIED_AT_BIRTH : REGISTRATION_BIRTH_NOTIFY;
 
         await insertAnimalRegistrationRow(
-          db,
+          db.raw(),
           breeder,
           newAnimalId,
           animalTableInput.name,
@@ -282,18 +281,18 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
 
         
         let scrapieId : string | null = await unwrapOrThrow(
-          getActiveScrapieFlockNumberId(db, ownerId)
+          getActiveScrapieFlockNumberId(db.raw(), ownerId)
         );
 
         if (!row.isStillborn) {
           if (hasFedTagInfo(row)) {
             let fedTagInput = mapRegistryRowToFedTagInput(row, newAnimalId, scrapieId);
-            await insertAnimalIdInfoRow(db, fedTagInput);
+            await insertAnimalIdInfoRow(db.raw(), fedTagInput);
           }
 
           if (hasFarmTagInfo(row)) {
             let farmTagInput = mapRegistryRowToFarmTagInput(row, newAnimalId);
-            await insertAnimalIdInfoRow(db, farmTagInput);
+            await insertAnimalIdInfoRow(db.raw(), farmTagInput);
           }
         }
 
@@ -302,14 +301,14 @@ export async function processBirthRows(db: Database, sections: Record<string, Re
       }
     }
 
-    await commitTransaction(db);
+    await commitTransaction(db.raw());
     return {
       success: true,
       insertedRowCount: rows.length
     };
 
   } catch (error) {
-    await rollbackTransaction(db);
+    await rollbackTransaction(db.raw());
     return {
       success: false,
       errors: [(error as Error).message]
@@ -324,7 +323,7 @@ async function craftStillbornName(db: Database, row: RegistryRow, iteration: num
 
   const damId : string = row.damId;
 
-  const damIdResult = await getAnimalIdentification(db, damId);
+  const damIdResult = await getAnimalIdentification(db.raw(), damId);
   let damIdentification : AnimalIdentification;
 
   await handleResult(damIdResult, {
@@ -342,7 +341,7 @@ async function craftStillbornName(db: Database, row: RegistryRow, iteration: num
   //////////////////////////////////////////////////////////
   // get flock prefix of dam
   
-  const fpResult = await getFlockPrefixByAnimalIdFromRegistration(db, damId);
+  const fpResult = await getFlockPrefixByAnimalIdFromRegistration(db.raw(), damId);
   let flockPrefix : FlockPrefix
 
   await handleResult(fpResult, {
@@ -360,7 +359,7 @@ async function craftStillbornName(db: Database, row: RegistryRow, iteration: num
 
   const stillbornSexUUID = row.sexKey;
 
-  let stillbornSexResult = await getSexById(db, stillbornSexUUID);
+  let stillbornSexResult = await getSexById(db.raw(), stillbornSexUUID);
   let stillbornSex : Sex;
 
   await handleResult(stillbornSexResult, {
