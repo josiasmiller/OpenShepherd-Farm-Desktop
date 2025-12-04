@@ -7,7 +7,7 @@ import {
 
 import { BrowserWindow } from 'electron';
 import {selectJsonFile} from "@fileDialogs/jsonSelect";
-import {AnimalDeath, DeathRecord} from "@app/api/src/dtos";
+import {AnimalDeath, DeathRecord} from "@app/api";
 import {Failure, Result, Success} from "@common/core";
 import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
 import {readJsonFile} from "@registryHelpers";
