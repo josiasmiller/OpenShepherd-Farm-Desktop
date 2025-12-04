@@ -1,6 +1,7 @@
 import { DeathRecord, ValidationResult } from '@app/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
 import {Database} from "@database/async";
+import {checkDeathDateFormat} from "./rules/checkIsDeathDateValid";
 
 export async function validateDeathRows(
   db: Database, 
@@ -12,8 +13,11 @@ export async function validateDeathRows(
     const row = deathRecord.deaths[index];
     const errors: string[] = [];
 
-    var isDeadCheck = await checkIsAnimalAlreadyDead(db.raw(), row);
+    let isDeadCheck = await checkIsAnimalAlreadyDead(db, row);
     errors.push(...isDeadCheck.errors);
+
+    let isValidDeathDateCheck = checkDeathDateFormat(row);
+    errors.push(...isValidDeathDateCheck.errors);
 
     results.push({
       rowIndex: index,

@@ -52,8 +52,9 @@ export async function validateAndProcessDeaths(db: Database, deathRecord: DeathR
  * @returns ProcessingResult indicating if the process was successful or not
  */
 export async function processDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<number, string>> {
+  const rawDb = db.raw();
   try {
-    await beginTransaction(db.raw());
+    await beginTransaction(rawDb);
 
     for (const row of deathRecord.deaths) {
 
@@ -88,7 +89,7 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
         // update last location of animal
 
         let deathLocationResult = await markAnimalDeathLocation(
-          db.raw(),
+            rawDb,
           animalId,
           deathDate,
         );
@@ -112,7 +113,7 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // delete any pertinent data that needs to be on animal death
-        let deleteAnimalAlertResult = await deleteAnimalAlerts(db.raw(), animalId);
+        let deleteAnimalAlertResult = await deleteAnimalAlerts(rawDb, animalId);
 
         await handleResult(deleteAnimalAlertResult, {
           success: (_: null) => {
@@ -127,7 +128,7 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // remove from animal at stud table
 
-        let deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(db.raw(), animalId);
+        let deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(rawDb, animalId);
 
         await handleResult(deleteAnimalAtStudResult, {
           success: (_: null) => {
@@ -142,7 +143,7 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Remove from animal for sale table
 
-        let deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(db.raw(), animalId);
+        let deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(rawDb, animalId);
 
         await handleResult(deleteAnimalForSaleResult, {
           success: (_: null) => {
@@ -189,12 +190,12 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
       }
     }
 
-    await commitTransaction(db.raw());
+    await commitTransaction(rawDb);
 
     return new Success(deathRecord.deaths.length);
 
   } catch (error) {
-    await rollbackTransaction(db.raw());
+    await rollbackTransaction(rawDb);
     return new Failure(
         (error as Error).message
     );
