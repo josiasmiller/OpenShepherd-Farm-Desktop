@@ -20,7 +20,7 @@ export async function endMaleBreedingFromDeath(
     animalId: string,
     deathDate: string,
     deathTime: string
-): Promise<Result<void, string>> {
+): Promise<Result<null, string>> {
 
   const modifiedTimestamp = dateTimeAsString();
 
@@ -53,7 +53,7 @@ export async function endMaleBreedingFromDeath(
   try {
     await db.run(query, queryParams);
 
-    return new Success(undefined);
+    return new Success(null);
 
   } catch (err: any) {
     return new Failure(
