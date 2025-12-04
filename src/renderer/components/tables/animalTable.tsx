@@ -51,6 +51,12 @@ export const normalizeAnimals = (animalDetails: AnimalDetails[]): AnimalInfo[] =
   }));
 };
 
+/**
+ * A table to display general animal information as well as any other pertinent data that the caller defines
+ * @param animalIds the AnimalIDs to be shown
+ * @param extraColumns any extra column the caller wishes to display
+ * @param columnOrder the order in which to define the columns of the table. Will throw if all is not handled
+ */
 export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
   animalIds,
   extraColumns = [],
