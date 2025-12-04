@@ -33,8 +33,7 @@ export async function endMaleBreedingFromDeath(
     WHERE id_animalid = ?
       AND id_servicetypeid NOT IN (?, ?)
       AND (
-      date_male_out IS NULL
-        OR time_male_out IS NULL
+        (date_male_out IS NULL AND time_male_out IS NULL)
         OR (date_male_out || ' ' || time_male_out) > (? || ' ' || ?)
       )
   `;
