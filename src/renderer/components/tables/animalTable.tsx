@@ -60,7 +60,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Map of animalId → AnimalInfo
+  // Map of animalId --> AnimalInfo
   const animalMap = new Map<string, AnimalInfo>();
   animalData.forEach(a => animalMap.set(a.id, a));
 

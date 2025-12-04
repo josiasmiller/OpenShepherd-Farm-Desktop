@@ -1,6 +1,4 @@
-import {Failure, handleResult, Result, Success} from '@common/core';
-import {Species, RegistryRow, ProcessingResult, ValidationResult, DeathRecord} from '@app/api';
-
+import log from 'electron-log';
 
 // DB actions
 import {
@@ -21,7 +19,8 @@ import {
   endMaleBreedingFromDeath,
 } from '../../../../../database';
 
-import log from 'electron-log';
+import {Failure, handleResult, Result, Success} from '@common/core';
+import {ValidationResult, DeathRecord} from '@app/api';
 import {Database} from "@database/async";
 import {validateDeathRows} from "../validation/deathValidator";
 
@@ -171,7 +170,7 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // end any male stud records
-        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock until JSON parsing is updated and we can get the time
+        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock
 
         await handleResult(animalEndMaleBreeding, {
           success: (_: null) => {

@@ -19,11 +19,10 @@ import {
   UnitRequest,
   DeathRecord,
 } from '@app/api';
-import {bindIpcCallback} from "./core/callbacks";
-import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
 
-// import { SessionManagement } from "@ipc/api/sessionManagement";
-import {Database} from "@database/async";
+import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
+import { bindIpcCallback } from "./core/callbacks";
+import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
 
 
 // -------------------- Animal --------------------
