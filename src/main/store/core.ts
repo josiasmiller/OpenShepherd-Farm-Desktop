@@ -4,7 +4,7 @@ import type { DefaultSettingsResults, Species } from '@app/api';
 export type AppStoreSchema = {
   selectedDefault: DefaultSettingsResults | null;
   selectedSpecies: Species | null;
-  selectedSignatureFilepath: string;
+  selectedSignatureFilepath: string | null;
   // extend as needed
 };
 
