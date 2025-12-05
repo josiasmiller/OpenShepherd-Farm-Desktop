@@ -68,7 +68,11 @@ function run() {
 
   ipcMain.handle(SessionManagement.CHANNEL_OPEN_SESSION, async (event: IpcMainInvokeEvent) => {
     const clientWindow = BrowserWindow.fromWebContents(event.sender);
-    await openNewSession(clientWindow);
+    if (clientWindow) {
+      await openNewSession(clientWindow);
+    } else {
+      log.error(`No client window for IPC request ${SessionManagement.CHANNEL_OPEN_SESSION}`)
+    }
   });
 
   app.whenReady().then(() => {
