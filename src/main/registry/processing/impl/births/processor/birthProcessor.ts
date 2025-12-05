@@ -355,6 +355,9 @@ async function craftStillbornName(db: Database, row: RegistryRow, iteration: num
     },
   });
 
+  //TODO: Remove the need for !assignment by unpacking results properly
+  flockPrefix = flockPrefix!
+
   //////////////////////////////////////////////////////////
   // get sex from DB
 
