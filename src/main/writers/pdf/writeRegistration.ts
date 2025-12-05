@@ -58,7 +58,7 @@ export const writeRegistration = async (
 
   const directoryPath = filePaths[0];
 
-  let registryCompanyId : string = null;
+  let registryCompanyId : string | null = null;
 
   // for now, these are the only registries handled
   if (registrationType === 'black') {
@@ -80,11 +80,11 @@ export const writeRegistration = async (
       success: async (data : AnimalRegistrationResult[]) => {
         const result = await _handleRegistrationWrite(db, data, directoryPath, registrationType, signatureFilePath);
         
-        if (result instanceof Success) {
+        if (result.tag === "success") {
           // extract warnings if there are any
           warnings.push(...(result.data));
           success = true;
-        } else if (result instanceof Failure) {
+        } else if (result.tag === "error") {
           log.error("PDF generation failed:", result.error);
           success = false;
           errors.push(result.error);
@@ -131,7 +131,7 @@ const _handleRegistrationWrite = async (
   if (signatureFilePath) {
     try {
       signatureImageBytes = fs.readFileSync(signatureFilePath);
-    } catch (err) {
+    } catch (err: any) {
       return new Failure(`Could not read signature file: ${err.message}`);
     }
   }
@@ -177,14 +177,14 @@ const _handleRegistrationWrite = async (
       let breederMailingAddressPartOne: string = "";
       let breederMailingAddressPartTwo: string = "";
       if (regResult.breeder != null) {
-        breederMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.breeder, regResult.breederCompanies);
+        breederMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.breeder, regResult.breederCompanies ?? []);
         breederMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.breeder);
       }
 
       let ownerMailingAddressPartOne: string = "";
       let ownerMailingAddressPartTwo: string = "";
       if (regResult.owner != null) {
-        ownerMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.owner, regResult.ownerCompanies);
+        ownerMailingAddressPartOne = _getOwnerMailingAddressSectionOne(regResult.owner, regResult.ownerCompanies ?? []);
         ownerMailingAddressPartTwo = _getOwnerMailingAddressSectionTwo(regResult.owner);
       }
 
@@ -198,7 +198,7 @@ const _handleRegistrationWrite = async (
       const form = pdfDoc.getForm();
 
       if (regResult.animalIdentification != null) {
-        form.getTextField("RegNo").setText(regResult.pedigree.registrationNumber);
+        form.getTextField("RegNo").setText(regResult.pedigree?.registrationNumber ?? "");
       }
 
       if (bday != "") {
@@ -380,11 +380,12 @@ const _handleRegistrationWrite = async (
       if (regResult.animalIdentification) {
         const flockName = regResult.animalIdentification.flockPrefix.replace(/ /g, '_'); // replace spaces with underscores
         const animalName = regResult.animalIdentification.name.replace(/ /g, '_');       // replace spaces with underscores
-        const registrationNum = regResult.pedigree.registrationNumber;
+        const registrationNum = regResult.pedigree?.registrationNumber;
 
         let filenamePrefix = "";
-
-        if (regResult.breederCompanies.length > 1 || regResult.breederCompanies.length > 1) {
+        let breederCompaniesCount = regResult.breederCompanies?.length ?? 0;
+        //TODO: SHOULD THIS BE breederCompaniesCount and owerCompaniesCount?
+        if (breederCompaniesCount > 1 || breederCompaniesCount > 1) {
           filenamePrefix = "EDIT_";
         }
 
@@ -398,7 +399,7 @@ const _handleRegistrationWrite = async (
       // Attempt to write file
       try {
         fs.writeFileSync(filePath, pdfBytes);
-      } catch (e){
+      } catch (e: any) {
         return new Failure(`Failed to write PDF file: ${e.message}`);
       }
 
@@ -500,7 +501,7 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
   // Other fields joined with commas
   const otherParts = [
     pn.registrationNumber,
-    pn.sexName.charAt(0).toUpperCase(), // abbreviate the name of the sex (for example `Ram` --> `R`, `Ewe` --> `E`)
+    pn.sexName?.charAt(0).toUpperCase(), // abbreviate the name of the sex (for example `Ram` --> `R`, `Ewe` --> `E`)
     birthDateFormatted,
     pn.birthTypeAbbreviation,
   ].filter((part) => part && part.trim() !== "")
