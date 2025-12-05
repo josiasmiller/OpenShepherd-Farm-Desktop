@@ -304,7 +304,7 @@ function createAboutWindow(): BrowserWindow {
  * Convenience method for setting up menu handling for
  * window menus across various platforms.
  */
-function setupMenuHandlingForPlatform(window: BrowserWindow, updateMenuFunction: (window: BrowserWindow) => void): void {
+function setupMenuHandlingForPlatform(window: BrowserWindow, updateMenuFunction: (window: BrowserWindow | null) => void): void {
   if (process.platform === 'darwin') {
     window.on('focus', () => {
       updateMenuForPlatform(window, updateMenuFunction);
