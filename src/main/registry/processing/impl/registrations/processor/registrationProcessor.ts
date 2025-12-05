@@ -84,17 +84,12 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             isCompany,
           );
 
-          let sfi : ScrapieFlockInfo | null = null;
+          if (scrapieResult.tag === "error") {
+            console.error("Failed to fetch ScrapieFlockInfo:", scrapieResult.error);
+            throw new Error(scrapieResult.error);
+          }
 
-          await handleResult(scrapieResult, {
-            success: (data: ScrapieFlockInfo | null) => {
-              sfi = data;
-            },
-            error: (err: string) => {
-              console.error("Failed to fetch ScrapieFlockInfo:", err);
-              throw new Error(err);
-            },
-          });
+          let sfi: ScrapieFlockInfo | null = scrapieResult.data;
 
           let scrapieId : string | null = null;
 
