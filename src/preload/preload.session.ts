@@ -103,8 +103,8 @@ const storeAPI : StoreAPI = {
   getSelectedSpecies: () => ipcRenderer.invoke("get-store-selected-species"),
   getSelectedSignatureFilePath: () => ipcRenderer.invoke("get-store-selected-signature-file-path"),
   setSelectedDefault: (val: DefaultSettingsResults) => ipcRenderer.invoke("set-store-selected-default", val),
-  setSelectedSignatureFilePath: (val: string) => ipcRenderer.invoke("set-store-selected-signature-file-path", val),
   setSelectedSpecies: (val: Species | null) => ipcRenderer.invoke("set-store-selected-species", val),
+  setSelectedSignatureFilePath: (val: string | null) => ipcRenderer.invoke("set-store-selected-signature-file-path", val),
 }
 
 // -------------------- System --------------------
