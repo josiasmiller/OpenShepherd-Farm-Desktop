@@ -325,8 +325,8 @@ export const PreprocessorPage: React.FC = () => {
    * indicate that any parsing errors occured. 
    * @param warnings array of any warnings to be displayed to the user
    */
-  const handleWarnings = async (warnings : string[]) => {
-    if (warnings.length > 0) {
+  const handleWarnings = async (warnings : string[] | undefined) => {
+    if (warnings && warnings.length > 0) {
       const htmlContent = `
         <ul style="text-align: left; padding-left: 1.2em;">
           ${warnings.map(warning => `<li>${warning}</li>`).join('')}
@@ -409,7 +409,7 @@ export const PreprocessorPage: React.FC = () => {
   const handlePreCheck = async () => {
     const response: DatabaseStateCheckResponse = await window.systemAPI.databaseStateCheck();
 
-    const failedChecks = [];
+    const failedChecks: string[] = [];
     if (!response.blackVerified) failedChecks.push("Black registration numbers");
     if (!response.chocolateVerified) failedChecks.push("Chocolate registration numbers");
     if (!response.whiteVerified) failedChecks.push("White registration numbers");

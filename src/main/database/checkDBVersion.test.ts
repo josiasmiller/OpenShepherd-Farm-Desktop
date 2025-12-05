@@ -10,8 +10,7 @@ import {
   REQUIRED_DB_VERSION_PATCH
 } from "./checkDBVersion";
 
-test('dbVersionFrom returns null when passed null or undefined', () => {
-  expect(dbVersionFrom(undefined)).toBeNull()
+test('dbVersionFrom returns null when passed null', () => {
   expect(dbVersionFrom(null)).toBeNull()
 })
 

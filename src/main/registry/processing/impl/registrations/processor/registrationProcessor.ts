@@ -1,3 +1,4 @@
+import log from "electron-log"
 import { handleResult } from '@common/core';
 import { 
   Owner, 
@@ -8,7 +9,6 @@ import {
   RegistryRow, 
   ProcessingResult,
 } from '@app/api';
-
 
 // DB actions
 import {
@@ -67,7 +67,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             isCompany = data;
           },
           error: (err: string) => {
-            console.error("Failed to fetch if owner is a contact or company:", err);
+            log.error("Failed to fetch if owner is a contact or company:", err);
             throw new Error(err);
           },
         });
@@ -84,17 +84,12 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             isCompany,
           );
 
-          let sfi : ScrapieFlockInfo | null = null;
+          if (scrapieResult.tag === "error") {
+            log.error("Failed to fetch ScrapieFlockInfo:", scrapieResult.error);
+            throw new Error(scrapieResult.error);
+          }
 
-          await handleResult(scrapieResult, {
-            success: (data: ScrapieFlockInfo | null) => {
-              sfi = data;
-            },
-            error: (err: string) => {
-              console.error("Failed to fetch ScrapieFlockInfo:", err);
-              throw new Error(err);
-            },
-          });
+          let sfi: ScrapieFlockInfo | null = scrapieResult.data;
 
           let scrapieId : string | null = null;
 
@@ -117,7 +112,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             breeder = data;
           },
           error: (err: string) => {
-            console.error("Failed to fetch Breeder:", err);
+            log.error("Failed to fetch Breeder:", err);
             throw new Error(err);
           },
         });
@@ -137,7 +132,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             coatColor = data;
           },
           error: (err: string) => {
-            console.error("Failed to fetch animal coat color: ", err);
+            log.error("Failed to fetch animal coat color: ", err);
             throw new Error(err);
           },
         });
@@ -158,7 +153,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
             flockBookId = data;
           },
           error: (err: string) => {
-            console.error("Failed to fetch flock book id: ", err);
+            log.error("Failed to fetch flock book id: ", err);
             throw new Error(err);
           },
         });
@@ -249,7 +244,7 @@ async function handleRegistrationNumber(db: Database, animalId : string): Promis
       coatColor = data;
     },
     error: (err: string) => {
-      console.error(`Failed to fetch coat color for animalId=\'${animalId}\': `, err);
+      log.error(`Failed to fetch coat color for animalId=\'${animalId}\': `, err);
       throw new Error(err);
     },
   });
@@ -276,7 +271,7 @@ async function handleRegistrationNumber(db: Database, animalId : string): Promis
       newRegisteredValue = data;
     },
     error: (err: string) => {
-      console.error("Failed to fetch most recent birth notify value: ", err);
+      log.error("Failed to fetch most recent birth notify value: ", err);
       throw new Error(err);
     },
   });

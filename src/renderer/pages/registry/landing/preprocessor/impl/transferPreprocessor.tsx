@@ -21,7 +21,6 @@ import {
 import { Box, Typography, } from "@mui/material"
 import { handleResult, Result } from "@common/core";
 
-
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,35 +49,22 @@ export const TransferPreprocessorPage: React.FC = () => {
 
       const parsingResult: Result<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
-      let isSuccess : boolean = false;
-      let errType : TransferError = null;
-      let transferRecord : TransferRecord = null;
-
-      await handleResult(parsingResult, {
-        success: (data: TransferRecord) => {
-          isSuccess = true;
-          transferRecord = data; // this is needed for processing further in this file, otherwise a race condition of sorts crops up
-          setCurrentTransferRecord(data);
-        },
-        error: (err: TransferError) => {
-          errType = err;
-        },
-      });
-
-      // handle err cases
-      if (!isSuccess) {
-        if (errType.type == DIALOG_CANCELLED) { // dont display err on dialog cancel as this is an expected user input
+      if (parsingResult.tag === "error") {
+        let errType = parsingResult.error;
+        if (errType.type == DIALOG_CANCELLED) { // don't display err on dialog cancel as this is an expected user input
           return
         }
-
-        // display error to user 
+        // display error to user
         await Swal.fire(
           getSwalErrParams(errType)
         );
-        return
+        return;
       }
 
+      let transferRecord : TransferRecord = parsingResult.data;
+
       const { animals, seller, buyer } = transferRecord;
+      setCurrentTransferRecord(transferRecord);
 
       let newAnimalIds : string[] = [];
 
@@ -162,7 +148,7 @@ export const TransferPreprocessorPage: React.FC = () => {
    * Submits the parsed & altered data to be validated & processed
    */
   const handleSubmit = async () => {
-    if (loading) return;
+    if (loading || !currentTransferRecord) return;
 
     const processingResult : Result<number, string> = await window.registryAPI.processTransfers(currentTransferRecord);
 

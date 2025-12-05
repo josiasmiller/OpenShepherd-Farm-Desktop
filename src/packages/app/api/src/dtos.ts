@@ -542,8 +542,8 @@ export type AnimalRow = {
 };
 
 export type SellerInfo = {
-    contactId: string;
-    companyId: string;
+    contactId: string | null;
+    companyId: string | null;
     premiseId: string;
     soldAt: string;
     movedAt: string;

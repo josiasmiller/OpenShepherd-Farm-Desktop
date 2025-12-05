@@ -123,10 +123,10 @@ export interface RegistryAPI {
 export interface StoreAPI {
   getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
   getSelectedSpecies: () => Promise<Species | null>;
-  getSelectedSignatureFilePath: () => Promise<string>;
+  getSelectedSignatureFilePath: () => Promise<string | null>;
   setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
-  setSelectedSpecies: (species: Species) => Promise<void>;
-  setSelectedSignatureFilePath: (filePath: string) => Promise<void>;
+  setSelectedSpecies: (species: Species | null) => Promise<void>;
+  setSelectedSignatureFilePath: (filePath: string | null) => Promise<void>;
 }
 
 // -------------------- System --------------------

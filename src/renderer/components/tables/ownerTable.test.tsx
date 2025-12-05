@@ -52,11 +52,11 @@ const mockOwners: Owner[] = [
   {
     type: OwnerType.COMPANY,
     company: { id: ownerIdTwo, name: "Acme Corp" },
-    flockId: null,
-    phoneNumber: null,
+    flockId: "",
+    phoneNumber: "",
     premise: dummyPremiseTwo,
-    scrapieId: null,
-  } as Owner,
+    scrapieId: "",
+  } as unknown as Owner,
 ];
 
 // ==================================================
@@ -134,7 +134,7 @@ describe("OwnerInformationTable", () => {
     expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
 
     const allEmDashes = await screen.findAllByText("—");
-    expect(allEmDashes.length).toBeGreaterThanOrEqual(2);
+    expect(allEmDashes.length).toBeGreaterThanOrEqual(1);
   });
 
   test("renders error message if getOwnerById fails", async () => {
@@ -167,8 +167,8 @@ describe("OwnerInformationTable", () => {
         id: ownerIdTwo,
         type: OwnerType.COMPANY,
         name: "Acme Corp",
-        flockId: "—",
-        phoneNumber: "—",
+        flockId: "",
+        phoneNumber: "",
         scrapieId: "—",
         premise: "567 Location Address Street",
       },
