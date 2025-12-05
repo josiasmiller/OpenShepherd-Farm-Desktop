@@ -1,23 +1,25 @@
-import { contextBridge, ipcRenderer } from "electron";
+import {contextBridge, ipcRenderer} from "electron";
 import {
+  AnimalAPI,
   AnimalSearchRequest,
   BreedRequest,
-  UnitRequest,
-  NewDefaultSettingsParameters,
-  DefaultSettingsResults,
-  Species,
-  RegistryProcessRequest,
   DatabaseStateCheckResponse,
+  DefaultsAPI,
+  DefaultSettingsResults,
+  ExportAPI,
+  LookupAPI,
+  NewDefaultSettingsParameters,
   OwnerType,
+  RegistryAPI,
+  RegistryProcessRequest,
+  Species,
+  StoreAPI,
+  SystemAPI,
   TransferRecord,
+  UnitRequest,
 } from '@app/api';
-
-import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
-import { DatabaseSessionInfo } from "@app/api";
-import { bindIpcCallback } from "./core/callbacks";
+import {bindIpcCallback} from "./core/callbacks";
 import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
-import { SessionManagement } from "@ipc/api/sessionManagement";
-import {Database} from "@database/async";
 
 
 // -------------------- Animal --------------------
