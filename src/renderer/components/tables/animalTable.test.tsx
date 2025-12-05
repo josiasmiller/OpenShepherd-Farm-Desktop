@@ -52,7 +52,7 @@ describe("AnimalInformationTable", () => {
 
   test("renders loading state then table rows with normalized data", async () => {
 
-    const numberEmDashes = 5; // how many em dashes are included due to invalid data
+    const numberEmDashes = 2; // how many em dashes are included due to invalid data
 
     const mockAnimals: AnimalDetails[] = [
       {
@@ -65,11 +65,11 @@ describe("AnimalInformationTable", () => {
       },
       {
         animalId: animalIdTwo,
-        flockPrefix: null,
-        name: null,
+        flockPrefix: "",
+        name: "",
         registrationNumber: null,
-        birthDate: null,
-        coatColor: null,
+        birthDate: "",
+        coatColor: "",
       },
     ];
 
@@ -121,11 +121,11 @@ describe("AnimalInformationTable", () => {
     const input: AnimalDetails[] = [
       {
         animalId: animalIdOne,
-        flockPrefix: null,
-        name: null,
+        flockPrefix: "",
+        name: "",
         registrationNumber: null,
-        birthDate: null,
-        coatColor: null,
+        birthDate: "",
+        coatColor: "",
       },
     ];
 
@@ -134,11 +134,11 @@ describe("AnimalInformationTable", () => {
     expect(normalized).toEqual([
       {
         id: animalIdOne,
-        flockPrefix: "—",
-        name: "—",
+        flockPrefix: "",
+        name: "",
         registrationNumber: "—",
         birthDate: "—",
-        coatColor: "—",
+        coatColor: "",
       },
     ]);
   });
