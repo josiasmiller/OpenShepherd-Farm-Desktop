@@ -50,7 +50,7 @@ describe("AnimalInformationTable", () => {
     render(<AnimalInformationTable animalIds={[]} />);
     expect(screen.getByText("No animal data found.")).toBeInTheDocument();
   });
-  
+
   test("renders loading state then table rows with normalized data", async () => {
     const numberEmDashes = 2; // how many em dashes are included due to invalid data
 

@@ -43,23 +43,14 @@ export const DeathPreprocessorPage: React.FC = () => {
 
             const parsingResult: Result<DeathRecord, DeathError> = await window.registryAPI.parseDeaths();
 
-            let isSuccess : boolean = false;
-            let errType : DeathError = null;
-            let deathRecord : DeathRecord = null;
+            let errType : DeathError;
+            let deathRecord : DeathRecord;
 
-            await handleResult(parsingResult, {
-                success: (data: DeathRecord) => {
-                    isSuccess = true;
-                    deathRecord = data; // this is needed for processing further in this file, otherwise a race condition of sorts crops up
-                    setCurrentDeathRecord(data);
-                },
-                error: (err: DeathError) => {
-                    errType = err;
-                },
-            });
-
-            // handle err cases
-            if (!isSuccess) {
+            if (parsingResult.tag === 'success') {
+                deathRecord = parsingResult.data;
+                setCurrentDeathRecord(deathRecord);
+            } else {
+                errType = parsingResult.error
                 if (errType.type == DIALOG_CANCELLED) { // dont display err on dialog cancel as this is an expected user input
                     return
                 }
@@ -104,7 +95,7 @@ export const DeathPreprocessorPage: React.FC = () => {
      * Submits the parsed & altered data to be validated & processed
      */
     const handleSubmit = async () => {
-        if (loading) return;
+        if (loading || !currentDeathRecord) return;
 
         const processingResult : Result<number, string> = await window.registryAPI.processDeaths(currentDeathRecord);
 
