@@ -5,6 +5,7 @@ import { Sex } from '@app/api';
 type SexRow = {
   id: string;
   name: string;
+  abbreviation: string;
   display_order: number;
   species_id: string | null;
 };
@@ -22,6 +23,7 @@ export const getSexFromAnimalId = async (db: Database, animalId: string): Promis
     SELECT 
       s.id_sexid AS id, 
       s.sex_name AS name,
+      s.sex_abbrev as abbreviation,
       s.sex_display_order AS display_order,
       s.id_speciesid AS species_id
     FROM animal_table a
@@ -39,6 +41,7 @@ export const getSexFromAnimalId = async (db: Database, animalId: string): Promis
         const result: Sex = {
           id: row.id,
           name: row.name,
+          abbreviation: row.abbreviation,
           display_order: row.display_order,
           species_id: row.species_id,
         };

@@ -12,6 +12,7 @@ type PedigreeRow = {
   animalName: string;
   registrationNumber: string | null;
   sexName: string | null;
+  sexAbbreviation: string | null;
   birthDate: string | null;
   birthType: string | null;
   birthTypeAbbrev: string | null;
@@ -44,6 +45,7 @@ export const getPedigree = async (
       a.animal_name AS animalName,
       ar.registration_number AS registrationNumber,
       s.sex_name AS sexName,
+      s.sex_abbrev AS sexAbbreviation,
       a.birth_date AS birthDate,
       bt.birth_type AS birthType,
       bt.birth_type_abbrev AS birthTypeAbbrev
@@ -120,6 +122,7 @@ export const getPedigree = async (
         animalName: row.animalName,
         registrationNumber: row.registrationNumber,
         sexName: row.sexName,
+        sexAbbreviation: row.sexAbbreviation,
         birthDate: bday,
         birthType: row.birthType,
         birthTypeAbbreviation: row.birthTypeAbbrev,

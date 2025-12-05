@@ -244,6 +244,7 @@ export type RemoveReason = {
 export type Sex = {
     id: string;
     name: string;
+    abbreviation: string;
     display_order: number;
     species_id: string | null;
 }
@@ -400,6 +401,7 @@ export type PedigreeNode = {
     animalName: string;
     registrationNumber: string | null;
     sexName: string | null;
+    sexAbbreviation: string | null;
     birthDate: Date | null;
     birthType: string | null;
     birthTypeAbbreviation: string | null;

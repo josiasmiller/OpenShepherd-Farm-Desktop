@@ -502,7 +502,7 @@ const _buildRegistryName = (pn : PedigreeNode | null): string => {
   // Other fields joined with commas
   const otherParts = [
     pn.registrationNumber,
-    pn.sexName?.charAt(0).toUpperCase(), // abbreviate the name of the sex (for example `Ram` --> `R`, `Ewe` --> `E`)
+    pn.sexAbbreviation,
     birthDateFormatted,
     pn.birthTypeAbbreviation,
   ].filter((part) => part && part.trim() !== "")
