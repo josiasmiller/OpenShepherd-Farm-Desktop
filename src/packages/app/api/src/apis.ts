@@ -125,7 +125,7 @@ export interface StoreAPI {
   getSelectedSpecies: () => Promise<Species | null>;
   getSelectedSignatureFilePath: () => Promise<string>;
   setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
-  setSelectedSpecies: (species: Species) => Promise<void>;
+  setSelectedSpecies: (species: Species | null) => Promise<void>;
   setSelectedSignatureFilePath: (filePath: string) => Promise<void>;
 }
 

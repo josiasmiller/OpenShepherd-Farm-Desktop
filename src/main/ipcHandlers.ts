@@ -544,7 +544,7 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent, value: Species) => {
+  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent, value: Species | null) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
       //TODO: Update storage of to consider database path/identifier
