@@ -95,7 +95,7 @@ export async function processTransfers(db: Database, transferRecord: TransferRec
           sellerType,
         );
 
-        let sellerOwner : Owner = null;
+        let sellerOwner: Owner | null = null;
 
         await handleResult(sellerOwnerResult, {
           success: (data: Owner) => {
@@ -135,7 +135,7 @@ export async function processTransfers(db: Database, transferRecord: TransferRec
           buyerType,
         );
 
-        let buyerOwner : Owner = null;
+        let buyerOwner: Owner | null = null;
 
         await handleResult(buyerOwnerResult, {
           success: (data: Owner) => {
@@ -170,7 +170,7 @@ export async function processTransfers(db: Database, transferRecord: TransferRec
         ///////////////////////////////////////////////////////////////////////////////////////////
         // get breeder for insertion into animal registration row
         const breederResult = await getBreeder(db, animalInfo.animalId);
-        let breeder : Owner = null;
+        let breeder: Owner | null = null;
 
         await handleResult(breederResult, {
           success: (data: Owner) => {
@@ -227,7 +227,7 @@ export async function processTransfers(db: Database, transferRecord: TransferRec
 
         // get registration type ID
         const regTypeReuslt = await getRegistrationTypeIdByRegNum(db, animalInfo.registrationNumber);
-        let regType : string = null;
+        let regType : string | null = null;
 
         await handleResult(regTypeReuslt, {
           success: (data: string) => {
