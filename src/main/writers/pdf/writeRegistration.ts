@@ -383,9 +383,10 @@ const _handleRegistrationWrite = async (
         const registrationNum = regResult.pedigree?.registrationNumber;
 
         let filenamePrefix = "";
+        let ownerCompaniesCount = regResult.ownerCompanies?.length ?? 0;
         let breederCompaniesCount = regResult.breederCompanies?.length ?? 0;
-        //TODO: SHOULD THIS BE breederCompaniesCount and owerCompaniesCount?
-        if (breederCompaniesCount > 1 || breederCompaniesCount > 1) {
+
+        if (ownerCompaniesCount > 1 || breederCompaniesCount > 1) {
           filenamePrefix = "EDIT_";
         }
 
