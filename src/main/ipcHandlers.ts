@@ -122,7 +122,7 @@ const IPC_INVOKE_SET_STORE_SELECTED_SPECIES = 'set-store-selected-species'
 const IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH = 'set-store-selected-signature-file-path'
 const IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS = 'write-new-default-settings'
 
-const logAndThrowUnhandledIpcRequest = (channel: string, event: IpcMainInvokeEvent) => {
+const logAndThrowUnhandledIpcRequest: (channel: string, event: IpcMainInvokeEvent) => never = (channel: string, event: IpcMainInvokeEvent) => {
   const message = `Unhandled IPC invocation in main process : No session found : sender=${event.sender.id}, channel=${channel}`
   log.error(message); throw Error(message);
 }
