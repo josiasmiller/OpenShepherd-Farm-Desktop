@@ -358,7 +358,7 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STORE_SELECTED_SPECIES, event)
   });
 
-  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH, (event: IpcMainInvokeEvent): string => {
+  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH, (event: IpcMainInvokeEvent): string | null => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
       //TODO: Update storage of to consider database path/identifier
