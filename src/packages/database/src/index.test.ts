@@ -41,7 +41,7 @@ beforeEach(async () => {
  * to avoid using too many resources as the test suite grows.
  */
 afterEach(async () => {
-  await _testDatabase.close()
+  await _testDatabase?.close()
 })
 
 /**
