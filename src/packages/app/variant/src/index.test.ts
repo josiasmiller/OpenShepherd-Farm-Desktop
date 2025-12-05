@@ -6,11 +6,11 @@ test('Default AppVariant should be Farm', () => {
 })
 
 test('appVariantFromString throws on undefined', () => {
-    expect(() => appVariantFromString(undefined)).toThrow()
+    expect(() => appVariantFromString(undefined as unknown as string)).toThrow()
 })
 
 test('appVariantFromString throws on null', () => {
-    expect(() => appVariantFromString(null)).toThrow()
+    expect(() => appVariantFromString(undefined as unknown as string)).toThrow()
 })
 
 test('appVariantFromString throws on invalid variant string', () => {
