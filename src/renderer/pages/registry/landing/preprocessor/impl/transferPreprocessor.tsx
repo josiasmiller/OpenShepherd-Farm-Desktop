@@ -162,7 +162,7 @@ export const TransferPreprocessorPage: React.FC = () => {
    * Submits the parsed & altered data to be validated & processed
    */
   const handleSubmit = async () => {
-    if (loading) return;
+    if (loading || !currentTransferRecord) return;
 
     const processingResult : Result<number, string> = await window.registryAPI.processTransfers(currentTransferRecord);
 
