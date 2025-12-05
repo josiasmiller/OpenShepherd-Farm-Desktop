@@ -85,8 +85,8 @@ export const transferParser = async (filePath: string): Promise<Result<TransferR
     // =================================================================================================
     // --- Map SELLER ---
     const sellerIdentityType = fileContents.seller.identity.type;
-    let sellerContactId : string = null;
-    let sellerCompanyId : string = null;
+    let sellerContactId : string | null = null;
+    let sellerCompanyId : string | null = null;
 
     if (sellerIdentityType === 'contact') {
       sellerContactId = fileContents.seller.identity.id;
@@ -112,8 +112,8 @@ export const transferParser = async (filePath: string): Promise<Result<TransferR
     if (buyerType === "EXISTING") {
 
       const buyerIdentityType = fileContents.buyer.identity.type;
-      let buyerContactId : string = null;
-      let buyerCompanyId : string = null;
+      let buyerContactId : string | null = null;
+      let buyerCompanyId : string | null = null;
 
       if (buyerIdentityType === 'contact') {
         buyerContactId = fileContents.buyer.identity.id;
