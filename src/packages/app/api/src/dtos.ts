@@ -400,8 +400,8 @@ export type PedigreeNode = {
     flockPrefix: string | null;
     animalName: string;
     registrationNumber: string | null;
-    sexName: string | null;
-    sexAbbreviation: string | null;
+    sexName: string;
+    sexAbbreviation: string;
     birthDate: Date | null;
     birthType: string | null;
     birthTypeAbbreviation: string | null;
