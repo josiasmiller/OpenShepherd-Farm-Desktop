@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { handleResult, Result } from "@common/core";
+import { Result } from "@common/core";
 import { AnimalDetails } from "@app/api";
 import log from "electron-log/renderer";
 
@@ -84,20 +84,16 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
       const result: Result<AnimalDetails[], string> = await window.animalAPI.getAnimalDetails(animalIds);
       let details: AnimalDetails[] = [];
 
-      await handleResult(result, {
-        success: (data) => {
-          details = data;
-        },
-        error: (err) => {
-          log.error("Failed to get animalDetails:", err);
-          setError(err);
-        },
-      });
-
-      if (!error) {
-        const normalized = normalizeAnimals(details);
-        setAnimalData(normalized);
+      if (result.tag === 'success') {
+        details = result.data;
+      } else {
+        log.error("Failed to get animalDetails:", result.error);
+        setError(result.error);
+        return
       }
+
+      const normalized = normalizeAnimals(details);
+      setAnimalData(normalized);
 
       setLoading(false);
     };

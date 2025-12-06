@@ -9,7 +9,7 @@ import { BrowserWindow } from 'electron';
 import {selectJsonFile} from "@fileDialogs/jsonSelect";
 import {AnimalDeath, DeathRecord} from "@app/api";
 import {Failure, Result, Success} from "@common/core";
-import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
+import {DeathError} from "@app/api";
 import {readJsonFile} from "@registryHelpers";
 import log from "electron-log";
 
@@ -36,18 +36,16 @@ export const deathParser = async (filePath: string): Promise<Result<DeathRecord,
   try{
     const fileContents = await readJsonFile(filePath);
 
-    const missingFields: string[] = [];
-    if (!fileContents.deaths || !Array.isArray(fileContents.deaths))
-      missingFields.push("deaths");
-
-    if (missingFields.length > 0) {
+    if (!fileContents.deaths || !Array.isArray(fileContents.deaths)) {
       const error: MissingFieldsError = {
         type: MISSING_FIELDS,
-        missing: missingFields,
+        missing: ["deaths"],
       };
 
       return new Failure(error);
     }
+
+
     // ===================================================================================================================
     // --- Map deaths ---
     const animalDeaths: AnimalDeath[] = fileContents.deaths.map((a: any) => ({

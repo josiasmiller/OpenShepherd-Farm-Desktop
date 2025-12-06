@@ -1,16 +1,24 @@
 import log from "electron-log";
 import { deathParser } from "./deathParser";
 
-import {
-    MISSING_FIELDS,
-    PARSE_ERROR,
-    type MissingFieldsError,
-    type ParseError,
-    DeathRecord
-} from "@app/api";
+// import {
+//     MISSING_FIELDS,
+//     PARSE_ERROR,
+//     type MissingFieldsError,
+//     type ParseError,
+//     DeathRecord,
+// } from "@app/api";
 
 import { readJsonFile } from "@registryHelpers";
 import { Failure, Success } from "@common/core";
+
+import {
+    DeathRecord,
+    MISSING_FIELDS,
+    MissingFieldsError,
+    PARSE_ERROR,
+    ParseError
+} from "@app/api";
 
 // mock readJsonFile helper
 jest.mock("@registryHelpers", () => ({
@@ -26,9 +34,7 @@ describe("deathParser", () => {
         jest.clearAllMocks();
     });
 
-    // --------------------------------------------------------
-    // 1. MissingFieldsError --> deaths missing
-    // --------------------------------------------------------
+
     test("returns MissingFieldsError when deaths is missing", async () => {
         mockRead.mockResolvedValueOnce({});
 
@@ -44,9 +50,7 @@ describe("deathParser", () => {
         }
     });
 
-    // --------------------------------------------------------
-    // 2. MissingFieldsError --> deaths not an array
-    // --------------------------------------------------------
+
     test("returns MissingFieldsError when deaths is not an array", async () => {
         mockRead.mockResolvedValueOnce({ deaths: {} });
 
@@ -62,9 +66,7 @@ describe("deathParser", () => {
         }
     });
 
-    // --------------------------------------------------------
-    // 3. Valid JSON --> success
-    // --------------------------------------------------------
+
     test("parses valid JSON correctly", async () => {
         mockRead.mockResolvedValueOnce({
             deaths: [
@@ -96,9 +98,7 @@ describe("deathParser", () => {
         expect(death.reason).toBe("Old age");
     });
 
-    // --------------------------------------------------------
-    // 4. Invalid JSON --> PARSE_ERROR
-    // --------------------------------------------------------
+
     test("returns PARSE_ERROR if readJsonFile throws", async () => {
         mockRead.mockRejectedValueOnce(new Error("bad json"));
 

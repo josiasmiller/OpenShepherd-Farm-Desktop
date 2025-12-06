@@ -93,6 +93,10 @@ export {
 } from "./errorCodes/genericCodes"
 
 export {
+  DeathError
+} from "./errorCodes/registryProcessing/deathCodes"
+
+export {
   NEW_BUYER_NOT_SUPPORTED,
   TransferError,
 } from "./errorCodes/registryProcessing/transferCodes"

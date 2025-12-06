@@ -39,13 +39,18 @@ import {
   RegistrationParseResponse,
   OwnerType,
   Owner,
-  TransferRecord, DeathRecord,
+  TransferRecord,
+  DeathRecord,
 } from "./dtos";
 
 import { Result } from "@common/core";
 import { type IpcEventRegistrarFunc } from "@ipc/core";
-import { TransferError } from "./errorCodes/registryProcessing/transferCodes";
-import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
+
+import {
+  DeathError,
+  TransferError,
+} from "./index";
+
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
