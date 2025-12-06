@@ -40,7 +40,7 @@ import {
   OwnerType,
   Owner,
   TransferRecord,
-  DeathRecord,
+  DeathRecord, ProcessSuccess, ProcessFailure,
 } from "./dtos";
 
 import { Result } from "@common/core";
@@ -121,8 +121,8 @@ export interface RegistryAPI {
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
   parseTransfers: () => Promise<Result<TransferRecord, TransferError>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
-  processTransfers: (transferRecord: TransferRecord) => Promise<Result<number, string>>;
-  processDeaths: (deathRecord: DeathRecord) => Promise<Result<number, string>>;
+  processTransfers: (transferRecord: TransferRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
+  processDeaths: (deathRecord: DeathRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
 }
 
 // -------------------- Store --------------------

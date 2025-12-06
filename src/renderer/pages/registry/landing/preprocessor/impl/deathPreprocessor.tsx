@@ -11,6 +11,8 @@ import {
   DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
+  ProcessFailure,
+  ProcessSuccess,
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
@@ -97,21 +99,23 @@ export const DeathPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading || !currentDeathRecord) return;
 
-    const processingResult : Result<number, string> = await window.registryAPI.processDeaths(currentDeathRecord);
+    const processingResult : Result<ProcessSuccess, ProcessFailure> = await window.registryAPI.processDeaths(currentDeathRecord);
 
     await handleResult(processingResult, {
-      success: (data: number) => {
+      success: (data: ProcessSuccess) => {
         Swal.fire({
           title: "Success",
           icon: "success",
           confirmButtonText: "OK",
           width: "40em",
-          text: `${data} Deaths processed successfully`,
+          text: `${data.numberProcessed} Deaths processed successfully`,
         });
 
         navigate("/"); // nav back to home after processing
       },
-      error: (errMsg: string) => {
+      error: (processFailure: ProcessFailure) => {
+        const errMsg = processFailure.errors.join("\n");
+
         Swal.fire({
           title: "Error",
           icon: "error",

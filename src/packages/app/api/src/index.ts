@@ -38,6 +38,8 @@ export {
   NewBuyer,
   ParseResult,
   Premise,
+  ProcessFailure,
+  ProcessSuccess,
   RegistryType,
   RegistryProcessType,
   RegistryProcessRequest,

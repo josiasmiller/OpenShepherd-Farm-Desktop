@@ -1,5 +1,16 @@
 import { Failure, handleResult, Result, Success } from '@common/core';
-import { ExistingMemberBuyer, NewBuyer, SellerInfo,  Owner, CoatColor, OwnerType,  TransferRecord, ValidationResult } from '@app/api';
+import {
+  ExistingMemberBuyer,
+  NewBuyer,
+  SellerInfo,
+  Owner,
+  CoatColor,
+  OwnerType,
+  TransferRecord,
+  ValidationResult,
+  ProcessSuccess,
+  ProcessFailure
+} from '@app/api';
 
 
 import {
@@ -22,22 +33,25 @@ import {
 } from '../../../../../database';
 import {Database} from "sqlite3";
 
-import { validateTransferRows } from '../validation/transferValidator'; // change import??
+import { validateTransferRows } from '../validation/transferValidator';
 
 
-export async function validateAndProcessTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
+export async function validateAndProcessTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
   const validationAnswer : ValidationResult[] = await validateTransferRows(db, transferRecord);
 
   const hasInvalid = validationAnswer.some(v => !v.isValid);
 
   if (hasInvalid) {
-    // Combine all errors into a single message
-    const errorMessage = validationAnswer
-        .filter(v => !v.isValid)
-        .map(v => `Row ${v.rowIndex}: ${v.errors.join(", ")}`)
-        .join("\n");
+    // Map each invalid row into a readable message
+    const errors = validationAnswer
+      .filter(v => !v.isValid)
+      .flatMap(v =>
+        v.errors.map(err => `Row ${v.rowIndex}: ${err}`)
+      );
 
-    return new Failure(errorMessage);
+    return new Failure({
+      errors
+    });
   }
 
   return processTransfers(db, transferRecord);
@@ -51,7 +65,7 @@ export async function validateAndProcessTransfers(db: Database, transferRecord: 
  * @param transferRecord the transfer data being processed
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<number, string>> {
+export async function processTransfers(db: Database, transferRecord: TransferRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
 
   if (isNewBuyer(transferRecord.buyer)) {
     throw new Error("New Buyers not yet supported"); // this should be handled higher in the stack --> we should never get a New Buyer here YET (until they are implemented)
@@ -268,11 +282,15 @@ export async function processTransfers(db: Database, transferRecord: TransferRec
     }
 
     await commitTransaction(db);
-    return new Success(transferRecord.animals.length);
+    return new Success({
+      numberProcessed: transferRecord.animals.length
+    });
 
   } catch (error) {
     await rollbackTransaction(db);
-    return new Failure((error as Error).message);
+    return new Failure({
+      errors: [(error as Error).message],
+    });
   }
 }
 

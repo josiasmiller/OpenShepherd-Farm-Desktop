@@ -761,3 +761,14 @@ interface HasName {
 }
 
 export type ItemEntry = HasId & HasName
+
+
+
+export type ProcessSuccess = {
+    numberProcessed: number;
+}
+
+export type ProcessFailure = {
+    errors: string[];
+}
+

@@ -20,25 +20,28 @@ import {
 } from '../../../../../database';
 
 import {Failure, handleResult, Result, Success} from '@common/core';
-import {ValidationResult, DeathRecord} from '@app/api';
+import {ValidationResult, DeathRecord, ProcessSuccess, ProcessFailure} from '@app/api';
 import {Database} from "@database/async";
 import {validateDeathRows} from "../validation/deathValidator";
 
 
 
-export async function validateAndProcessDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<number, string>> {
+export async function validateAndProcessDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
   const validationAnswer : ValidationResult[] = await validateDeathRows(db, deathRecord);
 
   const hasInvalid = validationAnswer.some(v => !v.isValid);
 
   if (hasInvalid) {
-    // Combine all errors into a single message
-    const errorMessage = validationAnswer
-        .filter(v => !v.isValid)
-        .map(v => `Row ${v.rowIndex}: ${v.errors.join(", ")}`)
-        .join("\n");
+    // Map each invalid row into a readable message
+    const errors = validationAnswer
+      .filter(v => !v.isValid)
+      .flatMap(v =>
+        v.errors.map(err => `Row ${v.rowIndex}: ${err}`)
+      );
 
-    return new Failure(errorMessage);
+    return new Failure({
+      errors
+    });
   }
 
   return processDeaths(db, deathRecord);
@@ -51,7 +54,7 @@ export async function validateAndProcessDeaths(db: Database, deathRecord: DeathR
  * @param deathRecord the record of deaths
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<number, string>> {
+export async function processDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
   const rawDb = db.raw();
   try {
     await beginTransaction(rawDb);
@@ -184,21 +187,23 @@ export async function processDeaths(db: Database, deathRecord: DeathRecord): Pro
         });
 
       } catch (innerError) {
-        return new Failure(
-            `Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`
-        );
+        return new Failure({
+          errors: [`Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`]
+        });
       }
     }
 
     await commitTransaction(rawDb);
 
-    return new Success(deathRecord.deaths.length);
+    return new Success({
+      numberProcessed: deathRecord.deaths.length
+    });
 
   } catch (error) {
     await rollbackTransaction(rawDb);
-    return new Failure(
-        (error as Error).message
-    );
+    return new Failure({
+      errors: [(error as Error).message],
+    });
   }
 }
 
