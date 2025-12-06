@@ -1,7 +1,8 @@
 import { DeathRecord, ValidationResult } from '@app/api';
 import { checkIsAnimalAlreadyDead } from './rules/checkIsAnimalAlreadyDead';
 import {Database} from "@database/async";
-import {checkDeathDateFormat} from "./rules/checkIsDeathDateValid";
+import {checkDateFormat} from "../../../helpers/validators/dateValidator";
+import {checkUUIDv4} from "../../../helpers/validators/uuidv4Validator";
 
 export async function validateDeathRows(
   db: Database, 
@@ -16,8 +17,11 @@ export async function validateDeathRows(
     let isDeadCheck = await checkIsAnimalAlreadyDead(db, row);
     errors.push(...isDeadCheck.errors);
 
-    let isValidDeathDateCheck = checkDeathDateFormat(row);
+    let isValidDeathDateCheck = checkDateFormat(row.deathDate);
     errors.push(...isValidDeathDateCheck.errors);
+
+    let isValidUUIDv4 = checkUUIDv4(row.animalId);
+    errors.push(...isValidUUIDv4.errors);
 
     results.push({
       rowIndex: index,
