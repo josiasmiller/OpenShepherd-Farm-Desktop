@@ -14,6 +14,7 @@ export const getSexes = async (db: Database): Promise<Result<Sex[], string>> => 
     SELECT 
         id_sexid AS id, 
         sex_name AS name,
+        sex_abbrev as abbreviation,
         sex_display_order AS display_order,
         id_speciesid AS species_id
     FROM sex_table`;
@@ -26,6 +27,7 @@ export const getSexes = async (db: Database): Promise<Result<Sex[], string>> => 
         const results: Sex[] = rows.map((row: any) => ({
           id: row.id,
           name: row.name,
+          abbreviation: row.abbreviation,
           display_order: row.display_order,
           species_id: row.species_id,
         }));

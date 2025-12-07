@@ -11,7 +11,8 @@ type PedigreeRow = {
   flockPrefix: string | null;
   animalName: string;
   registrationNumber: string | null;
-  sexName: string | null;
+  sexName: string;
+  sexAbbreviation: string;
   birthDate: string | null;
   birthType: string | null;
   birthTypeAbbrev: string | null;
@@ -44,6 +45,7 @@ export const getPedigree = async (
       a.animal_name AS animalName,
       ar.registration_number AS registrationNumber,
       s.sex_name AS sexName,
+      s.sex_abbrev AS sexAbbreviation,
       a.birth_date AS birthDate,
       bt.birth_type AS birthType,
       bt.birth_type_abbrev AS birthTypeAbbrev
@@ -55,7 +57,7 @@ export const getPedigree = async (
       ON afp.id_animalid = a.id_animalid
     LEFT JOIN flock_prefix_table fr 
       ON fr.id_flockprefixid = afp.id_flockprefixid
-    LEFT JOIN sex_table s 
+    INNER JOIN sex_table s 
       ON s.id_sexid = a.id_sexid
     LEFT JOIN birth_type_table bt 
       ON bt.id_birthtypeid = a.id_birthtypeid
@@ -103,8 +105,7 @@ export const getPedigree = async (
         return;
       }
 
-
-      var bday : Date | null;
+      let bday : Date | null;
 
       if (row.birthDate) {
         bday = getDbDate(row.birthDate);
@@ -120,6 +121,7 @@ export const getPedigree = async (
         animalName: row.animalName,
         registrationNumber: row.registrationNumber,
         sexName: row.sexName,
+        sexAbbreviation: row.sexAbbreviation,
         birthDate: bday,
         birthType: row.birthType,
         birthTypeAbbreviation: row.birthTypeAbbrev,

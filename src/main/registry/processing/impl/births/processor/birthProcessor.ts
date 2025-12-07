@@ -377,11 +377,8 @@ async function craftStillbornName(db: Database, row: RegistryRow, iteration: num
 
   stillbornSex = stillbornSex!
 
-  const sexInitial : string = stillbornSex.name.charAt(0).toUpperCase();
-
   // formula --> `YYYY-flock prefix Dam_name-Stillborn-sex_abbrev-number`
-  let ret = `${birthYear}-${flockPrefix.name} ${damIdentification.name}-Stillborn-${sexInitial}-${iteration}`;
-  return ret;
+  return `${birthYear}-${flockPrefix.name} ${damIdentification.name}-Stillborn-${stillbornSex.abbreviation}-${iteration}`;
 }
 
 // -----------------------------------------------------

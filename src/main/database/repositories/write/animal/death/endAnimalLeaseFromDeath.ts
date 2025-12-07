@@ -14,7 +14,7 @@ export async function endAnimalLeaseFromDeath(
     db: Database,
     animalId: string,
     deathDate: string
-): Promise<Result<void, string>> {
+): Promise<Result<null, string>> {
 
   const modifiedTimestamp = dateTimeAsString();
 
@@ -31,7 +31,7 @@ export async function endAnimalLeaseFromDeath(
       animalId,
     ]);
 
-    return new Success(undefined);
+    return new Success(null);
 
   } catch (err: any) {
     return new Failure(
