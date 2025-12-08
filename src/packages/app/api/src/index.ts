@@ -81,7 +81,6 @@ export type {
   AnimalTrakkerIPC,
   SystemAPI,
   AnimalAPI,
-  DefaultsAPI,
   ExportAPI,
   LookupAPI,
   RegistryAPI,
