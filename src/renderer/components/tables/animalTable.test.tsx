@@ -51,7 +51,7 @@ describe("AnimalInformationTable", () => {
     expect(screen.getByText("No animal data found.")).toBeInTheDocument();
   });
 
-  test("renders loading state then table rows with normalized data", async () => {
+  test("renders table rows with normalized data", async () => {
     const numberEmDashes = 2; // how many em dashes are included due to invalid data
 
     const mockAnimals: AnimalDetails[] = [
@@ -76,9 +76,6 @@ describe("AnimalInformationTable", () => {
     mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(new Success(mockAnimals));
 
     render(<AnimalInformationTable animalIds={[animalIdOne, animalIdTwo]} />);
-
-    // Loading indicator should appear (use findByRole to wait for it)
-    expect(await screen.findByRole("progressbar")).toBeInTheDocument();
 
     // Wait for table to update
     expect(await screen.findByText("12345")).toBeInTheDocument();

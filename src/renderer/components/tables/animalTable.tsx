@@ -89,6 +89,7 @@ export const AnimalInformationTable: React.FC<AnimalInformationTableProps> = ({
       } else {
         log.error("Failed to get animalDetails:", result.error);
         setError(result.error);
+        setLoading(false);
         return
       }
 
