@@ -139,7 +139,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         let animalEndBreedingLeases = await endAnimalLeaseFromDeath(db, animalId, deathDate);
 
         await handleResult(animalEndBreedingLeases, {
-          success: (_: null) => {
+          success: (_: void) => {
             // do nothing
           },
           error: (err: string) => {
