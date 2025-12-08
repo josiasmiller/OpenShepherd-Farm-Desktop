@@ -753,3 +753,13 @@ export type AnimalDetails = {
   birthDate: string;
   coatColor: string;
 }
+
+interface HasId {
+  id: string
+}
+
+interface HasName {
+  name: string
+}
+
+export type ItemEntry = HasId & HasName
