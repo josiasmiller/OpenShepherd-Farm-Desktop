@@ -89,7 +89,6 @@ export type {
 } from "./apis"
 
 export {
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
 } from "./errorCodes/genericCodes"
@@ -104,7 +103,6 @@ export {
 } from "./errorCodes/registryProcessing/transferCodes"
 
 export type {
-  DialogCancelledError,
   MissingFieldsError,
   ParseError,
 } from "./errorCodes/genericCodes";

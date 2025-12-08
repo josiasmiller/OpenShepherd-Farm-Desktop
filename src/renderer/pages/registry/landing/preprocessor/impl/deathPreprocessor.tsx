@@ -8,7 +8,6 @@ import AtrkkrTheme from "src/renderer/theme/AtrkkrTheme";
 
 
 import {
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
   ProcessFailure,
@@ -16,7 +15,7 @@ import {
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
-import { handleResult, Result } from "@common/core";
+import {DialogOutcome, handleResult, Result} from "@common/core";
 import {AnimalDeath, DeathRecord} from "@app/api/src/dtos";
 import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
 
@@ -43,26 +42,23 @@ export const DeathPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parsingResult: Result<DeathRecord, DeathError> = await window.registryAPI.parseDeaths();
+      const parsingResult: DialogOutcome<DeathRecord, DeathError> = await window.registryAPI.parseDeaths();
 
-      let errType : DeathError;
-      let deathRecord : DeathRecord;
+      if (parsingResult.tag === 'cancel') {
+        setLoading(false);
+        return;
+      }
 
-      if (parsingResult.tag === 'success') {
-        deathRecord = parsingResult.data;
-        setCurrentDeathRecord(deathRecord);
-      } else {
-        errType = parsingResult.error
-        if (errType.type == DIALOG_CANCELLED) { // dont display err on dialog cancel as this is an expected user input
-          return
-        }
-
-        // display error to user
+      // show error in cases where it occurs
+      if (parsingResult.tag === 'error') {
         await Swal.fire(
-          getSwalErrParams(errType)
+          getSwalErrParams(parsingResult.error)
         );
         return
       }
+
+      let deathRecord : DeathRecord = parsingResult.data;
+      setCurrentDeathRecord(deathRecord);
 
       const deathRows : AnimalDeath[] = deathRecord.deaths;
 
@@ -209,13 +205,6 @@ export const DeathPreprocessorPage: React.FC = () => {
 
 export function getSwalErrParams(err: DeathError): SweetAlertOptions {
   switch (true) {
-    case err.type === DIALOG_CANCELLED:
-      return {
-        title: "Cancelled",
-        text: "The operation was cancelled by the user.",
-        icon: "info",
-        confirmButtonText: "OK",
-      };
 
     case err.type === MISSING_FIELDS:
       return {

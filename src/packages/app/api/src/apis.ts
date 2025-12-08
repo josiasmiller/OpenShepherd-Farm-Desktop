@@ -43,7 +43,7 @@ import {
   DeathRecord, ProcessSuccess, ProcessFailure,
 } from "./dtos";
 
-import { Result } from "@common/core";
+import { Result, DialogOutcome } from "@common/core";
 import { type IpcEventRegistrarFunc } from "@ipc/core";
 
 import {
@@ -117,9 +117,9 @@ export interface LookupAPI {
 // -------------------- Registry --------------------
 export interface RegistryAPI {
   parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
-  parseDeaths: () => Promise<Result<DeathRecord, DeathError>>;
+  parseDeaths: () => Promise<DialogOutcome<DeathRecord, DeathError>>;
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
-  parseTransfers: () => Promise<Result<TransferRecord, TransferError>>;
+  parseTransfers: () => Promise<DialogOutcome<TransferRecord, TransferError>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
   processTransfers: (transferRecord: TransferRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
   processDeaths: (deathRecord: DeathRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;

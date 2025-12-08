@@ -119,3 +119,20 @@ export const unwrapOrFailWithAnimal = async <T>(
     return new Failure(`Failed to get ${label} for animal ID ${animalId}`);
   }
 };
+
+/**
+ * Type wrapper for Result that allows users to cancel
+ */
+export type DialogOutcome<T, E> =
+  | { tag: "cancel" }
+  | Result<T, E>;
+
+export class Cancelled {
+  readonly tag = "cancel";
+}
+
+/**
+ * helper function to create a cancelled object
+ * can be called in consumer code as simple as `cancelled` where a `DialogOutcome` is used
+ */
+export const cancelled = (): Cancelled => new Cancelled();

@@ -1,20 +1,13 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {
-  // AnimalAPI,
   AnimalSearchRequest,
   BreedRequest,
   DatabaseStateCheckResponse,
-  // DefaultsAPI,
   DefaultSettingsResults,
-  // ExportAPI,
-  // LookupAPI,/
   NewDefaultSettingsParameters,
   OwnerType,
-  // RegistryAPI,
   RegistryProcessRequest,
   Species,
-  // StoreAPI,
-  // SystemAPI,
   TransferRecord,
   UnitRequest,
   DeathRecord,

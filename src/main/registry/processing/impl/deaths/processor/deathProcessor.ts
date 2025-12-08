@@ -25,7 +25,6 @@ import {Database} from "@database/async";
 import {validateDeathRows} from "../validation/deathValidator";
 
 
-
 export async function validateAndProcessDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
   const validationAnswer : ValidationResult[] = await validateDeathRows(db, deathRecord);
 

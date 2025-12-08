@@ -12,7 +12,6 @@ import {
   ExistingMemberBuyer,
   OwnerType,
   Species,
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
   NEW_BUYER_NOT_SUPPORTED,
@@ -21,7 +20,7 @@ import {
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
-import { handleResult, Result } from "@common/core";
+import {DialogOutcome, handleResult, Result} from "@common/core";
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
@@ -49,16 +48,18 @@ export const TransferPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parsingResult: Result<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
+      const parsingResult: DialogOutcome<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
+      // if user cancels, exit early
+      if (parsingResult.tag === 'cancel') {
+        setLoading(false);
+        return;
+      }
+
+      // show error in cases where it occurs
       if (parsingResult.tag === "error") {
-        let errType = parsingResult.error;
-        if (errType.type == DIALOG_CANCELLED) { // don't display err on dialog cancel as this is an expected user input
-          return
-        }
-        // display error to user
         await Swal.fire(
-          getSwalErrParams(errType)
+          getSwalErrParams(parsingResult.error)
         );
         return;
       }
@@ -250,14 +251,6 @@ export const TransferPreprocessorPage: React.FC = () => {
 
 export function getSwalErrParams(err: TransferError): SweetAlertOptions {
   switch (true) {
-    case err.type === DIALOG_CANCELLED:
-      return {
-        title: "Cancelled",
-        text: "The operation was cancelled by the user.",
-        icon: "info",
-        confirmButtonText: "OK",
-      };
-
     case err.type === MISSING_FIELDS:
       return {
         title: "Missing Required Fields",
