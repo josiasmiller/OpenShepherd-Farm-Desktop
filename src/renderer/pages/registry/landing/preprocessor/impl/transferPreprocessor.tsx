@@ -20,7 +20,7 @@ import {
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
-import {DialogOutcome, handleResult, Result} from "@common/core";
+import {Fulfillment, handleResult, Result} from "@common/core";
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
@@ -48,7 +48,7 @@ export const TransferPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parsingResult: DialogOutcome<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
+      const parsingResult: Fulfillment<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
       // if user cancels, exit early
       if (parsingResult.tag === 'cancel') {

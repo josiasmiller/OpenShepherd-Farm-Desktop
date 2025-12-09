@@ -6,7 +6,7 @@ import {
 import { BrowserWindow } from 'electron';
 import {selectJsonFile} from "@fileDialogs/jsonSelect";
 import {AnimalDeath, DeathRecord} from "@app/api";
-import {DialogOutcome, Failure, Success, cancelled} from "@common/core";
+import {Fulfillment, Failure, Success, cancelled} from "@common/core";
 import {DeathError} from "@app/api";
 import {readJsonFile} from "@registryHelpers";
 import log from "electron-log";
@@ -14,7 +14,7 @@ import log from "electron-log";
 /**
  * Main Entrypoint for death parsing
  */
-export const selectAndParseDeaths = async (window: BrowserWindow): Promise<DialogOutcome<DeathRecord, DeathError>> => {
+export const selectAndParseDeaths = async (window: BrowserWindow): Promise<Fulfillment<DeathRecord, DeathError>> => {
 
   const fileResult = await selectJsonFile("Select Deaths JSON file", window);
 
@@ -26,7 +26,7 @@ export const selectAndParseDeaths = async (window: BrowserWindow): Promise<Dialo
 }
 
 
-export const deathParser = async (filePath: string): Promise<DialogOutcome<DeathRecord, DeathError>> => {
+export const deathParser = async (filePath: string): Promise<Fulfillment<DeathRecord, DeathError>> => {
 
   try{
     const fileContents = await readJsonFile(filePath);

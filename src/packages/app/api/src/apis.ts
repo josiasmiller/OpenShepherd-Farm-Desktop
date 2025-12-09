@@ -40,10 +40,12 @@ import {
   OwnerType,
   Owner,
   TransferRecord,
-  DeathRecord, ProcessSuccess, ProcessFailure,
+  DeathRecord,
+  ProcessSuccess,
+  ProcessFailure,
 } from "./dtos";
 
-import { Result, DialogOutcome } from "@common/core";
+import { Result, Fulfillment } from "@common/core";
 import { type IpcEventRegistrarFunc } from "@ipc/core";
 
 import {
@@ -117,9 +119,9 @@ export interface LookupAPI {
 // -------------------- Registry --------------------
 export interface RegistryAPI {
   parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
-  parseDeaths: () => Promise<DialogOutcome<DeathRecord, DeathError>>;
+  parseDeaths: () => Promise<Fulfillment<DeathRecord, DeathError>>;
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
-  parseTransfers: () => Promise<DialogOutcome<TransferRecord, TransferError>>;
+  parseTransfers: () => Promise<Fulfillment<TransferRecord, TransferError>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
   processTransfers: (transferRecord: TransferRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
   processDeaths: (deathRecord: DeathRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;

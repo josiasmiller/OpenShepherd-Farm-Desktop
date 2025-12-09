@@ -2,7 +2,7 @@ export {
   Result,
   Success,
   Failure,
-  DialogOutcome,
+  Fulfillment,
   handleResult,
   unwrapOrFailWithAnimal,
   unwrapOrThrow,

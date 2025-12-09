@@ -21,13 +21,13 @@ import type {
 
 import { selectJsonFile } from "@fileDialogs/jsonSelect";
 import { readJsonFile } from "@registryHelpers";
-import {Failure, Success, DialogOutcome, cancelled} from "@common/core";
+import {Failure, Success, Fulfillment, cancelled} from "@common/core";
 
 
 /**
  * Main Entrypoint for transfer parsing
  */
-export const selectAndParseTransfers = async (window: BrowserWindow): Promise<DialogOutcome<TransferRecord, TransferError>> => {
+export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Fulfillment<TransferRecord, TransferError>> => {
 
   const fileResult = await selectJsonFile("Select Transfers JSON file", window);
 
@@ -42,7 +42,7 @@ export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Di
 /**
  * Core JSON parser
  */
-export const transferParser = async (filePath: string): Promise<DialogOutcome<TransferRecord, TransferError>> => {
+export const transferParser = async (filePath: string): Promise<Fulfillment<TransferRecord, TransferError>> => {
   try {
     const fileContents = await readJsonFile(filePath);
 

@@ -15,8 +15,8 @@ import {
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
-import {DialogOutcome, handleResult, Result} from "@common/core";
-import {AnimalDeath, DeathRecord} from "@app/api/src/dtos";
+import {Fulfillment, handleResult, Result} from "@common/core";
+import {AnimalDeath, DeathRecord} from "@app/api";
 import {DeathError} from "@app/api/src/errorCodes/registryProcessing/deathCodes";
 
 
@@ -42,7 +42,7 @@ export const DeathPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parsingResult: DialogOutcome<DeathRecord, DeathError> = await window.registryAPI.parseDeaths();
+      const parsingResult: Fulfillment<DeathRecord, DeathError> = await window.registryAPI.parseDeaths();
 
       if (parsingResult.tag === 'cancel') {
         setLoading(false);
