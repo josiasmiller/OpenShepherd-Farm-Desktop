@@ -7,7 +7,6 @@ import { BackButton } from "@components/buttons";
 import { RegistryFieldDef, RegistryRow } from '@app/api';
 
 import { BirthParseResponse, BirthParseRow } from '@app/api';
-import { DeathParseResponse, DeathParseRow } from '@app/api';
 import { RegistrationParseResponse, RegistrationParseRow } from '@app/api';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '@app/api';
@@ -75,20 +74,6 @@ const processTypeButtons: Record<string, (ctx: {
     }
   ],
 
-  deaths: ({ handlePreCheck, selectAndLoadFile, loading }) => [
-    {
-      label: "Pre-check Database",
-      onClick: handlePreCheck,
-      className: "wide-button"
-    },
-    {
-      label: loading ? "Loading..." : "Select Deaths CSV",
-      onClick: selectAndLoadFile,
-      disabled: loading,
-      className: "wide-button"
-    }
-  ],
-
   // Default fallback
   default: ({ selectAndLoadFile, loading }) => [
     {
@@ -128,8 +113,6 @@ export const PreprocessorPage: React.FC = () => {
       } else if (processType === 'registrations') {
         await handleRegistrations();
 
-      } else if (processType == 'deaths') {
-        await handleDeaths();
       }
 
     } catch (error) {
@@ -273,39 +256,7 @@ export const PreprocessorPage: React.FC = () => {
     setHasSelectedFile(true);
   };
 
-  /**
-   * parses deaths and then populates the table with the parsed data
-   */
-  const handleDeaths = async () => {
-    const parseResult: ParseResult<DeathParseResponse> = await window.registryAPI.parseDeaths();
-    const parsedDeaths: DeathParseRow[] = parseResult.data.rows;
 
-    handleWarnings(parseResult.warnings);
-
-    const deathColumns: RegistryFieldDef[] = [
-      { key: 'deathDate', label: 'Death Date', editable: true },
-      { key: 'animalId', label: 'Animal ID', editable: false },
-      { key: 'prefixKey', label: 'Prefix Key', editable: true },
-      { key: 'prefix', label: 'Prefix', editable: true },
-      { key: 'name', label: 'Animal Name', editable: true },
-      { key: 'registrationNumber', label: 'Registration Number', editable: false },
-      { key: 'reasonKey', label: 'Reason Key', editable: true },
-      { key: 'reason', label: 'Reason', editable: true },
-      { key: 'notes', label: 'Notes', editable: true },
-    ];
-
-    const rows: RegistryRow[] = parsedDeaths.map(r => ({ ...r }));
-
-    setTables([
-      {
-        title: "Death Records",
-        columns: deathColumns,
-        rows: rows,
-        editable: true,
-      },
-    ]);
-    setHasSelectedFile(true);
-  };
 
   /**
    * handles when a row is updated in any form

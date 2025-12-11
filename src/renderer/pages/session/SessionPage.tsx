@@ -10,6 +10,7 @@ import RegistryLanding from "../registry/landing/registryLanding";
 import LandingPage from "../common/animalSearch/landingPage";
 import {PreprocessorPage} from "../registry/landing/preprocessor/registryPreprocessor";
 import { TransferPreprocessorPage } from '../registry/landing/preprocessor/impl/transferPreprocessor';
+import {DeathPreprocessorPage} from "../registry/landing/preprocessor/impl/deathPreprocessor";
 
 const SessionPage = () => {
   return (
@@ -30,6 +31,7 @@ const SessionPage = () => {
             <Route path="/landing" element={<LandingPage />} />  {/* Note this is only reachable via the animal search page (there is no tab to be selected) */}
 
             <Route path="/registry/preprocess/transfers" element={<TransferPreprocessorPage />} />
+            <Route path="/registry/preprocess/deaths" element={<DeathPreprocessorPage />} />
             <Route path="/registry/preprocess/:processType" element={<PreprocessorPage />} />
           </Routes>
         </div>

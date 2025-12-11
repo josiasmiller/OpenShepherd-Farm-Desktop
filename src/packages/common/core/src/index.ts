@@ -1,4 +1,15 @@
-export { Result, Success, Failure, handleResult, unwrapOrFailWithAnimal, unwrapOrThrow, dataOrNull, dataOrThrow } from './resultTypes'
+export {
+  Result,
+  Success,
+  Failure,
+  Fulfillment,
+  handleResult,
+  unwrapOrFailWithAnimal,
+  unwrapOrThrow,
+  dataOrNull,
+  dataOrThrow,
+  cancelled,
+} from './resultTypes'
 export { isUUIDv4 } from './uuids';
 
 export function promiseFrom<T>(executor: () => T): Promise<T> {

@@ -1,24 +1,20 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {
-  AnimalAPI,
   AnimalSearchRequest,
   BreedRequest,
   DatabaseStateCheckResponse,
-  DefaultsAPI,
   DefaultSettingsResults,
-  ExportAPI,
-  LookupAPI,
   NewDefaultSettingsParameters,
   OwnerType,
-  RegistryAPI,
   RegistryProcessRequest,
   Species,
-  StoreAPI,
-  SystemAPI,
   TransferRecord,
   UnitRequest,
+  DeathRecord,
 } from '@app/api';
-import {bindIpcCallback} from "./core/callbacks";
+
+import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
+import { bindIpcCallback } from "./core/callbacks";
 import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
 
 
@@ -97,6 +93,7 @@ const registryAPI : RegistryAPI = {
   parseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   process: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
   processTransfers: (transferRecord: TransferRecord) => ipcRenderer.invoke("registry-process-transfers", transferRecord),
+  processDeaths: (deathRecord: DeathRecord) => ipcRenderer.invoke("registry-process-deaths", deathRecord),
 }
 
 // -------------------- Store --------------------

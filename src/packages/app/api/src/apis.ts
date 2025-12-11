@@ -37,15 +37,22 @@ import {
   BirthParseResponse,
   RegistrationWriteResponse,
   RegistrationParseResponse,
-  DeathParseResponse,
   OwnerType,
   Owner,
   TransferRecord,
+  DeathRecord,
+  ProcessSuccess,
+  ProcessFailure,
 } from "./dtos";
 
-import { Result } from "@common/core";
+import { Result, Fulfillment } from "@common/core";
 import { type IpcEventRegistrarFunc } from "@ipc/core";
-import { TransferError } from "./errorCodes/registryProcessing/transferCodes";
+
+import {
+  DeathError,
+  TransferError,
+} from "./index";
+
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
@@ -112,11 +119,12 @@ export interface LookupAPI {
 // -------------------- Registry --------------------
 export interface RegistryAPI {
   parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
-  parseDeaths: () => Promise<ParseResult<DeathParseResponse>>;
+  parseDeaths: () => Promise<Fulfillment<DeathRecord, DeathError>>;
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
-  parseTransfers: () => Promise<Result<TransferRecord, TransferError>>;
+  parseTransfers: () => Promise<Fulfillment<TransferRecord, TransferError>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
-  processTransfers: (transferRecord: TransferRecord) => Promise<Result<number, string>>;
+  processTransfers: (transferRecord: TransferRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
+  processDeaths: (deathRecord: DeathRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
 }
 
 // -------------------- Store --------------------

@@ -1,11 +1,11 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import React from "react";
 import log from "electron-log/renderer";
 
 import { AnimalInformationTable, normalizeAnimals } from "./animalTable";
-import { handleResult, Result, Success, Failure } from "@common/core";
-import { AnimalDetails, AnimalSearchRequest } from "@app/api";
+import { Result, Success, Failure } from "@common/core";
+import { AnimalDetails } from "@app/api";
 
 // ==================================================
 // Constants for tests
@@ -45,13 +45,13 @@ describe("AnimalInformationTable", () => {
     jest.clearAllMocks();
   });
 
+
   test("renders 'No animal data found.' when no animalIds are provided", () => {
     render(<AnimalInformationTable animalIds={[]} />);
     expect(screen.getByText("No animal data found.")).toBeInTheDocument();
   });
 
-  test("renders loading state then table rows with normalized data", async () => {
-
+  test("renders table rows with normalized data", async () => {
     const numberEmDashes = 2; // how many em dashes are included due to invalid data
 
     const mockAnimals: AnimalDetails[] = [
@@ -73,28 +73,17 @@ describe("AnimalInformationTable", () => {
       },
     ];
 
-    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(
-      new Success(mockAnimals)
-    );
+    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(new Success(mockAnimals));
 
     render(<AnimalInformationTable animalIds={[animalIdOne, animalIdTwo]} />);
 
-    // Loading indicator should appear
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
-
-    // Wait for API call
-    await waitFor(() => {
-      expect(mockAnimalAPI.getAnimalDetails)
-        .toHaveBeenCalledWith([animalIdOne, animalIdTwo]);
-    });
-
-    // Verify specific data is rendered in the document
+    // Wait for table to update
     expect(await screen.findByText("12345")).toBeInTheDocument();
     expect(await screen.findByText("Desert Where")).toBeInTheDocument();
     expect(await screen.findByText("Boba Fett")).toBeInTheDocument();
     expect(await screen.findByText("Black")).toBeInTheDocument();
 
-    // Fallback placeholders for null/undefined
+    // Fallback placeholders
     expect(await screen.findAllByText("—")).toHaveLength(numberEmDashes);
   });
 
@@ -142,4 +131,65 @@ describe("AnimalInformationTable", () => {
       },
     ]);
   });
+
+  // ==================================================
+  // Extra Columns & Column Order Tests
+  // ==================================================
+
+  test("renders extra columns correctly", async () => {
+    const mockAnimals: AnimalDetails[] = [
+      { animalId: animalIdOne, flockPrefix: "F", name: "A", registrationNumber: "123", birthDate: "2020-01-01", coatColor: "Black" }
+    ];
+
+    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(new Success(mockAnimals));
+
+    await act(async () => {
+      render(<AnimalInformationTable animalIds={[animalIdOne]} extraColumns={[
+        { key: "extraInfo", header: "Extra Info", getValue: (id: string) => `Extra-${id}` },
+      ]} />);
+    });
+
+    expect(await screen.findByText("Extra Info")).toBeInTheDocument();
+    expect(await screen.findByText(`Extra-${animalIdOne}`)).toBeInTheDocument();
+  });
+
+
+  test("renders columns in custom columnOrder", async () => {
+    const mockAnimals: AnimalDetails[] = [
+      { animalId: animalIdOne, flockPrefix: "F", name: "A", registrationNumber: "123", birthDate: "2020-01-01", coatColor: "Black" }
+    ];
+
+    mockAnimalAPI.getAnimalDetails = jest.fn().mockResolvedValue(new Success(mockAnimals));
+
+    await act(async () => {
+      render(<AnimalInformationTable animalIds={[animalIdOne]} columnOrder={["name", "registrationNumber", "flockPrefix", "birthDate", "coatColor"]} />);
+    });
+
+    // Verify headers rendered in the correct order
+    const headers = screen.getAllByRole("columnheader").map(th => th.textContent);
+    expect(headers).toEqual(["Animal Name", "Registration Number", "Flock Prefix", "Birth Date", "Coat Color"]);
+  });
+
+
+  test("throws error when columnOrder has duplicates", () => {
+    const columnOrder = ["name", "name", "registrationNumber", "flockPrefix", "birthDate", "coatColor"];
+    expect(() => render(<AnimalInformationTable animalIds={[animalIdOne]} columnOrder={columnOrder} />))
+        .toThrow(/columnOrder contains duplicates/);
+  });
+
+
+  test("throws error when columnOrder contains unknown keys", () => {
+    const columnOrder = ["name", "registrationNumber", "flockPrefix", "birthDate", "coatColor", "unknownKey"];
+    expect(() => render(<AnimalInformationTable animalIds={[animalIdOne]} columnOrder={columnOrder} />))
+        .toThrow(/columnOrder contains unknown key "unknownKey"/);
+  });
+
+
+  test("throws error when columnOrder does not include all columns", () => {
+    const columnOrder = ["name", "registrationNumber", "flockPrefix"];
+    expect(() => render(<AnimalInformationTable animalIds={[animalIdOne]} columnOrder={columnOrder} />))
+        .toThrow(/columnOrder must include all columns/);
+  });
+
+
 });

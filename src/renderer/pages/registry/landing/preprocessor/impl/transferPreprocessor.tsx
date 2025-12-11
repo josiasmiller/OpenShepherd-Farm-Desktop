@@ -12,14 +12,15 @@ import {
   ExistingMemberBuyer,
   OwnerType,
   Species,
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
   NEW_BUYER_NOT_SUPPORTED,
+  ProcessFailure,
+  ProcessSuccess,
 } from "@app/api";
 
 import { Box, Typography, } from "@mui/material"
-import { handleResult, Result } from "@common/core";
+import {Fulfillment, handleResult, Result} from "@common/core";
 
 export const TransferPreprocessorPage: React.FC = () => {
   const location = useLocation();
@@ -47,16 +48,18 @@ export const TransferPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
-      const parsingResult: Result<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
+      const parsingResult: Fulfillment<TransferRecord, TransferError> = await window.registryAPI.parseTransfers();
 
+      // if user cancels, exit early
+      if (parsingResult.tag === 'cancel') {
+        setLoading(false);
+        return;
+      }
+
+      // show error in cases where it occurs
       if (parsingResult.tag === "error") {
-        let errType = parsingResult.error;
-        if (errType.type == DIALOG_CANCELLED) { // don't display err on dialog cancel as this is an expected user input
-          return
-        }
-        // display error to user
         await Swal.fire(
-          getSwalErrParams(errType)
+          getSwalErrParams(parsingResult.error)
         );
         return;
       }
@@ -150,27 +153,29 @@ export const TransferPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading || !currentTransferRecord) return;
 
-    const processingResult : Result<number, string> = await window.registryAPI.processTransfers(currentTransferRecord);
+    const processingResult : Result<ProcessSuccess, ProcessFailure> = await window.registryAPI.processTransfers(currentTransferRecord);
 
     await handleResult(processingResult, {
-      success: (data: number) => {
+      success: (data: ProcessSuccess) => {
         Swal.fire({
           title: "Success",
           icon: "success",
           confirmButtonText: "OK",
           width: "40em",
-          text: `${data} Transfers processed successfully`,
+          text: `${data.numberProcessed} Transfers processed successfully`,
         });
 
         navigate("/"); // nav back to home after processing
       },
-      error: (_: string) => {
+      error: (processFailure: ProcessFailure) => {
+        const errMsg = processFailure.errors.join("\n");
+
         Swal.fire({
           title: "Error",
           icon: "error",
           confirmButtonText: "OK",
           width: "40em",
-          text: "There was an error processing transfers.",
+          text: `There was an issue processing transfers:\n${errMsg}`,
         });
       },
     });
@@ -246,14 +251,6 @@ export const TransferPreprocessorPage: React.FC = () => {
 
 export function getSwalErrParams(err: TransferError): SweetAlertOptions {
   switch (true) {
-    case err.type === DIALOG_CANCELLED:
-      return {
-        title: "Cancelled",
-        text: "The operation was cancelled by the user.",
-        icon: "info",
-        confirmButtonText: "OK",
-      };
-
     case err.type === MISSING_FIELDS:
       return {
         title: "Missing Required Fields",

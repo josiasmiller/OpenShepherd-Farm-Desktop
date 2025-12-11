@@ -1,6 +1,4 @@
-import { handleResult } from '@common/core';
-import { Species, RegistryRow, ProcessingResult } from '@app/api';
-
+import log from 'electron-log';
 
 // DB actions
 import {
@@ -20,23 +18,48 @@ import {
   endAnimalLeaseFromDeath,
   endMaleBreedingFromDeath,
 } from '../../../../../database';
-import {Database} from '@database/async';
-import log from 'electron-log';
+
+import {Failure, handleResult, Result, Success} from '@common/core';
+import {ValidationResult, DeathRecord, ProcessSuccess, ProcessFailure} from '@app/api';
+import {Database} from "@database/async";
+import {validateDeathRows} from "../validation/deathValidator";
+
+
+export async function validateAndProcessDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
+  const validationAnswer : ValidationResult[] = await validateDeathRows(db, deathRecord);
+
+  const hasInvalid = validationAnswer.some(v => !v.isValid);
+
+  if (hasInvalid) {
+    // Map each invalid row into a readable message
+    const errors = validationAnswer
+      .filter(v => !v.isValid)
+      .flatMap(v =>
+        v.errors.map(err => `Row ${v.rowIndex}: ${err}`)
+      );
+
+    return new Failure({
+      errors
+    });
+  }
+
+  return processDeaths(db, deathRecord);
+}
+
 
 /**
  * processes registration rows by inputing data into the DB. Does not commit anything if any failaures are encountered
  * @param db The Database to act on
- * @param rows RegistryRows to be processed
- * @param _ here only to satisfy interface
+ * @param deathRecord the record of deaths
  * @returns ProcessingResult indicating if the process was successful or not
  */
-export async function processDeathRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
+export async function processDeaths(db: Database, deathRecord: DeathRecord): Promise<Result<ProcessSuccess, ProcessFailure>> {
+  const rawDb = db.raw();
   try {
-    await beginTransaction(db.raw());
+    await beginTransaction(rawDb);
 
-    let rows : RegistryRow[] = sections.death_records;
+    for (const row of deathRecord.deaths) {
 
-    for (const row of rows) {
       try {
 
         const animalId : string = row.animalId;
@@ -68,7 +91,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         // update last location of animal
 
         let deathLocationResult = await markAnimalDeathLocation(
-          db.raw(),
+            rawDb,
           animalId,
           deathDate,
         );
@@ -92,7 +115,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // delete any pertinent data that needs to be on animal death
-        let deleteAnimalAlertResult = await deleteAnimalAlerts(db.raw(), animalId);
+        let deleteAnimalAlertResult = await deleteAnimalAlerts(rawDb, animalId);
 
         await handleResult(deleteAnimalAlertResult, {
           success: (_: null) => {
@@ -107,7 +130,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // remove from animal at stud table
 
-        let deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(db.raw(), animalId);
+        let deleteAnimalAtStudResult = await deleteAnimalAtStudEntriesWithoutFrozenSemen(rawDb, animalId);
 
         await handleResult(deleteAnimalAtStudResult, {
           success: (_: null) => {
@@ -122,7 +145,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Remove from animal for sale table
 
-        let deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(db.raw(), animalId);
+        let deleteAnimalForSaleResult = await deleteAnimalForSaleEntry(rawDb, animalId);
 
         await handleResult(deleteAnimalForSaleResult, {
           success: (_: null) => {
@@ -150,7 +173,7 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // end any male stud records
-        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock until JSON parsing is updated and we can get the time
+        let animalEndMaleBreeding = await endMaleBreedingFromDeath(db, animalId, deathDate, "08:00:00"); // for now just assume 8 o'clock
 
         await handleResult(animalEndMaleBreeding, {
           success: (_: null) => {
@@ -163,22 +186,23 @@ export async function processDeathRows(db: Database, sections: Record<string, Re
         });
 
       } catch (innerError) {
-        throw new Error(`Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`);
+        return new Failure({
+          errors: [`Failed processing row with animal name "${row.name}": ${(innerError as Error).message}`]
+        });
       }
     }
 
-    await commitTransaction(db.raw());
-    return {
-      success: true,
-      insertedRowCount: rows.length
-    };
+    await commitTransaction(rawDb);
+
+    return new Success({
+      numberProcessed: deathRecord.deaths.length
+    });
 
   } catch (error) {
-    await rollbackTransaction(db.raw());
-    return {
-      success: false,
-      errors: [(error as Error).message]
-    };
+    await rollbackTransaction(rawDb);
+    return new Failure({
+      errors: [(error as Error).message],
+    });
   }
 }
 

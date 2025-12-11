@@ -1,6 +1,5 @@
 import { 
-  DialogCancelledError, 
-  MissingFieldsError, 
+  MissingFieldsError,
   ParseError 
 } from "../genericCodes";
 
@@ -10,7 +9,6 @@ export interface NewBuyerNotSupportedError {
   type: typeof NEW_BUYER_NOT_SUPPORTED;
 }
 
-export type TransferError = DialogCancelledError
-  | MissingFieldsError
+export type TransferError = MissingFieldsError
   | ParseError
   | NewBuyerNotSupportedError;

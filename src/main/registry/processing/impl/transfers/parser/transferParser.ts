@@ -6,7 +6,6 @@ import {
   SellerInfo,
   ExistingMemberBuyer,
   NewBuyer,
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   NEW_BUYER_NOT_SUPPORTED,
   PARSE_ERROR,
@@ -15,7 +14,6 @@ import {
 } from '@app/api';
 
 import type {
-  DialogCancelledError,
   MissingFieldsError,
   ParseError,
   NewBuyerNotSupportedError,
@@ -23,21 +21,18 @@ import type {
 
 import { selectJsonFile } from "@fileDialogs/jsonSelect";
 import { readJsonFile } from "@registryHelpers";
-import { Failure, Result, Success } from "@common/core";
+import {Failure, Success, Fulfillment, cancelled} from "@common/core";
 
 
 /**
  * Main Entrypoint for transfer parsing
  */
-export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Result<TransferRecord, TransferError>> => {
+export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Fulfillment<TransferRecord, TransferError>> => {
 
   const fileResult = await selectJsonFile("Select Transfers JSON file", window);
 
   if (fileResult === null) {
-    const ret: DialogCancelledError = {
-      type: DIALOG_CANCELLED,
-    };
-    return new Failure(ret);
+    return cancelled();
   }
 
   return transferParser(fileResult);
@@ -47,11 +42,10 @@ export const selectAndParseTransfers = async (window: BrowserWindow): Promise<Re
 /**
  * Core JSON parser
  */
-export const transferParser = async (filePath: string): Promise<Result<TransferRecord, TransferError>> => {
+export const transferParser = async (filePath: string): Promise<Fulfillment<TransferRecord, TransferError>> => {
   try {
     const fileContents = await readJsonFile(filePath);
 
-    // Validation without exceptions
     const missingFields: string[] = [];
     if (!fileContents.animals || !Array.isArray(fileContents.animals))
       missingFields.push("animals");

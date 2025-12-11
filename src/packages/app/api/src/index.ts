@@ -1,6 +1,7 @@
 import { AnimalTrakkerIPC } from "./apis";
 
 export {
+  AnimalDeath,
   AnimalDetails,
   AnimalIdentification,
   AnimalIdInfoInput,
@@ -25,8 +26,7 @@ export {
   DatabaseSessionInfo,
   DatabaseStateCheckResponse,
   DeathReason,
-  DeathParseResponse,
-  DeathParseRow,
+  DeathRecord,
   DefaultSettingsResults,
   DrugEvent,
   ExistingMemberBuyer,
@@ -38,6 +38,8 @@ export {
   NewBuyer,
   ParseResult,
   Premise,
+  ProcessFailure,
+  ProcessSuccess,
   RegistryType,
   RegistryProcessType,
   RegistryProcessRequest,
@@ -87,10 +89,13 @@ export type {
 } from "./apis"
 
 export {
-  DIALOG_CANCELLED,
   MISSING_FIELDS,
   PARSE_ERROR,
 } from "./errorCodes/genericCodes"
+
+export {
+  DeathError
+} from "./errorCodes/registryProcessing/deathCodes"
 
 export {
   NEW_BUYER_NOT_SUPPORTED,
@@ -98,7 +103,6 @@ export {
 } from "./errorCodes/registryProcessing/transferCodes"
 
 export type {
-  DialogCancelledError,
   MissingFieldsError,
   ParseError,
 } from "./errorCodes/genericCodes";
