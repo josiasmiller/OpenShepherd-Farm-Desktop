@@ -192,7 +192,11 @@ const _handleRegistrationWrite = async (
       let birthWeight : string = "";
       if (regResult.birthInfo != null) {
         birthTypeName = regResult.birthInfo.birthType.name ?? ""; // first node of the pedigree is the actual animal being searched
-        birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
+
+        // only update birth weight if the weight is non-0 and non-null
+        if (regResult.birthInfo.birthWeight !== 0.0 && regResult.birthInfo.birthWeight !== null) {
+          birthWeight  = regResult.birthInfo.birthWeight.toString() ?? "";
+        }
       }
 
       const form = pdfDoc.getForm();
