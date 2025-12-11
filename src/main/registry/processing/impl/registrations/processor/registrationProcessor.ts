@@ -43,10 +43,13 @@ import {Database} from "@database/async";
  * @returns ProcessingResult indicating if the process was successful or not
  */
 export async function processRegistrationRows(db: Database, sections: Record<string, RegistryRow[]>, _ : Species): Promise<ProcessingResult> {
-  try {
-    await beginTransaction(db.raw());
 
-    var rows : RegistryRow[] = sections.registration_records;
+  const rawDb = db.raw();
+
+  try {
+    await beginTransaction(rawDb);
+
+    let rows : RegistryRow[] = sections.registration_records;
 
     for (const row of rows) {
       try {
@@ -60,7 +63,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
         // determine if breederId is for an contact or company
 
         let isCompany : boolean = false;
-        let isCompanyResult = await isOwnerCompany(db.raw(), breederId);
+        let isCompanyResult = await isOwnerCompany(rawDb, breederId);
 
         await handleResult(isCompanyResult, {
           success: (data: boolean) => {
@@ -79,7 +82,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
 
           // get scrapie flock information for tag
           const scrapieResult = await getScrapieFlockInfo(
-            db.raw(),
+            rawDb,
             breederId,
             isCompany,
           );
@@ -98,14 +101,17 @@ export async function processRegistrationRows(db: Database, sections: Record<str
           }
 
           const fedTagInput = mapRegistryRowToFedTagInput(row, animalId, scrapieId);
-          await insertAnimalIdInfoRow(db.raw(), fedTagInput);
+
+          // check if an existing tag already exists
+
+          await insertAnimalIdInfoRow(rawDb, fedTagInput);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get breeder
 
         let breeder : Owner;
-        let breederResult = await getBreederById(db.raw(), breederId, isCompany);
+        let breederResult = await getBreederById(rawDb, breederId, isCompany);
 
         await handleResult(breederResult, {
           success: (data: Owner) => {
@@ -123,7 +129,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get the registry company ID for a given animal via the animal's coat color
 
-        var coatColorResult = await getCoatColorForAnimal(db.raw(), animalId);
+        let coatColorResult = await getCoatColorForAnimal(rawDb, animalId);
         let coatColor : CoatColor
         let regCompanyId : string;
 
@@ -144,9 +150,8 @@ export async function processRegistrationRows(db: Database, sections: Record<str
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // get flock book ID
 
-        var flockBookResult = await getDefaultFlockBookId(db.raw(), regCompanyId);
-
-        var flockBookId : string
+        let flockBookResult = await getDefaultFlockBookId(rawDb, regCompanyId);
+        let flockBookId : string
 
         await handleResult(flockBookResult, {
           success: (data: string) => {
@@ -163,10 +168,10 @@ export async function processRegistrationRows(db: Database, sections: Record<str
 
         /////////////////////////////////////////////////////////////////////
         // get next registered number to put into DB
-        var { newRegNum, registrationTypeId } = await handleRegistrationNumber(db, animalId);
+        let { newRegNum, registrationTypeId } = await handleRegistrationNumber(db, animalId);
 
-        var insertRegRowResult = await insertAnimalRegistrationRow(
-          db.raw(),
+        let insertRegRowResult = await insertAnimalRegistrationRow(
+          rawDb,
           breeder,
           animalId,
           animalName,
@@ -183,7 +188,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // update animal name to match most recent registration name
         await updateAnimalName(
-          db.raw(),
+          rawDb,
           animalId,
           animalName,
         );
@@ -191,7 +196,7 @@ export async function processRegistrationRows(db: Database, sections: Record<str
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Add a record in the registry_certificate_print_table with the proper registration company and type and the create and modified dates
         await markRegistryCertificateNotPrinted(
-          db.raw(), animalId,
+          rawDb, animalId,
         );
 
       } catch (innerError) {
@@ -199,14 +204,14 @@ export async function processRegistrationRows(db: Database, sections: Record<str
       }
     }
 
-    await commitTransaction(db.raw());
+    await commitTransaction(rawDb);
     return {
       success: true,
       insertedRowCount: rows.length
     };
 
   } catch (error) {
-    await rollbackTransaction(db.raw());
+    await rollbackTransaction(rawDb);
     return {
       success: false,
       errors: [(error as Error).message]
@@ -230,9 +235,9 @@ export async function processRegistrationRows(db: Database, sections: Record<str
  */
 async function handleRegistrationNumber(db: Database, animalId : string): Promise<{ newRegNum : string, registrationTypeId : string}> {
 
-  var ccResult = await getCoatColorForAnimal(db.raw(), animalId);
+  let ccResult = await getCoatColorForAnimal(db.raw(), animalId);
 
-  var coatColor : CoatColor;
+  let coatColor : CoatColor;
 
   await handleResult(ccResult, {
     success: (data: CoatColor) => {
@@ -252,14 +257,14 @@ async function handleRegistrationNumber(db: Database, animalId : string): Promis
   coatColor = coatColor!;
 
   // get the registration type from the coat color
-  var ccLower : string = coatColor.name.toLowerCase();
-  var registrationUuid : string = registryTypeToUuid(ccLower as RegistryType);
+  let ccLower : string = coatColor.name.toLowerCase();
+  let registrationUuid : string = registryTypeToUuid(ccLower as RegistryType);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // increment the registration number in the DB
 
-  var registeredValResult = await incrementLastRegistrationNumber(db.raw(), registrationUuid);
-  var newRegisteredValue : string;
+  let registeredValResult = await incrementLastRegistrationNumber(db.raw(), registrationUuid);
+  let newRegisteredValue : string;
 
   await handleResult(registeredValResult, {
     success: (data: string | null) => {
