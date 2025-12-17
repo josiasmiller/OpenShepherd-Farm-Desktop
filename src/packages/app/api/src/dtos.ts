@@ -752,17 +752,15 @@ export type AnimalDetails = {
   coatColor: string;
 }
 
-interface HasId {
+export interface HasId {
   id: string
 }
 
-interface HasName {
+export interface HasName {
   name: string
 }
 
 export type ItemEntry = HasId & HasName
-
-
 
 export type ProcessSuccess = {
     numberProcessed: number;
