@@ -11,7 +11,13 @@ import {
   CircularProgress,
   Typography,
 } from "@mui/material";
+import {HasId, HasName} from "@app/api";
 
+// Row key strategies
+export const ID_AS_ROW_KEY = (row: HasId): string => row.id;
+export const NAME_AS_ROW_KEY = (row: HasName): string => row.name;
+
+// Table types
 export interface TableColumn<T> {
   label: string;
   render: (row: T) => React.ReactNode;
@@ -20,21 +26,22 @@ export interface TableColumn<T> {
 export interface GenericTableProps<T> {
   rows: T[];
   columns: TableColumn<T>[];
+  getRowKey: (row: T) => string;
   loading?: boolean;
   error?: string | null;
   emptyMessage?: string;
   onRowClick?: (row: T) => void;
-  getRowKey?: (row: T) => string | number;
 }
 
+// Component
 export function GenericTable<T>({
   rows,
   columns,
+  getRowKey,
   loading = false,
   error = null,
   emptyMessage = "No data found.",
   onRowClick,
-  getRowKey = (row) => (row as any).id ?? JSON.stringify(row),
 }: GenericTableProps<T>) {
   const cellStyle = {
     padding: "12px 16px",
