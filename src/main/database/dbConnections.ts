@@ -15,6 +15,7 @@ import checkDBVersion, {
 import {
   checkDBQueryable,
   DB_QUERY_CHECK_FAILED_ANIMALS,
+  DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA,
   DB_QUERY_CHECK_FAILED_SETTINGS,
   DB_QUERY_CHECK_PASSED
 } from "./checkDBQueryable";
@@ -124,11 +125,16 @@ async function validateDBQueryableOrClose(db: Database, dbPath: string, parentWi
       case DB_QUERY_CHECK_FAILED_ANIMALS:
         await showQueryableCheckFailed(dbPath, parentWindow)
         log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath} : ${checkQueryableResult.error}`)
-        await db.close().catch((err: Error) => {
-          log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`)
-        })
-        return null
+        break
+      case DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA:
+        await showRequiredDataMissing(dbPath, parentWindow)
+        log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath}`)
+        break
     }
+    await db.close().catch((err: Error) => {
+      log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`)
+    })
+    return null
   } catch (err) {
     log.error(`Failed to check if database ${dbPath} is queryable : ${err}`)
     await db.close().catch((err: Error) => {
@@ -198,6 +204,17 @@ async function showQueryableCheckFailed(
   await dialog.showMessageBox(parentWindow, {
     type: 'error',
     message: `The database "${dbPath}" failed to load and is not queryable.\n\nThe database may be corrupt or in an invalid state and will be closed.`,
+    buttons: ['Ok']
+  })
+}
+
+async function showRequiredDataMissing(
+  dbPath: string,
+  parentWindow: BrowserWindow
+) {
+  await dialog.showMessageBox(parentWindow, {
+    type: 'error',
+    message: `The database "${dbPath}" is missing data required for AnimalTrakker to execute.`,
     buttons: ['Ok']
   })
 }
