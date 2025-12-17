@@ -111,6 +111,12 @@ export type {
   NewBuyerNotSupportedError
 } from "./errorCodes/registryProcessing/transferCodes";
 
+export {
+  type ItemEntry,
+  type HasId,
+  type HasName
+} from './dtos'
+
 declare global {
   interface Window extends AnimalTrakkerIPC {}
 }
