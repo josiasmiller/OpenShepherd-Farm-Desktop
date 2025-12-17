@@ -1,4 +1,5 @@
 import {contextBridge, ipcRenderer} from "electron";
+
 import {
   AnimalSearchRequest,
   BreedRequest,
@@ -13,10 +14,9 @@ import {
   DeathRecord,
 } from '@app/api';
 
-import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
-import { bindIpcCallback } from "./core/callbacks";
+import {AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI} from '@app/api';
+import {bindIpcCallback} from "./core/callbacks";
 import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
-
 
 // -------------------- Animal --------------------
 const animalAPI : AnimalAPI = {
