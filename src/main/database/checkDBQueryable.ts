@@ -1,5 +1,6 @@
 import {Database} from "@database/async";
-import log from 'electron-log'
+import {defaultSettingsExists} from "./repositories/read/defaults/defaultSettingsExists";
+//THIS IMPORT IS TEMPORARILY BROKEN AND NEEDS TO BE TO LIB BECAUSE OF A PACKAGE SETUP ISSUE
 import {ID_DEFAULT_SETTINGS_STANDARD} from "../../packages/database/src/schema/schema";
 
 export const DB_QUERY_CHECK_PASSED = 'db_query_check_passed'
@@ -64,14 +65,7 @@ export const checkDBQueryable = async (db: Database): Promise<DBQueryCheckResult
     return animalsCountResult
   }
 
-  const standardSettingsExists = await db.get<{ standard_settings_exists: boolean }>(QUERY_STANDARD_SETTINGS_EXISTS)
-    .then((result): boolean => {
-      return result.standard_settings_exists
-    })
-    .catch((err): boolean => {
-      log.error('Failed query standard default settings.', err)
-      return false
-    })
+  const standardSettingsExists = await defaultSettingsExists(db, ID_DEFAULT_SETTINGS_STANDARD)
 
   if (!standardSettingsExists) {
     return { type: DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA }
@@ -86,8 +80,3 @@ export const checkDBQueryable = async (db: Database): Promise<DBQueryCheckResult
 
 const QUERY_COUNT_ALL_DEFAULT_SETTINGS = 'SELECT COUNT(*) AS settings_count FROM animaltrakker_default_settings_table'
 const QUERY_COUNT_ALL_ANIMALS = 'SELECT COUNT(*) AS animal_count FROM animal_table'
-
-const QUERY_STANDARD_SETTINGS_EXISTS = `SELECT EXISTS (
-  SELECT 1 FROM animaltrakker_default_settings_table
-    WHERE id_animaltrakkerdefaultsettingsid = '${ID_DEFAULT_SETTINGS_STANDARD}'
-) AS standard_settings_exists`

@@ -1,4 +1,4 @@
-import {Database} from "../../packages/database";
+import {Database} from "@database/async";
 import {
   checkDBQueryable,
   DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA,
@@ -21,7 +21,7 @@ test('checkDBQueryable returns DBQueryCheckPassed when settings, animal, and req
   const getMock = (mockDatabase.get as jest.Mock)
   getMock.mockResolvedValueOnce({ settings_count: 5 })
   getMock.mockResolvedValueOnce({ animal_count: 10 })
-  getMock.mockResolvedValueOnce({ standard_settings_exists: 1 })
+  getMock.mockResolvedValueOnce({ default_settings_exists: 1 })
   const result = await checkDBQueryable(mockDatabase as Database)
   expect(result.type).toEqual(DB_QUERY_CHECK_PASSED)
   expect((result as DBQueryCheckPassed).settingsCount).toEqual(5)

@@ -223,7 +223,7 @@ const CreateDefaults: React.FC = () => {
         weightUnitsResult,
         currencyUnitsResult,
       ] = await Promise.all([
-        window.defaultsAPI.getExisting(),
+        window.defaultSettingsManagementIpc.queryDefaultSettings(),
         window.lookupAPI.getContactInfo(),
         window.lookupAPI.getCompanyInfo(false),
         window.lookupAPI.getCompanyInfo(true),
@@ -818,7 +818,7 @@ const CreateDefaults: React.FC = () => {
     const formData: NewDefaultSettingsParameters = result.data;
   
     try {
-      const success: boolean = await window.defaultsAPI.writeNew(formData);
+      const success: boolean = await window.defaultSettingsManagementIpc.createDefaultSettings(formData);
 
       if (success) {
         Swal.fire({
@@ -853,7 +853,7 @@ const CreateDefaults: React.FC = () => {
 
     const formData: NewDefaultSettingsParameters = result.data;
   
-    const success: boolean = await window.defaultsAPI.editExisting(formData);
+    const success: boolean = await window.defaultSettingsManagementIpc.updateDefaultSettings(formData);
   
     if (success) {
       Swal.fire({

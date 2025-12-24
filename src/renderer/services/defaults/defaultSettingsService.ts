@@ -1,41 +1,46 @@
-import {DefaultsAPI} from '@app/api';
-import {concat, from, map, Observable, switchMap} from "rxjs";
-import {DefaultSettingsResults} from '@app/api';
+import {DefaultSettingsManagementIpc} from '@ipc/api';
+import {concat, filter, from, map, Observable, switchMap} from "rxjs";
+import {DefaultSettingsResults, ItemEntry} from '@app/api';
 import {observeApiEvent} from "@ipc/core";
 import {createContext} from "react";
 
 export interface DefaultSettingsService {
-  selectActiveDefaultSettings: (val: DefaultSettingsResults) => Promise<void>
-  activeDefaultSettings$: () => Observable<DefaultSettingsResults>
+  selectActiveDefaultSettings: (defaultSettingsId: string) => Promise<boolean>
+  activeDefaultSettingsEntry$: () => Observable<ItemEntry>
   defaultSettings$: () => Observable<DefaultSettingsResults[]>
+  defaultSettingsEntries$: () => Observable<ItemEntry[]>
 }
 
 export class IPCDefaultSettingsService implements DefaultSettingsService {
 
-  constructor(private readonly defaultsAPI: DefaultsAPI) {}
+  constructor(private readonly defaultsAPI: DefaultSettingsManagementIpc) {}
 
-  selectActiveDefaultSettings(settings: DefaultSettingsResults) {
-    return this.defaultsAPI.selectActiveDefaultSettings(settings)
+  selectActiveDefaultSettings(defaultSettingsId: string) {
+    return this.defaultsAPI.selectActiveDefaultSettings(defaultSettingsId)
   }
 
-  activeDefaultSettings$(): Observable<DefaultSettingsResults> {
-    const initial = from(this.defaultsAPI.queryActiveDefaultSettings())
-    const updates = observeApiEvent(this.defaultsAPI.onActiveDefaultSettingsChanged)
-      .pipe(switchMap((event) => this.defaultsAPI.queryActiveDefaultSettings()))
+  activeDefaultSettingsEntry$(): Observable<ItemEntry> {
+    const initial = from(this.defaultsAPI.queryActiveDefaultSettingsEntry()).pipe(
+      filter(data => data !== null)
+    )
+    const updates = observeApiEvent(this.defaultsAPI.onActiveDefaultSettingsChanged).pipe(
+      switchMap((event) => this.defaultsAPI.queryActiveDefaultSettingsEntry()),
+      filter(data => data !== null)
+    )
     return concat(initial, updates)
   }
 
   defaultSettings$(): Observable<DefaultSettingsResults[]> {
-    const initial = from(this.defaultsAPI.getExisting())
+    const initial = from(this.defaultsAPI.queryDefaultSettings())
       .pipe(map(result => {
         switch(result.tag) {
           case "success": return result.data
           case "error": return []
         }
       }))
-    const updates = observeApiEvent(this.defaultsAPI.onDefaultSettingsListChanged)
+    const updates = observeApiEvent(this.defaultsAPI.onDefaultSettingsCollectionChanged)
       .pipe(
-        switchMap((event) => this.defaultsAPI.getExisting()),
+        switchMap((event) => this.defaultsAPI.queryDefaultSettings()),
         map(result => {
           switch(result.tag) {
             case "success": return result.data
@@ -45,8 +50,17 @@ export class IPCDefaultSettingsService implements DefaultSettingsService {
       )
     return concat(initial, updates)
   }
+
+  defaultSettingsEntries$(): Observable<ItemEntry[]> {
+    const initial = from(this.defaultsAPI.queryDefaultSettingsEntries())
+    const updates = observeApiEvent(this.defaultsAPI.onDefaultSettingsCollectionChanged)
+      .pipe(
+        switchMap((event) => this.defaultsAPI.queryDefaultSettingsEntries()),
+      )
+    return concat(initial, updates)
+  }
 }
 
 export const DefaultSettingsServiceContext = createContext<DefaultSettingsService>(
-  new IPCDefaultSettingsService(window.defaultsAPI)
+  new IPCDefaultSettingsService(window.defaultSettingsManagementIpc)
 )
