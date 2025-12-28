@@ -144,4 +144,16 @@ export class Database {
       })
     })
   }
+
+  async inTransaction<T>(work: (db: Database) => Promise<T>): Promise<T> {
+    await this.exec('BEGIN TRANSACTION');
+    try {
+      const result = await work(this);
+      await this.exec('END TRANSACTION');
+      return result;
+    } catch (error) {
+      await this.exec('ROLLBACK TRANSACTION');
+      throw error;
+    }
+  }
 }
