@@ -3,8 +3,7 @@ import {BrowserWindow} from "electron";
 import {defaultSettingsExists} from "../database/repositories/read/defaults/defaultSettingsExists";
 import {BehaviorSubject, distinctUntilChanged, Observable} from "rxjs";
 import {DefaultSettingsManagement} from "@ipc/api";
-//THIS IMPORT IS TEMPORARILY BROKEN AND NEEDS TO BE TO LIB BECAUSE OF A PACKAGE SETUP ISSUE
-import {ID_DEFAULT_SETTINGS_STANDARD} from "../../packages/database/src/schema/schema";
+import {ID_DEFAULT_SETTINGS_STANDARD} from "@database/schema";
 
 export class AtrkkrSession {
 

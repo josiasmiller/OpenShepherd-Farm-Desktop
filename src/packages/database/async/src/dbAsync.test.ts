@@ -1,4 +1,4 @@
-import {Database} from "./index";
+import {Database} from "./dbAsync";
 
 /**
  * Holds test database for all tests in this module

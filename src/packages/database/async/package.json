@@ -1,8 +1,8 @@
 {
-  "name": "database-promises",
+  "name": "database-async",
   "version": "1.0.0",
   "description": "Wraps node-sqlite3 database in a promise based api.",
-  "main": "lib/index.js",
+  "main": "lib/dbAsync.js",
   "directories": {
     "lib": "lib"
   }
