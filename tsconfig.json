@@ -17,8 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@app/*": ["src/packages/app/*"],
-      "@database/async": ["src/packages/database"],
-      "@database/schema": ["src/packages/database/src/schema"],
+      "@database/async": ["src/packages/database/async"],
+      "@database/schema": ["src/packages/database/schema"],
       "@ipc/api": ["src/packages/ipc/api"],
       "@ipc/core": ["src/packages/ipc/core"],
       "@common/*": ["src/packages/common/*"],

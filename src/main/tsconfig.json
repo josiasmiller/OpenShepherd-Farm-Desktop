@@ -13,7 +13,8 @@
   "exclude": ["./build/*", "./**/*.test.ts"],
   "references": [
     { "path": "../packages/app/buildVariant" },
-    { "path": "../packages/database" },
+    { "path": "../packages/database/async" },
+    { "path": "../packages/database/schema" },
     { "path": "../packages/app/api" },
     { "path": "../packages/ipc/api" },
     { "path": "../packages/common/core" },

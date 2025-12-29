@@ -6,7 +6,8 @@
     { "path": "app/variant" },
     { "path": "common/core" },
     { "path": "common/time" },
-    { "path": "database" },
+    { "path": "database/async" },
+    { "path": "database/schema" },
     { "path": "ipc/api" },
     { "path": "ipc/core" },
   ]

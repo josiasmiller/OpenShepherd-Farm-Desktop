@@ -1,7 +1,6 @@
 import {Database} from "@database/async";
 import {defaultSettingsExists} from "./repositories/read/defaults/defaultSettingsExists";
-//THIS IMPORT IS TEMPORARILY BROKEN AND NEEDS TO BE TO LIB BECAUSE OF A PACKAGE SETUP ISSUE
-import {ID_DEFAULT_SETTINGS_STANDARD} from "../../packages/database/src/schema/schema";
+import {ID_DEFAULT_SETTINGS_STANDARD} from "@database/schema";
 
 export const DB_QUERY_CHECK_PASSED = 'db_query_check_passed'
 export const DB_QUERY_CHECK_FAILED_SETTINGS = 'db_query_check_failed_settings'
