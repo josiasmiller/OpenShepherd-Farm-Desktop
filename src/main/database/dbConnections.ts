@@ -1,13 +1,12 @@
 import {Database} from '@database/async';
+import {DatabaseVersion, queryDBVersion} from "@database/schema";
 import log from 'electron-log';
 import {BrowserWindow, dialog} from "electron";
 import checkDBVersion, {
-  DatabaseVersion,
   DB_VERSION_CHECK_PATCH_VERSION_RECOMMENDED,
   DB_VERSION_CHECK_RESULT_TYPE_INVALID_FORMAT,
   DB_VERSION_CHECK_RESULT_TYPE_PASSED,
   DB_VERSION_CHECK_UNSUPPORTED_VERSION,
-  queryDBVersion,
   REQUIRED_DB_VERSION_MAJOR,
   REQUIRED_DB_VERSION_MINOR,
   REQUIRED_DB_VERSION_PATCH
