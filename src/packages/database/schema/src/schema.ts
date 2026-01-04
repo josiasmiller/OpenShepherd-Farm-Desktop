@@ -79,11 +79,15 @@ export const dbVersionFrom = (versionString: string | null): DatabaseVersion | n
  * @returns The version string if found, null if not.
  */
 export const queryDBVersion = async (db: Database): Promise<string | null> => {
-    const queryResult = await db.get<{ database_version: string } | undefined>(QUERY_DATABASE_VERSION)
-    return queryResult?.database_version ?? null
+  type DbVersionResult = { database_version: string } | undefined;
+  const queryResult = await db.get<DbVersionResult>(QUERY_DATABASE_VERSION_METADATA).catch(() => null)
+      ?? await db.get<DbVersionResult>(QUERY_DATABASE_VERSION_LEGACY).catch(() => null)
+      ?? null;
+  return queryResult?.database_version ?? null;
 }
 
-const QUERY_DATABASE_VERSION = `SELECT database_version FROM animaltrakker_metadata_table LIMIT 1`
+const QUERY_DATABASE_VERSION_LEGACY = `SELECT database_version FROM animaltrakker_metadata_table LIMIT 1`;
+const QUERY_DATABASE_VERSION_METADATA = `SELECT propery_value AS database_version FROM metadata_table WHERE propery_name = 'database_version' LIMIT 1`;
 
 //endregion
 
@@ -104,6 +108,6 @@ export const ARTIFICIAL_INSEMINATION_FROZEN_LAPROSCOPIC = 'aa46e122-cc6e-4468-b1
 export const ARTIFICIAL_INSEMINATION_FROZEN_VAGINAL = 'f513a321-120b-4b71-af4c-6f6c818ffe19';
 
 // animaltrakker_default_settings_table
-export const ID_DEFAULT_SETTINGS_STANDARD = "29753af4-2b46-49b3-854c-4644d8919db6"
+export const ID_DEFAULT_SETTINGS_STANDARD = "29753af4-2b46-49b3-854c-4644d8919db6";
 
 //endregion
