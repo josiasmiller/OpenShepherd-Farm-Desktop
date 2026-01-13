@@ -1,8 +1,12 @@
 
 export {
-  validateAndProcessDeaths
-} from "./processing/impl/deaths/processor/deathProcessor"
+  validateAndProcessBirths,
+} from "./processing/impl/births/processor/birthProcessor";
 
 export {
-  validateAndProcessTransfers
+  validateAndProcessDeaths
+} from "./processing/impl/deaths/processor/deathProcessor";
+
+export {
+  validateAndProcessTransfers,
 } from "./processing/impl/transfers/processor/transferProcessor";

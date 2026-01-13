@@ -1,59 +1,44 @@
-import { BirthType, RegistryRow } from '@app/api';
+import { BirthType, BirthNotification } from '@app/api';
 import { InsertAnimalTableInput } from '../../../../../../database';
 import { isUUIDv4 } from '@common/core';
 
-export function mapRegistryRowToInsertAnimalInput(row: RegistryRow, birthType: BirthType): InsertAnimalTableInput {
+export function mapBirthNotificationToInsertAnimalInput(bn: BirthNotification, birthType: BirthType): InsertAnimalTableInput {
 
-  if (!isUUIDv4(row.sexKey)) {
-    throw new Error("sexKey is not a UUIDv4 key: " + row.sexKey);
+  if (!isUUIDv4(bn.sex.id)) {
+    throw new Error("sex.id is not a UUIDv4 key: " + bn.sex.id);
   }
 
-  if (!isUUIDv4(row.birthTypeKey)) {
-    throw new Error("BirthTypeID is not a UUIDv4 key: " + row.birthTypeKey);
+  if (!isUUIDv4(bn.birthType.id)) {
+    throw new Error("birthtype.id is not a UUIDv4 key: " + bn.birthType.id);
   }
 
-  if (!isUUIDv4(row.weightUnitsKey)) {
-    throw new Error("WeightKey is not a UUIDv4 key: " + row.weightUnitsKey);
+  if (!isUUIDv4(bn.weightUnits.id)) {
+    throw new Error("weightUnits.id is not a UUIDv4 key: " + bn.weightUnits.id);
   }
 
-  if (!isUUIDv4(row.sireId)) {
-    throw new Error("sireId is not a UUIDv4 key: " + row.sireId);
+  if (!isUUIDv4(bn.sireId)) {
+    throw new Error("sireId is not a UUIDv4 key: " + bn.sireId);
   }
 
-  if (!isUUIDv4(row.damId)) {
-    throw new Error("damId is not a UUIDv4 key: " + row.damId);
-  }
-
-  var birthWeight : number | null = null;
-  var birthWeightUnitsId : string | null = null;
-  
-  // Assign birthWeight if row.weight is a number
-  if (typeof row.weight === 'number') {
-    birthWeight = row.weight;
-  }
-
-  // Assign birthWeightUnitsId if row.weightUnitsKey is a string
-  if (typeof row.weightUnitsKey === 'string') {
-    birthWeightUnitsId = row.weightUnitsKey;
+  if (!isUUIDv4(bn.damId)) {
+    throw new Error("damId is not a UUIDv4 key: " + bn.damId);
   }
 
   return {
-    name: row.animalName,
-    sexId: row.sexKey,
-    birthdate: row.birthdate,
+    name: bn.animalName,
+    sexId: bn.sex.id,
+    birthdate: bn.birthdate,
     birthTime: "00:00:00", // for now, set at midnight
     birthType: birthType,
-    birthWeight: birthWeight,
-    birthWeightUnitsId: birthWeightUnitsId,
+    birthWeight: bn.weight,
+    birthWeightUnitsId: bn.weightUnits.id,
     birthOrder: 1,
     rearType: null,
     weanedDate: null,
     deathDate: null,
     deathReasonId: null,
-    sireId: row.sireId,
-    damId: row.damId,
-    fosterDamId: row.fosterDamId ?? null,
-    surrogateDamId: row.surrogateDamId ?? null,
-    handReared: row.handReared ?? false,
+    sireId: bn.sireId,
+    damId: bn.damId,
+    handReared: false, // todo --> this information is NOT present in the birth JSON as of now
   };
 }

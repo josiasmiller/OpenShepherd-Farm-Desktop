@@ -1,4 +1,4 @@
-import { RegistryRow, Species, ValidationResult } from '@app/api';
+import {BirthRecord, BirthNotification, Species, ValidationResult} from '@app/api';
 import { checkSireAlive } from './rules/checkSireAlive';
 import { checkSireBreedingAge } from './rules/checkSireBreedingAge';
 import { checkDamBreedingAge } from './rules/checkDamBreedingAge';
@@ -7,21 +7,23 @@ import { checkHasAtLeastOneValidTag } from './rules/checkHasAtLeastOneValidTag';
 import { checkElectronicTags } from './rules/checkElectronicTags';
 import {Database} from "@database/async";
 
-export async function validateBirthRows(db: Database, sections: Record<string, RegistryRow[]>, species: Species): Promise<ValidationResult[]> {
+export async function validateBirthRows(db: Database, birthRecord: BirthRecord, species: Species): Promise<ValidationResult[]> {
   const results: ValidationResult[] = [];
   
-  var rows : RegistryRow[] = sections.birth_records;
+  let rows : BirthNotification[] = birthRecord.rows;
 
   for (let index = 0; index < rows.length; index++) {
     const row = rows[index];
     const errors: string[] = [];
 
-    // Run all relevant checks
-    const tagCheck = await checkElectronicTags(db.raw(), row);
-    errors.push(...tagCheck.errors);
+    const electronicTagCheck = await checkElectronicTags(row);
+    errors.push(...electronicTagCheck.errors);
 
-    const atLeastOneValidTagCheck = await checkHasAtLeastOneValidTag(row);
-    errors.push(...atLeastOneValidTagCheck.errors)
+    // do not check stillborn tags
+    if (!row.isStillborn) {
+      const atLeastOneValidTagCheck = await checkHasAtLeastOneValidTag(row);
+      errors.push(...atLeastOneValidTagCheck.errors)
+    }
 
     const sireCheck = await checkSireAlive(db.raw(), row, species);
     errors.push(...sireCheck.errors);

@@ -1,10 +1,11 @@
 import {contextBridge, ipcRenderer} from "electron";
-
 import {
   AnimalSearchRequest,
+  BirthRecord,
   BreedRequest,
   DatabaseStateCheckResponse,
   DefaultSettingsResults,
+  NewDefaultSettingsParameters,
   OwnerType,
   RegistryProcessRequest,
   Species,
@@ -13,9 +14,10 @@ import {
   DeathRecord,
 } from '@app/api';
 
-import {AnimalAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI} from '@app/api';
+import { AnimalAPI, DefaultsAPI, ExportAPI, LookupAPI, RegistryAPI, StoreAPI, SystemAPI } from '@app/api';
+import { bindIpcCallback } from "./core/callbacks";
 import {SessionManagement, sessionManagementIpcProxy} from "./proxies/sessionManagement";
-import {DefaultSettingsManagement, defaultSettingsManagementIpcProxy} from "./proxies/defaultSettingsManagement";
+
 
 // -------------------- Animal --------------------
 const animalAPI : AnimalAPI = {
@@ -32,6 +34,24 @@ const exportAPI : ExportAPI = {
   tissueTestResultsCsv: (ids: string[]) => ipcRenderer.invoke("export-tissue-test-results-csv", ids),
   registration: (animalIds: string[], type: "black" | "white" | "chocolate", sig: string | null) =>
     ipcRenderer.invoke("export-registration", animalIds, type, sig),
+}
+
+// -------------------- Defaults --------------------
+const defaultsAPI : DefaultsAPI = {
+  editExisting: (params: NewDefaultSettingsParameters) => ipcRenderer.invoke("edit-existing-default", params),
+  writeNew: (params: NewDefaultSettingsParameters) => ipcRenderer.invoke("write-new-default-settings", params),
+  getExisting: () => ipcRenderer.invoke("get-existing-defaults"),
+  onDefaultSettingsListChanged: (callback) => {
+    return bindIpcCallback("default-settings-list-changed", callback)
+  },
+  selectActiveDefaultSettings: (val: DefaultSettingsResults) => ipcRenderer.invoke("set-store-selected-default", val),
+  queryActiveDefaultSettings: () => ipcRenderer.invoke('get-store-selected-default'),
+  onActiveDefaultSettingsChanged: (callback) => {
+    return bindIpcCallback('active-default-settings-changed', callback)
+  },
+  onActiveDefaultSettingsNotFound: (callback) => {
+    return bindIpcCallback('active-default-settings-not-found', callback)
+  }
 }
 
 // -------------------- Lookup --------------------
@@ -73,14 +93,18 @@ const registryAPI : RegistryAPI = {
   parseRegistrations: () => ipcRenderer.invoke("registry-parse-registrations"),
   parseTransfers: () => ipcRenderer.invoke("registry-parse-transfers"),
   process: (args: RegistryProcessRequest) => ipcRenderer.invoke("registry-process", args),
+
+  processBirths: (birthRecord: BirthRecord, species: Species) => ipcRenderer.invoke("registry-process-births", birthRecord, species),
   processTransfers: (transferRecord: TransferRecord) => ipcRenderer.invoke("registry-process-transfers", transferRecord),
   processDeaths: (deathRecord: DeathRecord) => ipcRenderer.invoke("registry-process-deaths", deathRecord),
 }
 
 // -------------------- Store --------------------
 const storeAPI : StoreAPI = {
+  getSelectedDefault: () => ipcRenderer.invoke("get-store-selected-default"),
   getSelectedSpecies: () => ipcRenderer.invoke("get-store-selected-species"),
   getSelectedSignatureFilePath: () => ipcRenderer.invoke("get-store-selected-signature-file-path"),
+  setSelectedDefault: (val: DefaultSettingsResults) => ipcRenderer.invoke("set-store-selected-default", val),
   setSelectedSpecies: (val: Species | null) => ipcRenderer.invoke("set-store-selected-species", val),
   setSelectedSignatureFilePath: (val: string | null) => ipcRenderer.invoke("set-store-selected-signature-file-path", val),
 }
@@ -97,6 +121,7 @@ const systemAPI : SystemAPI = {
 
 // -------------------- expose APIs --------------------
 contextBridge.exposeInMainWorld("animalAPI", animalAPI);
+contextBridge.exposeInMainWorld("defaultsAPI", defaultsAPI);
 contextBridge.exposeInMainWorld("exportAPI", exportAPI);
 contextBridge.exposeInMainWorld("lookupAPI", lookupAPI);
 contextBridge.exposeInMainWorld("registryAPI", registryAPI);
@@ -104,4 +129,5 @@ contextBridge.exposeInMainWorld("storeAPI", storeAPI);
 contextBridge.exposeInMainWorld("systemAPI", systemAPI);
 
 contextBridge.exposeInMainWorld(SessionManagement.IPC_API_NAME, sessionManagementIpcProxy())
-contextBridge.exposeInMainWorld(DefaultSettingsManagement.IPC_API_NAME, defaultSettingsManagementIpcProxy())
+
+console.log("✅ Preload script loaded!");

@@ -1,14 +1,11 @@
 import {Database} from "@database/async";
-import {defaultSettingsExists} from "./repositories/read/defaults/defaultSettingsExists";
-import {ID_DEFAULT_SETTINGS_STANDARD} from "@database/schema";
 
 export const DB_QUERY_CHECK_PASSED = 'db_query_check_passed'
 export const DB_QUERY_CHECK_FAILED_SETTINGS = 'db_query_check_failed_settings'
 export const DB_QUERY_CHECK_FAILED_ANIMALS = 'db_query_check_failed_animals'
-export const DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA = 'db_query_check_failed_missing_required_data'
 
 export type DBQueryCheckResult = DBQueryCheckPassed | DBQueryCheckFailed
-export type DBQueryCheckFailed = DBQueryCheckFailedSettings | DBQueryCheckFailedAnimals | DBQueryCheckFailedMissingRequiredData
+export type DBQueryCheckFailed = DBQueryCheckFailedSettings | DBQueryCheckFailedAnimals
 
 export type DBQueryCheckPassed = {
   type: typeof DB_QUERY_CHECK_PASSED,
@@ -24,10 +21,6 @@ export type DBQueryCheckFailedSettings = {
 export type DBQueryCheckFailedAnimals = {
   type: typeof DB_QUERY_CHECK_FAILED_ANIMALS
   error: Error
-}
-
-export type DBQueryCheckFailedMissingRequiredData = {
-  type: typeof DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA
 }
 
 /**
@@ -62,12 +55,6 @@ export const checkDBQueryable = async (db: Database): Promise<DBQueryCheckResult
 
   if (animalsCountResult.type !== DB_QUERY_CHECK_PASSED) {
     return animalsCountResult
-  }
-
-  const standardSettingsExists = await defaultSettingsExists(db, ID_DEFAULT_SETTINGS_STANDARD)
-
-  if (!standardSettingsExists) {
-    return { type: DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA }
   }
 
   return {

@@ -43,15 +43,17 @@ import {writeTissueTestResults} from "./writers/csv/writeTissueTestResults";
 
 import {writeRegistration} from "./writers/pdf/writeRegistration";
 
-import {birthParser} from "./registry/processing/impl/births/parser/birthParser";
+import {selectAndParseBirths} from "./registry/processing/impl/births/parser/birthParser";
 import {selectAndParseDeaths} from "./registry/processing/impl/deaths/parser/deathParser";
-import {registrationParser} from "./registry/processing/impl/registrations/parser/registrationParser";
 import {selectAndParseTransfers} from "./registry/processing/impl/transfers/parser/transferParser";
+import {registrationParser} from "./registry/processing/impl/registrations/parser/registrationParser";
+
 import {handleDatabaseStateCheck} from "./registry/processing/ipc/handleDatabaseStateCheck";
 import {
+  BirthRecord,
   DatabaseStateCheckResponse,
   DeathRecord,
-  DefaultSettingsResults, ItemEntry, NewDefaultSettingsParameters,
+  DefaultSettingsResults,
   OwnerType,
   RegistryProcessRequest,
   Species,
@@ -66,14 +68,14 @@ import {getStoreSelectedFilepath, setStoreSelectedFilepath} from "./store/impl/s
 import {promiseFrom} from "@common/core";
 import {atrkkrSessionForEvent} from "./session/sessionManagement";
 import log from "electron-log";
-import {validateAndProcessTransfers, validateAndProcessDeaths} from "./registry";
-import {ApplicationSettings, DefaultSettingsManagement} from "@ipc/api";
+
+import {validateAndProcessTransfers, validateAndProcessDeaths, validateAndProcessBirths} from "./registry";
+
+import {ApplicationSettings} from "@ipc/api";
 import {AboutApp, AppAboutInfo} from "@app/buildVariant";
-import {getDefaultSettingsEntries} from "./database/repositories/read/defaults/getDefaultSettingsEntries";
-import {AtrkkrSession} from "./session/AtrkkrSession";
-import {getDefaultSettingsEntry} from "./database/repositories/read/defaults/getDefaultSettingsEntry";
 
 const IPC_INVOKE_ANIMAL_SEARCH = 'animal-search'
+const IPC_INVOKE_EDIT_EXISTING_DEFAULT = 'edit-existing-default'
 const IPC_INVOKE_EXPORT_ANIMAL_NOTES = 'export-animal-notes-csv'
 const IPC_INVOKE_EXPORT_DRUG_HISTORY_CSV = 'export-drug-history-csv'
 const IPC_INVOKE_EXPORT_TISSUE_TEST_RESULTS_CSV = 'export-tissue-test-results-csv'
@@ -90,6 +92,7 @@ const IPC_INVOKE_GET_COUNTIES = 'get-counties'
 const IPC_INVOKE_GET_COUNTRIES = 'get-countries'
 const IPC_INVOKE_GET_COUNTRY_PREFIX_FOR_OWNER = 'get-country-prefix-for-owner'
 const IPC_INVOKE_GET_DEATH_REASONS = 'get-death-reasons'
+const IPC_INVOKE_GET_EXISTING_DEFAULTS = 'get-existing-defaults'
 const IPC_INVOKE_GET_FLOCK_PREFIXES = 'get-flock-prefixes'
 const IPC_INVOKE_GET_LOCATIONS = 'get-locations'
 const IPC_INVOKE_GET_OWNER_BY_ID = 'get-owner-by-id'
@@ -97,6 +100,7 @@ const IPC_INVOKE_GET_PEDIGREE = 'get-pedigree'
 const IPC_INVOKE_GET_PREMISE_INFO = 'get-premise-info'
 const IPC_INVOKE_GET_REMOVE_REASONS = 'get-remove-reasons'
 const IPC_INVOKE_GET_SCRAPIE_FLOCK_INFO = 'get-scrapie-flock-info'
+const IPC_INVOKE_GET_STORE_SELECTED_DEFAULT = 'get-store-selected-default'
 const IPC_INVOKE_GET_STORE_SELECTED_SPECIES = 'get-store-selected-species'
 const IPC_INVOKE_GET_STORE_SELECTED_SIGNATURE_FILE_PATH = 'get-store-selected-signature-file-path'
 const IPC_INVOKE_GET_SEXES = 'get-sexes'
@@ -116,21 +120,14 @@ const IPC_INVOKE_REGISTRY_PARSE_REGISTRATIONS = 'registry-parse-registrations'
 const IPC_INVOKE_REGISTRY_PARSE_TRANSFERS = 'registry-parse-transfers'
 const IPC_INVOKE_REGISTRY_PROCESS = 'registry-process'
 const IPC_INVOKE_REGISTRY_PROCESS_DEATHS = 'registry-process-deaths'
+const IPC_INVOKE_REGISTRY_PROCESS_BIRTHS = 'registry-process-births'
 const IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS = 'registry-process-transfers'
 const IPC_INVOKE_DATABASE_STATE_CHECK = 'database-state-check'
 const IPC_INVOKE_RESOLVE_DATABASE_ISSUES = 'resolve-database-issues'
+const IPC_INVOKE_SET_STORE_SELECTED_DEFAULT = 'set-store-selected-default'
 const IPC_INVOKE_SET_STORE_SELECTED_SPECIES = 'set-store-selected-species'
 const IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH = 'set-store-selected-signature-file-path'
-
-const registerSessionIpcHandler = (channel: string, handler: (session: AtrkkrSession, ... args: any[]) => (Promise<any>) | (any)) => {
-  ipcMain.handle(channel, async (event: IpcMainInvokeEvent, ... args: any[]) => {
-    const session = atrkkrSessionForEvent(event)
-    if (session) {
-      return handler(session, ... args)
-    }
-    logAndThrowUnhandledIpcRequest(channel, event)
-  });
-}
+const IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS = 'write-new-default-settings'
 
 const logAndThrowUnhandledIpcRequest: (channel: string, event: IpcMainInvokeEvent) => never = (channel: string, event: IpcMainInvokeEvent) => {
   const message = `Unhandled IPC invocation in main process : No session found : sender=${event.sender.id}, channel=${channel}`
@@ -145,6 +142,17 @@ export const registerIpcHandlers = () => {
       return animalSearch(session.db.raw(), queryParams);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_ANIMAL_SEARCH, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_EDIT_EXISTING_DEFAULT, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return editExistingDefaultSettings(session.db.raw(), queryParams)
+        .then(() => {
+          session.window.webContents.send('default-settings-list-changed')
+        });
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_EDIT_EXISTING_DEFAULT, event)
   });
 
   ipcMain.handle(IPC_INVOKE_EXPORT_ANIMAL_NOTES, async (event: IpcMainInvokeEvent, animals: string[]) => {
@@ -275,6 +283,14 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_DEATH_REASONS, event)
   });
 
+  ipcMain.handle(IPC_INVOKE_GET_EXISTING_DEFAULTS, async (event: IpcMainInvokeEvent) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return getExistingDefaults(session.db.raw());
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_EXISTING_DEFAULTS, event)
+  });
+
   ipcMain.handle(IPC_INVOKE_GET_FLOCK_PREFIXES, async (event: IpcMainInvokeEvent) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
@@ -329,6 +345,15 @@ export const registerIpcHandlers = () => {
       return getScrapieFlockInfo(session.db.raw(), ownerId, isCompany);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_SCRAPIE_FLOCK_INFO, event)
+  });
+
+  ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_DEFAULT, (event: IpcMainInvokeEvent): DefaultSettingsResults | null => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      return getStoreSelectedDefault();
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_GET_STORE_SELECTED_DEFAULT, event)
   });
 
   ipcMain.handle(IPC_INVOKE_GET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent): Species | null => {
@@ -451,7 +476,7 @@ export const registerIpcHandlers = () => {
   ipcMain.handle(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, async (event: IpcMainInvokeEvent, ) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
-      return birthParser(session.window);
+      return selectAndParseBirths(session.window);
     }
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PARSE_BIRTHS, event)
   });
@@ -489,6 +514,14 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS, event)
   });
 
+  ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS_BIRTHS, async (event: IpcMainInvokeEvent, birthRecord: BirthRecord, species: Species) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      return validateAndProcessBirths(session.db, birthRecord, species);
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS, event)
+  });
+
   ipcMain.handle(IPC_INVOKE_REGISTRY_PROCESS_TRANSFERS, async (event: IpcMainInvokeEvent, transferRecord: TransferRecord) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
@@ -521,6 +554,17 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_RESOLVE_DATABASE_ISSUES, event)
   });
 
+  ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, async (event: IpcMainInvokeEvent, value: DefaultSettingsResults) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
+      //TODO: Update storage of to consider database path/identifier
+      setStoreSelectedDefault(value)
+      session.window.webContents.send('active-default-settings-changed')
+      return
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_DEFAULT, event)
+  });
+
   ipcMain.handle(IPC_INVOKE_SET_STORE_SELECTED_SPECIES, (event: IpcMainInvokeEvent, value: Species | null) => {
     const session = atrkkrSessionForEvent(event)
     if (session) {
@@ -539,56 +583,16 @@ export const registerIpcHandlers = () => {
     logAndThrowUnhandledIpcRequest(IPC_INVOKE_SET_STORE_SELECTED_SIGNATURE_FILE_PATH, event)
   });
 
-  //////////////////////////////////////////////////////
-  // Default Settings Management API
-  //////////////////////////////////////////////////////
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_CREATE_DEFAULT_SETTINGS,
-    async (session: AtrkkrSession, queryParams: NewDefaultSettingsParameters) => {
+  ipcMain.handle(IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS, async (event: IpcMainInvokeEvent, queryParams) => {
+    const session = atrkkrSessionForEvent(event)
+    if (session) {
       return writeNewDefaultSettings(session.db.raw(), queryParams)
         .then(() => {
-          session.window.webContents.send(DefaultSettingsManagement.CHANNEL_EVENT_DEFAULT_SETTINGS_COLLECTION_CHANGED)
+          session.window.webContents.send('default-settings-list-changed')
         });
-    });
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_UPDATE_DEFAULT_SETTINGS,
-    async (session: AtrkkrSession, queryParams: NewDefaultSettingsParameters) => {
-      return editExistingDefaultSettings(session.db.raw(), queryParams)
-        .then((success: boolean) => {
-          session.window.webContents.send(DefaultSettingsManagement.CHANNEL_EVENT_DEFAULT_SETTINGS_COLLECTION_CHANGED)
-          return success
-        });
-    });
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_QUERY_DEFAULT_SETTINGS,
-    async (session: AtrkkrSession) => {
-      return getExistingDefaults(session.db.raw());
-    });
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_QUERY_DEFAULT_SETTINGS_ENTRIES,
-    async (session: AtrkkrSession) => {
-      return getDefaultSettingsEntries(session.db);
-    });
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_QUERY_ACTIVE_DEFAULT_SETTINGS_ENTRY,
-    (session: AtrkkrSession): Promise<ItemEntry | null> => {
-      return getDefaultSettingsEntry(session.db, session.activeDefaultSettingsId())
-    });
-
-  registerSessionIpcHandler(
-    DefaultSettingsManagement.CHANNEL_SELECT_ACTIVE_DEFAULT_SETTINGS,
-    async (session: AtrkkrSession, defaultSettingsId: string) => {
-      return session.activateDefaultSettings(defaultSettingsId)
-    });
-
-  //////////////////////////////////////////////////////
-  // Application Settings API
-  //////////////////////////////////////////////////////
+    }
+    logAndThrowUnhandledIpcRequest(IPC_INVOKE_WRITE_NEW_DEFAULT_SETTINGS, event)
+  });
 
   ipcMain.handle(ApplicationSettings.CHANNEL_QUERY_ABOUT_APP, async (_: IpcMainInvokeEvent): Promise<AppAboutInfo> => {
     return promiseFrom(() => {

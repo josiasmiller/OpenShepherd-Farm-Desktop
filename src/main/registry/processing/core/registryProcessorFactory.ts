@@ -1,9 +1,5 @@
-import { RegistryProcessType, ValidationResult } from '@app/api';
+import { RegistryProcessType } from '@app/api';
 import { RegistryProcessor } from './types'
-
-// births
-import { processBirthRows } from '../impl/births/processor/birthProcessor';
-import { validateBirthRows } from '../impl/births/validation/birthValidator';
 
 // registrations
 import { processRegistrationRows } from '../impl/registrations/processor/registrationProcessor';
@@ -17,11 +13,6 @@ import { validateRegistrationRows } from '../impl/registrations/validation/regis
  */
 export const registryProcessorFactory = (type: RegistryProcessType): RegistryProcessor => {
   switch (type) {
-    case 'births':
-      return {
-        validateRegistryRows: validateBirthRows,
-        processRegistryRows: processBirthRows,
-      };
     case 'registrations':
       return {
         validateRegistryRows: validateRegistrationRows,

@@ -1,12 +1,14 @@
 import { unwrapOrFailWithAnimal } from '@common/core';
-import { Species, RegistryRow, ValidationResponse } from '@app/api';
+import { Species, BirthNotification, ValidationResponse } from '@app/api';
 import { getGestationPeriod, getAnimalBirthDate, getBreedingAges } from '../../../../../../database';
 import {Database} from "sqlite3";
 
-export async function checkSireBreedingAge(db: Database, row: RegistryRow, species : Species): Promise<ValidationResponse> {
+export async function checkSireBreedingAge(db: Database, bn: BirthNotification, species : Species): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
-  const { sireId, birthdate } = row;
+
+  const sireId : string = bn.sireId;
+  const birthdate : string = bn.birthdate;
 
   if (!sireId || !birthdate || !species) {
     if (!sireId) errors.push("Missing sire ID.");

@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
-import {DefaultSettingsResults, ItemEntry} from '@app/api';
+import { DefaultSettingsResults } from '@app/api';
 import { isRegistryDesktop } from '@app/buildVariant';
 import {
   Box,
@@ -45,12 +45,12 @@ const SideDrawer = styled(Drawer)({
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const defaultsService = useContext<DefaultSettingsService>(DefaultSettingsServiceContext)
-  const [defaultList, setDefaultList] = useState<ItemEntry[]>([]);
+  const [defaultList, setDefaultList] = useState<DefaultSettingsResults[]>([]);
   const [selectedDefault, setSelectedDefault] = useState<string>("");
 
   useEffect(() => {
-    const defaultsListSubscription = defaultsService.defaultSettingsEntries$().subscribe(setDefaultList)
-    const activeDefaultsSubscription = defaultsService.activeDefaultSettingsEntry$()
+    const defaultsListSubscription = defaultsService.defaultSettings$().subscribe(setDefaultList)
+    const activeDefaultsSubscription = defaultsService.activeDefaultSettings$()
       .subscribe((activeDefaults) => {
         setSelectedDefault(activeDefaults?.name ?? '')
       })
@@ -64,7 +64,7 @@ const Sidebar: React.FC = () => {
     const newSelected = defaultList.find((def) => def.name === selectedName);
     if (newSelected) {
       try {
-        await defaultsService.selectActiveDefaultSettings(newSelected.id);
+        await defaultsService.selectActiveDefaultSettings(newSelected);
       } catch (error) {
         console.error("Failed to persist selected default:", error);
       }

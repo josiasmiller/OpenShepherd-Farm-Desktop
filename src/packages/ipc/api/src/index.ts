@@ -10,9 +10,3 @@ export {
   SessionManagementIpc,
   SessionManagementIpcProvider
 } from './apis/sessionManagement'
-
-export {
-  DefaultSettingsManagement,
-  DefaultSettingsManagementIpc,
-  DefaultSettingsManagementIpcProvider
-} from './apis/defaultSettingsManagement'

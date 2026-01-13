@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { EditableTable } from '@components/editableTable/editableTable';
-import { BackButton } from "@components/buttons";
 
 import { RegistryFieldDef, RegistryRow } from '@app/api';
 
-import { BirthParseResponse, BirthParseRow } from '@app/api';
 import { RegistrationParseResponse, RegistrationParseRow } from '@app/api';
 
 import { ParseResult, ProcessingResult, RegistryProcessRequest, RegistryProcessType } from '@app/api';
 import { ScrapieFlockInfo, Species } from '@app/api';
 import { DatabaseStateCheckResponse } from '@app/api';
 import { handleResult, Result } from '@common/core';
+import {BackButton} from "@components/buttons";
+import {EditableTable} from "@components/editableTable/editableTable";
 
 type EditableTableData = {
   title: string;
@@ -41,19 +40,6 @@ const processTypeButtons: Record<string, (ctx: {
   handleFixFederalRegnums: () => void;
   loading: boolean;
 }) => ActionButton[]> = {
-  births: ({ handlePreCheck, selectAndLoadFile, loading }) => [
-    {
-      label: "Pre-check Database",
-      onClick: handlePreCheck,
-      className: "wide-button"
-    },
-    {
-      label: loading ? "Loading..." : "Select Birth Notify CSV",
-      onClick: selectAndLoadFile,
-      disabled: loading,
-      className: "wide-button"
-    }
-  ],
 
   registrations: ({ handlePreCheck, handleFixFederalRegnums, selectAndLoadFile, loading }) => [
     {
@@ -99,18 +85,13 @@ export const PreprocessorPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
 
-  const [currentParseResult, setParseResult] = useState(null);
-
   const selectAndLoadFile = async () => {
     if (!processType) return;
 
     try {
       setLoading(true);
-
-      if (processType === 'births') {
-        await handleBirths();
         
-      } else if (processType === 'registrations') {
+      if (processType === 'registrations') {
         await handleRegistrations();
 
       }
@@ -123,78 +104,6 @@ export const PreprocessorPage: React.FC = () => {
     }
   };
 
-  /**
-   * parses births and then populates the table with the parsed data
-   */
-  const handleBirths = async () => {
-    const parseResult: ParseResult<BirthParseResponse> = await window.registryAPI.parseBirths();
-    const parsedBirths: BirthParseRow[] = parseResult.data.rows;
-
-    handleWarnings(parseResult.warnings);
-
-    const birthColumns: RegistryFieldDef[] = [
-      // Core birth info
-      { key: 'isStillborn', label: 'Stillborn?', editable: true },
-      { key: 'prefixKey', label: 'Prefix Key', editable: false },
-      { key: 'prefix', label: 'Prefix', editable: true },
-      { key: 'animalName', label: 'Animal Name', editable: true },
-      { key: 'birthdate', label: 'Birth Date', editable: true },
-      { key: 'sexKey', label: 'Sex Key', editable: true },
-      { key: 'sex', label: 'Sex', editable: true },
-
-      // Breeder and parents
-      { key: 'breederId', label: 'Breeder ID', editable: true },
-      { key: 'breederName', label: 'Breeder Name', editable: true },
-      { key: 'sireId', label: 'Sire ID', editable: true },
-      { key: 'damId', label: 'Dam ID', editable: true },
-
-      // Conception & birth type
-      { key: 'conceptionTypeKey', label: 'Conception Type Key', editable: true },
-      { key: 'conceptionType', label: 'Conception Type', editable: true },
-      { key: 'birthTypeKey', label: 'Birth Type', editable: true },
-
-      // Federal tag
-      { key: 'fedColorKey', label: 'Federal Color Key', editable: true },
-      { key: 'fedColor', label: 'Federal Tag Color', editable: true },
-      { key: 'fedLocKey', label: 'Federal Location Key', editable: true },
-      { key: 'fedLoc', label: 'Federal Tag Location', editable: true },
-      { key: 'fedNum', label: 'Federal Tag Number', editable: true },
-      { key: 'fedTypeKey', label: 'Federal Type Key', editable: true },
-      { key: 'fedType', label: 'Federal Tag Type', editable: true },
-
-      // Farm tag
-      { key: 'farmColorKey', label: 'Farm Color Key', editable: true },
-      { key: 'farmColor', label: 'Farm Tag Color', editable: true },
-      { key: 'farmLocKey', label: 'Farm Location Key', editable: true },
-      { key: 'farmLoc', label: 'Farm Tag Location', editable: true },
-      { key: 'farmNum', label: 'Farm Tag Number', editable: true },
-      { key: 'farmTypeKey', label: 'Farm Type Key', editable: true },
-      { key: 'farmType', label: 'Farm Tag Type', editable: true },
-
-      // Weight
-      { key: 'weight', label: 'Weight', editable: true },
-      { key: 'weightUnitsKey', label: 'Weight Units Key', editable: true },
-      { key: 'weightUnits', label: 'Weight Units', editable: true },
-
-      // Misc
-      { key: 'coatColorKey', label: 'Coat Color Key', editable: false },
-      { key: 'coatColor', label: 'Coat Color', editable: true },
-      { key: 'coatColorTableKey', label: 'Coat Color Table Key', editable: true },
-      { key: 'birthNotes', label: 'Notes', editable: true },
-    ];
-
-    const rows: RegistryRow[] = parsedBirths.map(b => ({ ...b }));
-
-    setTables([
-      {
-        title: "Birth Records",
-        columns: birthColumns,
-        rows,
-        editable: true,
-      }
-    ]);
-    setHasSelectedFile(true);
-  };
 
   /**
    * Parses registrations and then populates the table with the parsed data

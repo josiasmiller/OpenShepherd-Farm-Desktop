@@ -101,7 +101,6 @@ Here’s a summary of the key npm scripts:
 | `npm run make:registry`    | Creates installers for Registry Desktop        |
 | `npm run make`             | Creates installers for all app variants        |
 | `npm run clean`            | Removes build info files, .webpack, and out folders |
-| `npm run test`             | Execute all tests                              |
 
 
 ---

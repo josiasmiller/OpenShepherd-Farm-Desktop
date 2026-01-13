@@ -441,45 +441,42 @@ export interface RegistryRow {
     [key: string]: any;
 }
 
-export type BirthParseResponse = {
-    rows : BirthParseRow[];
+export type BirthRecord = {
+    rows : BirthNotification[];
 }
 
-export type BirthParseRow = {
-    breederId: string;
-    breederName: string;
+export type BirthNotification = {
+    breeder: ItemEntry;
     isStillborn: boolean;
+
+    flockPrefix: ItemEntry;
     animalName: string;
-    sexKey: string;
-    sex: string;
+
+    sex: ItemEntry;
+
     birthdate: string;
-    birthTypeKey: string;
+    birthType: ItemEntry;
+
     sireId: string;
     damId: string;
-    prefixKey: string;
-    prefix: string;
-    fedTypeKey: string;
-    fedType: string;
-    fedColorKey: string;
-    fedColor: string;
-    fedLocKey: string;
-    fedLoc: string;
+
+    federalTagType: ItemEntry;
+    federalTagColor: ItemEntry;
+    federalTagLocation: ItemEntry;
     fedNum: string;
-    farmTypeKey: string;
-    farmType: string;
-    farmColorKey: string;
-    farmColor: string;
-    farmLocKey: string;
-    farmLoc: string;
+
+    farmTagType: ItemEntry;
+    farmTagColor: ItemEntry;
+    farmTagLocation: ItemEntry;
     farmNum: string;
+
     weight: number;
-    weightUnitsKey: string;
-    weightUnits: string;
+    weightUnits: ItemEntry;
+
     coatColorTableKey: string;
-    coatColorKey: string;
-    coatColor: string;
-    conceptionTypeKey: string;
-    conceptionType: string;
+    coatColor: ItemEntry;
+
+    serviceType: ItemEntry;
     birthNotes: string;
 };
 
@@ -752,15 +749,17 @@ export type AnimalDetails = {
   coatColor: string;
 }
 
-export interface HasId {
+interface HasId {
   id: string
 }
 
-export interface HasName {
+interface HasName {
   name: string
 }
 
 export type ItemEntry = HasId & HasName
+
+
 
 export type ProcessSuccess = {
     numberProcessed: number;

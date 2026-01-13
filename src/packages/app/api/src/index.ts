@@ -12,8 +12,8 @@ export {
   AnimalSearchResult,
   BirthInfo,
   BirthType,
-  BirthParseRow,
-  BirthParseResponse,
+  BirthNotification,
+  BirthRecord,
   Breed,
   BreedRequest,
   CoatColor,
@@ -81,6 +81,7 @@ export type {
   AnimalTrakkerIPC,
   SystemAPI,
   AnimalAPI,
+  DefaultsAPI,
   ExportAPI,
   LookupAPI,
   RegistryAPI,
@@ -97,6 +98,10 @@ export {
 } from "./errorCodes/registryProcessing/deathCodes"
 
 export {
+  BirthError
+} from "./errorCodes/registryProcessing/birthCodes"
+
+export {
   NEW_BUYER_NOT_SUPPORTED,
   TransferError,
 } from "./errorCodes/registryProcessing/transferCodes"
@@ -109,12 +114,6 @@ export type {
 export type {
   NewBuyerNotSupportedError
 } from "./errorCodes/registryProcessing/transferCodes";
-
-export {
-  type ItemEntry,
-  type HasId,
-  type HasName
-} from './dtos'
 
 declare global {
   interface Window extends AnimalTrakkerIPC {}

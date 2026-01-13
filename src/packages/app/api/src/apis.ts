@@ -27,17 +27,18 @@ import {
   Unit,
   UnitRequest,
   UnitType,
+  NewDefaultSettingsParameters,
   PedigreeNode,
   ScrapieFlockInfo,
   RegistryProcessRequest,
   DatabaseStateCheckResponse,
   ParseResult,
   ProcessingResult,
-  BirthParseResponse,
   RegistrationWriteResponse,
   RegistrationParseResponse,
   OwnerType,
   Owner,
+  BirthRecord,
   TransferRecord,
   DeathRecord,
   ProcessSuccess,
@@ -45,11 +46,14 @@ import {
 } from "./dtos";
 
 import { Result, Fulfillment } from "@common/core";
+import { type IpcEventRegistrarFunc } from "@ipc/core";
 
 import {
+  BirthError,
   DeathError,
   TransferError,
 } from "./index";
+
 
 // -------------------- Animal --------------------
 export interface AnimalAPI {
@@ -69,6 +73,18 @@ export interface ExportAPI {
     registrationType: "black" | "white" | "chocolate",
     signatureFilePath: string | null
   ) => Promise<RegistrationWriteResponse>;
+}
+
+// -------------------- Defaults --------------------
+export interface DefaultsAPI {
+  editExisting: (params: NewDefaultSettingsParameters) => Promise<boolean>;
+  writeNew: (params: NewDefaultSettingsParameters) => Promise<boolean>;
+  getExisting: () => Promise<Result<DefaultSettingsResults[], string>>;
+  onDefaultSettingsListChanged: IpcEventRegistrarFunc<DefaultSettingsResults[]>
+  selectActiveDefaultSettings: (params: DefaultSettingsResults) => Promise<void>
+  queryActiveDefaultSettings: () => Promise<DefaultSettingsResults>
+  onActiveDefaultSettingsChanged: IpcEventRegistrarFunc<DefaultSettingsResults>
+  onActiveDefaultSettingsNotFound: IpcEventRegistrarFunc<string>
 }
 
 // -------------------- Lookup --------------------
@@ -103,19 +119,22 @@ export interface LookupAPI {
 
 // -------------------- Registry --------------------
 export interface RegistryAPI {
-  parseBirths: () => Promise<ParseResult<BirthParseResponse>>;
+  parseBirths: () => Promise<Fulfillment<BirthRecord, BirthError>>;
   parseDeaths: () => Promise<Fulfillment<DeathRecord, DeathError>>;
   parseRegistrations: () => Promise<ParseResult<RegistrationParseResponse>>;
   parseTransfers: () => Promise<Fulfillment<TransferRecord, TransferError>>;
   process: (args: RegistryProcessRequest) => Promise<ProcessingResult>;
   processTransfers: (transferRecord: TransferRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
   processDeaths: (deathRecord: DeathRecord) => Promise<Result<ProcessSuccess, ProcessFailure>>;
+  processBirths: (birthRecord: BirthRecord, species: Species) => Promise<Result<ProcessSuccess, ProcessFailure>>;
 }
 
 // -------------------- Store --------------------
 export interface StoreAPI {
+  getSelectedDefault: () => Promise<DefaultSettingsResults | null>;
   getSelectedSpecies: () => Promise<Species | null>;
   getSelectedSignatureFilePath: () => Promise<string | null>;
+  setSelectedDefault: (defaultSettings: DefaultSettingsResults) => Promise<void>;
   setSelectedSpecies: (species: Species | null) => Promise<void>;
   setSelectedSignatureFilePath: (filePath: string | null) => Promise<void>;
 }
@@ -134,6 +153,7 @@ export interface SystemAPI {
 export interface AnimalTrakkerIPC {
   animalAPI: AnimalAPI;
   exportAPI: ExportAPI;
+  defaultsAPI: DefaultsAPI;
   lookupAPI: LookupAPI;
   registryAPI: RegistryAPI;
   storeAPI: StoreAPI;

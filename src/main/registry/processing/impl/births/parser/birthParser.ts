@@ -1,74 +1,114 @@
-import fs from 'fs/promises';
-import Papa from 'papaparse';
-import { BrowserWindow, dialog } from 'electron';
-import { ParseResult, BirthParseResponse, BirthParseRow } from '@app/api';
-import { birthParseMap } from './util/birthParseMap';
+
+import { BrowserWindow } from 'electron';
+import {
+  BirthRecord,
+  BirthError,
+  PARSE_ERROR,
+  ParseError,
+  type MissingFieldsError,
+  MISSING_FIELDS,
+  BirthNotification,
+} from '@app/api';
+import {selectJsonFile} from "@fileDialogs/jsonSelect";
+import {Failure, Result, Success, Fulfillment, cancelled} from "@common/core";
+import {readJsonFile} from "@registryHelpers";
+import {findBirthMissingFields} from "./helpers/findBirthMissingFields"
+
+
+/**
+ * Main Entrypoint for birth parsing
+ */
+export const selectAndParseBirths = async (window: BrowserWindow): Promise<Fulfillment<BirthRecord, BirthError>> => {
+
+  const fileResult = await selectJsonFile("Select Births JSON file", window);
+
+  if (fileResult === null) {
+    return cancelled();
+  }
+
+  return birthParser(fileResult);
+}
+
 
 /**
  * parses birth data from a given CSV chosen by the user
  * @returns ParseResult of given data
  */
-export const birthParser = async (mainWindow: BrowserWindow): Promise<ParseResult<BirthParseResponse>> => {
-  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
-    title: "Select CSV File",
-    properties: ["openFile"],
-    filters: [{ name: "CSV Files", extensions: ["csv"] }],
-  });
+export const birthParser = async (filePath: string): Promise<Fulfillment<BirthRecord, BirthError>> => {
+  try {
+    const fileContents = await readJsonFile(filePath);
 
-  if (canceled || filePaths.length === 0) {
-    console.log("User cancelled CSV file selection.");
-    return { 
-      data: {
-        rows : []
-      }, 
-      warnings: [] 
-    };
-  }
+    const missingFields: string[] = findBirthMissingFields(fileContents);
 
-  const selectedFile = filePaths[0];
-  const fileContent = await fs.readFile(selectedFile, 'utf-8');
+    if (missingFields.length > 0) {
+      const error: MissingFieldsError = {
+        type: MISSING_FIELDS,
+        missing: missingFields,
+      };
 
-  return new Promise((resolve, reject) => {
-    Papa.parse(fileContent, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const warnings: string[] = [];
-        const actualHeaders = results.meta.fields ?? [];
-        const expectedHeaders = Object.keys(birthParseMap);
+      return new Failure(error);
+    }
 
-        for (const header of expectedHeaders) {
-          if (!actualHeaders.includes(header)) {
-            warnings.push(`Missing expected column: "${header}"`);
-          }
-        }
+    // Build BirthRecord rows
+    const rows : BirthNotification[] = fileContents.births.map((b: any): BirthRecord["rows"][number] => {
 
-        const parsedData: BirthParseRow[] = (results.data as Record<string, any>[]).map((row) => {
-          const parsedRow: Partial<BirthParseRow> = {};
+      // Utility: converts { key, value } --> { id, name }
+      const toItem = (x: any) => ({
+        id: x.key,
+        name: x.value,
+      });
 
-          for (const [csvKey, fieldKey] of Object.entries(birthParseMap)) {
-            let value = row[csvKey];
+      const birth: BirthNotification = {
+        breeder: toItem(b.breeder),
 
-            if (fieldKey === 'isStillborn') {
-              value = value?.toLowerCase() === 'true';
-            } else if (fieldKey === 'weight') {
-              value = value ? parseFloat(value) : 0;
-            }
+        isStillborn: b.isStillborn,
+        animalName: b.animalName,
 
-            (parsedRow as Record<keyof BirthParseRow, typeof value>)[fieldKey] = value;
-          }
+        sex: toItem(b.sex),
 
-          return parsedRow as BirthParseRow;
-        });
+        birthdate: b.birth.date,
+        birthType: toItem(b.birth.type),
 
-        resolve({
-          data: {
-            rows: parsedData,
-          } as BirthParseResponse,
-          warnings,
-        });
-      },
-      error: (err: any) => reject(err),
+        sireId: b.parents.sireId,
+        damId: b.parents.damId,
+
+        flockPrefix: toItem(b.prefix),
+
+        // Federal tag fields
+        federalTagType: toItem(b.tags.federal.type),
+        federalTagColor: toItem(b.tags.federal.color),
+        federalTagLocation: toItem(b.tags.federal.location),
+        fedNum: b.tags.federal.number,
+
+        // Farm tag fields
+        farmTagType: toItem(b.tags.farm.type),
+        farmTagColor: toItem(b.tags.farm.color),
+        farmTagLocation: toItem(b.tags.farm.location),
+        farmNum: b.tags.farm.number,
+
+        weight: b.weight.value,
+        weightUnits: toItem(b.weight.units),
+
+        coatColorTableKey: b.coatColor.tableKey,
+        coatColor: toItem(b.coatColor),
+
+        serviceType: toItem(b.birth.service),
+        birthNotes: b.birth.notes ?? "",
+      };
+
+      return birth;
     });
-  });
+
+    let ret : BirthRecord = {
+      rows: rows,
+    }
+
+    return new Success(ret); 
+  } catch (err: any) {
+    const error: ParseError = {
+      type: PARSE_ERROR,
+      details: err?.message ?? String(err),
+    };
+    return new Failure(error);
+  }
 };

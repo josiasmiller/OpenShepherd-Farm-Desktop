@@ -1,5 +1,5 @@
 import { unwrapOrFailWithAnimal } from '@common/core';
-import { RegistryRow, Species, ValidationResponse } from '@app/api';
+import {BirthNotification, Species, ValidationResponse} from '@app/api';
 import {
   getGestationPeriod,
   getOffspringOfDam,
@@ -13,12 +13,13 @@ import {Database} from "sqlite3";
  */
 export async function checkDamRecentOffspring(
   db: Database,
-  row: RegistryRow,
+  bn: BirthNotification,
   species: Species
 ): Promise<ValidationResponse> {
   const millisecondsInDay = 86400000;
   const errors: string[] = [];
-  const { damId, birthdate } = row;
+  const damId : string = bn.damId;
+  const birthdate : string = bn.birthdate;
 
   if (!damId || !birthdate || !species) {
     if (!damId) errors.push("Missing dam ID.");
