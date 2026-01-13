@@ -12,6 +12,8 @@ export {
   AnimalSearchResult,
   BirthInfo,
   BirthType,
+  BirthRecord,
+  BirthNotification,
   BirthParseRow,
   BirthParseResponse,
   Breed,
@@ -91,6 +93,10 @@ export {
   MISSING_FIELDS,
   PARSE_ERROR,
 } from "./errorCodes/genericCodes"
+
+export {
+  BirthError
+} from "./errorCodes/registryProcessing/birthCodes"
 
 export {
   DeathError

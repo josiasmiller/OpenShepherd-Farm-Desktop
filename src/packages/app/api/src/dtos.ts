@@ -441,6 +441,46 @@ export interface RegistryRow {
     [key: string]: any;
 }
 
+export type BirthRecord = {
+    rows : BirthNotification[];
+}
+
+export type BirthNotification = {
+    breeder: ItemEntry;
+    isStillborn: boolean;
+
+    flockPrefix: ItemEntry;
+    animalName: string;
+
+    sex: ItemEntry;
+
+    birthdate: string;
+    birthType: ItemEntry;
+
+    sireId: string;
+    damId: string;
+
+    federalTagType: ItemEntry;
+    federalTagColor: ItemEntry;
+    federalTagLocation: ItemEntry;
+    fedNum: string;
+
+    farmTagType: ItemEntry;
+    farmTagColor: ItemEntry;
+    farmTagLocation: ItemEntry;
+    farmNum: string;
+
+    weight: number;
+    weightUnits: ItemEntry;
+
+    coatColorTableKey: string;
+    coatColor: ItemEntry;
+
+    serviceType: ItemEntry;
+    birthNotes: string;
+};
+
+
 export type BirthParseResponse = {
     rows : BirthParseRow[];
 }
