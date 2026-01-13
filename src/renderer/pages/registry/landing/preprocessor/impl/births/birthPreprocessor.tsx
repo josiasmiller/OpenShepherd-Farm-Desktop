@@ -55,6 +55,8 @@ export const BirthPreprocessorPage: React.FC = () => {
     try {
       setLoading(true);
 
+      // This will be implemented by a future MR
+      /** 
       const parsingResult: Fulfillment<BirthRecord, BirthError> = await window.registryAPI.parseBirths();
 
       if (parsingResult.tag === 'cancel') {
@@ -73,6 +75,7 @@ export const BirthPreprocessorPage: React.FC = () => {
 
       setCurrentBirthRecord(birthRecord);
       setHasLoadedFile(true);
+      */
 
     } catch (err: any) {
       await Swal.fire({
@@ -91,6 +94,8 @@ export const BirthPreprocessorPage: React.FC = () => {
   const handleSubmit = async () => {
     if (loading || !currentBirthRecord) return;
 
+    // this will be implemented in a future MR
+    /**
     const processingResult : Result<ProcessSuccess, ProcessFailure> = await window.registryAPI.processBirths(currentBirthRecord, species);
 
     await handleResult(processingResult, {
@@ -123,6 +128,8 @@ export const BirthPreprocessorPage: React.FC = () => {
         });
       },
     });
+
+    */
 
     return;
   };
