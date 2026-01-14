@@ -1,13 +1,13 @@
 import {Database} from "@database/async";
 import {Failure, Result, Success, wrapInError} from "@common/core";
+import {type ForeignKeyViolation} from "./types"
 import {
   DatabaseVersion,
   DB_VERSION_6_1_0,
   DB_VERSION_TARGET,
   dbVersionFrom,
-  ForeignKeyViolation,
   queryDBVersion
-} from "./schema";
+} from "./versioning";
 import {migrateTo6_1_0} from "./migrations/migrateTo6_1_0";
 
 export const DB_MIGRATION_RESULT_SUCCESS = 'db_migration_result_success';

@@ -27,48 +27,27 @@ import {
  *
  * @param dbPath
  * @param parentWindow
- * @returns The given dbPath value if the database is successfully opened
+ * @returns The database if it is successfully opened
  * and passes integrity checks, null otherwise.
  */
 export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promise<Database | null> => {
 
-  let db: Database | null = await validateDBVersionOrClose(
-    await Database.open(dbPath), dbPath, parentWindow,
-  )
-
-  if (!db) {
-    return null
-  }
-
-  db = await validateDBQueryableOrClose(db, dbPath, parentWindow)
-
-  if (!db) {
-    return null
-  }
-
-  return db
-}
-
-const validateDBVersionOrClose = async (
-  db: Database,
-  dbPath: string,
-  parentWindow: BrowserWindow
-): Promise<Database | null> => {
+  let db: Database = await Database.open(dbPath);
 
   try {
 
-    const dbVersionString = await queryDBVersion(db)
-    const versionCheckResult = checkDBVersion(dbVersionString)
+    const dbVersionString = await queryDBVersion(db);
+    let versionCheckResult = checkDBVersion(dbVersionString);
 
     switch (versionCheckResult.type) {
       case DB_VERSION_CHECK_RESULT_TYPE_PASSED:
-        return db
+        break;
       case DB_VERSION_CHECK_RESULT_TYPE_INVALID_FORMAT:
-        await showInvalidVersionFormat(dbPath, parentWindow)
+        await showInvalidVersionFormat(dbPath, parentWindow);
         await db.close().catch((err: Error) => {
-          log.error(`Failed to close database following invalid version format error for ${dbPath} : ${err}`)
-        })
-        return null
+          log.error(`Failed to close database following invalid version format error for ${dbPath} : ${err}`);
+        });
+        return null;
       case DB_VERSION_CHECK_UNSUPPORTED_VERSION:
         await showUnsupportedDatabaseVersion(
           dbPath,
@@ -76,11 +55,11 @@ const validateDBVersionOrClose = async (
           REQUIRED_DB_VERSION_MAJOR,
           REQUIRED_DB_VERSION_MINOR,
           parentWindow,
-        )
+        );
         await db.close().catch((err: Error) => {
-          log.error(`Failed to close database following unsupported version found for ${dbPath} : ${err}`)
-        })
-        return null
+          log.error(`Failed to close database following unsupported version found for ${dbPath} : ${err}`);
+        });
+        return null;
       case DB_VERSION_CHECK_PATCH_VERSION_RECOMMENDED:
         const shouldProceed = await showPatchVersionRecommended(
           dbPath,
@@ -89,28 +68,28 @@ const validateDBVersionOrClose = async (
           REQUIRED_DB_VERSION_MINOR,
           REQUIRED_DB_VERSION_PATCH,
           parentWindow,
-        )
+        );
         if (!shouldProceed) {
           await db.close().catch((err: Error) => {
-            log.error(`Failed to close database following recommended patch version warning for ${dbPath} : ${err}`)
-          })
-          return null
-        } else {
-          return db
+            log.error(`Failed to close database following recommended patch version warning for ${dbPath} : ${err}`);
+          });
+          return null;
         }
+        break;
     }
   } catch (err) {
-    log.error(`Failed to query database version for ${dbPath} : ${err}`)
+    log.error(`Failed to check database version for ${dbPath} : ${err}`);
     await db.close().catch((err: Error) => {
-      log.error(`Failed to close database following failure querying database version for ${dbPath} : ${err}`)
-    })
-    return null
+      log.error(`Failed to close database following failure checking database version for ${dbPath} : ${err}`);
+    });
+    return null;
   }
-}
 
-async function validateDBQueryableOrClose(db: Database, dbPath: string, parentWindow: BrowserWindow): Promise<Database | null> {
   try {
-    const checkQueryableResult = await checkDBQueryable(db)
+
+    const checkQueryableResult = await checkDBQueryable(db);
+    let shouldCloseDB = false;
+
     switch (checkQueryableResult.type) {
       case DB_QUERY_CHECK_PASSED:
         await showQueryableCheckPassed(
@@ -118,29 +97,35 @@ async function validateDBQueryableOrClose(db: Database, dbPath: string, parentWi
           checkQueryableResult.settingsCount,
           checkQueryableResult.animalCount,
           parentWindow
-        )
-        return db
+        );
+        break;
       case DB_QUERY_CHECK_FAILED_SETTINGS:
       case DB_QUERY_CHECK_FAILED_ANIMALS:
-        await showQueryableCheckFailed(dbPath, parentWindow)
-        log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath} : ${checkQueryableResult.error}`)
-        break
+        shouldCloseDB = true;
+        await showQueryableCheckFailed(dbPath, parentWindow);
+        log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath} : ${checkQueryableResult.error}`);
+        break;
       case DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA:
-        await showRequiredDataMissing(dbPath, parentWindow)
-        log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath}`)
-        break
+        shouldCloseDB = true;
+        await showRequiredDataMissing(dbPath, parentWindow);
+        log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath}`);
+        break;
     }
-    await db.close().catch((err: Error) => {
-      log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`)
-    })
-    return null
+    if (shouldCloseDB) {
+      await db.close().catch((err: Error) => {
+        log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`);
+      });
+      return null;
+    }
   } catch (err) {
-    log.error(`Failed to check if database ${dbPath} is queryable : ${err}`)
+    log.error(`Failed to check if database ${dbPath} is queryable : ${err}`);
     await db.close().catch((err: Error) => {
-      log.error(`Failed to close database ${dbPath} after failing to check if database ${dbPath} is queryable : ${err}`)
+      log.error(`Failed to close database ${dbPath} after failing to check if database ${dbPath} is queryable : ${err}`);
     })
-    return null
+    return null;
   }
+
+  return db;
 }
 
 async function showInvalidVersionFormat(dbPath: string, parentWindow: BrowserWindow) {
@@ -148,7 +133,7 @@ async function showInvalidVersionFormat(dbPath: string, parentWindow: BrowserWin
     type: 'error',
     message: `Unable to determine the version of the specified database.\n\nThe database "${dbPath}" could be corrupted or is not an AnimalTrakker database.`,
     buttons: ['Ok']
-  })
+  });
 }
 
 async function showUnsupportedDatabaseVersion(
@@ -162,7 +147,7 @@ async function showUnsupportedDatabaseVersion(
     type: 'error',
     message: `The database "${dbPath}" has version ${dbVersion.major}.${dbVersion.minor}.${dbVersion.patch}.\n\nThis version of AnimalTrakker requires the database version to be ${requiredMajor}.${requiredMinor}.x.`,
     buttons: ['Ok']
-  })
+  });
 }
 
 async function showPatchVersionRecommended(
@@ -179,8 +164,8 @@ async function showPatchVersionRecommended(
     buttons: ['No', 'Yes'],
     defaultId: 0,
     cancelId: 0
-  })
-  return messageBoxReturn.response === 1
+  });
+  return messageBoxReturn.response === 1;
 }
 
 async function showQueryableCheckPassed(
@@ -193,7 +178,7 @@ async function showQueryableCheckPassed(
     type: 'info',
     message: `The database "${dbPath}" has loaded successfully.\n\nThe database currently contains ${settingsCount} default settings entries and ${animalCount} animal entries.`,
     buttons: ['Ok']
-  })
+  });
 }
 
 async function showQueryableCheckFailed(
@@ -204,7 +189,7 @@ async function showQueryableCheckFailed(
     type: 'error',
     message: `The database "${dbPath}" failed to load and is not queryable.\n\nThe database may be corrupt or in an invalid state and will be closed.`,
     buttons: ['Ok']
-  })
+  });
 }
 
 async function showRequiredDataMissing(
@@ -215,5 +200,5 @@ async function showRequiredDataMissing(
     type: 'error',
     message: `The database "${dbPath}" is missing data required for AnimalTrakker to execute.`,
     buttons: ['Ok']
-  })
+  });
 }

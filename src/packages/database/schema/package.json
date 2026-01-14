@@ -2,7 +2,7 @@
   "name": "database-schema",
   "version": "1.0.0",
   "description": "AnimalTrakker database schema specifics.",
-  "main": "lib/schema.js",
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib"
   }
