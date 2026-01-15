@@ -129,6 +129,11 @@ function showLandingWindow() {
     .catch(err => {
       log.error(`Failed to load landing window: ${err}`);
     });
+  setImmediate(() => {
+    if (landingWindow) {
+      bringWindowToFront(landingWindow)
+    }
+  });
 }
 
 /**
@@ -239,9 +244,9 @@ async function openNewSession(parentWindow: BrowserWindow): Promise<void> {
     setupMenuHandlingForPlatform(newSessionWindow, updateSessionWindowMenu);
     await newSessionWindow.loadURL(SESSION_WINDOW_WEBPACK_ENTRY);
   } else {
+    showLandingWindowIfNoSessions();
     // Failed to open the database, there is no need for the window anymore.
     newSessionWindow.destroy();
-    showLandingWindowIfNoSessions();
   }
 }
 
