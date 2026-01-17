@@ -212,10 +212,10 @@ async function openNewSession(parentWindow: BrowserWindow): Promise<void> {
   // Open the selected database using the window
   // we just created as a hook point for dialogs
   // related to opening the database.
-  const db = await openDb(dbPath, newSessionWindow);
+  const openDbResult = await openDb(dbPath, newSessionWindow);
 
-  if (db) {
-    const session = new AtrkkrSession(dbPath, db, newSessionWindow);
+  if (openDbResult) {
+    const session = new AtrkkrSession(dbPath, openDbResult.database, newSessionWindow);
     trackAtrkkrSession(session);
     // Ask before closing the session.
     newSessionWindow.on('close', (event) => {
@@ -243,6 +243,12 @@ async function openNewSession(parentWindow: BrowserWindow): Promise<void> {
     });
     setupMenuHandlingForPlatform(newSessionWindow, updateSessionWindowMenu);
     await newSessionWindow.loadURL(SESSION_WINDOW_WEBPACK_ENTRY);
+    await showDatabaseLoaded(
+      openDbResult.databasePath,
+      openDbResult.settingsCount,
+      openDbResult.animalCount,
+      newSessionWindow
+    );
   } else {
     showLandingWindowIfNoSessions();
     // Failed to open the database, there is no need for the window anymore.
@@ -451,4 +457,17 @@ function updateSessionWindowMenu(window: BrowserWindow | null) {
   } else {
     Menu.setApplicationMenu(menu);
   }
+}
+
+async function showDatabaseLoaded(
+  dbPath: string,
+  settingsCount: number,
+  animalCount: number,
+  parentWindow: BrowserWindow
+) {
+  await dialog.showMessageBox(parentWindow, {
+    type: 'info',
+    message: `The database "${dbPath}" has loaded successfully.\n\nThe database currently contains ${settingsCount} default settings entries and ${animalCount} animal entries.`,
+    buttons: ['Ok']
+  });
 }
