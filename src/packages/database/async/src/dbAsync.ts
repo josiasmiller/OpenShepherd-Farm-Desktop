@@ -1,6 +1,6 @@
 import {Database as Sqlite3Database, Statement, OPEN_READWRITE, OPEN_FULLMUTEX} from 'sqlite3';
 import {type RunResult} from 'sqlite3'
-import {Result} from "@common/core";
+import {Failure, Result, Success, wrapInError} from "@common/core";
 
 /**
  * A wrapper class around a sqlite3 database.
@@ -173,6 +173,15 @@ export class Database {
     } catch (error) {
       await this.exec('ROLLBACK TRANSACTION');
       throw error;
+    }
+  }
+
+  async backupTo(backupPath: string): Promise<Result<void, Error>> {
+    try {
+      await this.run('VACUUM INTO ?', backupPath)
+      return new Success(undefined)
+    } catch (error) {
+      return new Failure(wrapInError(error));
     }
   }
 }
