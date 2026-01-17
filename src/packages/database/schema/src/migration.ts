@@ -51,6 +51,11 @@ const MIGRATION_SPECS: DBMigrationSpec[] = [
   /* ADD FUTURE MIGRATION FUNCTION REFERENCES HERE */
 ];
 
+export const canMigrateFrom = (dbVersion: DatabaseVersion): boolean => {
+  const migrations = migrationsFrom(dbVersion);
+  return 0 < migrations.length;
+}
+
 export const migrate = async (db: Database): Promise<DBMigrationResult> => {
 
   try {
@@ -80,9 +85,7 @@ export const migrate = async (db: Database): Promise<DBMigrationResult> => {
       }
     }
 
-    const migrations: DBMigrationSpec[] = MIGRATION_SPECS.filter((spec) => {
-      return currentVersion.isLowerThan(spec.version);
-    });
+    const migrations: DBMigrationSpec[] = migrationsFrom(currentVersion);
 
     if (migrations.length === 0) {
       return {
@@ -167,4 +170,10 @@ export const migrate = async (db: Database): Promise<DBMigrationResult> => {
       error: wrapInError(error)
     };
   }
+}
+
+const migrationsFrom = (dbVersion: DatabaseVersion): DBMigrationSpec[] => {
+  return MIGRATION_SPECS.filter((spec) => {
+    return dbVersion.isLowerThan(spec.version);
+  });
 }
