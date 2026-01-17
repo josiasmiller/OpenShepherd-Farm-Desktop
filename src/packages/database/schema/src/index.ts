@@ -2,13 +2,19 @@
 export {
   DatabaseVersion,
   queryDBVersion,
-  dbVersionFrom
+  dbVersionFrom,
+  DB_VERSION_TARGET
 } from './versioning';
 
 export {type ForeignKeyViolation} from './types';
 
 export {
-  migrate
+  migrate,
+  canMigrateFrom,
+  DB_MIGRATION_RESULT_SUCCESS,
+  DB_MIGRATION_RESULT_ERROR,
+  DB_MIGRATION_RESULT_SKIPPED,
+  DB_MIGRATION_RESULT_FK_VIOLATIONS
 } from './migration';
 
 export {
