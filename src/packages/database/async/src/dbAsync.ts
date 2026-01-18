@@ -1,5 +1,6 @@
 import {Database as Sqlite3Database, Statement, OPEN_READWRITE, OPEN_FULLMUTEX} from 'sqlite3';
 import {type RunResult} from 'sqlite3'
+import {Result} from "@common/core";
 
 /**
  * A wrapper class around a sqlite3 database.
@@ -150,6 +151,24 @@ export class Database {
     try {
       const result = await work(this);
       await this.exec('END TRANSACTION');
+      return result;
+    } catch (error) {
+      await this.exec('ROLLBACK TRANSACTION');
+      throw error;
+    }
+  }
+
+  async inTransactionForResult<T, E>(work: (db: Database) => Promise<Result<T, E>>): Promise<Result<T, E>> {
+    await this.exec('BEGIN TRANSACTION');
+    try {
+      const result = await work(this);
+      switch (result.tag) {
+        case 'success':
+          await this.exec('END TRANSACTION');
+          break;
+        case 'error':
+          await this.exec('ROLLBACK TRANSACTION');
+      }
       return result;
     } catch (error) {
       await this.exec('ROLLBACK TRANSACTION');

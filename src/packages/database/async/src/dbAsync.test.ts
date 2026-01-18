@@ -1,4 +1,5 @@
 import {Database} from "./dbAsync";
+import {Result, Success, Failure} from "@common/core";
 
 /**
  * Holds test database for all tests in this module
@@ -199,7 +200,7 @@ test('Database#inTransaction completes with transaction effects intact', async (
  * under transaction and then throw to verify that inserted row
  * and deleted row are rolled back after transaction fails.
  */
-test('Database#inTransaction rolls back effects when failures occur in transaction\'s lifetime', async () => {
+test('Database#inTransaction rolls back effects when exceptions are thrown in transaction\'s lifetime', async () => {
   const database = testDatabase()
   await database.exec(CREATE_TEST_TABLE)
       .then(() => {
@@ -216,4 +217,86 @@ test('Database#inTransaction rolls back effects when failures occur in transacti
       .resolves.toEqual(expect.objectContaining({ column_one: 1, column_two: 2 }))
   await expect(database.get(`SELECT * FROM test_table WHERE column_one = 2`))
       .resolves.toBeUndefined()
+})
+
+/**
+ * Insert row into test database and delete an existing row
+ * under a transaction and verify the rows presence after the
+ * transaction is complete and returns a success result.
+ */
+test('Database#inTransactionForResult completes with transaction effects intact when result is a success', async () => {
+  const database = testDatabase()
+  await database.exec(CREATE_TEST_TABLE)
+    .then(() => {
+      return database.run(INSERT_TEST_TABLE_ROW_1)
+    })
+
+  const result = await database.inTransactionForResult<'success', 'failure'>(async (db: Database): Promise<Result<'success', 'failure'>> => {
+    await db.run(INSERT_TEST_TABLE_ROW_2)
+    await db.run(`DELETE FROM test_table WHERE column_one = 1`)
+    return new Success('success')
+  })
+
+  expect(result.tag).toBe('success')
+  expect(result['data']).toBeDefined()
+  expect(result['data']).toEqual('success')
+
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 1`))
+    .resolves.toBeUndefined()
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 2`))
+    .resolves.toEqual(expect.objectContaining({ column_one: 2, column_two: 3}))
+})
+
+/**
+ * Insert row into test database and delete an existing row
+ * under transaction and then return a failure to verify that inserted row
+ * and deleted row are rolled back after transaction ends with a failure result.
+ */
+test('Database#inTransactionForResult rolls back effects when result is a failure', async () => {
+  const database = testDatabase()
+  await database.exec(CREATE_TEST_TABLE)
+    .then(() => {
+      return database.run(INSERT_TEST_TABLE_ROW_1)
+    })
+
+  const result = await database.inTransactionForResult<'success', 'failure'>(async (db: Database): Promise<Result<'success', 'failure'>> => {
+    await db.run(INSERT_TEST_TABLE_ROW_2)
+    await db.run(`DELETE FROM test_table WHERE column_one = 1`)
+    return new Failure('failure')
+  })
+
+  expect(result.tag).toBe('error')
+  expect(result['error']).toBeDefined()
+  expect(result['error']).toEqual('failure')
+
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 1`))
+    .resolves.toEqual(expect.objectContaining({ column_one: 1, column_two: 2 }))
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 2`))
+    .resolves.toBeUndefined()
+})
+
+/**
+ * Insert row into test database and delete an existing row
+ * under transaction and then throw to verify that inserted row
+ * and deleted row are rolled back after transaction fails.
+ */
+test('Database#inTransactionForResult rolls back effects when exceptions are thrown in transaction\'s lifetime', async () => {
+  const database = testDatabase()
+  await database.exec(CREATE_TEST_TABLE)
+    .then(() => {
+      return database.run(INSERT_TEST_TABLE_ROW_1)
+    })
+
+  const result = await database.inTransactionForResult(async (db: Database) => {
+    await db.run(INSERT_TEST_TABLE_ROW_2)
+    await db.run(`DELETE FROM test_table WHERE column_one = 1`)
+    throw new Error('Forced failure of transaction.')
+  }).catch(() => { /* NO-OP so we can run assertions */ })
+
+  expect(result).toBeUndefined()
+
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 1`))
+    .resolves.toEqual(expect.objectContaining({ column_one: 1, column_two: 2 }))
+  await expect(database.get(`SELECT * FROM test_table WHERE column_one = 2`))
+    .resolves.toBeUndefined()
 })
