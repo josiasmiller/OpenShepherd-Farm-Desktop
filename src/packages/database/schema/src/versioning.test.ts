@@ -1,4 +1,4 @@
-import {DatabaseVersion, dbVersionFrom} from "./schema";
+import {DatabaseVersion, dbVersionFrom} from "./versioning";
 
 describe("dbVersionFrom", () => {
 
