@@ -659,19 +659,37 @@ export const migrateTo6_1_0 = async (db: Database): Promise<void> => {
     ON CONFLICT(id_genetichorntypeid) DO NOTHING;
     
     --------------------------------------------------------------------------------------
+    -- Add additional id_location_table seed data
+    --------------------------------------------------------------------------------------
+
+    -- Do nothing on conflicts as the rows are new and we are only interested in idempotence for the script.
+
+    INSERT INTO id_location_table (id_idlocationid, id_location_name, id_location_abbrev, id_location_display_order, created, modified) VALUES ('eb0c0a76-53dc-4a30-9e82-05b19cd3a812', 'Collar', 'COL', '12', '2026-01-19 10:33:26', '2026-01-19 10:33:26');\t
+    ON CONFLICT(id_idlocationid) DO NOTHING;
+
+    --------------------------------------------------------------------------------------
     -- Add additional id_type_table seed data
     --------------------------------------------------------------------------------------
-    
+
     -- Do nothing on conflicts as the rows are new and we are only interested in idempotence for the script.
-    
+
     INSERT INTO id_type_table(id_idtypeid,id_type_name,id_type_abbrev,id_type_display_order,created,modified) 
-    VALUES ('2e8a9552-1ad3-43f8-a417-eefb3a79946a','NSIP_ID','NSIP',17,'2025-12-13 07:47:32','2025-12-13 07:47:32')
+    VALUES ('2e8a9552-1ad3-43f8-a417-eefb3a79946a','NSIP ID','NSIP',17,'2025-12-13 07:47:32','2025-12-13 07:47:32')
     ON CONFLICT(id_idtypeid) DO NOTHING;
-    
+
     INSERT INTO id_type_table(id_idtypeid,id_type_name,id_type_abbrev,id_type_display_order,created,modified) 
-    VALUES ('5434810e-4b52-4e88-9a02-c34b5b488205','Flock_54_BDI','Flock 54',18,'2025-12-13 07:47:32','2025-12-13 07:47:32')
-    ON CONFLICT(id_idtypeid) DO NOTHING;  
-    
+    VALUES ('5434810e-4b52-4e88-9a02-c34b5b488205','Flock 54 BDI','Flock 54',18,'2025-12-13 07:47:32','2025-12-13 07:47:32')
+    ON CONFLICT(id_idtypeid) DO NOTHING;
+
+    INSERT INTO id_type_table(id_idtypeid,id_type_name,id_type_abbrev,id_type_display_order,created,modified) VALUES ('4d4d6d62-f7b7-4158-99f3-d794ab7ad9ba','US Animal ID Num','AIN',19,'2026-01-19 10:33:26','2026-01-19 10:33:26');
+    ON CONFLICT(id_idtypeid) DO NOTHING;
+
+    INSERT INTO id_type_table(id_idtypeid,id_type_name,id_type_abbrev,id_type_display_order,created,modified) VALUES ('4ea6ee47-2077-4c38-900d-64f6d2f07bba','Microchip','Chip',20,'2026-01-19 10:33:26','2026-01-19 10:33:26');
+    ON CONFLICT(id_idtypeid) DO NOTHING;
+
+    INSERT INTO id_type_table(id_idtypeid,id_type_name,id_type_abbrev,id_type_display_order,created,modified) VALUES ('a2af11e6-be3f-4875-9764-ab82027b1157','Hot Brand','Brand',21,'2026-01-19 10:33:26','2026-01-19 10:33:26');
+    ON CONFLICT(id_idtypeid) DO NOTHING;
+
     --------------------------------------------------------------------------------------
     -- Add additional premise_table seed data
     --------------------------------------------------------------------------------------
