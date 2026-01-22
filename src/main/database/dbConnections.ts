@@ -28,6 +28,13 @@ import {
 } from "./checkDBQueryable";
 import path from "path";
 
+type OpenDbSuccess = {
+  database: Database,
+  databasePath: string,
+  settingsCount: number,
+  animalCount: number
+}
+
 /**
  * Opens the database at the given path and performs various integrity checks,
  * including the need for and application of migrations.
@@ -41,10 +48,10 @@ import path from "path";
  *
  * @param dbPath
  * @param parentWindow
- * @returns The database if it is successfully opened
+ * @returns The database and associated counts if it is successfully opened
  * and passes integrity checks, null otherwise.
  */
-export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promise<Database | null> => {
+export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promise<OpenDbSuccess | null> => {
 
   let db: Database = await Database.open(dbPath);
   let shouldMigrateToVersion: DatabaseVersion | null = null;
@@ -206,35 +213,29 @@ export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promi
   try {
 
     const checkQueryableResult = await checkDBQueryable(db);
-    let shouldCloseDB = false;
 
     switch (checkQueryableResult.type) {
       case DB_QUERY_CHECK_PASSED:
-        await showQueryableCheckPassed(
-          dbPath,
-          checkQueryableResult.settingsCount,
-          checkQueryableResult.animalCount,
-          parentWindow
-        );
-        break;
+        return {
+          database: db,
+          databasePath: dbPath,
+          settingsCount: checkQueryableResult.settingsCount,
+          animalCount: checkQueryableResult.animalCount
+        };
       case DB_QUERY_CHECK_FAILED_SETTINGS:
       case DB_QUERY_CHECK_FAILED_ANIMALS:
-        shouldCloseDB = true;
         await showQueryableCheckFailed(dbPath, parentWindow);
         log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath} : ${checkQueryableResult.error}`);
         break;
       case DB_QUERY_CHECK_FAILED_MISSING_REQUIRED_DATA:
-        shouldCloseDB = true;
         await showRequiredDataMissing(dbPath, parentWindow);
         log.error(`Query check failed for type ${checkQueryableResult.type} for ${dbPath}`);
         break;
     }
-    if (shouldCloseDB) {
-      await db.close().catch((err: Error) => {
-        log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`);
-      });
-      return null;
-    }
+    await db.close().catch((err: Error) => {
+      log.error(`Failed to close database ${dbPath} after queryable check failed : ${err}`);
+    });
+    return null;
   } catch (err) {
     log.error(`Failed to check if database ${dbPath} is queryable : ${err}`);
     await db.close().catch((err: Error) => {
@@ -242,8 +243,6 @@ export const openDb = async (dbPath: string, parentWindow: BrowserWindow): Promi
     })
     return null;
   }
-
-  return db;
 }
 
 async function showInvalidVersionFormat(dbPath: string, parentWindow: BrowserWindow) {
@@ -391,19 +390,6 @@ async function showMigrationSkipped(
     message: message,
     buttons: ['Ok']
   })
-}
-
-async function showQueryableCheckPassed(
-  dbPath: string,
-  settingsCount: number,
-  animalCount: number,
-  parentWindow: BrowserWindow
-) {
-  await dialog.showMessageBox(parentWindow, {
-    type: 'info',
-    message: `The database "${dbPath}" has loaded successfully.\n\nThe database currently contains ${settingsCount} default settings entries and ${animalCount} animal entries.`,
-    buttons: ['Ok']
-  });
 }
 
 async function showQueryableCheckFailed(
