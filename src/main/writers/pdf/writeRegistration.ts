@@ -144,7 +144,7 @@ const _handleRegistrationWrite = async (
 
   for (const regResult of data) {
 
-    for (const unprintedCert of regResult.certificatesReadyToPrint) {
+    for (const unprintedCert of regResult.unprintedCertificates) {
 
       // Load the existing PDF and access the form
       let pdfDoc: PDFDocument | undefined;

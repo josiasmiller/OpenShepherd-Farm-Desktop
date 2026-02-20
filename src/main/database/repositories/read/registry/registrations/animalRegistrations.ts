@@ -19,7 +19,7 @@ import { estimateFiftyDayWeight } from "../../animal/weight/estimateFiftyDayWeig
 import { getBreeder } from "../../owners/getBreeder";
 import { getOwner } from "../../owners/getOwner";
 import { getCompaniesForContact } from "../../owners/getCompaniesForContact";
-import { getRegistryCertificatesReadyToPrintForAnimal } from "./getRegistryCertificatesReadyToPrintForAnimal";
+import { getUnprintedRegistryCertificatesForAnimal } from "./getUnprintedRegistryCertificatesForAnimal";
 import log from "electron-log";
 
 /**
@@ -43,7 +43,7 @@ export const getAnimalRegistrationInfo = async (
     for (const animalId of animalIds) {
 
       const [
-        readyToPrintCertificatesResult,
+        unprintedCertificateResult,
         pedigreeResult,
         animalIdentificationResult,
         breederResult,
@@ -56,7 +56,7 @@ export const getAnimalRegistrationInfo = async (
         codon171Result,
         fiftyDayWeightResult,
       ] = await Promise.all([
-        getRegistryCertificatesReadyToPrintForAnimal(db, registryCompanyId, animalId),
+        getUnprintedRegistryCertificatesForAnimal(db, registryCompanyId, animalId),
 
         // this will need to be updated to use our DB wrapper
         getPedigree(db.raw(), animalId, 4),
@@ -86,16 +86,16 @@ export const getAnimalRegistrationInfo = async (
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // unprinted certificate ID checker
 
-      let foundReadyToPrintPaper : boolean = false;
+      let foundUnprintedPaper : boolean = false;
       // let unprintedPaperUUID : string = null;
-      let certificatesReadyToPrint : RegistryCertificate[] = []
+      let unprintedCertificates : RegistryCertificate[] = []
 
-      await handleResult(readyToPrintCertificatesResult, {
+      await handleResult(unprintedCertificateResult, {
         success: (certs: RegistryCertificate[]) => {
           
           if (certs !== undefined && certs.length > 0) {
-            foundReadyToPrintPaper = true;
-            certificatesReadyToPrint = certs;
+            foundUnprintedPaper = true;
+            unprintedCertificates = certs;
           }
         },
         error: (err: string) => {
@@ -105,7 +105,7 @@ export const getAnimalRegistrationInfo = async (
       });
 
       // when no unprinted paper is found or we do not find a UUID for said paper, do not do any processing
-      if (!foundReadyToPrintPaper || certificatesReadyToPrint.length === 0) {
+      if (!foundUnprintedPaper || unprintedCertificates.length === 0) {
         log.info(`No certificate papers for for name=\'${animalIdentification.name}\' animalId=\'${animalId}\'`)
         continue;
       }
@@ -173,7 +173,7 @@ export const getAnimalRegistrationInfo = async (
       }
 
       const registration: AnimalRegistrationResult = {
-        certificatesReadyToPrint: certificatesReadyToPrint,
+        unprintedCertificates: unprintedCertificates,
         animalIdentification: animalIdentification,
         officialTag: officialTag,
         unofficialTag: unofficialTag,

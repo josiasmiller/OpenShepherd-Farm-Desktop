@@ -11,7 +11,7 @@ import { RegistryCertificate } from "@app/api";
  * @param animalId The animal ID
  * @returns Result array of RegistryCertificate or failure message
  */
-export async function getRegistryCertificatesReadyToPrintForAnimal(
+export async function getUnprintedRegistryCertificatesForAnimal(
     db: Database,
     registryCompanyId: string,
     animalId: string
