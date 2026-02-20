@@ -670,7 +670,7 @@ export type BirthInfo = {
 }
 
 export type AnimalRegistrationResult = {
-    unprintedCertificates: RegistryCertificate[];
+    certificatesReadyToPrint: RegistryCertificate[];
     Codon171: CodonResponse | null;
     Codon136: CodonResponse | null;
     animalIdentification: AnimalIdentification | null;
