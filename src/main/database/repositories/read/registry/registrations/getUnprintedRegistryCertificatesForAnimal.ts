@@ -4,14 +4,14 @@ import { RegistryCertificate } from "@app/api";
 
 
 /**
- * Fetch all registry certificates for a given animal and company.
+ * Fetch all registry certificates that are ready to print for a given animal and company.
  *
  * @param db The database instance
  * @param registryCompanyId The company ID
  * @param animalId The animal ID
  * @returns Result array of RegistryCertificate or failure message
  */
-export async function getRegistryCertificatesForAnimal(
+export async function getUnprintedRegistryCertificatesForAnimal(
     db: Database,
     registryCompanyId: string,
     animalId: string
@@ -19,14 +19,15 @@ export async function getRegistryCertificatesForAnimal(
 
   const query = `
     SELECT
-      id_registrycertificateprintid AS id,
-      id_animalid AS animalId,
-      id_companyid AS registryCompanyId,
-      id_registrationtypeid AS registrationType,
-      printed AS isPrinted
+      id_registrycertificateprintid AS id
+      , id_animalid AS animalId
+      , id_companyid AS registryCompanyId
+      , id_registrationtypeid AS registrationType
+      , printed AS isPrinted
     FROM registry_certificate_print_table
     WHERE id_companyid = ?
       AND id_animalid = ?
+      AND printed = 0
     ORDER BY created DESC
   `;
 
