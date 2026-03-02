@@ -1,3 +1,20 @@
+This is an import of AnimalTrakker™ Farm Desktop - I am grateful to the developers at AnimalTrakker™ for making this program. I will try to merge any features i feel fit in with the AnimalTrakker™ teams goals... If i donot not get something merged that you think i should feel free to contact me.
+
+Here are some features i want to add:
+
+1. A way to import .csv and NSIP data directly into Farm Desktop.
+2. An easier way to transfer databases between Farm Desktop and Farm Mobile.
+3. Detailed Reports - Graphs and such like.
+4. Compatibility with as many eid readers, scales, and sort gates as possible.
+5. Bulk Actions.
+6. My Dream is to have an open source sheep project that is better than any other commercial sheep software out there.
+
+
+This will be the home for my version of AnimalTrakker™ Farm Desktop. I believe that in order to accomplish the goals i want for sheep software, we need the help of everyone. Because of this i will add all the features to AnimalTrakker™ on Gitlab that allign with the goal of that project - any features that donot fit that will then be brought here.
+
+
+
+
 # AnimalTrakker Desktop (an Electron Application)
 
 ---
